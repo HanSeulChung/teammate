@@ -38,6 +38,7 @@ public class Member extends BaseEntity {
   private LoginType loginType;
   @Convert(converter = AuthorityConverter.class)
   private Authority authority;
+  private String emailAuthenticationYn;
   private String memberProfileUrl;
 
   @OneToMany(mappedBy = "member")

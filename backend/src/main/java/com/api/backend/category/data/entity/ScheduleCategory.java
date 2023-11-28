@@ -31,6 +31,7 @@ public class ScheduleCategory extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long scheduleCategoryId;
   private String color;
+  private String categoryName;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "teamId")
