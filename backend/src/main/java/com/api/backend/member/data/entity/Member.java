@@ -4,6 +4,7 @@ import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.type.Authority;
 import com.api.backend.member.data.type.LoginType;
+import com.api.backend.member.data.type.SexType;
 import com.api.backend.member.data.type.converter.AuthorityConverter;
 import com.api.backend.member.data.type.converter.LoginTypeConverter;
 import com.api.backend.notification.data.entity.Notification;
@@ -33,7 +34,7 @@ public class Member extends BaseEntity {
   private String password;
   private String name;
   private String nickName;
-  private String sex;
+  private SexType sexType;
   @Convert(converter = LoginTypeConverter.class)
   private LoginType loginType;
   @Convert(converter = AuthorityConverter.class)
