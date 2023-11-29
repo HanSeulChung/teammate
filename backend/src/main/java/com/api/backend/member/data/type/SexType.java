@@ -3,8 +3,8 @@ package com.api.backend.member.data.type;
 import com.api.backend.global.type.converter.legacy.LegacyCodeCommonType;
 
 public enum SexType implements LegacyCodeCommonType {
-  MALE("0", "USER"),
-  FEMALE("1", "ADMIN");
+  MALE("0", "MALE"),
+  FEMALE("1", "FEMALE");
 
   private final String code;
   private final String description;

@@ -4,10 +4,7 @@ import com.api.backend.member.data.dto.SignUpRequest;
 import com.api.backend.member.data.dto.SignUpResponse;
 import com.api.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -17,13 +14,11 @@ public class MemberController {
 
     private final MemberService memberService;
 
+
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(
-            @RequestBody @Valid SignUpRequest request
-            ){
-        SignUpResponse response = this.memberService.register(request);
-        return ResponseEntity.ok().body(response);
+    public SignUpResponse signUp (
+            @RequestBody SignUpRequest request
+    )throws Exception {
+        return this.memberService.register(request);
     }
-
-
 }

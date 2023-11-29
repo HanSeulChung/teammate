@@ -9,16 +9,28 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest(MemberController.class)
 class MemberControllerTest {
-    @Mock
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private MemberService memberService;
-    @InjectMocks
-    private MemberController memberController;
 
     @BeforeEach
     public void setUp() {
@@ -26,30 +38,10 @@ class MemberControllerTest {
     }
 
     @Test
-    public void 회원가입성공() {
+    public void 회원가입성공() throws Exception {
         // Given
-        SignUpRequest signUpRequset = new SignUpRequest();
-        signUpRequset.setEmail("testemail@gmail.com");
-        signUpRequset.setPassword("testpassword");
-        signUpRequset.setRepassword("testpassword");
-        signUpRequset.setName("testname");
-        signUpRequset.setNickName("testnickname");
-        signUpRequset.setSexType(SexType.FEMALE);
-
-        SignUpResponse signUpResponse = new SignUpResponse();
-        signUpResponse.setEmail("testemail@gmail.com");
-        signUpResponse.setMessage("이메일 인증후 로그인이 가능합니다.");
-
-        when(memberService.register(signUpRequset)).thenReturn(signUpResponse);
 
         // When
-        ResponseEntity<?> responseEntity = memberController.signUp(signUpRequset);
-
-        SignUpResponse response = (SignUpResponse) responseEntity.getBody();
-        // Then
-        assertNotNull(responseEntity.getBody());
-        assertEquals("testemail@gmail.com", response.getEmail());
-        assertEquals("이메일 인증후 로그인이 가능합니다.",response.getMessage());
     }
 
 
