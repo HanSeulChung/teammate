@@ -12,16 +12,11 @@ import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 @AllArgsConstructor
@@ -47,9 +42,11 @@ public class ScheduleCategoryServiceImpl implements ScheduleCategoryService {
     return ScheduleCategoryDto.of(scheduleCategory);
   }
 
+
   @Override
   public List<ScheduleCategoryDto> searchByCategoryType(CategoryType categoryType) {
-    List<ScheduleCategory> scheduleCategories = scheduleCategoryRepository.findAllByCategoryType(categoryType);
+    List<ScheduleCategory> scheduleCategories = scheduleCategoryRepository.findAllByCategoryType(
+        categoryType, Sort.by(Sort.Order.asc("categoryType").ignoreCase()));
     return ScheduleCategoryDto.of(scheduleCategories);
   }
 

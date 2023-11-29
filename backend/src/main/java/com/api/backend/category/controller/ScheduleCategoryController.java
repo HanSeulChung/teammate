@@ -31,9 +31,10 @@ public class ScheduleCategoryController {
     return ResponseEntity.ok(ScheduleCategoryResponse.toResponse(scheduleCategoryDto));
   }
 
-  @GetMapping("/{categoryType}")
+  @GetMapping
   public ResponseEntity<List<ScheduleCategoryDto>> searchByCategoryType(
-      @PathVariable CategoryType categoryType) {
-    return ResponseEntity.ok(scheduleCategoryService.searchByCategoryType(categoryType));
+      @RequestParam String categoryType) {
+    return ResponseEntity.ok(scheduleCategoryService.searchByCategoryType(
+        CategoryType.valueOf(categoryType.toUpperCase())));
   }
 }
