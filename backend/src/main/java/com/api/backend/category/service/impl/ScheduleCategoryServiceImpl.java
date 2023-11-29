@@ -33,7 +33,7 @@ public class ScheduleCategoryServiceImpl implements ScheduleCategoryService {
     Team team = validateTeam(teamId);
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
-        .scheduleCategoryId(scheduleCategoryRequest.getId())
+        .scheduleCategoryId(scheduleCategoryRequest.getCategoryId())
         .team(team)
         .categoryName(scheduleCategoryRequest.getCategoryName())
         .categoryType(scheduleCategoryRequest.getCategoryType())
@@ -63,13 +63,18 @@ public class ScheduleCategoryServiceImpl implements ScheduleCategoryService {
     return ScheduleCategoryDto.of(saved);
   }
 
+  @Override
+  public void delete(Long categoryId) {
+    validateScheduleCategory(categoryId);
+    scheduleCategoryRepository.deleteById(categoryId);
+  }
+
 
   public Team validateTeam(Long teamId) {
     return teamRepository.findById(teamId)
         .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
   }
 
-  //TODO: 카테고리 조회, 수정, 삭제시 사용할 메소드
   public ScheduleCategory validateScheduleCategory(Long scheduleCategoryId) {
     return scheduleCategoryRepository.findById(scheduleCategoryId)
         .orElseThrow(() -> new CustomException(SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));

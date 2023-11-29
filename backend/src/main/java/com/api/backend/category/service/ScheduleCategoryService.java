@@ -14,4 +14,6 @@ public interface ScheduleCategoryService {
   List<ScheduleCategoryDto> searchByCategoryType(CategoryType categoryType);
 
   ScheduleCategoryDto edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest, Long teamId);
+
+  void delete(Long categoryId);
 }
