@@ -1,5 +1,6 @@
 package com.api.backend.category.data.entity;
 
+import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.category.type.converter.CategoryTypeConverter;
 import com.api.backend.global.domain.BaseEntity;
@@ -45,4 +46,19 @@ public class ScheduleCategory extends BaseEntity {
 
   @OneToMany(mappedBy = "scheduleCategory")
   private List<Schedule> schedule = new ArrayList<>();
+
+  public void editScheduleCategory(ScheduleCategoryEditRequest request) {
+    if (request.getCategoryId() != null) {
+      this.scheduleCategoryId = request.getCategoryId();
+    }
+    if (request.getCategoryName() != null) {
+      this.categoryName = request.getCategoryName();
+    }
+    if (request.getCategoryType() != null) {
+      this.categoryType = request.getCategoryType();
+    }
+    if (request.getColor() != null) {
+      this.color = request.getColor();
+    }
+  }
 }

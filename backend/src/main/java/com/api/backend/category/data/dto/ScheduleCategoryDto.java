@@ -14,7 +14,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ScheduleCategoryDto {
 
-  private Long id;
+  private Long categoryId;
   private Long teamId;
   private LocalDateTime createDt;
   private LocalDateTime updateDt;
@@ -24,13 +24,13 @@ public class ScheduleCategoryDto {
 
   public static ScheduleCategoryDto of(ScheduleCategory scheduleCategory) {
     return ScheduleCategoryDto.builder()
-        .id(scheduleCategory.getScheduleCategoryId())
+        .categoryId(scheduleCategory.getScheduleCategoryId())
         .teamId(scheduleCategory.getTeam().getTeamId())
-        .createDt(scheduleCategory.getCreateDt())
-        .updateDt(scheduleCategory.getUpdateDt())
         .categoryName(scheduleCategory.getCategoryName())
         .categoryType(scheduleCategory.getCategoryType())
         .color(scheduleCategory.getColor())
+        .createDt(scheduleCategory.getCreateDt())
+        .updateDt(scheduleCategory.getUpdateDt())
         .build();
   }
 

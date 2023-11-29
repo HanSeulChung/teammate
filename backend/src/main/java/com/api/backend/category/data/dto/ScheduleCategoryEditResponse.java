@@ -9,22 +9,20 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class ScheduleCategoryResponse {
+public class ScheduleCategoryEditResponse {
 
   private Long categoryId;
   private String categoryName;
   private CategoryType categoryType;
-  private LocalDateTime createDt;
   private LocalDateTime updateDt;
   private String color;
 
-  public static ScheduleCategoryResponse toResponse(ScheduleCategoryDto scheduleCategoryDto) {
-    return ScheduleCategoryResponse.builder()
+  public static ScheduleCategoryEditResponse toResponse(ScheduleCategoryDto scheduleCategoryDto) {
+    return ScheduleCategoryEditResponse.builder()
         .categoryId(scheduleCategoryDto.getCategoryId())
         .categoryName(scheduleCategoryDto.getCategoryName())
         .categoryType(scheduleCategoryDto.getCategoryType())
-        .createDt(scheduleCategoryDto.getCreateDt())
-        .updateDt(scheduleCategoryDto.getUpdateDt())
+        .updateDt(LocalDateTime.now())
         .color(scheduleCategoryDto.getColor())
         .build();
   }

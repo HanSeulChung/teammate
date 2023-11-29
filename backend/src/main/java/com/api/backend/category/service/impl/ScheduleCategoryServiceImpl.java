@@ -4,6 +4,7 @@ import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 
 import com.api.backend.category.data.dto.ScheduleCategoryDto;
+import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryRequest;
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
@@ -48,6 +49,18 @@ public class ScheduleCategoryServiceImpl implements ScheduleCategoryService {
     List<ScheduleCategory> scheduleCategories = scheduleCategoryRepository.findAllByCategoryType(
         categoryType, Sort.by(Sort.Order.asc("categoryType").ignoreCase()));
     return ScheduleCategoryDto.of(scheduleCategories);
+  }
+
+  @Transactional
+  @Override
+  public ScheduleCategoryDto edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest,
+      Long teamId) {
+    validateTeam(teamId);
+    ScheduleCategory scheduleCategory = validateScheduleCategory(
+        scheduleCategoryEditRequest.getCategoryId());
+    scheduleCategory.editScheduleCategory(scheduleCategoryEditRequest);
+    ScheduleCategory saved = scheduleCategoryRepository.save(scheduleCategory);
+    return ScheduleCategoryDto.of(saved);
   }
 
 
