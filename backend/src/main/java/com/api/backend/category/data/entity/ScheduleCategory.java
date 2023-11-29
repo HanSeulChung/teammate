@@ -35,8 +35,10 @@ public class ScheduleCategory extends BaseEntity {
   private Long scheduleCategoryId;
   private String color;
   private String categoryName;
+
   @Convert(converter = CategoryTypeConverter.class)
   private CategoryType categoryType;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "teamId")
   private Team team;

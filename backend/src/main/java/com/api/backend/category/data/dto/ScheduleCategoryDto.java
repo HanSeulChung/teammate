@@ -34,7 +34,6 @@ public class ScheduleCategoryDto {
         .build();
   }
 
-  //TODO: 카테고리 목록 조회할 때 사용 예정
   public static List<ScheduleCategoryDto> of(List<ScheduleCategory> scheduleCategories) {
     if (scheduleCategories != null) {
       List<ScheduleCategoryDto> scheduleCategoryDtoList = new ArrayList<>();

@@ -6,6 +6,7 @@ import com.api.backend.global.type.converter.AbstractLegacyEnumAttributeConverte
 public class CategoryTypeConverter extends AbstractLegacyEnumAttributeConverter<CategoryType> {
 
   private static final String ENUM_NAME = "카테고리 종류";
+
   public CategoryTypeConverter(){
     super(CategoryType.class, ENUM_NAME);
   }
