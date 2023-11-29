@@ -1,10 +1,13 @@
 package com.api.backend.category.data.entity;
 
+import com.api.backend.category.type.CategoryType;
+import com.api.backend.category.type.converter.CategoryTypeConverter;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.team.data.entity.Team;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,7 +34,9 @@ public class ScheduleCategory extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long scheduleCategoryId;
   private String color;
-
+  private String categoryName;
+  @Convert(converter = CategoryTypeConverter.class)
+  private CategoryType categoryType;
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "teamId")
   private Team team;
