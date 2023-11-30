@@ -43,7 +43,7 @@ public class ScheduleCategoryDto {
       }
       return scheduleCategoryDtoList;
     }
-    return null;
+    return new ArrayList<>();
   }
 
 }

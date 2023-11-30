@@ -9,6 +9,7 @@ import com.api.backend.category.service.ScheduleCategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,11 @@ class ScheduleCategoryControllerTest {
   }
 
   @Test
+  @DisplayName("카테고리 추가 성공")
   void categoryAddSuccess() throws Exception {
     // Mock 데이터 설정
     ScheduleCategoryRequest request = ScheduleCategoryRequest.builder()
         .categoryId(1L)
-        .createDt(LocalDateTime.now())
         .color("Red")
         .categoryName("Test Category")
         .build();

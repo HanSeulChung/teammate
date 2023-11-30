@@ -22,9 +22,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @AllArgsConstructor
-public class ScheduleCategoryServiceImpl implements ScheduleCategoryService {
+public class ScheduleCategoryServiceImpl implements ScheduleCategoryService{
 
   private final ScheduleCategoryRepository scheduleCategoryRepository;
   private final TeamRepository teamRepository;
