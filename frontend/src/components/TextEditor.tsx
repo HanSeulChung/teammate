@@ -5,11 +5,22 @@ import {
   RichUtils,
   DraftEditorCommand,
   convertToRaw,
-  convertFromRaw
+  convertFromRaw,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import styled from "styled-components";
 import './TextEditor.css';
+
+const TitleInput = styled.input`
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  width: 40rem;
+  font-size: 16px;
+  margin-bottom: 4px;
+  padding: 4px;
+  placeholder: 'title';
+`
 
 const StyledTexteditor = styled.div`
   width: 40rem;
@@ -86,6 +97,7 @@ const TextEditor: React.FC = () => {
 
   return (
     <StyledTexteditor className="texteditor">
+      <TitleInput placeholder="title"></TitleInput>
       <ButtonContainer>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-one")}>H1</StyledButton>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-two")}>H2</StyledButton>
@@ -112,7 +124,7 @@ const TextEditor: React.FC = () => {
         editorState={editorState}
         onChange={(newEditorState) => {
           setEditorState(newEditorState);
-          handleChange(newEditorState);
+          handleChange;
         }}
         handleKeyCommand={handleKeyCommand}
       />
