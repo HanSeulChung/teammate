@@ -52,6 +52,12 @@ const TextEditor: React.FC = () => {
     const contentState = newEditorState.getCurrentContent();
     const text = contentState.getPlainText();
     setCurrentText(text);
+
+    // Get the current selection state
+    const selectionState = newEditorState.getSelection();
+    
+    // Extract information about the selection (e.g., anchorOffset, focusOffset, isBackward, etc.)
+    console.log('Cursor Position:', selectionState.toJS());
   };
 
   const handleKeyCommand = (command: DraftEditorCommand) => {
@@ -73,13 +79,9 @@ const TextEditor: React.FC = () => {
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
 
-  // const onChangeText = () => {
-  //   setEditorState;
-  //   // console.log('change');
-  // }
-
   React.useEffect(() => {
     console.log(currentText);
+    handleSave();
   }, [currentText]);
 
   return (
@@ -92,7 +94,7 @@ const TextEditor: React.FC = () => {
         <StyledButton onMouseDown={(e) => handleTogggleClick(e, "BOLD")}>bold</StyledButton>
         <StyledButton onMouseDown={(e) => handleTogggleClick(e, "UNDERLINE")}>underline</StyledButton>
         <StyledButton onMouseDown={(e) => handleTogggleClick(e, "ITALIC")}>italic</StyledButton>
-        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "STRIKETHROUGH")}>strikthrough</StyledButton>
+        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "STRIKETHROUGH")}>strikethrough</StyledButton>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "ordered-list-item")}>Ordered List</StyledButton>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "unordered-list-item")}>Unordered List</StyledButton>
         <StyledButton
