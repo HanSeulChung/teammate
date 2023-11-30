@@ -3,15 +3,16 @@ package com.api.backend.category.service;
 import com.api.backend.category.data.dto.ScheduleCategoryDto;
 import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryRequest;
-import com.api.backend.category.data.entity.ScheduleCategory;
+import com.api.backend.category.data.dto.ScheduleCategoryResponse;
 import com.api.backend.category.type.CategoryType;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ScheduleCategoryService {
 
   ScheduleCategoryDto add(ScheduleCategoryRequest scheduleCategoryRequest, Long teamId);
 
-  List<ScheduleCategoryDto> searchByCategoryType(CategoryType categoryType);
+  Page<ScheduleCategoryResponse> searchByCategoryType(CategoryType categoryType, Pageable pageable);
 
   ScheduleCategoryDto edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest, Long teamId);
 

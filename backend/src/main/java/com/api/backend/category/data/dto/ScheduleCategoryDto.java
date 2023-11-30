@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
@@ -34,7 +35,7 @@ public class ScheduleCategoryDto {
         .build();
   }
 
-  public static List<ScheduleCategoryDto> of(List<ScheduleCategory> scheduleCategories) {
+  public static List<ScheduleCategoryDto> of(Page<ScheduleCategory> scheduleCategories) {
     if (scheduleCategories != null) {
       List<ScheduleCategoryDto> scheduleCategoryDtoList = new ArrayList<>();
       for (ScheduleCategory scheduleCategory : scheduleCategories) {

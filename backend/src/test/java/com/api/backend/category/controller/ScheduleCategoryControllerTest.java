@@ -42,14 +42,14 @@ class ScheduleCategoryControllerTest {
   void categoryAddSuccess() throws Exception {
     // Mock 데이터 설정
     ScheduleCategoryRequest request = ScheduleCategoryRequest.builder()
-        .id(1L)
+        .categoryId(1L)
         .createDt(LocalDateTime.now())
         .color("Red")
         .categoryName("Test Category")
         .build();
 
     ScheduleCategoryDto mockResponse = ScheduleCategoryDto.builder()
-        .id(1L)
+        .categoryId(1L)
         .createDt(LocalDateTime.now())
         .color("Red")
         .categoryName("Test Category")

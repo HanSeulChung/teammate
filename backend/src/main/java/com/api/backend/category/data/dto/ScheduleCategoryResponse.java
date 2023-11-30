@@ -2,6 +2,8 @@ package com.api.backend.category.data.dto;
 
 import com.api.backend.category.type.CategoryType;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,5 +29,17 @@ public class ScheduleCategoryResponse {
         .updateDt(scheduleCategoryDto.getUpdateDt())
         .color(scheduleCategoryDto.getColor())
         .build();
+  }
+
+  public static List<ScheduleCategoryResponse> toResponse(
+      List<ScheduleCategoryDto> scheduleCategoryDtoList) {
+    if (scheduleCategoryDtoList != null) {
+      List<ScheduleCategoryResponse> scheduleCategoryResponses = new ArrayList<>();
+      for (ScheduleCategoryDto dto : scheduleCategoryDtoList) {
+        scheduleCategoryResponses.add(toResponse(dto));
+      }
+      return scheduleCategoryResponses;
+    }
+    return new ArrayList<>();
   }
 }

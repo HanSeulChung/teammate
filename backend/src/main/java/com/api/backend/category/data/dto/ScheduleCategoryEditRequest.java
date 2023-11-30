@@ -9,6 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class ScheduleCategoryEditRequest {
+
   private Long categoryId;
   private String categoryName;
   private CategoryType categoryType;

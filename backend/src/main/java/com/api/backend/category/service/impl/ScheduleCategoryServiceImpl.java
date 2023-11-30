@@ -6,6 +6,7 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXC
 import com.api.backend.category.data.dto.ScheduleCategoryDto;
 import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryRequest;
+import com.api.backend.category.data.dto.ScheduleCategoryResponse;
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.category.service.ScheduleCategoryService;
@@ -16,7 +17,9 @@ import com.api.backend.team.data.repository.TeamRepository;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,10 +48,16 @@ public class ScheduleCategoryServiceImpl implements ScheduleCategoryService {
 
 
   @Override
-  public List<ScheduleCategoryDto> searchByCategoryType(CategoryType categoryType) {
-    List<ScheduleCategory> scheduleCategories = scheduleCategoryRepository.findAllByCategoryType(
-        categoryType, Sort.by(Sort.Order.asc("categoryType").ignoreCase()));
-    return ScheduleCategoryDto.of(scheduleCategories);
+  public Page<ScheduleCategoryResponse> searchByCategoryType(CategoryType categoryType,
+      Pageable pageable) {
+    Page<ScheduleCategory> scheduleCategoryPage = scheduleCategoryRepository.findAllByCategoryType(
+        categoryType, pageable);
+    List<ScheduleCategoryDto> scheduleCategoryDtoList = ScheduleCategoryDto.of(
+        scheduleCategoryPage);
+    List<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.toResponse(
+        scheduleCategoryDtoList);
+    return new PageImpl<>(responses, scheduleCategoryPage.getPageable(),
+        scheduleCategoryPage.getTotalElements());
   }
 
   @Transactional

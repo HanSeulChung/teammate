@@ -7,8 +7,9 @@ import com.api.backend.category.data.dto.ScheduleCategoryRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryResponse;
 import com.api.backend.category.service.ScheduleCategoryService;
 import com.api.backend.category.type.CategoryType;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,10 +35,11 @@ public class ScheduleCategoryController {
   }
 
   @GetMapping
-  public ResponseEntity<List<ScheduleCategoryDto>> searchByCategoryType(
-      @RequestParam String categoryType) {
-    return ResponseEntity.ok(scheduleCategoryService.searchByCategoryType(
-        CategoryType.valueOf(categoryType.toUpperCase())));
+  public ResponseEntity<Page<ScheduleCategoryResponse>> searchByCategoryType(
+      @RequestParam String categoryType, Pageable pageable) {
+    CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
+    return ResponseEntity.ok(
+        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable));
   }
 
   @PutMapping
