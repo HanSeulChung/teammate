@@ -20,7 +20,7 @@ public class ScheduleCategoryResponse {
   private LocalDateTime updateDt;
   private String color;
 
-  public static ScheduleCategoryResponse toResponse(ScheduleCategoryDto scheduleCategoryDto) {
+  public static ScheduleCategoryResponse from(ScheduleCategoryDto scheduleCategoryDto) {
     return ScheduleCategoryResponse.builder()
         .categoryId(scheduleCategoryDto.getCategoryId())
         .categoryName(scheduleCategoryDto.getCategoryName())
@@ -31,12 +31,12 @@ public class ScheduleCategoryResponse {
         .build();
   }
 
-  public static List<ScheduleCategoryResponse> toResponse(
+  public static List<ScheduleCategoryResponse> from(
       List<ScheduleCategoryDto> scheduleCategoryDtoList) {
     if (scheduleCategoryDtoList != null) {
       List<ScheduleCategoryResponse> scheduleCategoryResponses = new ArrayList<>();
       for (ScheduleCategoryDto dto : scheduleCategoryDtoList) {
-        scheduleCategoryResponses.add(toResponse(dto));
+        scheduleCategoryResponses.add(from(dto));
       }
       return scheduleCategoryResponses;
     }

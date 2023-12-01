@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,13 +22,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @Builder
+@Table(name = "team")
 public class Team extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long teamId;
-  private LocalDateTime reservationTime;
-  private boolean deleteYn;
+  private LocalDateTime restorationTime;
+  private boolean isDelete;
   private int memberLimit;
   private String inviteLink;
   private String profileUrl;

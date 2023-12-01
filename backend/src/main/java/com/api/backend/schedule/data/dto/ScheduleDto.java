@@ -1,10 +1,9 @@
 package com.api.backend.schedule.data.dto;
 
 import com.api.backend.schedule.data.enetity.Schedule;
-import java.time.LocalDate;
+import com.api.backend.team.data.entity.TeamParticipants;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.Page;
 @NoArgsConstructor
 @Builder
 public class ScheduleDto {
+
   private Long scheduleId;
   private Long teamId;
   private Long categoryId;
@@ -25,10 +25,10 @@ public class ScheduleDto {
   private String place;
   private LocalDateTime startDt;
   private LocalDateTime endDt;
-  private boolean repeatYn;
-  private LocalDate repeatCycle;
+  private boolean isRepeat;
+  private LocalDateTime repeatCycle;
   private String color;
-  private HashMap<Long, String> scheduleParticipantMap;
+  private List<TeamParticipants> teamParticipants;
 
   public static ScheduleDto of(Schedule schedule) {
     return ScheduleDto.builder()
@@ -40,10 +40,9 @@ public class ScheduleDto {
         .place(schedule.getPlace())
         .startDt(schedule.getStartDt())
         .endDt(schedule.getEndDt())
-        .repeatYn(schedule.isRepeatYn())
+        .isRepeat(schedule.isRepeat())
         .repeatCycle(schedule.getRepeatCycle())
         .color(schedule.getColor())
-        .scheduleParticipantMap(schedule.getScheduleParticipantMap())
         .build();
   }
 

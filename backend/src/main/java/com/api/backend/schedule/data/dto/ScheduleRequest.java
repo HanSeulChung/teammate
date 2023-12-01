@@ -1,8 +1,8 @@
 package com.api.backend.schedule.data.dto;
 
-import java.time.LocalDate;
+import com.api.backend.team.data.entity.TeamParticipants;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class ScheduleRequest {
+
   private Long scheduleId;
   private Long teamId;
   private Long categoryId;
@@ -19,9 +20,8 @@ public class ScheduleRequest {
   private String place;
   private LocalDateTime startDt;
   private LocalDateTime endDt;
-  private boolean repeatYn;
-  private LocalDate repeatCycle;
+  private boolean isRepeat;
+  private LocalDateTime repeatCycle;
   private String color;
-  private HashMap<Long, String> scheduleParticipantMap;
-
+  private List<TeamParticipants> teamParticipants;
 }

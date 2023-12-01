@@ -55,7 +55,7 @@ public class ScheduleCategoryServiceImpl implements ScheduleCategoryService{
         categoryType, pageable);
     List<ScheduleCategoryDto> scheduleCategoryDtoList = ScheduleCategoryDto.of(
         scheduleCategoryPage);
-    List<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.toResponse(
+    List<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.from(
         scheduleCategoryDtoList);
     return new PageImpl<>(responses, scheduleCategoryPage.getPageable(),
         scheduleCategoryPage.getTotalElements());

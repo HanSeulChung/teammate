@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Builder
+@Table(name = "comment")
 public class Comment extends BaseEntity {
 
   @Id
@@ -28,10 +30,10 @@ public class Comment extends BaseEntity {
   private String content;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "documentsId")
+  @JoinColumn(name = "documents_id")
   private Documents documents;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "memberId")
+  @JoinColumn(name = "member_id")
   private Member member;
 }

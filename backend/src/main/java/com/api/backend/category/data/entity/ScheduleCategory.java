@@ -2,14 +2,14 @@ package com.api.backend.category.data.entity;
 
 import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.type.CategoryType;
-import com.api.backend.category.type.converter.CategoryTypeConverter;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.team.data.entity.Team;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,11 +37,11 @@ public class ScheduleCategory extends BaseEntity {
   private String color;
   private String categoryName;
 
-  @Convert(converter = CategoryTypeConverter.class)
+  @Enumerated(EnumType.STRING)
   private CategoryType categoryType;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "teamId")
+  @JoinColumn(name = "team_id")
   private Team team;
 
   @OneToMany(mappedBy = "scheduleCategory")

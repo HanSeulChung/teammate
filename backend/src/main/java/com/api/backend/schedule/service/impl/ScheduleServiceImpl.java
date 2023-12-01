@@ -10,7 +10,6 @@ import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
 import com.api.backend.schedule.service.ScheduleService;
 import com.api.backend.team.data.entity.Team;
-import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import lombok.AllArgsConstructor;
@@ -41,7 +40,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         .startDt(scheduleRequest.getStartDt())
         .endDt(scheduleRequest.getEndDt())
         .repeatCycle(scheduleRequest.getRepeatCycle())
-        .repeatYn(scheduleRequest.isRepeatYn())
+        .isRepeat(scheduleRequest.isRepeat())
         .build();
     return null;
   }

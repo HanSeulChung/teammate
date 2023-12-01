@@ -17,7 +17,7 @@ public class ScheduleResponse {
   private LocalDateTime endDt;
   private String place;
 
-  public static ScheduleResponse toResponse(ScheduleDto scheduleDto) {
+  public static ScheduleResponse from(ScheduleDto scheduleDto) {
     return ScheduleResponse.builder()
         .scheduleId(scheduleDto.getScheduleId())
         .startDt(scheduleDto.getStartDt())
@@ -26,11 +26,11 @@ public class ScheduleResponse {
         .build();
   }
 
-  public static List<ScheduleResponse> toResponse(List<ScheduleDto> scheduleDtoList) {
+  public static List<ScheduleResponse> from(List<ScheduleDto> scheduleDtoList) {
     if (scheduleDtoList != null) {
       List<ScheduleResponse> scheduleResponses = new ArrayList<>();
       for (ScheduleDto dto : scheduleDtoList) {
-        scheduleResponses.add(toResponse(dto));
+        scheduleResponses.add(from(dto));
       }
       return scheduleResponses;
     }
