@@ -1,32 +1,38 @@
-import {useState} from "react";
+import { useState } from "react";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
 import '../styles/teamCalender.css'
+import { Modal, Overlay, ModalContent, CloseModal, CalendarDiv } from '../styles/TeamCalenderStyled.tsx'
+import CreateEvent from "./CreateEvent.tsx";
 
-import {Modal, Overlay, ModalContent, CloseModal} from '../styles/TeamCalenderStyled.tsx'
 
 const TeamCalender = () => {
-    // 모달팝업 유무
-    const [modal, setModal] = useState(false);
-    const [event, setEvent] = useState({});
+    // 모달팝업 유무 값
+    const [eventDetailModal, setEventDetailModal] = useState(false);
+    const [eventFormModal, seteventFormModal] = useState(false);
+    
+    // 달력 일정
+    const [event, setEvent] = useState(``);
 
+    // 모달팝업 관리
     const toggleModal = () => {
-        setModal(!modal);
+        setEventDetailModal(!eventDetailModal);
+    };
+    const toggleFormModal = () => {
+        seteventFormModal(!eventFormModal);
     };
 
     // 달력 일정 임시데이터
     const events = [
         { title: 'Meeting1', start: new Date('2023-11-29') },
-        { title: 'Meeting2', start: new Date('2023-11-30'), description: '백프로팀 회의 하는 날' }
+        { title: 'Meeting2', start: new Date('2023-11-30'), description: '백프로팀 회의 하는 날' },
+        { title: 'Meeting3', start: new Date('2023-11-30'), description: '화분 물 주는 날' }
     ]
 
     // 일정클릭 핸들링
-    const handleEventClick = (e) => {
-        // console.log(clickInfo.event.id) // id 값 나옴
-        console.log(e.event.title);
-        console.log(e.event.start);
-        console.log('-------');
-        console.log(e.event.extendedProps.description);
+    const HandleEventClick = (e) => {
         setEvent({
             title: e.event.title,
             start: e.event.start.toString(),
@@ -35,34 +41,33 @@ const TeamCalender = () => {
         toggleModal();
     }
 
+    // 날짜클릭 핸들링
+    const HandleDateClick = (e) => {
+        // console.log(e.dayEl);
+        toggleFormModal();
+    }
+
     return (
-        <div>
-            <h2>캘린더입니다.</h2>
+        <CalendarDiv>
+            {/* <h2>캘린더입니다.</h2> */}
             <FullCalendar
                 locale="kr"
-                plugins={[ dayGridPlugin]}
+                plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
                 initialView="dayGridMonth"
-                headerToolbar ={{
-                    start: "today",
+                headerToolbar={{
+                    start: "today prev,next",
                     center: "title",
-                    end: "prev,next"
+                    end: "dayGridMonth timeGridWeek"
                 }}
                 events={events}
-                eventClick = {(e) => handleEventClick(e)}
-                // dateClick
+                eventClick={(e) => HandleEventClick(e)}
+                dateClick={(e) => HandleDateClick(e)}
             />
-            {/* <button
-                onClick={toggleModal}
-                className="btn-modal">
-                    Open
-            </button>
-            <p>기존 밑에 깔리는 내용</p> */}
-            
-            {/* 모달부분 */}
-            {modal && (
+            {/* 일정클릭 모달 */}
+            {eventDetailModal && (
                 <Modal>
                     <Overlay
-                      onClick={toggleModal}
+                        onClick={toggleModal}
                     ></Overlay>
                     <ModalContent>
                         <h2>일정상세</h2>
@@ -71,15 +76,33 @@ const TeamCalender = () => {
                             일시: {event.start}<br />
                             내용: {event.description}
                         </p>
+                        <button>수정</button>
+                        <button>삭제</button>
                         <CloseModal
-                          onClick={toggleModal}
+                            onClick={toggleModal}
                         >
                             CLOSE
                         </CloseModal>
                     </ModalContent>
                 </Modal>
             )}
-        </div>
+            {/* 날짜클릭 모달 */}
+            {eventFormModal && (
+                <Modal>
+                    <Overlay
+                        onClick={toggleFormModal}
+                    ></Overlay>
+                    <ModalContent>
+                        <CreateEvent />
+                        <CloseModal
+                            onClick={toggleFormModal}
+                        >
+                            CLOSE
+                        </CloseModal>
+                    </ModalContent>
+                </Modal>
+            )}
+        </CalendarDiv>
     );
 };
 

@@ -43,3 +43,6 @@ export const CloseModal = styled.button`
     right: 10px;
     padding: 5px 7px;
 `
+
+export const CalendarDiv = styled.div`
+`
