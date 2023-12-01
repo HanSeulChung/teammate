@@ -7,7 +7,6 @@ import com.api.backend.global.type.converter.legacy.LegacyCodeEnumValueConverter
 import javax.persistence.AttributeConverter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
 @Getter
 @Slf4j
@@ -35,4 +34,3 @@ public class AbstractLegacyEnumAttributeConverter<E extends Enum<E> & LegacyCode
     return LegacyCodeEnumValueConverterUtils.ofLegacyCode(targetEnumClass, dbData);
   }
 }
-
