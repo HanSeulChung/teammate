@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useCallback}from "react";
 import {
   Editor,
   EditorState,
@@ -15,7 +15,7 @@ const TitleInput = styled.input`
   border: 1px solid black;
   background-color: white;
   color: black;
-  width: 40rem;
+  width: 39rem;
   font-size: 16px;
   margin-bottom: 4px;
   padding: 4px;
@@ -92,18 +92,51 @@ const TextEditor: React.FC = () => {
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
 
-  const onKeyUp = (e:KeyboardEvent) => {
+  const onKeyUp = useCallback((e: KeyboardEvent) => {
     console.log('keyUp:', e);
     e.preventDefault();
     handleSave();
-  }
+  }, [handleSave]);
 
-  document.addEventListener('keyup', onKeyUp);
+  useEffect(() => {
+    document.addEventListener('keyup', onKeyUp);
+    return () => {
+      document.removeEventListener('keyup', onKeyUp);
+    };
+  }, [onKeyUp]);
 
   React.useEffect(() => {
     console.log(currentText);
     handleSave();
   }, [currentText]);
+
+  // const socket = new WebSocket('*websocket url*');
+
+  // socket.addEventListener('open', (event: Event) => {
+  //   console.log('WebSocket connection opened', event);
+  // });
+
+  // socket.addEventListener('message', (event: MessageEvent) => {
+  //   console.log(`Received message: ${event.data}`);
+  // });
+
+  // socket.addEventListener('close', (event: CloseEvent) => {
+  //   console.log('WebSocket connection closed', event);
+  // });
+
+  // function sendMessage() {
+  //   const messageInput = document.getElementById('messageInput') as HTMLInputElement | null;
+
+  //   if (messageInput) {
+  //     const message = messageInput.value;
+
+  //     // Send the message to the server
+  //     socket.send(message);
+
+  //     // Clear the input field
+  //     messageInput.value = '';
+  //   }
+  // }
 
   return (
     <StyledTexteditor className="texteditor">
@@ -137,6 +170,7 @@ const TextEditor: React.FC = () => {
           handleChange(newEditorState);
           handleSave();
         }}
+        
         handleKeyCommand={handleKeyCommand}
       />
       <SaveButton
