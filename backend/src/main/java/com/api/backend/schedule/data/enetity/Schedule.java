@@ -40,7 +40,6 @@ public class Schedule extends BaseEntity {
   private String content;
   private String place;
   @Type(type = "json")
-  @Column(columnDefinition = "longtext")
   private HashMap<Long, String> scheduleParticipantMap = new HashMap<>();
 
   private LocalDateTime startDt;
