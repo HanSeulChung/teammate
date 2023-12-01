@@ -55,6 +55,7 @@ const TextEditor: React.FC = () => {
   const [editorState, setEditorState] = React.useState<EditorState>(initialState);
 
   const handleSave = () => {
+    console.log('save');
     const data = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
     localStorage.setItem(TEXT_EDITOR_ITEM, data);
   };
@@ -90,6 +91,14 @@ const TextEditor: React.FC = () => {
     e.preventDefault();
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
+
+  const onKeyUp = (e:KeyboardEvent) => {
+    console.log('keyUp:', e);
+    e.preventDefault();
+    handleSave();
+  }
+
+  document.addEventListener('keyup', onKeyUp);
 
   React.useEffect(() => {
     console.log(currentText);
