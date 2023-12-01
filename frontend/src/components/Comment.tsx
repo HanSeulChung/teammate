@@ -10,7 +10,7 @@ const StyledCommentArea = styled.div`
 
 const CommentInput = styled.input`
   width: 10rem;
-  margin-bottom: 0.5rem;
+  margin: 0.5rem 0.25rem 0 0.25rem;
   padding: 0.5rem;
   background-color: white;
   color: black;

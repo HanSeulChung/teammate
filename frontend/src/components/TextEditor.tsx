@@ -64,12 +64,13 @@ const TextEditor: React.FC = () => {
     const text = contentState.getPlainText();
     setCurrentText(text);
 
-    // Get the current selection state
+    // 현재 선택 상태 가져오기
     const selectionState = newEditorState.getSelection();
-    
-    // Extract information about the selection (e.g., anchorOffset, focusOffset, isBackward, etc.)
-    console.log('Cursor Position:', selectionState.toJS());
+
+    // 선택에 관한 정보 추출 (예: anchorOffset, focusOffset, isBackward 등)
+    console.log('커서 위치:', selectionState.toJS());
   };
+
 
   const handleKeyCommand = (command: DraftEditorCommand) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -124,7 +125,8 @@ const TextEditor: React.FC = () => {
         editorState={editorState}
         onChange={(newEditorState) => {
           setEditorState(newEditorState);
-          handleChange;
+          handleChange(newEditorState);
+          handleSave();
         }}
         handleKeyCommand={handleKeyCommand}
       />
