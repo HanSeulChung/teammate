@@ -1,7 +1,9 @@
 package com.api.backend.member.service.impl;
 
 import com.api.backend.global.exception.CustomException;
-
+import com.api.backend.global.security.jwt.JwtTokenProvider;
+import com.api.backend.member.data.dto.SignInRequest;
+import com.api.backend.member.data.dto.SignInResponse;
 import com.api.backend.member.data.dto.SignUpRequest;
 import com.api.backend.member.data.dto.SignUpResponse;
 import com.api.backend.member.data.entity.Member;
@@ -9,18 +11,24 @@ import com.api.backend.member.data.repository.MemberRepository;
 import com.api.backend.member.data.type.Authority;
 import com.api.backend.member.data.type.LoginType;
 import com.api.backend.member.service.MemberService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.api.backend.global.exception.type.ErrorCode.*;
+import static com.api.backend.global.exception.type.ErrorCode.EMAIL_ALREADY_EXIST_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     @Override
@@ -53,5 +61,17 @@ public class MemberServiceImpl implements MemberService {
                 .email(member.getEmail())
                 .message("이메일 인증후 로그인 가능합니다.")
                 .build();
+    }
+
+    @Override
+    public SignInResponse login(SignInRequest signInRequest) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword());
+
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+        SignInResponse signInResponse = jwtTokenProvider.generateToken(authentication);
+
+        return signInResponse;
     }
 }
