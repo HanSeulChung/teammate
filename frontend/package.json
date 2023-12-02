@@ -10,9 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fullcalendar/core": "^6.1.9",
+    "@fullcalendar/core": "^6.1.10",
     "@fullcalendar/daygrid": "^6.1.9",
+    "@fullcalendar/interaction": "^6.1.10",
     "@fullcalendar/react": "^6.1.9",
+    "@fullcalendar/timegrid": "^6.1.10",
     "@tanstack/react-query": "^5.8.9",
     "@tanstack/react-query-devtools": "^5.8.9",
     "axios": "^1.6.2",

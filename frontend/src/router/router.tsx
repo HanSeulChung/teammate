@@ -1,11 +1,14 @@
 import { Routes, Route } from 'react-router-dom';
-import TextEditorView from '../views/TextEditorView';
+
+import Calender from '../views/Calender';
 
 const Router = () => {
     return (
         <Routes>
 			{/* <Route path='*' element={<Error />} /> */}
-			<Route path='/' element={<TextEditorView/>}/>
+
+			<Route path='/캘린더' element={<Calender />} />
+			{/* <Route /> */}
 		</Routes>
     );
 };
