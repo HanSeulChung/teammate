@@ -10,17 +10,7 @@ import {
 import "draft-js/dist/Draft.css";
 import styled from "styled-components";
 import './TextEditor.css';
-
-const TitleInput = styled.input`
-  border: 1px solid black;
-  background-color: white;
-  color: black;
-  width: 39rem;
-  font-size: 16px;
-  margin-bottom: 4px;
-  padding: 4px;
-  placeholder: 'title';
-`
+import TextTitle from "./TextTitle";
 
 const StyledTexteditor = styled.div`
   width: 40rem;
@@ -42,23 +32,6 @@ const SaveButton = styled.button`
 const ButtonContainer = styled.div`
   width: 40rem;
 `;
-
-const titleData = localStorage.getItem('title');
-console.log(titleData);
-const titleInput = document.querySelector('#title') as HTMLInputElement | null;
-
-if (titleInput) {
-  titleInput.setAttribute('value', titleData ?? '');
-  console.log('title id checked');
-}  
-const titleSave = () => {
-  console.log('title save');  
-
-  if (titleInput) {
-    const titleText = titleInput.value;
-    localStorage.setItem('title', titleText);
-  }
-}
 
 const TextEditor: React.FC = () => {
   const [currentText, setCurrentText] = React.useState<string>("");
@@ -157,17 +130,7 @@ const TextEditor: React.FC = () => {
 
   return (
     <StyledTexteditor className="texteditor">
-      <TitleInput
-        id="title"
-        placeholder="title"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            titleSave();
-          }
-        }}
-        // value={titleData}
-      />
-
+      <TextTitle />
       <ButtonContainer>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-one")}>H1</StyledButton>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-two")}>H2</StyledButton>
