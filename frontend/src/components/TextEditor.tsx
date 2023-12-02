@@ -96,7 +96,7 @@ const TextEditor: React.FC = () => {
   }, [onKeyUp]);
 
   React.useEffect(() => {
-    console.log(currentText);
+    console.log("currentText: ",currentText);
     handleSave();
   }, [currentText]);
 

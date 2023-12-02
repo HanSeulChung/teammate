@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 const TitleInput = styled.input`
@@ -15,34 +15,33 @@ const TitleInput = styled.input`
 `;
 
 const TextTitle: React.FC = () => {
-  const titleData = localStorage.getItem('title');
-  console.log("title data: ", titleData);
-  const titleInput = document.getElementById('title') as HTMLInputElement | null;
+  const [title, setTitle] = useState<string>("");
   
-  if (titleInput) {
-    titleInput.setAttribute('value', titleData ?? '');
-    console.log('title id checked');
-  }  
+  useEffect(() => {
+    const titleData = localStorage.getItem('title');
+    if (titleData) {
+      setTitle(titleData);
+    }
+  }, []);
+
   const titleSave = () => {
     console.log('title save');  
-  
-    if (titleInput) {
-      const titleText = titleInput.value;
-      localStorage.setItem('title', titleText);
-    }
+    localStorage.setItem('title', title);
   }
 
   return (
     <TitleInput
       id="title"
       placeholder="Title"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
           titleSave();
         }
       }}
     />
-  )
+  );
 }
 
 export default TextTitle;
