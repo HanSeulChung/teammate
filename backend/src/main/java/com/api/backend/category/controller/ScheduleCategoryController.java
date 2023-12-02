@@ -31,7 +31,7 @@ public class ScheduleCategoryController {
   public ResponseEntity<ScheduleCategoryResponse> categoryAdd(
       @RequestBody ScheduleCategoryRequest request, @RequestParam Long teamId) {
     ScheduleCategoryDto scheduleCategoryDto = scheduleCategoryService.add(request, teamId);
-    return ResponseEntity.ok(ScheduleCategoryResponse.toResponse(scheduleCategoryDto));
+    return ResponseEntity.ok(ScheduleCategoryResponse.from(scheduleCategoryDto));
   }
 
   @GetMapping
@@ -46,7 +46,7 @@ public class ScheduleCategoryController {
   public ResponseEntity<ScheduleCategoryEditResponse> editCategory(
       @RequestBody ScheduleCategoryEditRequest request, @RequestParam Long teamId) {
     ScheduleCategoryDto scheduleCategoryDto = scheduleCategoryService.edit(request, teamId);
-    return ResponseEntity.ok(ScheduleCategoryEditResponse.toResponse(scheduleCategoryDto));
+    return ResponseEntity.ok(ScheduleCategoryEditResponse.from(scheduleCategoryDto));
   }
 
   @DeleteMapping
