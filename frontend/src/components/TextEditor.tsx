@@ -44,11 +44,11 @@ const TextEditor: React.FC = () => {
     : EditorState.createEmpty();
   const [editorState, setEditorState] = React.useState<EditorState>(initialState);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     console.log('save');
     const data = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
     localStorage.setItem(TEXT_EDITOR_ITEM, data);
-  };
+  }, [editorState]);
 
   const handleChange = (newEditorState: EditorState) => {
     const contentState = newEditorState.getCurrentContent();
@@ -158,11 +158,10 @@ const TextEditor: React.FC = () => {
         onChange={(newEditorState) => {
           setEditorState(newEditorState);
           handleChange(newEditorState);
-          // handleSave();
         }}
         
         handleKeyCommand={handleKeyCommand}
-      />
+        />
       <SaveButton
         className="save"
         type="button"
