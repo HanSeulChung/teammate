@@ -43,10 +43,27 @@ const ButtonContainer = styled.div`
   width: 40rem;
 `;
 
-const TEXT_EDITOR_ITEM = "draft-js-example-item";
+const titleData = localStorage.getItem('title');
+console.log(titleData);
+const titleInput = document.querySelector('#title') as HTMLInputElement | null;
+
+if (titleInput) {
+  titleInput.setAttribute('value', titleData ?? '');
+  console.log('title id checked');
+}  
+const titleSave = () => {
+  console.log('title save');  
+
+  if (titleInput) {
+    const titleText = titleInput.value;
+    localStorage.setItem('title', titleText);
+  }
+}
 
 const TextEditor: React.FC = () => {
   const [currentText, setCurrentText] = React.useState<string>("");
+
+  const TEXT_EDITOR_ITEM = "draft-js-example-item";
 
   const data = localStorage.getItem(TEXT_EDITOR_ITEM);
   const initialState = data
@@ -140,7 +157,17 @@ const TextEditor: React.FC = () => {
 
   return (
     <StyledTexteditor className="texteditor">
-      <TitleInput placeholder="title"></TitleInput>
+      <TitleInput
+        id="title"
+        placeholder="title"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            titleSave();
+          }
+        }}
+        // value={titleData}
+      />
+
       <ButtonContainer>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-one")}>H1</StyledButton>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-two")}>H2</StyledButton>
@@ -168,7 +195,7 @@ const TextEditor: React.FC = () => {
         onChange={(newEditorState) => {
           setEditorState(newEditorState);
           handleChange(newEditorState);
-          handleSave();
+          // handleSave();
         }}
         
         handleKeyCommand={handleKeyCommand}
