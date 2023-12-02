@@ -10,8 +10,11 @@ import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
 import com.api.backend.schedule.service.ScheduleService;
 import com.api.backend.team.data.entity.Team;
+import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +28,13 @@ public class ScheduleServiceImpl implements ScheduleService {
   private final TeamParticipantsRepository teamParticipantsRepository;
 
   @Override
-  public ScheduleDto add(ScheduleRequest scheduleRequest, Long teamId, Long categoryId) {
-    Team team = teamRepository.findById(teamId)
+  @Transactional
+  public Schedule add(ScheduleRequest scheduleRequest) {
+    Team team = teamRepository.findById(scheduleRequest.getTeamId())
         .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION));
-    ScheduleCategory category = categoryRepository.findById(categoryId)
+    ScheduleCategory category = categoryRepository.findById(scheduleRequest.getCategoryId())
         .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+
 
     Schedule schedule = Schedule.builder()
         .scheduleId(scheduleRequest.getScheduleId())
@@ -41,8 +46,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         .endDt(scheduleRequest.getEndDt())
         .repeatCycle(scheduleRequest.getRepeatCycle())
         .isRepeat(scheduleRequest.isRepeat())
+        .teamParticipants(scheduleRequest.getTeamParticipants())
         .build();
-    return null;
+    scheduleRepository.save(schedule);
+    return schedule;
   }
 
   @Override

@@ -43,6 +43,7 @@ public class ScheduleDto {
         .isRepeat(schedule.isRepeat())
         .repeatCycle(schedule.getRepeatCycle())
         .color(schedule.getColor())
+        .teamParticipants(schedule.getTeamParticipants())
         .build();
   }
 
