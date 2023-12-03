@@ -1,48 +1,12 @@
 import React, { useState, ChangeEvent } from 'react';
 import axios from 'axios';
-import styled from 'styled-components';
+import { StyledContainer, StyledFormItem } from '../styles/SignUpStyled.tsx'
+import MockAdapter from 'axios-mock-adapter';
+import * as Regex from '../common/Regex.ts';
+
+const mock = new MockAdapter(axios); // MockAdapter 인스턴스 생성
 
 interface SignUpProps {}
-
-const StyledContainer = styled.div`
-  color: #333333;
-  padding: 20px;
-  max-width: 400px;
-  margin: auto;
-`;
-
-const StyledFormItem = styled.div`
-  margin: 5px 0 5px 0;
-  display: flex;
-
-  label {
-    margin-right: 60px; 
-  }
-
-  input, button {
-    flex: 2;
-    padding: 5px;
-    outline: none; 
-  }
-
-  input {
-    border: none;
-    border-bottom: 1px solid #333333; 
-  }
-
-  button {
-    flex: 1;
-    margin-left: 10px;
-    padding: 8px;
-    background-color: #A3CCA3;
-    color: #333333;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #cccccc;
-    }
-  }
-`;
 
 const SignUp: React.FC<SignUpProps> = () => {
   const [email, setEmail] = useState<string>('');
@@ -55,11 +19,13 @@ const SignUp: React.FC<SignUpProps> = () => {
   const [isEmailFormatValid, setIsEmailFormatValid] = useState<boolean | null>(null);
   const [isRepasswordValid, setIsRepasswordValid] = useState<boolean>(true);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<boolean | null>(null);
-  const [signupMessage, setSignupMessage] = useState<string | null>(null);
   const [isNicknameFormatValid, setIsNicknameFormatValid] = useState<boolean | null>(null);
+  const [signupMessage, setSignupMessage] = useState<string | null>(null);
 
-  const isEmailValid = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const isNicknameValid = (nickName: string): boolean => /^[가-힣]{2,10}$/.test(nickName.trim());
+  mock.onPost('/sign-up').reply(200, { message: '가입 성공' });
+
+  const isEmailValid = (email: string): boolean => Regex.emailRegex.test(email.trim());
+  const isNicknameValid = (nickName: string): boolean => Regex.nicknameRegex.test(nickName.trim());
 
   const handleSignUp = () => {
     if ([email, password, repassword, name, nickName].some(value => value.trim() === '')) {
@@ -82,15 +48,16 @@ const SignUp: React.FC<SignUpProps> = () => {
     if (isIdAvailable === null) {
       setSignupMessage('아이디 중복 확인이 필요합니다.');
     } else if (isIdAvailable && isRepasswordValid && isEmailFormatValid && isNicknameAvailable) {
-      axios.post('/sign-up', { id: email, password, repassword, name, nickName, sex: sexType })
-        .then(response => {
-          console.log('회원가입 성공:', response.data);
-          setSignupMessage('회원가입 성공');
-        })
-        .catch(error => {
-          console.error('회원가입 실패:', error.response.data);
-          setSignupMessage('회원가입 실패');
-        });
+      axios.post('/sign-up', {id: email,password,repassword,name,nickName,sex: sexType,
+      })
+      .then(response => {
+        console.log('회원가입 성공:', response.data);
+        setSignupMessage('회원가입 성공');
+      })
+      .catch(error => {
+        console.error('회원가입 실패:', error.response.data);
+        setSignupMessage('회원가입 실패');
+      });
     } else if (!isIdAvailable) {
       setSignupMessage('아이디가 이미 사용 중입니다.');
     }
