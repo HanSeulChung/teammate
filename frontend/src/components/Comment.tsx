@@ -22,13 +22,13 @@ const CommentButton = styled.button`
   border: 1px solid black;
   color: black;
   background-color: white;
-  font-size: 11px
-`
+  font-size: 11px;
+`;
 
 const CommentText = styled.div`
-  display:flex;
+  display: flex;
   margin-left: 8px;
-`
+`;
 
 interface CommentProps {}
 
@@ -48,7 +48,7 @@ const Comment: React.FC<CommentProps> = () => {
   return (
     <StyledCommentArea>
       <h3>Comments</h3>
-      
+
       <CommentInput
         type="text"
         placeholder="댓글을 입력해주세요"

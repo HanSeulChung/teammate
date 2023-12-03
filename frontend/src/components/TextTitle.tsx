@@ -16,17 +16,17 @@ const TitleInput = styled.input`
 
 const TextTitle: React.FC = () => {
   const [title, setTitle] = useState<string>("");
-  
+
   useEffect(() => {
-    const titleData = localStorage.getItem('title');
+    const titleData = localStorage.getItem("title");
     if (titleData) {
       setTitle(titleData);
     }
   }, []);
 
   const titleSave = () => {
-    localStorage.setItem('title', title);
-  }
+    localStorage.setItem("title", title);
+  };
 
   return (
     <TitleInput
@@ -35,12 +35,12 @@ const TextTitle: React.FC = () => {
       value={title}
       onChange={(e) => setTitle(e.target.value)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') {
+        if (e.key === "Enter") {
           titleSave();
         }
       }}
     />
   );
-}
+};
 
 export default TextTitle;
