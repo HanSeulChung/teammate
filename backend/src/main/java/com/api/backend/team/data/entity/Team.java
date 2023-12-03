@@ -50,6 +50,8 @@ public class Team extends BaseEntity {
     return Team.builder()
         .memberLimit(teamRequest.getMemberLimit())
         .name(teamRequest.getTeamName())
+        // todo imge는 나중에 어떻게 처리를 해야할지 결정하면 다시 구현하겠다.
+        .profileUrl(teamRequest.getTeamImg())
         .build();
   }
 
