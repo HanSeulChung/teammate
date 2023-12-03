@@ -24,7 +24,9 @@ public class TeamController {
       TeamRequest.Create teamRequest
   ) {
     return ResponseEntity.ok(
-        teamService.createTeam(teamRequest)
+        TeamCreateResponse.from(
+            teamService.createTeam(teamRequest)
+        )
     );
   }
 }
