@@ -45,8 +45,6 @@ const Comment: React.FC<CommentProps> = () => {
     setNewComment("");
   };
 
-  console.log("comment");
-
   return (
     <StyledCommentArea>
       <h3>Comments</h3>

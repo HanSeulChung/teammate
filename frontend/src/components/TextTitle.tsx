@@ -25,7 +25,6 @@ const TextTitle: React.FC = () => {
   }, []);
 
   const titleSave = () => {
-    console.log('title save');  
     localStorage.setItem('title', title);
   }
 
