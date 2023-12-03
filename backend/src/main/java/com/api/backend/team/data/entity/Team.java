@@ -56,7 +56,7 @@ public class Team extends BaseEntity {
   }
 
   public void setInviteLink() {
-    this.inviteLink = String.valueOf(this.teamId) +
-        "/" + UUID.randomUUID().toString();
+    this.inviteLink = this.teamId +
+        "/" + UUID.randomUUID();
   }
 }
