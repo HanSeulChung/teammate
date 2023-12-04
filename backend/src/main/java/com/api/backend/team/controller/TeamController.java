@@ -1,7 +1,11 @@
 package com.api.backend.team.controller;
 
+import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM_PARTICIPANTS;
+
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
+import com.api.backend.team.data.dto.UpdateTeamParticipantsResponse;
+import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.service.TeamService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,12 +46,20 @@ public class TeamController {
     );
   }
 
-
-//
-//  ) {
-//    return ResponseEntity.ok(
-//        teamService.getTeamUrl(teamId,code)
-//    );
-//  }
+  @PostMapping("/{teamId}/{code}")
+  public ResponseEntity<UpdateTeamParticipantsResponse> updateTeamParticipantRequest(
+      @PathVariable("teamId") Long teamId,
+      @PathVariable("code") String code
+      // todo Princial를 통한 유저 객체 가져오기
+  ) {
+    Team team = teamService.updateTeamParticipants(teamId, code, null);
+    return ResponseEntity.ok(
+        UpdateTeamParticipantsResponse
+            .builder().teamName(team.getName())
+            .teamId(teamId)
+            .message(team.getName() + UPDATE_TEAM_PARTICIPANTS)
+            .build()
+    );
+  }
 
 }
