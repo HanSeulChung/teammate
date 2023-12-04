@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback}from "react";
+import React, { useEffect, useCallback } from "react";
 import {
   Editor,
   EditorState,
@@ -9,7 +9,7 @@ import {
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import styled from "styled-components";
-import './TextEditor.css';
+import "./TextEditor.css";
 import TextTitle from "./TextTitle";
 
 const StyledTexteditor = styled.div`
@@ -17,14 +17,14 @@ const StyledTexteditor = styled.div`
 `;
 
 const StyledButton = styled.button`
-  border : 1px solid white;
-  background-color: rgb(163,204,163);
+  border: 1px solid white;
+  background-color: rgb(163, 204, 163);
   padding: 0.5rem 1.5rem;
   color: #333333;
 `;
 
 const SaveButton = styled.button`
-  background-color: rgb(163,204,163);
+  background-color: rgb(163, 204, 163);
   color: #333333;
   border-radius: 0.5rem;
 `;
@@ -42,13 +42,14 @@ const TextEditor: React.FC = () => {
   const initialState = data
     ? EditorState.createWithContent(convertFromRaw(JSON.parse(data)))
     : EditorState.createEmpty();
-  const [editorState, setEditorState] = React.useState<EditorState>(initialState);
+  const [editorState, setEditorState] =
+    React.useState<EditorState>(initialState);
 
-  const handleSave = () => {
-    console.log('save');
+  const handleSave = useCallback(() => {
+    console.log("save");
     const data = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
     localStorage.setItem(TEXT_EDITOR_ITEM, data);
-  };
+  }, [editorState]);
 
   const handleChange = (newEditorState: EditorState) => {
     const contentState = newEditorState.getCurrentContent();
@@ -59,9 +60,8 @@ const TextEditor: React.FC = () => {
     const selectionState = newEditorState.getSelection();
 
     // 선택에 관한 정보 추출 (예: anchorOffset, focusOffset, isBackward 등)
-    console.log('커서 위치:', selectionState.toJS());
+    console.log("커서 위치:", selectionState.toJS());
   };
-
 
   const handleKeyCommand = (command: DraftEditorCommand) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -82,21 +82,24 @@ const TextEditor: React.FC = () => {
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
 
-  const onKeyUp = useCallback((e: KeyboardEvent) => {
-    console.log('keyUp:', e);
-    e.preventDefault();
-    handleSave();
-  }, [handleSave]);
+  const onKeyUp = useCallback(
+    (e: KeyboardEvent) => {
+      console.log("keyUp:", e);
+      e.preventDefault();
+      handleSave();
+    },
+    [handleSave],
+  );
 
   useEffect(() => {
-    document.addEventListener('keyup', onKeyUp);
+    document.addEventListener("keyup", onKeyUp);
     return () => {
-      document.removeEventListener('keyup', onKeyUp);
+      document.removeEventListener("keyup", onKeyUp);
     };
   }, [onKeyUp]);
 
   React.useEffect(() => {
-    console.log(currentText);
+    console.log("currentText: ", currentText);
     handleSave();
   }, [currentText]);
 
@@ -132,24 +135,52 @@ const TextEditor: React.FC = () => {
     <StyledTexteditor className="texteditor">
       <TextTitle />
       <ButtonContainer>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-one")}>H1</StyledButton>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-two")}>H2</StyledButton>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-three")}>H3</StyledButton>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "unstyled")}>Normal</StyledButton>
-        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "BOLD")}>bold</StyledButton>
-        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "UNDERLINE")}>underline</StyledButton>
-        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "ITALIC")}>italic</StyledButton>
-        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "STRIKETHROUGH")}>strikethrough</StyledButton>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "ordered-list-item")}>Ordered List</StyledButton>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "unordered-list-item")}>Unordered List</StyledButton>
+        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-one")}>
+          H1
+        </StyledButton>
+        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-two")}>
+          H2
+        </StyledButton>
+        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-three")}>
+          H3
+        </StyledButton>
+        <StyledButton onMouseDown={(e) => handleBlockClick(e, "unstyled")}>
+          Normal
+        </StyledButton>
+        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "BOLD")}>
+          bold
+        </StyledButton>
+        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "UNDERLINE")}>
+          underline
+        </StyledButton>
+        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "ITALIC")}>
+          italic
+        </StyledButton>
+        <StyledButton
+          onMouseDown={(e) => handleTogggleClick(e, "STRIKETHROUGH")}
+        >
+          strikethrough
+        </StyledButton>
+        <StyledButton
+          onMouseDown={(e) => handleBlockClick(e, "ordered-list-item")}
+        >
+          Ordered List
+        </StyledButton>
+        <StyledButton
+          onMouseDown={(e) => handleBlockClick(e, "unordered-list-item")}
+        >
+          Unordered List
+        </StyledButton>
         <StyledButton
           disabled={editorState.getUndoStack().size <= 0}
-          onMouseDown={() => setEditorState(EditorState.undo(editorState))}>
+          onMouseDown={() => setEditorState(EditorState.undo(editorState))}
+        >
           undo
         </StyledButton>
         <StyledButton
           disabled={editorState.getRedoStack().size <= 0}
-          onMouseDown={() => setEditorState(EditorState.redo(editorState))}>
+          onMouseDown={() => setEditorState(EditorState.redo(editorState))}
+        >
           redo
         </StyledButton>
       </ButtonContainer>
@@ -158,9 +189,7 @@ const TextEditor: React.FC = () => {
         onChange={(newEditorState) => {
           setEditorState(newEditorState);
           handleChange(newEditorState);
-          // handleSave();
         }}
-        
         handleKeyCommand={handleKeyCommand}
       />
       <SaveButton
@@ -169,7 +198,8 @@ const TextEditor: React.FC = () => {
         onClick={(e) => {
           e.preventDefault();
           handleSave();
-        }}>
+        }}
+      >
         save
       </SaveButton>
     </StyledTexteditor>
