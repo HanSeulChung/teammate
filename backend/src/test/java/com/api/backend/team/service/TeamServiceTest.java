@@ -45,7 +45,7 @@ class TeamServiceTest {
         .build();
     when(teamRepository.findById(anyLong()))
         .thenReturn(Optional.of(team));
-    when(teamParticipantsRepository.existsByIdAndMember_MemberId(id, Long.valueOf(userId)))
+    when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(id, Long.valueOf(userId)))
         .thenReturn(true);
     //when
     String result = teamService.getTeamUrl(id,userId);
@@ -66,7 +66,7 @@ class TeamServiceTest {
         .build();
     when(teamRepository.findById(anyLong()))
         .thenReturn(Optional.of(team));
-    when(teamParticipantsRepository.existsByIdAndMember_MemberId(id, Long.valueOf(userId)))
+    when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(id, Long.valueOf(userId)))
         .thenReturn(false);
     //when
     CustomException result = assertThrows(CustomException.class,
