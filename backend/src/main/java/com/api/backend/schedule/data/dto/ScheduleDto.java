@@ -29,16 +29,12 @@ public class ScheduleDto {
   private LocalDateTime startDt;
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDateTime endDt;
-  private LocalTime time;
   private boolean isRepeat;
   private LocalDateTime repeatCycle;
   private String color;
   private List<TeamParticipants> teamParticipants;
 
   public static ScheduleDto of(Schedule schedule) {
-    LocalDateTime startDt = schedule.getStartDt();
-    LocalTime time = startDt.toLocalTime();
-
     return ScheduleDto.builder()
         .scheduleId(schedule.getScheduleId())
         .teamId(schedule.getTeam().getTeamId())
@@ -52,7 +48,6 @@ public class ScheduleDto {
         .repeatCycle(schedule.getRepeatCycle())
         .color(schedule.getColor())
         .teamParticipants(schedule.getTeamParticipants())
-        .time(time)
         .build();
   }
 

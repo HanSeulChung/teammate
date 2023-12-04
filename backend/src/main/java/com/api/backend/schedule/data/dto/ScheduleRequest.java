@@ -21,6 +21,7 @@ public class ScheduleRequest {
   @NotBlank(message = "일정 제목을 입력해주세요.")
   private String title;
   private String content;
+  @NotBlank(message = "시작 날짜를 입력해주세요.")
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")

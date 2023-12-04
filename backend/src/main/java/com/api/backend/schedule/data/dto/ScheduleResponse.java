@@ -16,18 +16,16 @@ public class ScheduleResponse {
 
   private Long scheduleId;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-  private LocalDateTime datetime;
+  private LocalDateTime startDt;
+  private LocalDateTime endDt;
   private String place;
   private List<TeamParticipants> teamParticipants;
 
   public static ScheduleResponse from(ScheduleDto scheduleDto) {
-    LocalDateTime combinedDateTime = LocalDateTime.of(
-        scheduleDto.getStartDt().toLocalDate(),
-        scheduleDto.getTime()
-    );
     return ScheduleResponse.builder()
         .scheduleId(scheduleDto.getScheduleId())
-        .datetime(combinedDateTime)
+        .startDt(scheduleDto.getStartDt())
+        .endDt(scheduleDto.getEndDt())
         .place(scheduleDto.getPlace())
         .teamParticipants(scheduleDto.getTeamParticipants())
         .build();

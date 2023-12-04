@@ -15,7 +15,7 @@ public class ScheduleEditRequest {
   private Long teamId;
   private Long categoryId;
   private String title;
-  private String contents;
+  private String content;
   private LocalDateTime startDt;
   private LocalDateTime endDt;
   private String place;
