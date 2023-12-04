@@ -1,5 +1,7 @@
 package com.api.backend.team.service;
 
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
 import static org.assertj.core.api.BDDAssumptions.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,5 +77,81 @@ class TeamServiceTest {
     //then
     assertEquals(result.getErrorMessage(),TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION.getErrorMessage());
     assertEquals(result.getErrorCode().getCode(),500);
+  }
+
+  @Test
+  @DisplayName("팀에 팀원 추가 로직 - 성공")
+  void updateTeamParticipants_success(){
+    //given
+    Long id = 1L;
+    String userId = "1";
+    String code = "dsfefsefnklsd";
+    Team team = Team.builder()
+        .teamId(1L)
+        .inviteLink("2/dsfefsefnklsd")
+        .build();
+    when(teamRepository.findById(anyLong()))
+        .thenReturn(Optional.of(team));
+    when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(
+        anyLong(), anyLong()
+    )).thenReturn(false);
+    //when
+    Team result = teamService.updateTeamParticipants(id, code, userId);
+
+    //then
+    assertEquals(result.getTeamId(), team.getTeamId());
+    assertEquals(result.getInviteLink(), team.getInviteLink());
+  }
+
+  @Test
+  @DisplayName("팀에 팀원 추가 로직 - 실패[code]")
+  void updateTeamParticipants_fail_code(){
+    //given
+    Long id = 1L;
+    String userId = "1";
+    String code = "sadsadasd";
+    Team team = Team.builder()
+        .teamId(1L)
+        .inviteLink("2/dsfefsefnklsd")
+        .build();
+    when(teamRepository.findById(anyLong()))
+        .thenReturn(Optional.of(team));
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.updateTeamParticipants(id, code, userId)
+    );
+
+    //then
+    assertEquals(result.getErrorMessage(),TEAM_CODE_NOT_VALID_EXCEPTION.getErrorMessage());
+    assertEquals(result.getErrorCode().getCode(),TEAM_CODE_NOT_VALID_EXCEPTION.getCode());
+  }
+
+  @Test
+  @DisplayName("팀에 팀원 추가 로직 - 실패[existUser]")
+  void updateTeamParticipants_fail_exist_user(){
+    //given
+    Long id = 1L;
+    String userId = "1";
+    String code = "dsfefsefnklsd";
+    Team team = Team.builder()
+        .teamId(1L)
+        .inviteLink("2/dsfefsefnklsd")
+        .build();
+    when(teamRepository.findById(anyLong()))
+        .thenReturn(Optional.of(team));
+    when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(anyLong(),anyLong()))
+        .thenReturn(true);
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.updateTeamParticipants(id, code, userId)
+    );
+
+    //then
+    assertEquals(result.getErrorMessage(),TEAM_PARTICIPANTS_EXIST_EXCEPTION.getErrorMessage());
+    assertEquals(result.getErrorCode().getCode(),TEAM_PARTICIPANTS_EXIST_EXCEPTION.getCode());
   }
 }
