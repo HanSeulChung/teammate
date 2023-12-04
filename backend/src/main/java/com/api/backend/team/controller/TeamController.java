@@ -4,6 +4,8 @@ import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM_PARTICIPANTS
 
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
+import com.api.backend.team.data.dto.TeamKickOutRequest;
+import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.UpdateTeamParticipantsResponse;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.service.TeamService;
@@ -59,6 +61,16 @@ public class TeamController {
             .teamId(teamId)
             .message(team.getName() + UPDATE_TEAM_PARTICIPANTS)
             .build()
+    );
+  }
+
+  @PostMapping("/kick-out")
+  public ResponseEntity<TeamKickOutResponse> kickOutTeamRequest(
+      @RequestBody @Valid
+      TeamKickOutRequest teamKickOutRequest
+  ) {
+    return ResponseEntity.ok(
+        teamService.KickOutUser(teamKickOutRequest)
     );
   }
 
