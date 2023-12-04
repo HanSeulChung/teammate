@@ -1,6 +1,7 @@
 package com.api.backend.schedule.data.dto;
 
 import com.api.backend.team.data.entity.TeamParticipants;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import lombok.Getter;
 public class ScheduleResponse {
 
   private Long scheduleId;
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime datetime;
   private String place;
   private List<TeamParticipants> teamParticipants;

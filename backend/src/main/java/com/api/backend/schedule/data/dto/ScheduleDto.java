@@ -2,6 +2,7 @@ package com.api.backend.schedule.data.dto;
 
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.team.data.entity.TeamParticipants;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -24,7 +25,9 @@ public class ScheduleDto {
   private String title;
   private String content;
   private String place;
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDateTime startDt;
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDateTime endDt;
   private LocalTime time;
   private boolean isRepeat;
