@@ -10,13 +10,11 @@ import static org.mockito.Mockito.when;
 
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
-import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
-import com.api.backend.schedule.service.ScheduleService;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
 import java.time.LocalDateTime;
@@ -51,7 +49,7 @@ class ScheduleServiceTest {
 
   @Test
   @DisplayName("스케줄 추가 성공")
-  public void testAddSchedule() {
+  public void addScheduleSuccess() {
     // Mocking data
     Long teamId = 1L;
     Long categoryId = 1L;
@@ -69,7 +67,6 @@ class ScheduleServiceTest {
         .color("PINK")
         .build();
 
-
     Team mockTeam = Team.builder()
         .teamId(teamId)
         .build();
@@ -79,7 +76,8 @@ class ScheduleServiceTest {
 
     when(teamRepository.findById(teamId)).thenReturn(Optional.of(mockTeam));
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(scheduleCategory));
-    when(scheduleRepository.save(any(Schedule.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(scheduleRepository.save(any(Schedule.class))).thenAnswer(
+        invocation -> invocation.getArgument(0));
 
     Schedule result = scheduleService.add(scheduleRequest);
 
@@ -104,10 +102,13 @@ class ScheduleServiceTest {
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
         .scheduleCategoryId(1L)
         .build();
+
     Team team = Team.builder()
         .teamId(1L)
         .build();
+
     LocalDateTime startDt = LocalDateTime.now();
+
     Schedule schedule1 = Schedule.builder()
         .scheduleId(1L)
         .scheduleCategory(scheduleCategory)
@@ -121,6 +122,7 @@ class ScheduleServiceTest {
         .isRepeat(false)
         .repeatCycle(null)
         .build();
+
     Schedule schedule2 = Schedule.builder()
         .scheduleId(2L)
         .scheduleCategory(scheduleCategory)
@@ -134,6 +136,7 @@ class ScheduleServiceTest {
         .isRepeat(false)
         .repeatCycle(null)
         .build();
+
     mockScheduleList.add(schedule1);
     mockScheduleList.add(schedule2);
 
@@ -151,7 +154,7 @@ class ScheduleServiceTest {
 
   @Test
   @DisplayName("일정 수정 - 성공")
-  void editScheduleSuccess(){
+  void editScheduleSuccess() {
     Long teamId = 1L;
     Long categoryId = 1L;
 
@@ -180,19 +183,25 @@ class ScheduleServiceTest {
 
     when(teamRepository.findById(teamId)).thenReturn(Optional.of(mockTeam));
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(scheduleCategory));
-    when(scheduleRepository.save(any(Schedule.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    when(scheduleRepository.save(any(Schedule.class))).thenAnswer(
+        invocation -> invocation.getArgument(0));
 
-    Schedule result = scheduleService.edit(request);
+    Schedule editSchedule = scheduleService.edit(request);
 
-    assertEquals(request.getTitle(), result.getTitle());
-    assertEquals(request.getContents(), result.getContent());
-    assertEquals(request.getStartDt(), result.getStartDt());
-    assertEquals(request.getEndDt(), result.getEndDt());
-    assertEquals(request.getRepeatCycle(), result.getRepeatCycle());
-    assertEquals(request.isRepeat(), result.isRepeat());
-    assertEquals(mockTeam, result.getTeam());
-    assertEquals(scheduleCategory, result.getScheduleCategory());
+    assertEquals(request.getTitle(), editSchedule.getTitle());
+    assertEquals(request.getContents(), editSchedule.getContent());
+    assertEquals(request.getStartDt(), editSchedule.getStartDt());
+    assertEquals(request.getEndDt(), editSchedule.getEndDt());
+    assertEquals(request.getRepeatCycle(), editSchedule.getRepeatCycle());
+    assertEquals(request.isRepeat(), editSchedule.isRepeat());
+    assertEquals(mockTeam, editSchedule.getTeam());
+    assertEquals(scheduleCategory, editSchedule.getScheduleCategory());
+
+    verify(teamRepository, times(1)).findById(teamId);
+    verify(categoryRepository, times(1)).findById(categoryId);
+    verify(scheduleRepository, times(1)).save(any(Schedule.class));
   }
+
 
   @Test
   @DisplayName("일정 삭제 - 성공")

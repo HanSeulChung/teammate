@@ -4,6 +4,7 @@ import com.api.backend.schedule.data.dto.ScheduleDto;
 import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
+import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.service.ScheduleService;
 import java.util.List;
@@ -29,25 +30,29 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
 
   @PostMapping
-  public ResponseEntity<ScheduleDto> addSchedule(@RequestBody ScheduleRequest request,
+  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody ScheduleRequest request,
       @PathVariable Long teamId) {
-    ScheduleDto scheduleDto = ScheduleDto.of(scheduleService.add(request));
-    return ResponseEntity.ok(scheduleDto);
+    Schedule schedule = scheduleService.add(request);
+    ScheduleDto scheduleDto = ScheduleDto.of(schedule);
+    ScheduleResponse scheduleResponse = ScheduleResponse.from(scheduleDto);
+    return ResponseEntity.ok(scheduleResponse);
   }
 
   @GetMapping("/{scheduleId}")
-  public ResponseEntity<Page<ScheduleDto>> searchSchedule(@PathVariable Long teamId,
+  public ResponseEntity<Page<ScheduleResponse>> searchSchedule(@PathVariable Long teamId,
       @PathVariable Long scheduleId, Pageable pageable) {
     Page<Schedule> schedules = scheduleService.searchSchedule(pageable);
     List<ScheduleDto> scheduleDtoList = ScheduleDto.of(schedules);
-    Page<ScheduleDto> scheduleDtoPage = new PageImpl<>(scheduleDtoList);
+    List<ScheduleResponse> scheduleResponses = ScheduleResponse.from(scheduleDtoList);
+    Page<ScheduleResponse> scheduleDtoPage = new PageImpl<>(scheduleResponses);
     return ResponseEntity.ok(scheduleDtoPage);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
   ScheduleEditRequest request) {
-    ScheduleDto scheduleDto = ScheduleDto.of(scheduleService.edit(request));
+    Schedule schedule = scheduleService.edit(request);
+    ScheduleDto scheduleDto = ScheduleDto.of(schedule);
     ScheduleEditResponse response = ScheduleEditResponse.from(scheduleDto);
     return ResponseEntity.ok(response);
   }

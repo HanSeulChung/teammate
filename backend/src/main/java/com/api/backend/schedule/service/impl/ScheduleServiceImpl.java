@@ -12,7 +12,6 @@ import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
 import com.api.backend.schedule.service.ScheduleService;
 import com.api.backend.team.data.entity.Team;
-import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -29,15 +28,12 @@ public class ScheduleServiceImpl implements ScheduleService {
   private final ScheduleRepository scheduleRepository;
   private final TeamRepository teamRepository;
   private final ScheduleCategoryRepository categoryRepository;
-  private final TeamParticipantsRepository teamParticipantsRepository;
 
   @Override
   @Transactional
   public Schedule add(ScheduleRequest scheduleRequest) {
-    Team team = teamRepository.findById(scheduleRequest.getTeamId())
-        .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION));
-    ScheduleCategory category = categoryRepository.findById(scheduleRequest.getCategoryId())
-        .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+    Team team = validateTeam(scheduleRequest.getTeamId());
+    ScheduleCategory category = validateCategory(scheduleRequest.getCategoryId());
 
     Schedule schedule = Schedule.builder()
         .scheduleId(scheduleRequest.getScheduleId())
@@ -50,7 +46,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         .repeatCycle(scheduleRequest.getRepeatCycle())
         .isRepeat(scheduleRequest.isRepeat())
         .teamParticipants(scheduleRequest.getTeamParticipants())
+        .place(scheduleRequest.getPlace())
+        .color(scheduleRequest.getColor())
         .build();
+
     scheduleRepository.save(schedule);
     return schedule;
   }
@@ -65,10 +64,11 @@ public class ScheduleServiceImpl implements ScheduleService {
   @Override
   @Transactional
   public Schedule edit(ScheduleEditRequest scheduleEditRequest) {
-    Team team = teamRepository.findById(scheduleEditRequest.getTeamId())
-        .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION));
-    ScheduleCategory category = categoryRepository.findById(scheduleEditRequest.getCategoryId())
-        .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+    if (scheduleEditRequest.getScheduleId() == null) {
+      throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
+    }
+    Team team = validateTeam(scheduleEditRequest.getTeamId());
+    ScheduleCategory category = validateCategory(scheduleEditRequest.getCategoryId());
 
     Schedule schedule = Schedule.builder()
         .scheduleId(scheduleEditRequest.getScheduleId())
@@ -84,6 +84,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         .repeatCycle(scheduleEditRequest.getRepeatCycle())
         .teamParticipants(scheduleEditRequest.getTeamParticipants())
         .build();
+
     return scheduleRepository.save(schedule);
   }
 
@@ -94,4 +95,15 @@ public class ScheduleServiceImpl implements ScheduleService {
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
     scheduleRepository.delete(schedule);
   }
+
+  public Team validateTeam(Long teamId) {
+    return teamRepository.findById(teamId)
+        .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION));
+  }
+
+  public ScheduleCategory validateCategory(Long categoryId) {
+    return categoryRepository.findById(categoryId)
+        .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+  }
+
 }

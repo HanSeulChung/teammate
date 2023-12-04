@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.team.data.entity.TeamParticipants;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +14,20 @@ import lombok.Getter;
 public class ScheduleResponse {
 
   private Long scheduleId;
-  private LocalDateTime startDt;
-  private LocalDateTime endDt;
+  private LocalDateTime datetime;
   private String place;
+  private List<TeamParticipants> teamParticipants;
 
   public static ScheduleResponse from(ScheduleDto scheduleDto) {
+    LocalDateTime combinedDateTime = LocalDateTime.of(
+        scheduleDto.getStartDt().toLocalDate(),
+        scheduleDto.getTime()
+    );
     return ScheduleResponse.builder()
         .scheduleId(scheduleDto.getScheduleId())
-        .startDt(scheduleDto.getStartDt())
-        .endDt(scheduleDto.getEndDt())
+        .datetime(combinedDateTime)
         .place(scheduleDto.getPlace())
+        .teamParticipants(scheduleDto.getTeamParticipants())
         .build();
   }
 

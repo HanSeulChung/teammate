@@ -1,7 +1,5 @@
 package com.api.backend.schedule.data.dto;
 
-import com.api.backend.category.data.dto.ScheduleCategoryDto;
-import com.api.backend.category.data.dto.ScheduleCategoryEditResponse;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
