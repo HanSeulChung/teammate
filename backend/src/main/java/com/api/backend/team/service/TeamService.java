@@ -75,6 +75,7 @@ public class TeamService {
     return team.getInviteLink();
   }
 
+  @Transactional
   public Team updateTeamParticipants(Long teamId, String code, String userId) {
     Team team = getTeam(teamId);
     Long changedTypeUserId = Long.valueOf(userId);
@@ -100,7 +101,8 @@ public class TeamService {
     return team;
   }
 
-  public TeamKickOutResponse KickOutTeamParticipants(TeamKickOutRequest request) {
+  @Transactional
+  public TeamKickOutResponse kickOutTeamParticipants(TeamKickOutRequest request) {
     Team team = getTeam(request.getTeamId());
 
     TeamParticipants teamParticipants = team.getTeamParticipants().stream()

@@ -70,7 +70,7 @@ public class TeamController {
       TeamKickOutRequest teamKickOutRequest
   ) {
     return ResponseEntity.ok(
-        teamService.KickOutTeamParticipants(teamKickOutRequest)
+        teamService.kickOutTeamParticipants(teamKickOutRequest)
     );
   }
 

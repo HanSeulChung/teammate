@@ -2,16 +2,25 @@ package com.api.backend.team.service;
 
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
-import static org.assertj.core.api.BDDAssumptions.given;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.api.backend.global.exception.CustomException;
+import com.api.backend.member.data.entity.Member;
+import com.api.backend.team.data.dto.TeamKickOutRequest;
+import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.entity.Team;
+import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -153,5 +162,58 @@ class TeamServiceTest {
     //then
     assertEquals(result.getErrorMessage(),TEAM_PARTICIPANTS_EXIST_EXCEPTION.getErrorMessage());
     assertEquals(result.getErrorCode().getCode(),TEAM_PARTICIPANTS_EXIST_EXCEPTION.getCode());
+  }
+
+  @Test
+  @DisplayName("팀원 강퇴 로직 - 성공")
+  void KickOutTeamParticipants_success(){
+    //given
+    TeamKickOutRequest request =
+        new TeamKickOutRequest(1L, 1L, "testMessage");
+    TeamParticipants teamParticipants = TeamParticipants
+        .builder()
+        .member(
+            Member.builder().memberId(1L).build()
+        ).build();
+    List<TeamParticipants> teamParticipantsList = List.of(teamParticipants);
+
+    Team team = Team.builder()
+        .teamParticipants(teamParticipantsList)
+        .teamId(1L)
+        .build();
+    when(teamRepository.findById(anyLong()))
+        .thenReturn(Optional.of(team));
+    doNothing().when(teamParticipantsRepository).delete(any());
+    //when
+    TeamKickOutResponse result = teamService.kickOutTeamParticipants(request);
+
+    //then
+    assertEquals(result.getTeamId(),request.getTeamId());
+    assertEquals(result.getUserId(),request.getUserId());
+  }
+  @Test
+  @DisplayName("팀원 강퇴 로직 - 실패")
+  void KickOutTeamParticipants_fail(){
+    //given
+    TeamKickOutRequest request =
+        new TeamKickOutRequest(1L, 1L, "testMessage");
+
+    Team team = Team.builder()
+        .teamParticipants(new ArrayList<>())
+        .teamId(1L)
+        .build();
+    when(teamRepository.findById(anyLong()))
+        .thenReturn(Optional.of(team));
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.kickOutTeamParticipants(request)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getCode(),
+        TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION.getCode());
+    assertEquals(result.getErrorCode().getErrorMessage(),
+        TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION.getErrorMessage());
   }
 }
