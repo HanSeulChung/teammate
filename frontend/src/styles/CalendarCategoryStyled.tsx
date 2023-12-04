@@ -8,3 +8,8 @@ export const CategoryUl = styled.ul`
     float: right;
     flex-basis: 0;
 `
+
+export const CategoryForm = styled.form`
+    display: flex;
+    flex-flow: column; 
+`
