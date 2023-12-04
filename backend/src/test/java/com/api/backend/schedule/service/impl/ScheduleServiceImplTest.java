@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.category.type.CategoryType;
+import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
@@ -141,5 +142,50 @@ class ScheduleServiceTest {
 
     // then
     assertEquals(mockScheduleList.size(), resultScheduleList.size());
+  }
+
+  @Test
+  @DisplayName("일정 수정 - 성공")
+  void editScheduleSuccess(){
+    Long teamId = 1L;
+    Long categoryId = 1L;
+
+    ScheduleEditRequest request = ScheduleEditRequest.builder()
+        .scheduleId(1L)
+        .categoryId(categoryId)
+        .teamId(teamId)
+        .title("김하나 휴가")
+        .contents("휴가")
+        .repeatCycle(LocalDateTime.now())
+        .isRepeat(false)
+        .place("집")
+        .startDt(LocalDateTime.now())
+        .endDt(LocalDateTime.now())
+        .color("PINK")
+        .teamParticipants(new ArrayList<>())
+        .build();
+
+    Team mockTeam = Team.builder()
+        .teamId(teamId)
+        .build();
+
+    ScheduleCategory scheduleCategory = ScheduleCategory.builder()
+        .scheduleCategoryId(categoryId)
+        .build();
+
+    when(teamRepository.findById(teamId)).thenReturn(Optional.of(mockTeam));
+    when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(scheduleCategory));
+    when(scheduleRepository.save(any(Schedule.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    Schedule result = scheduleService.edit(request);
+
+    assertEquals(request.getTitle(), result.getTitle());
+    assertEquals(request.getContents(), result.getContent());
+    assertEquals(request.getStartDt(), result.getStartDt());
+    assertEquals(request.getEndDt(), result.getEndDt());
+    assertEquals(request.getRepeatCycle(), result.getRepeatCycle());
+    assertEquals(request.isRepeat(), result.isRepeat());
+    assertEquals(mockTeam, result.getTeam());
+    assertEquals(scheduleCategory, result.getScheduleCategory());
   }
 }
