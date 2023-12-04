@@ -26,9 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class TeamService {
 
   private final TeamRepository teamRepository;
+  private final MemberRepository memberRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
   @Transactional
-  public Team createTeam(TeamCreateRequest teamRequest) {
+  public TeamCreateResponse createTeam(TeamCreateRequest teamRequest, String userId) {
+    Long changeTypeUserId = Long.valueOf(userId);
+    Member member = memberRepository.findById(changeTypeUserId)
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
     Team team = teamRepository.save(
         Team.builder()
             .memberLimit(teamRequest.getMemberLimit())
@@ -38,7 +43,16 @@ public class TeamService {
             .build()
     );
     team.setInviteLink();
-    return team;
+
+    teamParticipantsRepository.save(
+        TeamParticipants.builder()
+            .team(team)
+            .member(member)
+            .teamRole(TeamRole.READER)
+            .build()
+    );
+
+    return TeamCreateResponse.from(team,changeTypeUserId);
   }
 
 
