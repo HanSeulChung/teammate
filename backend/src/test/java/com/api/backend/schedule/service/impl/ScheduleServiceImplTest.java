@@ -1,12 +1,17 @@
 package com.api.backend.schedule.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.category.type.CategoryType;
+import com.api.backend.global.exception.CustomException;
 import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.enetity.Schedule;
@@ -188,4 +193,27 @@ class ScheduleServiceTest {
     assertEquals(mockTeam, result.getTeam());
     assertEquals(scheduleCategory, result.getScheduleCategory());
   }
+
+  @Test
+  @DisplayName("일정 삭제 - 성공")
+  void deleteScheduleSuccess() {
+    Long scheduleId = 1L;
+    Schedule mockSchedule = Schedule.builder()
+        .scheduleId(scheduleId)
+        .build();
+
+    when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(mockSchedule));
+    scheduleService.delete(scheduleId);
+    verify(scheduleRepository, times(1)).delete(mockSchedule);
+  }
+
+  @Test
+  @DisplayName("일정 삭제 실패- 일정이 존재하지 않음")
+  void deleteScheduleFailed() {
+    Long scheduleId = 1L;
+    when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.empty());
+    assertThrows(CustomException.class, () -> scheduleService.delete(scheduleId));
+    verify(scheduleRepository, never()).delete(any(Schedule.class));
+  }
+
 }
