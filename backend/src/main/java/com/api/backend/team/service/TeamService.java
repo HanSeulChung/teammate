@@ -44,7 +44,7 @@ public class TeamService {
     if (userId == null) {
       throw new CustomException(TOKEN_EXPIRED_EXCEPTION);
     }
-    if (!teamParticipantsRepository.existsByIdAndMember_MemberId(teamId, Long.valueOf(userId))) {
+    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
     }
     return team.getInviteLink();

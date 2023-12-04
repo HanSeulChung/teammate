@@ -43,4 +43,11 @@ public class TeamController {
   }
 
 
+//
+//  ) {
+//    return ResponseEntity.ok(
+//        teamService.getTeamUrl(teamId,code)
+//    );
+//  }
+
 }
