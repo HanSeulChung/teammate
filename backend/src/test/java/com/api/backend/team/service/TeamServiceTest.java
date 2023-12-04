@@ -41,7 +41,7 @@ class TeamServiceTest {
     String userId = "1";
     Team team = Team.builder()
         .teamId(1L)
-        .profileUrl("2/dsfefsefnklsd")
+        .inviteLink("2/dsfefsefnklsd")
         .build();
     when(teamRepository.findById(anyLong()))
         .thenReturn(Optional.of(team));
