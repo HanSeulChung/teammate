@@ -1,6 +1,6 @@
 package com.api.backend.team.controller;
 
-import com.api.backend.team.data.dto.TeamRequest;
+import com.api.backend.team.data.dto.CreateTeamRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.service.TeamService;
 import javax.validation.Valid;
@@ -21,7 +21,7 @@ public class TeamController {
   @PostMapping
   public ResponseEntity<TeamCreateResponse> createTeamRequest(
       @RequestBody @Valid
-      TeamRequest.Create teamRequest
+      CreateTeamRequest teamRequest
   ) {
     return ResponseEntity.ok(
         TeamCreateResponse.from(

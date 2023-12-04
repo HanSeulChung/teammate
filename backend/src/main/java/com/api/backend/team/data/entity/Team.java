@@ -3,7 +3,6 @@ package com.api.backend.team.data.entity;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.schedule.data.enetity.Schedule;
-import com.api.backend.team.data.dto.TeamRequest.Create;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +45,6 @@ public class Team extends BaseEntity {
   @OneToMany(mappedBy = "team")
   private List<Documents> documents = new ArrayList<>();
 
-  public static Team createTeam(Create teamRequest) {
-    return Team.builder()
-        .memberLimit(teamRequest.getMemberLimit())
-        .name(teamRequest.getTeamName())
-        // todo imge는 나중에 어떻게 처리를 해야할지 결정하면 다시 구현하겠다.
-        .profileUrl(teamRequest.getTeamImg())
-        .build();
-  }
 
   public void setInviteLink() {
     this.inviteLink = this.teamId +
