@@ -10,11 +10,13 @@ function App() {
 
     return (
         <BrowserRouter>
-            <Header />
-            <section>
-                <Router />
-            </section>
-            <Footer />
+            <div className='wrapper'>
+                <Header />
+                <section >
+                    <Router />
+                </section>
+                <Footer />
+            </div>
         </BrowserRouter>
         
     )
