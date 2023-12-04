@@ -1,10 +1,7 @@
 package com.api.backend.global.log;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -48,10 +45,8 @@ public class LogAop {
     log.info(sb.toString());
   }
 
-  // Poincut에 의해 필터링된 경로로 들어오는 경우 메서드 리턴 후에 적용
   @AfterReturning(value = "cut()", returning = "returnObj")
   public void afterReturnLog(JoinPoint joinPoint, Object returnObj) {
-    // 메서드 정보 받아오기
     Method method = getMethod(joinPoint);
 
     if (Objects.isNull(returnObj)) {
@@ -65,7 +60,6 @@ public class LogAop {
         returnObj);
   }
 
-  // JoinPoint로 메서드 정보 가져오기
   private Method getMethod(JoinPoint joinPoint) {
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     return signature.getMethod();

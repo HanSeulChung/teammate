@@ -1,13 +1,14 @@
-package com.api.backend.team.data.type;
+package com.api.backend.category.type;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum TeamRole {
-  READER("리더"),
-  MATE("메이트");
+public enum CategoryType{
+  DOCUMENTS ("문서"),
+  SCHEDULE ("일정");
 
   private final String description;
 }
