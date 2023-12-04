@@ -1,5 +1,6 @@
 package com.api.backend.team.data.dto;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class CreateTeamRequest {
   private String teamName;
   @NotBlank(message = "팀 이미지가 존재하지 않습니다.")
   private String teamImg;
-  @NotBlank(message = "팀 제한이 설정되어 있지 않습니다.")
+  // todo 회의를 통한 회원 수 제한 결정하기
+  @Min(0)
   private int memberLimit;
 }
