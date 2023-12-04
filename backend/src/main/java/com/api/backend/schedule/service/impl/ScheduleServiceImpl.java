@@ -4,6 +4,7 @@ import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
+import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
@@ -57,6 +58,30 @@ public class ScheduleServiceImpl implements ScheduleService {
     Page<Schedule> schedules = scheduleRepository.findAll(pageable);
     List<Schedule> scheduleList = schedules.toList();
     return new PageImpl<>(scheduleList);
+  }
+
+  @Override
+  public Schedule edit(ScheduleEditRequest scheduleEditRequest) {
+    Team team = teamRepository.findById(scheduleEditRequest.getTeamId())
+        .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION));
+    ScheduleCategory category = categoryRepository.findById(scheduleEditRequest.getCategoryId())
+        .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+
+    Schedule schedule = Schedule.builder()
+        .scheduleId(scheduleEditRequest.getScheduleId())
+        .team(team)
+        .scheduleCategory(category)
+        .title(scheduleEditRequest.getTitle())
+        .content(scheduleEditRequest.getContents())
+        .startDt(scheduleEditRequest.getStartDt())
+        .endDt(scheduleEditRequest.getEndDt())
+        .color(scheduleEditRequest.getColor())
+        .place(scheduleEditRequest.getPlace())
+        .isRepeat(scheduleEditRequest.isRepeat())
+        .repeatCycle(scheduleEditRequest.getRepeatCycle())
+        .teamParticipants(scheduleEditRequest.getTeamParticipants())
+        .build();
+    return scheduleRepository.save(schedule);
   }
 
   @Override

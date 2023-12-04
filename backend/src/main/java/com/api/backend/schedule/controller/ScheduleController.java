@@ -1,6 +1,8 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.schedule.data.dto.ScheduleDto;
+import com.api.backend.schedule.data.dto.ScheduleEditRequest;
+import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.service.ScheduleService;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +41,14 @@ public class ScheduleController {
     List<ScheduleDto> scheduleDtoList = ScheduleDto.of(schedules);
     Page<ScheduleDto> scheduleDtoPage = new PageImpl<>(scheduleDtoList);
     return ResponseEntity.ok(scheduleDtoPage);
+  }
+
+  @PutMapping
+  public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
+      ScheduleEditRequest request) {
+    ScheduleDto scheduleDto = ScheduleDto.of(scheduleService.edit(request));
+    ScheduleEditResponse response = ScheduleEditResponse.from(scheduleDto);
+    return ResponseEntity.ok(response);
   }
 
 }
