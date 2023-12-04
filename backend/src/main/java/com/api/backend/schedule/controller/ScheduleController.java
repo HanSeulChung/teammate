@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,10 +46,17 @@ public class ScheduleController {
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
-      ScheduleEditRequest request) {
+  ScheduleEditRequest request) {
     ScheduleDto scheduleDto = ScheduleDto.of(scheduleService.edit(request));
     ScheduleEditResponse response = ScheduleEditResponse.from(scheduleDto);
     return ResponseEntity.ok(response);
+  }
+
+  @DeleteMapping("/{scheduleId}")
+  public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
+      @PathVariable Long scheduleId) {
+    scheduleService.delete(scheduleId);
+    return ResponseEntity.ok("해당 일정이 정상적으로 삭제되었습니다.");
   }
 
 }

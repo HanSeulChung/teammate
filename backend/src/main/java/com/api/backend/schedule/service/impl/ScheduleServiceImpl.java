@@ -1,5 +1,7 @@
 package com.api.backend.schedule.service.impl;
 
+import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_NOT_FOUND_EXCEPTION;
+
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.global.exception.CustomException;
@@ -61,6 +63,7 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   @Override
+  @Transactional
   public Schedule edit(ScheduleEditRequest scheduleEditRequest) {
     Team team = teamRepository.findById(scheduleEditRequest.getTeamId())
         .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION));
@@ -85,7 +88,10 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   @Override
+  @Transactional
   public void delete(Long scheduleId) {
-
+    Schedule schedule = scheduleRepository.findById(scheduleId)
+        .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
+    scheduleRepository.delete(schedule);
   }
 }
