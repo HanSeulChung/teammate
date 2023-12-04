@@ -36,6 +36,7 @@ class TeamServiceTest {
   void getTeamUrl() {
     //given
     Long id = 1L;
+    String userId = "1";
     Team team = Team.builder()
         .teamId(1L)
         .profileUrl("2/dsfefsefnklsd")
@@ -43,7 +44,7 @@ class TeamServiceTest {
     when(teamRepository.findById(anyLong()))
         .thenReturn(Optional.of(team));
     //when
-    String result = teamService.getTeamUrl(id);
+    String result = teamService.getTeamUrl(id,userId);
 
     //then
     assertEquals(result,team.getInviteLink());

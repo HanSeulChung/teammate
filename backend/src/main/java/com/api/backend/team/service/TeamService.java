@@ -1,10 +1,13 @@
 package com.api.backend.team.service;
 
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TOKEN_EXPIRED_EXCEPTION;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.dto.CreateTeamRequest;
 import com.api.backend.team.data.entity.Team;
+import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TeamService {
 
   private final TeamRepository teamRepository;
+  private final TeamParticipantsRepository teamParticipantsRepository;
   @Transactional
   public Team createTeam(CreateTeamRequest teamRequest) {
     Team team = teamRepository.save(
@@ -35,7 +39,14 @@ public class TeamService {
         .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
   }
 
-  public String getTeamUrl(Long teamId) {
-    return getTeam(teamId).getInviteLink();
+  public String getTeamUrl(Long teamId,String userId) {
+    Team team = getTeam(teamId);
+    if (userId == null) {
+      throw new CustomException(TOKEN_EXPIRED_EXCEPTION);
+    }
+    if (!teamParticipantsRepository.existsByIdAndMember_MemberId(teamId, Long.valueOf(userId))) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+    }
+    return team.getInviteLink();
   }
 }

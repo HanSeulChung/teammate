@@ -35,9 +35,10 @@ public class TeamController {
   @GetMapping("/{teamId}/code")
   public ResponseEntity<String> getTeamUrlRequest(
       @PathVariable("teamId") Long teamId
+      // todo Princial를 통한 유저 객체 가져오기
   ) {
     return ResponseEntity.ok(
-        teamService.getTeamUrl(teamId)
+        teamService.getTeamUrl(teamId,null)
     );
   }
 
