@@ -1,5 +1,6 @@
 package com.api.backend.team.service;
 
+import static com.api.backend.global.exception.type.ErrorCode.MEMBER_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
@@ -9,7 +10,9 @@ import static com.api.backend.global.exception.type.ErrorCode.TOKEN_EXPIRED_EXCE
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
+import com.api.backend.member.data.repository.MemberRepository;
 import com.api.backend.team.data.dto.TeamCreateRequest;
+import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.entity.Team;
