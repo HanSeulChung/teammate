@@ -65,12 +65,12 @@ public class TeamController {
   }
 
   @PostMapping("/kick-out")
-  public ResponseEntity<TeamKickOutResponse> kickOutTeamRequest(
+  public ResponseEntity<TeamKickOutResponse> kickOutTeamParticipantsRequest(
       @RequestBody @Valid
       TeamKickOutRequest teamKickOutRequest
   ) {
     return ResponseEntity.ok(
-        teamService.KickOutUser(teamKickOutRequest)
+        teamService.KickOutTeamParticipants(teamKickOutRequest)
     );
   }
 

@@ -100,7 +100,7 @@ public class TeamService {
     return team;
   }
 
-  public TeamKickOutResponse KickOutUser(TeamKickOutRequest request) {
+  public TeamKickOutResponse KickOutTeamParticipants(TeamKickOutRequest request) {
     Team team = getTeam(request.getTeamId());
 
     TeamParticipants teamParticipants = team.getTeamParticipants().stream()
