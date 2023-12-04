@@ -5,7 +5,7 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_
 import static com.api.backend.global.exception.type.ErrorCode.TOKEN_EXPIRED_EXCEPTION;
 
 import com.api.backend.global.exception.CustomException;
-import com.api.backend.team.data.dto.CreateTeamRequest;
+import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
@@ -20,7 +20,7 @@ public class TeamService {
   private final TeamRepository teamRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
   @Transactional
-  public Team createTeam(CreateTeamRequest teamRequest) {
+  public Team createTeam(TeamCreateRequest teamRequest) {
     Team team = teamRepository.save(
         Team.builder()
             .memberLimit(teamRequest.getMemberLimit())
