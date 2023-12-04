@@ -1,5 +1,8 @@
 package com.api.backend.team.service;
 
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
+
+import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.dto.CreateTeamRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
@@ -24,5 +27,15 @@ public class TeamService {
     );
     team.setInviteLink();
     return team;
+  }
+
+
+  private Team getTeam(Long id) {
+    return teamRepository.findById(id)
+        .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
+  }
+
+  public String getTeamUrl(Long teamId) {
+    return getTeam(teamId).getInviteLink();
   }
 }
