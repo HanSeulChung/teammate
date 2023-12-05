@@ -32,7 +32,7 @@ public class ScheduleController {
   @PostMapping
   public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody ScheduleRequest request,
       @PathVariable Long teamId) {
-    Page<Schedule> schedules = scheduleService.add(request);
+    Page<Schedule> schedules = scheduleService.addSchedules(request);
     List<ScheduleDto> scheduleDto = ScheduleDto.of(schedules);
     List<ScheduleResponse> scheduleResponse = ScheduleResponse.from(scheduleDto);
     return ResponseEntity.ok(new PageImpl<>(scheduleResponse));
@@ -51,7 +51,7 @@ public class ScheduleController {
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
   ScheduleEditRequest request) {
-    Schedule schedule = scheduleService.edit(request);
+    Schedule schedule = scheduleService.editSchedule(request);
     ScheduleDto scheduleDto = ScheduleDto.of(schedule);
     ScheduleEditResponse response = ScheduleEditResponse.from(scheduleDto);
     return ResponseEntity.ok(response);
@@ -60,7 +60,7 @@ public class ScheduleController {
   @DeleteMapping("/{scheduleId}")
   public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
       @PathVariable Long scheduleId) {
-    scheduleService.delete(scheduleId);
+    scheduleService.deleteSchedule(scheduleId);
     return ResponseEntity.ok("해당 일정이 정상적으로 삭제되었습니다.");
   }
 

@@ -13,7 +13,8 @@ public enum ErrorCode {
   SCHEDULE_NOT_FOUND_EXCEPTION(500, "존재하지 않는 일정입니다."),
   TEAM_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀입니다."),
   EMAIL_ALREADY_EXIST_EXCEPTION(409,"해당 이메일로 가입한 사용자가 존재합니다."),
-  PASSWORD_NOT_MATCH_EXCEPTION(400, "비밀번호가 일치하지 않습니다.");
+  PASSWORD_NOT_MATCH_EXCEPTION(400, "비밀번호가 일치하지 않습니다."),
+  INVALID_REPEAT_CYCLE_EXCEPTION(400, "잘못된 반복 주기입니다.");
   private final int code;
   private final String errorMessage;
 }

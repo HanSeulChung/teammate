@@ -1,5 +1,6 @@
 package com.api.backend.schedule.service.impl;
 
+import static com.api.backend.global.exception.type.ErrorCode.INVALID_REPEAT_CYCLE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_NOT_FOUND_EXCEPTION;
 
 import com.api.backend.category.data.entity.ScheduleCategory;
@@ -34,69 +35,71 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Override
   @Transactional
-  public Page<Schedule> add(ScheduleRequest scheduleRequest) {
+  public Page<Schedule> addSchedules(ScheduleRequest scheduleRequest) {
     Team team = validateTeam(scheduleRequest.getTeamId());
     ScheduleCategory category = validateCategory(scheduleRequest.getCategoryId());
-    Schedule schedule = null;
     List<Schedule> schedules = new ArrayList<>();
 
     if (scheduleRequest.isRepeat()) {
-      LocalDateTime currentStart = scheduleRequest.getStartDt();
-
-      while (currentStart.isBefore(scheduleRequest.getEndDt())) {
-        schedule = Schedule.builder()
-            .team(team)
-            .scheduleCategory(category)
-            .title(scheduleRequest.getTitle())
-            .content(scheduleRequest.getContent())
-            .startDt(currentStart)
-            .endDt(currentStart)
-            .isRepeat(scheduleRequest.isRepeat())
-            .repeatCycle(scheduleRequest.getRepeatCycle())
-            .teamParticipants(scheduleRequest.getTeamParticipants())
-            .place(scheduleRequest.getPlace())
-            .color(scheduleRequest.getColor())
-            .build();
-
-        scheduleRepository.save(schedule);
-        schedules.add(schedule);
-
-        switch (scheduleRequest.getRepeatCycle()) {
-          case WEEKLY:
-            currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
-            break;
-          case MONTHLY:
-            currentStart = currentStart.plus(1, ChronoUnit.MONTHS);
-            break;
-          case YEARLY:
-            currentStart = currentStart.plus(1, ChronoUnit.YEARS);
-            break;
-          default:
-            throw new IllegalArgumentException("Unsupported repeatCycle");
-        }
-
-        currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
-      }
+      schedules.addAll(createRepeatingSchedules(scheduleRequest, team, category));
     } else {
-      schedule = Schedule.builder()
-          .team(team)
-          .scheduleCategory(category)
-          .title(scheduleRequest.getTitle())
-          .content(scheduleRequest.getContent())
-          .startDt(scheduleRequest.getStartDt())
-          .endDt(scheduleRequest.getEndDt())
-          .isRepeat(scheduleRequest.isRepeat())
-          .repeatCycle(scheduleRequest.getRepeatCycle())
-          .teamParticipants(scheduleRequest.getTeamParticipants())
-          .place(scheduleRequest.getPlace())
-          .color(scheduleRequest.getColor())
-          .build();
-
-      scheduleRepository.save(schedule);
+      Schedule schedule = createSingleSchedule(scheduleRequest, team, category);
       schedules.add(schedule);
     }
-
     return new PageImpl<>(schedules);
+  }
+
+  private List<Schedule> createRepeatingSchedules(ScheduleRequest scheduleRequest, Team team,
+      ScheduleCategory category) {
+    List<Schedule> schedules = new ArrayList<>();
+    LocalDateTime currentStart = scheduleRequest.getStartDt();
+
+    while (currentStart.isBefore(scheduleRequest.getEndDt())) {
+      Schedule schedule = createSchedules(scheduleRequest, team, category, currentStart);
+      schedules.add(schedule);
+
+      switch (scheduleRequest.getRepeatCycle()) {
+        case WEEKLY:
+          currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
+          break;
+        case MONTHLY:
+          currentStart = currentStart.plus(1, ChronoUnit.MONTHS);
+          break;
+        case YEARLY:
+          currentStart = currentStart.plus(1, ChronoUnit.YEARS);
+          break;
+        default:
+          throw new CustomException(INVALID_REPEAT_CYCLE_EXCEPTION);
+      }
+
+      currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
+    }
+    return schedules;
+  }
+
+  private Schedule createSingleSchedule(ScheduleRequest scheduleRequest, Team team,
+      ScheduleCategory category) {
+    return createSchedules(scheduleRequest, team, category, scheduleRequest.getStartDt());
+  }
+
+  private Schedule createSchedules(ScheduleRequest scheduleRequest, Team team,
+      ScheduleCategory category, LocalDateTime currentStart) {
+    Schedule schedule = Schedule.builder()
+        .team(team)
+        .scheduleCategory(category)
+        .title(scheduleRequest.getTitle())
+        .content(scheduleRequest.getContent())
+        .startDt(currentStart)
+        .endDt(currentStart)
+        .isRepeat(scheduleRequest.isRepeat())
+        .repeatCycle(scheduleRequest.getRepeatCycle())
+        .teamParticipants(scheduleRequest.getTeamParticipants())
+        .place(scheduleRequest.getPlace())
+        .color(scheduleRequest.getColor())
+        .build();
+
+    scheduleRepository.save(schedule);
+    return schedule;
   }
 
 
@@ -109,7 +112,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Override
   @Transactional
-  public Schedule edit(ScheduleEditRequest scheduleEditRequest) {
+  public Schedule editSchedule(ScheduleEditRequest scheduleEditRequest) {
     if (scheduleEditRequest.getScheduleId() == null) {
       throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
     }
@@ -136,7 +139,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Override
   @Transactional
-  public void delete(Long scheduleId) {
+  public void deleteSchedule(Long scheduleId) {
     Schedule schedule = scheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
     scheduleRepository.delete(schedule);

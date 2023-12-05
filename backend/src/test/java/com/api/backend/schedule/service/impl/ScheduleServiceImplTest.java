@@ -15,6 +15,7 @@ import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
+import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
 import java.time.LocalDateTime;
@@ -50,7 +51,6 @@ class ScheduleServiceTest {
   @Test
   @DisplayName("스케줄 추가 성공")
   public void addScheduleSuccess() {
-    // Mocking data
     Long teamId = 1L;
     Long categoryId = 1L;
     ScheduleRequest scheduleRequest = ScheduleRequest.builder()
@@ -59,7 +59,7 @@ class ScheduleServiceTest {
         .teamId(teamId)
         .title("김하나 휴가")
         .content("휴가")
-        .repeatCycle(LocalDateTime.now())
+        .repeatCycle(RepeatCycle.YEARLY)
         .isRepeat(false)
         .place("집")
         .startDt(LocalDateTime.now())
@@ -79,8 +79,11 @@ class ScheduleServiceTest {
     when(scheduleRepository.save(any(Schedule.class))).thenAnswer(
         invocation -> invocation.getArgument(0));
 
-    Schedule result = scheduleService.add(scheduleRequest);
+    Page<Schedule> resultPage = scheduleService.addSchedules(scheduleRequest);
 
+    // 결과 검증
+    assertEquals(1, resultPage.getTotalElements());  // 페이지에 포함된 스케줄의 총 개수는 1이어야 합니다.
+    Schedule result = resultPage.getContent().get(0);
     assertEquals(scheduleRequest.getTitle(), result.getTitle());
     assertEquals(scheduleRequest.getContent(), result.getContent());
     assertEquals(scheduleRequest.getStartDt(), result.getStartDt());
@@ -94,7 +97,6 @@ class ScheduleServiceTest {
   @Test
   @DisplayName("일정 조회 - 성공")
   public void searchScheduleSuccess() {
-    // given
     Pageable pageable = PageRequest.of(0, 10);
 
     List<Schedule> mockScheduleList = new ArrayList<>();
@@ -144,11 +146,9 @@ class ScheduleServiceTest {
 
     when(scheduleRepository.findAll(any(Pageable.class))).thenReturn(mockPage);
 
-    // when
     Page<Schedule> resultPage = scheduleService.searchSchedule(pageable);
     List<Schedule> resultScheduleList = resultPage.getContent();
 
-    // then
     assertEquals(mockScheduleList.size(), resultScheduleList.size());
   }
 
@@ -163,8 +163,8 @@ class ScheduleServiceTest {
         .categoryId(categoryId)
         .teamId(teamId)
         .title("김하나 휴가")
-        .contents("휴가")
-        .repeatCycle(LocalDateTime.now())
+        .content("휴가")
+        .repeatCycle(null)
         .isRepeat(false)
         .place("집")
         .startDt(LocalDateTime.now())
@@ -186,10 +186,10 @@ class ScheduleServiceTest {
     when(scheduleRepository.save(any(Schedule.class))).thenAnswer(
         invocation -> invocation.getArgument(0));
 
-    Schedule editSchedule = scheduleService.edit(request);
+    Schedule editSchedule = scheduleService.editSchedule(request);
 
     assertEquals(request.getTitle(), editSchedule.getTitle());
-    assertEquals(request.getContents(), editSchedule.getContent());
+    assertEquals(request.getContent(), editSchedule.getContent());
     assertEquals(request.getStartDt(), editSchedule.getStartDt());
     assertEquals(request.getEndDt(), editSchedule.getEndDt());
     assertEquals(request.getRepeatCycle(), editSchedule.getRepeatCycle());
@@ -202,7 +202,6 @@ class ScheduleServiceTest {
     verify(scheduleRepository, times(1)).save(any(Schedule.class));
   }
 
-
   @Test
   @DisplayName("일정 삭제 - 성공")
   void deleteScheduleSuccess() {
@@ -212,7 +211,7 @@ class ScheduleServiceTest {
         .build();
 
     when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(mockSchedule));
-    scheduleService.delete(scheduleId);
+    scheduleService.deleteSchedule(scheduleId);
     verify(scheduleRepository, times(1)).delete(mockSchedule);
   }
 
@@ -221,8 +220,7 @@ class ScheduleServiceTest {
   void deleteScheduleFailed() {
     Long scheduleId = 1L;
     when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.empty());
-    assertThrows(CustomException.class, () -> scheduleService.delete(scheduleId));
+    assertThrows(CustomException.class, () -> scheduleService.deleteSchedule(scheduleId));
     verify(scheduleRepository, never()).delete(any(Schedule.class));
   }
-
 }
