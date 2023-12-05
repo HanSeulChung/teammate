@@ -1,24 +1,32 @@
 package com.api.backend.team.service;
 
+import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
+import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
+import com.api.backend.team.data.type.TeamRole;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -172,8 +180,17 @@ class TeamServiceTest {
         new TeamKickOutRequest(1L, 1L, "testMessage");
     TeamParticipants teamParticipants = TeamParticipants
         .builder()
+        .teamParticipantsId(1L)
+        .teamRole(TeamRole.READER)
         .member(
             Member.builder().memberId(1L).build()
+        ).build();
+    TeamParticipants teamParticipants2 = TeamParticipants
+        .builder()
+        .teamParticipantsId(2L)
+        .teamRole(TeamRole.READER)
+        .member(
+            Member.builder().memberId(1L).name("testUser").build()
         ).build();
     List<TeamParticipants> teamParticipantsList = List.of(teamParticipants);
 
@@ -181,11 +198,14 @@ class TeamServiceTest {
         .teamParticipants(teamParticipantsList)
         .teamId(1L)
         .build();
-    when(teamRepository.findById(anyLong()))
-        .thenReturn(Optional.of(team));
+    when(teamRepository.existsByTeamIdAndIsDelete(anyLong(), anyBoolean()))
+        .thenReturn(false);
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))
+        .thenReturn(Optional.of(teamParticipants2))
+        .thenReturn(Optional.of(teamParticipants));
     doNothing().when(teamParticipantsRepository).delete(any());
     //when
-    TeamKickOutResponse result = teamService.kickOutTeamParticipants(request);
+    TeamKickOutResponse result = teamService.kickOutTeamParticipants(request, "2");
 
     //then
     assertEquals(result.getTeamId(),request.getTeamId());
@@ -202,12 +222,15 @@ class TeamServiceTest {
         .teamParticipants(new ArrayList<>())
         .teamId(1L)
         .build();
-    when(teamRepository.findById(anyLong()))
-        .thenReturn(Optional.of(team));
+
+    when(teamRepository.existsByTeamIdAndIsDelete(anyLong(), anyBoolean()))
+        .thenReturn(false);
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))
+        .thenReturn(Optional.empty());
     //when
     CustomException result = assertThrows(
         CustomException.class,
-        () -> teamService.kickOutTeamParticipants(request)
+        () -> teamService.kickOutTeamParticipants(request, "2")
     );
 
     //then

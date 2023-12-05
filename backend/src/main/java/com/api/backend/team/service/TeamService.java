@@ -6,6 +6,7 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALI
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EQUALS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION;
@@ -117,7 +118,7 @@ public class TeamService {
 
   @Transactional
   public TeamKickOutResponse kickOutTeamParticipants(TeamKickOutRequest request, String userId) {
-    if (teamRepository.existsByIdAndIsDelete(request.getTeamId(), DELETE_FALSE_FLAG)) {
+    if (teamRepository.existsByTeamIdAndIsDelete(request.getTeamId(), DELETE_FALSE_FLAG)) {
       throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
     }
 
@@ -133,11 +134,17 @@ public class TeamService {
         .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), request.getUserId())
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
+    if (teamParticipants.getTeamParticipantsId()
+        .equals(leaderParticipants.getTeamParticipantsId())) {
+      throw new CustomException(TEAM_PARTICIPANTS_EQUALS_EXCEPTION);
+    }
+
     teamParticipantsRepository.delete(teamParticipants);
 
     return TeamKickOutResponse.builder()
         .userId(request.getUserId())
         .teamId(request.getTeamId())
+        .nickName(teamParticipants.getMember().getNickName())
         .message("해당 사용자가 팀에서 강퇴됐습니다.")
         .build();
   }
