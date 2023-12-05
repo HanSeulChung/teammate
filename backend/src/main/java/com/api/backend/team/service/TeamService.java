@@ -1,17 +1,23 @@
 package com.api.backend.team.service;
 
 import static com.api.backend.global.exception.type.ErrorCode.MEMBER_NOT_FOUND_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.member.data.repository.MemberRepository;
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
+import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.entity.Team;
@@ -19,6 +25,7 @@ import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import com.api.backend.team.data.type.TeamRole;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +37,8 @@ public class TeamService {
   private final TeamRepository teamRepository;
   private final MemberRepository memberRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
+  private final boolean DELETE_FALSE_FLAG = false;
+
   @Transactional
   public TeamCreateResponse createTeam(TeamCreateRequest teamRequest, String userId) {
     Long changeTypeUserId = Long.valueOf(userId);
@@ -66,6 +75,10 @@ public class TeamService {
   public String getTeamUrl(Long teamId,String userId) {
     Team team = getTeam(teamId);
 
+    if (team.isDelete()) {
+      throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
+    }
+
     if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
     }
@@ -80,6 +93,10 @@ public class TeamService {
 
     if (!entityCode.equals(code)) {
       throw new CustomException(TEAM_CODE_NOT_VALID_EXCEPTION);
+    }
+
+    if (team.isDelete()) {
+      throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
 
     if (teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId,changedTypeUserId)) {
@@ -100,11 +117,20 @@ public class TeamService {
 
   @Transactional
   public TeamKickOutResponse kickOutTeamParticipants(TeamKickOutRequest request, String userId) {
-    Team team = getTeam(request.getTeamId());
+    if (teamRepository.existsByIdAndIsDelete(request.getTeamId(), DELETE_FALSE_FLAG)) {
+      throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
+    }
 
-    TeamParticipants teamParticipants = team.getTeamParticipants().stream()
-        .filter(i -> i.getMember().getMemberId().equals(request.getUserId()))
-        .findFirst()
+    TeamParticipants leaderParticipants = teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), Long.valueOf(userId))
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+
+    if (!leaderParticipants.getTeamRole().equals(TeamRole.READER)) {
+      throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
+    }
+
+    TeamParticipants teamParticipants = teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), request.getUserId())
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     teamParticipantsRepository.delete(teamParticipants);
