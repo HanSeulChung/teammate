@@ -239,4 +239,182 @@ class TeamServiceTest {
     assertEquals(result.getErrorCode().getErrorMessage(),
         TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION.getErrorMessage());
   }
+
+
+  @Test
+  @DisplayName("팀 해체 로직 - 성공")
+  void disbandTeam_success() {
+    //given
+    String userId = "1";
+    TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
+    Member member = Member.builder().memberId(1L).password("test").build();
+    Team team = Team.builder()
+        .isDelete(false)
+        .build();
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamRole(TeamRole.READER)
+        .member(member)
+        .team(team)
+        .build();
+
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.of(teamParticipants));
+
+    //when
+    Team result = teamService.disbandTeam(userId, teamDisbandRequest);
+
+    //then
+    assertEquals(result.getRestorationDt(), LocalDate.now().plusDays(30));
+  }
+
+  @Test
+  @DisplayName("팀 해체 로직 - 실패[팀원이 존재하지 않음]")
+  void disbandTeam_fail_participants() {
+    //given
+    String userId = "1";
+    TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
+    Member member = Member.builder().memberId(1L).password("test").build();
+    Team team = Team.builder()
+        .isDelete(false)
+        .build();
+
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.empty());
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.disbandTeam(userId, teamDisbandRequest)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getErrorMessage(), TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION.getErrorMessage());
+    assertEquals(result.getErrorCode().getCode(), TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION.getCode());
+  }
+
+  @Test
+  @DisplayName("팀 해체 로직 - 실패[권한 부족]")
+  void disbandTeam_fail_mate() {
+    //given
+    String userId = "1";
+    TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
+    Member member = Member.builder().memberId(1L).password("test").build();
+    Team team = Team.builder()
+        .isDelete(false)
+        .build();
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamRole(TeamRole.MATE)
+        .member(member)
+        .team(team)
+        .build();
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.of(teamParticipants));
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.disbandTeam(userId, teamDisbandRequest)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getErrorMessage(), TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION.getErrorMessage());
+    assertEquals(result.getErrorCode().getCode(), TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION.getCode());
+  }
+
+  @Test
+  @DisplayName("팀 해체 로직 - 실패[비밀번호 불일치]")
+  void disbandTeam_fail_password() {
+    //given
+    String userId = "1";
+    TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
+    Member member = Member.builder().memberId(1L).password("asdasdswd").build();
+    Team team = Team.builder()
+        .isDelete(false)
+        .build();
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamRole(TeamRole.READER)
+        .member(member)
+        .team(team)
+        .build();
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.of(teamParticipants));
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.disbandTeam(userId, teamDisbandRequest)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getErrorMessage(), PASSWORD_NOT_MATCH_EXCEPTION.getErrorMessage());
+    assertEquals(result.getErrorCode().getCode(), PASSWORD_NOT_MATCH_EXCEPTION.getCode());
+  }
+
+  @Test
+  @DisplayName("팀 해체 로직 - 실패[복구 시간 not null]")
+  void disbandTeam_fail_restoreDt() {
+    //given
+    String userId = "1";
+    TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
+    Member member = Member.builder().memberId(1L).password("test").build();
+    Team team = Team.builder()
+        .isDelete(false)
+        .restorationDt(LocalDate.now())
+        .build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamRole(TeamRole.READER)
+        .member(member)
+        .team(team)
+        .build();
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.of(teamParticipants));
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.disbandTeam(userId, teamDisbandRequest)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getErrorMessage(), TEAM_IS_DELETEING_EXCEPTION.getErrorMessage());
+    assertEquals(result.getErrorCode().getCode(), TEAM_IS_DELETEING_EXCEPTION.getCode());
+  }
+
+  @Test
+  @DisplayName("팀 해체 로직 - 실패[팀이 이미 해체됨]")
+  void disbandTeam_fail_delete() {
+    //given
+    String userId = "1";
+    TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
+    Member member = Member.builder().memberId(1L).password("test").build();
+    Team team = Team.builder()
+        .isDelete(true)
+        .build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamRole(TeamRole.READER)
+        .member(member)
+        .team(team)
+        .build();
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.of(teamParticipants));
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.disbandTeam(userId, teamDisbandRequest)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getErrorMessage(), TEAM_IS_DELETE_TRUE_EXCEPTION.getErrorMessage());
+    assertEquals(result.getErrorCode().getCode(), TEAM_IS_DELETE_TRUE_EXCEPTION.getCode());
+  }
+
 }
