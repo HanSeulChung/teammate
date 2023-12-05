@@ -2,11 +2,14 @@ package com.api.backend.schedule.data.enetity;
 
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.global.domain.BaseEntity;
+import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,7 +40,8 @@ public class Schedule extends BaseEntity {
   private LocalDateTime startDt;
   private LocalDateTime endDt;
   private boolean isRepeat;
-  private LocalDateTime repeatCycle;
+  @Enumerated(EnumType.STRING)
+  private RepeatCycle repeatCycle;
   private String color;
 
   @ManyToOne(fetch = FetchType.LAZY)

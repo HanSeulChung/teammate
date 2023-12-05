@@ -13,6 +13,8 @@ import com.api.backend.schedule.data.repository.ScheduleRepository;
 import com.api.backend.schedule.service.ScheduleService;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -34,25 +36,65 @@ public class ScheduleServiceImpl implements ScheduleService {
   public Schedule add(ScheduleRequest scheduleRequest) {
     Team team = validateTeam(scheduleRequest.getTeamId());
     ScheduleCategory category = validateCategory(scheduleRequest.getCategoryId());
+    Schedule schedule = null;
 
-    Schedule schedule = Schedule.builder()
-        .scheduleId(scheduleRequest.getScheduleId())
-        .team(team)
-        .scheduleCategory(category)
-        .title(scheduleRequest.getTitle())
-        .content(scheduleRequest.getContent())
-        .startDt(scheduleRequest.getStartDt())
-        .endDt(scheduleRequest.getEndDt())
-        .repeatCycle(scheduleRequest.getRepeatCycle())
-        .isRepeat(scheduleRequest.isRepeat())
-        .teamParticipants(scheduleRequest.getTeamParticipants())
-        .place(scheduleRequest.getPlace())
-        .color(scheduleRequest.getColor())
-        .build();
+    if (scheduleRequest.isRepeat()) {
+      LocalDateTime currentStart = scheduleRequest.getStartDt();
 
-    scheduleRepository.save(schedule);
+      while (currentStart.isBefore(scheduleRequest.getEndDt())) {
+        schedule = Schedule.builder()
+            .team(team)
+            .scheduleCategory(category)
+            .title(scheduleRequest.getTitle())
+            .content(scheduleRequest.getContent())
+            .startDt(currentStart)
+            .endDt(currentStart)
+            .isRepeat(scheduleRequest.isRepeat())
+            .repeatCycle(scheduleRequest.getRepeatCycle())
+            .teamParticipants(scheduleRequest.getTeamParticipants())
+            .place(scheduleRequest.getPlace())
+            .color(scheduleRequest.getColor())
+            .build();
+
+        scheduleRepository.save(schedule);
+
+        switch (scheduleRequest.getRepeatCycle()) {
+          case WEEKLY:
+            currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
+            break;
+          case MONTHLY:
+            currentStart = currentStart.plus(1, ChronoUnit.MONTHS);
+            break;
+          case YEARLY:
+            currentStart = currentStart.plus(1, ChronoUnit.YEARS);
+            break;
+          default:
+            throw new IllegalArgumentException("Unsupported repeatCycle");
+        }
+
+        currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
+      }
+    } else {
+      schedule = Schedule.builder()
+          .team(team)
+          .scheduleCategory(category)
+          .title(scheduleRequest.getTitle())
+          .content(scheduleRequest.getContent())
+          .startDt(scheduleRequest.getStartDt())
+          .endDt(scheduleRequest.getEndDt())
+          .isRepeat(scheduleRequest.isRepeat())
+          .repeatCycle(scheduleRequest.getRepeatCycle())
+          .teamParticipants(scheduleRequest.getTeamParticipants())
+          .place(scheduleRequest.getPlace())
+          .color(scheduleRequest.getColor())
+          .build();
+
+      scheduleRepository.save(schedule);
+    }
+
     return schedule;
   }
+
 
   @Override
   public Page<Schedule> searchSchedule(Pageable pageable) {
@@ -75,7 +117,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         .team(team)
         .scheduleCategory(category)
         .title(scheduleEditRequest.getTitle())
-        .content(scheduleEditRequest.getContents())
+        .content(scheduleEditRequest.getContent())
         .startDt(scheduleEditRequest.getStartDt())
         .endDt(scheduleEditRequest.getEndDt())
         .color(scheduleEditRequest.getColor())
@@ -95,6 +137,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
     scheduleRepository.delete(schedule);
   }
+
 
   public Team validateTeam(Long teamId) {
     return teamRepository.findById(teamId)

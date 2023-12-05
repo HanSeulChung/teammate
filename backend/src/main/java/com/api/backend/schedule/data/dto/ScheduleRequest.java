@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
@@ -28,10 +29,8 @@ public class ScheduleRequest {
   private LocalDateTime endDt;
   private LocalTime time;
   private String place;
-
-  //TODO: 추후 일정 반복 기능 구현 예정
   private boolean isRepeat;
-  private LocalDateTime repeatCycle;
+  private RepeatCycle repeatCycle;
 
   private String color;
   private List<TeamParticipants> teamParticipants;
