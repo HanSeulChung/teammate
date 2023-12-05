@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -52,7 +53,7 @@ public class Schedule extends BaseEntity {
   @JoinColumn(name = "schedule_category_id")
   private ScheduleCategory scheduleCategory;
 
-  @Transient
-  private List<TeamParticipants> teamParticipants;
+  @OneToMany(mappedBy = "schedule")
+  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
 }
