@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.TeamParticipants;
 import java.time.LocalDateTime;
@@ -23,5 +24,5 @@ public class ScheduleEditRequest {
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
   private String color;
-  private List<TeamParticipants> teamParticipants;
+  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 }

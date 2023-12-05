@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.TeamParticipants;
 import java.time.LocalDateTime;
@@ -22,7 +23,7 @@ public class ScheduleEditResponse {
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
   private String color;
-  private List<TeamParticipants> teamParticipants;
+  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
   public static ScheduleEditResponse from(ScheduleDto scheduleDto) {
     return ScheduleEditResponse.builder()
@@ -36,7 +37,7 @@ public class ScheduleEditResponse {
         .isRepeat(scheduleDto.isRepeat())
         .repeatCycle(scheduleDto.getRepeatCycle())
         .color(scheduleDto.getColor())
-        .teamParticipants(scheduleDto.getTeamParticipants())
+        .teamParticipantsSchedules(scheduleDto.getTeamParticipantsSchedules())
         .build();
   }
 }

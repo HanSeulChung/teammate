@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class ScheduleResponse {
   private LocalDateTime startDt;
   private LocalDateTime endDt;
   private String place;
-  private List<TeamParticipants> teamParticipants;
+  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
   public static ScheduleResponse from(ScheduleDto scheduleDto) {
     return ScheduleResponse.builder()
@@ -27,7 +28,7 @@ public class ScheduleResponse {
         .startDt(scheduleDto.getStartDt())
         .endDt(scheduleDto.getEndDt())
         .place(scheduleDto.getPlace())
-        .teamParticipants(scheduleDto.getTeamParticipants())
+        .teamParticipantsSchedules(scheduleDto.getTeamParticipantsSchedules())
         .build();
   }
 

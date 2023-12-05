@@ -1,6 +1,7 @@
 package com.api.backend.schedule.data.dto;
 
 import com.api.backend.schedule.data.enetity.Schedule;
+import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -33,7 +34,7 @@ public class ScheduleDto {
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
   private String color;
-  private List<TeamParticipants> teamParticipants;
+  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
   public static ScheduleDto of(Schedule schedule) {
     return ScheduleDto.builder()
@@ -48,7 +49,7 @@ public class ScheduleDto {
         .isRepeat(schedule.isRepeat())
         .repeatCycle(schedule.getRepeatCycle())
         .color(schedule.getColor())
-        .teamParticipants(schedule.getTeamParticipants())
+        .teamParticipantsSchedules(schedule.getTeamParticipantsSchedules())
         .build();
   }
 

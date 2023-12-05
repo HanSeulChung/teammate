@@ -6,6 +6,7 @@ import com.api.backend.schedule.data.enetity.Schedule;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,6 +29,7 @@ public class Team extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long teamId;
+  private String name;
   private LocalDateTime restorationTime;
   private boolean isDelete;
   private int memberLimit;
@@ -42,4 +44,10 @@ public class Team extends BaseEntity {
 
   @OneToMany(mappedBy = "team")
   private List<Documents> documents = new ArrayList<>();
+
+
+  public void setInviteLink() {
+    this.inviteLink = this.teamId +
+        "/" + UUID.randomUUID();
+  }
 }

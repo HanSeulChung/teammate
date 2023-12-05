@@ -38,6 +38,10 @@ public class LogAop {
     }
 
     for (Object arg : args) {
+      if (arg == null) {
+        continue;
+      }
+
       sb.append("[parameter type : ")
           .append(arg.getClass().getSimpleName())
           .append(" value : ").append(arg).append("] ");
@@ -45,10 +49,8 @@ public class LogAop {
     log.info(sb.toString());
   }
 
-  // Poincut에 의해 필터링된 경로로 들어오는 경우 메서드 리턴 후에 적용
   @AfterReturning(value = "cut()", returning = "returnObj")
   public void afterReturnLog(JoinPoint joinPoint, Object returnObj) {
-    // 메서드 정보 받아오기
     Method method = getMethod(joinPoint);
 
     if (Objects.isNull(returnObj)) {
@@ -62,7 +64,6 @@ public class LogAop {
         returnObj);
   }
 
-  // JoinPoint로 메서드 정보 가져오기
   private Method getMethod(JoinPoint joinPoint) {
     MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     return signature.getMethod();
