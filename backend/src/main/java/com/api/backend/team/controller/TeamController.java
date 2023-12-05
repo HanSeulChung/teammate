@@ -1,11 +1,13 @@
 package com.api.backend.team.controller;
 
-import com.api.backend.team.data.dto.CreateTeamRequest;
+import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.service.TeamService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +23,7 @@ public class TeamController {
   @PostMapping
   public ResponseEntity<TeamCreateResponse> createTeamRequest(
       @RequestBody @Valid
-      CreateTeamRequest teamRequest
+      TeamCreateRequest teamRequest
   ) {
     return ResponseEntity.ok(
         TeamCreateResponse.from(
@@ -29,4 +31,23 @@ public class TeamController {
         )
     );
   }
+
+  @GetMapping("/{teamId}/code")
+  public ResponseEntity<String> getTeamUrlRequest(
+      @PathVariable("teamId") Long teamId
+      // todo Princial를 통한 유저 객체 가져오기
+  ) {
+    return ResponseEntity.ok(
+        teamService.getTeamUrl(teamId,null)
+    );
+  }
+
+
+//
+//  ) {
+//    return ResponseEntity.ok(
+//        teamService.getTeamUrl(teamId,code)
+//    );
+//  }
+
 }
