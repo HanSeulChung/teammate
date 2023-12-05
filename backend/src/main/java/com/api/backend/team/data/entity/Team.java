@@ -30,7 +30,7 @@ public class Team extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long teamId;
   private String name;
-  private LocalDateTime restorationTime;
+  private LocalDate restorationDt;
   private boolean isDelete;
   private int memberLimit;
   private String inviteLink;
