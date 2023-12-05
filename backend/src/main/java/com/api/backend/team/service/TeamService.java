@@ -149,4 +149,43 @@ public class TeamService {
         .build();
   }
 
+  @Transactional
+  public Team disbandTeam(String userId, TeamDisbandRequest request) {
+    Long changeTypeUserId = Long.valueOf(userId);
+
+    TeamParticipants teamParticipants = teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), changeTypeUserId)
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+
+    disbandCheckPermission(request.getPassword(), teamParticipants);
+
+    Team team = teamParticipants.getTeam();
+
+    isDeletedCheck(team);
+
+    team.updateReservationTime();
+    return team;
+  }
+
+  public void isDeletedCheck(Team team) {
+    if (!Objects.isNull(team.getRestorationDt())) {
+      throw new CustomException(TEAM_IS_DELETEING_EXCEPTION);
+    }
+
+    if (team.isDelete()) {
+      throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
+    }
+  }
+
+  public void disbandCheckPermission(String password, TeamParticipants teamParticipants) {
+    if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION);
+    }
+
+    // todo 복호화 작업이 필요하다...ㅠㅠ
+    if (!teamParticipants.getMember().getPassword()
+        .equals(password)) {
+      throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
+    }
+  }
 }

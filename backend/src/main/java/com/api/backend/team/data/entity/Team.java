@@ -3,7 +3,7 @@ package com.api.backend.team.data.entity;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.schedule.data.enetity.Schedule;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,4 +50,8 @@ public class Team extends BaseEntity {
     this.inviteLink = this.teamId +
         "/" + UUID.randomUUID();
   }
+  public void updateReservationTime() {
+    this.restorationDt = LocalDate.now().plusDays(30);
+  }
+
 }

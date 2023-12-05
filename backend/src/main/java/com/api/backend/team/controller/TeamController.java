@@ -4,6 +4,8 @@ import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM_PARTICIPANTS
 
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
+import com.api.backend.team.data.dto.TeamDisbandRequest;
+import com.api.backend.team.data.dto.TeamDisbandResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.UpdateTeamParticipantsResponse;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,10 +35,10 @@ public class TeamController {
   public ResponseEntity<TeamCreateResponse> createTeamRequest(
       @RequestBody @Valid
       TeamCreateRequest teamRequest,
-      @RequestParam(value = "userId") String userId
+      Principal principal
   ) {
     return ResponseEntity.ok(
-            teamService.createTeam(teamRequest,userId)
+            teamService.createTeam(teamRequest,principal.getName())
     );
   }
 
@@ -73,6 +76,18 @@ public class TeamController {
   ) {
     return ResponseEntity.ok(
         teamService.kickOutTeamParticipants(teamKickOutRequest, principal.getName())
+    );
+  }
+
+  @PutMapping("/disband")
+  public ResponseEntity<TeamDisbandResponse> disbandTeamRequest(
+      @RequestBody @Valid TeamDisbandRequest request,
+      Principal principal
+  ) {
+    return ResponseEntity.ok(
+        TeamDisbandResponse.from(
+            teamService.disbandTeam(principal.getName(), request)
+        )
     );
   }
 
