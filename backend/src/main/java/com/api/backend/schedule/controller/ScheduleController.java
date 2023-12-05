@@ -30,12 +30,12 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
 
   @PostMapping
-  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody ScheduleRequest request,
+  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody ScheduleRequest request,
       @PathVariable Long teamId) {
-    Schedule schedule = scheduleService.add(request);
-    ScheduleDto scheduleDto = ScheduleDto.of(schedule);
-    ScheduleResponse scheduleResponse = ScheduleResponse.from(scheduleDto);
-    return ResponseEntity.ok(scheduleResponse);
+    Page<Schedule> schedules = scheduleService.add(request);
+    List<ScheduleDto> scheduleDto = ScheduleDto.of(schedules);
+    List<ScheduleResponse> scheduleResponse = ScheduleResponse.from(scheduleDto);
+    return ResponseEntity.ok(new PageImpl<>(scheduleResponse));
   }
 
   @GetMapping("/{scheduleId}")

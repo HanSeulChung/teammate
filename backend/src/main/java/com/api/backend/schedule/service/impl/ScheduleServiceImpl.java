@@ -15,6 +15,7 @@ import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -33,10 +34,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Override
   @Transactional
-  public Schedule add(ScheduleRequest scheduleRequest) {
+  public Page<Schedule> add(ScheduleRequest scheduleRequest) {
     Team team = validateTeam(scheduleRequest.getTeamId());
     ScheduleCategory category = validateCategory(scheduleRequest.getCategoryId());
     Schedule schedule = null;
+    List<Schedule> schedules = new ArrayList<>();
 
     if (scheduleRequest.isRepeat()) {
       LocalDateTime currentStart = scheduleRequest.getStartDt();
@@ -57,6 +59,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             .build();
 
         scheduleRepository.save(schedule);
+        schedules.add(schedule);
 
         switch (scheduleRequest.getRepeatCycle()) {
           case WEEKLY:
@@ -90,9 +93,10 @@ public class ScheduleServiceImpl implements ScheduleService {
           .build();
 
       scheduleRepository.save(schedule);
+      schedules.add(schedule);
     }
 
-    return schedule;
+    return new PageImpl<>(schedules);
   }
 
 
