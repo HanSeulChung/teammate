@@ -6,7 +6,6 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXC
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.TOKEN_EXPIRED_EXCEPTION;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
@@ -66,9 +65,7 @@ public class TeamService {
 
   public String getTeamUrl(Long teamId,String userId) {
     Team team = getTeam(teamId);
-    if (userId == null) {
-      throw new CustomException(TOKEN_EXPIRED_EXCEPTION);
-    }
+
     if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
     }
@@ -102,7 +99,7 @@ public class TeamService {
   }
 
   @Transactional
-  public TeamKickOutResponse kickOutTeamParticipants(TeamKickOutRequest request) {
+  public TeamKickOutResponse kickOutTeamParticipants(TeamKickOutRequest request, String userId) {
     Team team = getTeam(request.getTeamId());
 
     TeamParticipants teamParticipants = team.getTeamParticipants().stream()

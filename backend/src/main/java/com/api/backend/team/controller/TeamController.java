@@ -9,6 +9,7 @@ import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.UpdateTeamParticipantsResponse;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.service.TeamService;
+import java.security.Principal;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,21 +41,21 @@ public class TeamController {
 
   @GetMapping("/{teamId}/code")
   public ResponseEntity<String> getTeamUrlRequest(
-      @PathVariable("teamId") Long teamId
-      // todo Princial를 통한 유저 객체 가져오기
+      @PathVariable("teamId") Long teamId,
+      Principal principal
   ) {
     return ResponseEntity.ok(
-        teamService.getTeamUrl(teamId,null)
+        teamService.getTeamUrl(teamId, principal.getName())
     );
   }
 
   @PostMapping("/{teamId}/{code}")
   public ResponseEntity<UpdateTeamParticipantsResponse> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,
-      @PathVariable("code") String code
-      // todo Princial를 통한 유저 객체 가져오기
+      @PathVariable("code") String code,
+      Principal principal
   ) {
-    Team team = teamService.updateTeamParticipants(teamId, code, null);
+    Team team = teamService.updateTeamParticipants(teamId, code, principal.getName());
     return ResponseEntity.ok(
         UpdateTeamParticipantsResponse
             .builder().teamName(team.getName())
@@ -67,10 +68,11 @@ public class TeamController {
   @PostMapping("/kick-out")
   public ResponseEntity<TeamKickOutResponse> kickOutTeamParticipantsRequest(
       @RequestBody @Valid
-      TeamKickOutRequest teamKickOutRequest
+      TeamKickOutRequest teamKickOutRequest,
+      Principal principal
   ) {
     return ResponseEntity.ok(
-        teamService.kickOutTeamParticipants(teamKickOutRequest)
+        teamService.kickOutTeamParticipants(teamKickOutRequest, principal.getName())
     );
   }
 
