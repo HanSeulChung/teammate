@@ -31,8 +31,7 @@ public class WebSecurityConfig {
 
                 .and()
                 .authorizeRequests() // 요청에 대한 권한 설정
-                .antMatchers("/sign-up").permitAll()
-                .antMatchers("/sign-in").permitAll()
+                .antMatchers("/sign-in","/sign-up").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();

@@ -1,6 +1,7 @@
 package com.api.backend.global.security.jwt;
 
 
+import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.dto.SignInResponse;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -20,15 +21,23 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static com.api.backend.global.exception.type.ErrorCode.TOKEN_NOT_FOUND_PERMISSION_INFORMATION;
+
 @Component
 public class JwtTokenProvider {
     private final Key key;
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L;              // 30분
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L;    // 7일
+    private final long ACCESS_TOKEN_EXPIRE_TIME;
+    private final long REFRESH_TOKEN_EXPIRE_TIME;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.token.access-expiration-time}") Long accessExpirationTime ,
+            @Value("${jwt.token.refresh-expiration-time}") Long refreshExpirationTimeE
+    ) {
         byte[] secretByteKey = DatatypeConverter.parseBase64Binary(secretKey);
         this.key = Keys.hmacShaKeyFor(secretByteKey);
+        this.ACCESS_TOKEN_EXPIRE_TIME = accessExpirationTime;
+        this.REFRESH_TOKEN_EXPIRE_TIME = refreshExpirationTimeE;
     }
 
     public SignInResponse generateToken(Authentication authentication) {
@@ -65,7 +74,7 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if (claims.get("auth") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new CustomException(TOKEN_NOT_FOUND_PERMISSION_INFORMATION);
         }
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("auth").toString().split(","))

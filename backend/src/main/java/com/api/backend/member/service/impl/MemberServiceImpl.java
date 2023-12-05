@@ -1,6 +1,7 @@
 package com.api.backend.member.service.impl;
 
 import com.api.backend.global.exception.CustomException;
+import com.api.backend.global.redis.RedisService;
 import com.api.backend.global.security.jwt.JwtTokenProvider;
 import com.api.backend.member.data.dto.SignInRequest;
 import com.api.backend.member.data.dto.SignInResponse;
@@ -32,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisService redisService;
 
 
     @Override
@@ -70,8 +71,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public SignInResponse login(SignInRequest signInRequest) {
 
-
-
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword());
 
@@ -79,8 +78,12 @@ public class MemberServiceImpl implements MemberService {
 
         SignInResponse signInResponse = jwtTokenProvider.generateToken(authentication);
 
-        redisTemplate.opsForValue()
-                .set("RT:" + authentication.getName(), signInResponse.getRefreshToken(), signInResponse.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+        redisService.setValues(
+                "RT:" + authentication.getName(),
+                signInResponse.getRefreshToken(),
+                signInResponse.getRefreshTokenExpirationTime(),
+                TimeUnit.MILLISECONDS);
+
         return signInResponse;
     }
 }

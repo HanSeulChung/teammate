@@ -14,8 +14,6 @@ import java.util.concurrent.TimeUnit;
 public class RedisService {
     private final RedisTemplate<String, String> redisTemplate;
 
-
-
     public void setValues(String key, String data) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key, data);
@@ -25,6 +23,11 @@ public class RedisService {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key, data, duration);
     }
+    public void setValues(String key, String data, Long timeout, TimeUnit timeUnit) {
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+        values.set(key, data, timeout, timeUnit);
+    }
+
 
     public String getValues(String key) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
