@@ -25,14 +25,15 @@ public class WebSecurityConfig {
         http
                 .httpBasic().disable()
                 .csrf().disable()
+                .formLogin().disable()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
                 .and()
                 .authorizeRequests() // 요청에 대한 권한 설정
                 .antMatchers("/sign-up").permitAll()
                 .antMatchers("/sign-in").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .anyRequest().authenticated();
 
         return http.build();
     }

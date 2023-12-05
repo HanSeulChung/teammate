@@ -11,6 +11,12 @@ spring:
       dialect: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: true
     database: mysql
+  redis:
+    host: localhost
+    port: 6379
+jwt:
+  secret: SldUZm1mZ2hrZmR5ZGdrc2RrYWdoZ2hrZWhsc3psZGxxc2xla2Fuc3drcmxmZGxya0VvcWVrempkaWVobGR5
+
 logging:
   level:
     root: info
