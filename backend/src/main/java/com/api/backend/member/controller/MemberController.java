@@ -1,19 +1,10 @@
 package com.api.backend.member.controller;
 
-import com.api.backend.member.data.dto.SignInRequest;
-import com.api.backend.member.data.dto.SignInResponse;
-import com.api.backend.member.data.dto.SignUpRequest;
-import com.api.backend.member.data.dto.SignUpResponse;
+import com.api.backend.member.data.dto.*;
 import com.api.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpCookie;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,6 +35,22 @@ public class MemberController {
                 .header(HttpHeaders.SET_COOKIE, httpCookie.toString())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + signInResponse.getAccessToken())
                 .build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponse> logOut(@RequestHeader("Authorization") String requestAccessToken) {
+
+        LogoutResponse logoutResponse = memberService.logout(requestAccessToken);
+        ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
+                .maxAge(0)
+                .path("/")
+                .build();
+
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .body(logoutResponse);
     }
 
 
