@@ -1,7 +1,7 @@
-import SignIn from "../components/SignIn";
-import Kakao from "../components/Kakao";
-import Naver from "../components/Naver";
-import Google from "../components/Google";
+import SignIn from "../components/Login/SignIn";
+import Kakao from "../components/Login/Kakao";
+import Naver from "../components/Login/Naver";
+import Google from "../components/Login/Google";
 import styled from "styled-components";
 
 const SignInView = () => {
@@ -10,18 +10,18 @@ const SignInView = () => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-  `
+  `;
 
-  return(
+  return (
     <>
-    <StyledSignInView>
-      <SignIn />
-      <Kakao />
-      <Naver />
-      <Google />
-    </StyledSignInView>
+      <StyledSignInView>
+        <SignIn />
+        <Kakao />
+        <Naver />
+        <Google />
+      </StyledSignInView>
     </>
-  )
-}
+  );
+};
 
 export default SignInView;
