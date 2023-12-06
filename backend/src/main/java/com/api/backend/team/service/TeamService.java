@@ -2,6 +2,8 @@ package com.api.backend.team.service;
 
 import static com.api.backend.global.exception.type.ErrorCode.MEMBER_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
@@ -20,7 +22,10 @@ import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import com.api.backend.team.data.type.TeamRole;
+import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +56,7 @@ public class TeamService {
         TeamParticipants.builder()
             .team(team)
             .member(member)
+            .teamNickName(getRandomNickName(member.getName()))
             .teamRole(TeamRole.READER)
             .build()
     );
@@ -58,6 +64,9 @@ public class TeamService {
     return TeamCreateResponse.from(team,changeTypeUserId);
   }
 
+  private String getRandomNickName(String name){
+    return RandomStringUtils.randomAlphanumeric(4) + "_" + name;
+  }
 
   private Team getTeam(Long id) {
     return teamRepository.findById(id)
@@ -93,6 +102,7 @@ public class TeamService {
     teamParticipantsRepository.save(
         TeamParticipants.builder()
             .member(member)
+            .teamNickName(getRandomNickName(member.getName()))
             .team(team)
             .teamRole(TeamRole.MATE)
             .build()

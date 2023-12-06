@@ -32,6 +32,7 @@ public class TeamParticipants extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private TeamRole teamRole;
+  private String teamNickName;
   private String participantsProfileUrl;
 
   @ManyToOne(fetch = FetchType.LAZY)
