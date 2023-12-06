@@ -1,7 +1,9 @@
 package com.api.backend.schedule.service.impl;
 
 import static com.api.backend.global.exception.type.ErrorCode.INVALID_REPEAT_CYCLE_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_NOT_FOUND_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
@@ -10,9 +12,12 @@ import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.enetity.Schedule;
+import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
 import com.api.backend.schedule.service.ScheduleService;
 import com.api.backend.team.data.entity.Team;
+import com.api.backend.team.data.entity.TeamParticipants;
+import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -32,6 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService {
   private final ScheduleRepository scheduleRepository;
   private final TeamRepository teamRepository;
   private final ScheduleCategoryRepository categoryRepository;
+  private final TeamParticipantsRepository teamParticipantsRepository;
 
   @Override
   @Transactional
@@ -71,8 +77,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         default:
           throw new CustomException(INVALID_REPEAT_CYCLE_EXCEPTION);
       }
-
-      currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
     }
     return schedules;
   }
@@ -84,7 +88,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   private Schedule createSchedules(ScheduleRequest scheduleRequest, Team team,
       ScheduleCategory category, LocalDateTime currentStart) {
+
     Schedule schedule = Schedule.builder()
+        .scheduleId(scheduleRequest.getScheduleId())
         .team(team)
         .scheduleCategory(category)
         .title(scheduleRequest.getTitle())
@@ -93,11 +99,26 @@ public class ScheduleServiceImpl implements ScheduleService {
         .endDt(currentStart)
         .isRepeat(scheduleRequest.isRepeat())
         .repeatCycle(scheduleRequest.getRepeatCycle())
-        .teamParticipants(scheduleRequest.getTeamParticipants())
+        .teamParticipantsSchedules(new ArrayList<>())
         .place(scheduleRequest.getPlace())
-        .color(scheduleRequest.getColor())
         .build();
 
+    List<TeamParticipantsSchedule> teamParticipantsSchedules = schedule.getTeamParticipantsSchedules();
+
+    for (Long teamParticipantsId : scheduleRequest.getTeamParticipantsIds()) {
+      TeamParticipants participants = validateTeamParticipants(teamParticipantsId);
+
+      TeamParticipantsSchedule teamParticipantsSchedule = TeamParticipantsSchedule.builder()
+          .teamParticipants(participants)
+          .schedule(schedule)
+          .build();
+
+      teamParticipantsSchedule.setSchedule(schedule);
+      teamParticipantsSchedule.setTeamParticipants(participants);
+      teamParticipantsSchedules.add(teamParticipantsSchedule);
+    }
+
+    schedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
     scheduleRepository.save(schedule);
     return schedule;
   }
@@ -116,26 +137,46 @@ public class ScheduleServiceImpl implements ScheduleService {
     if (scheduleEditRequest.getScheduleId() == null) {
       throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
     }
+
     Team team = validateTeam(scheduleEditRequest.getTeamId());
     ScheduleCategory category = validateCategory(scheduleEditRequest.getCategoryId());
 
-    Schedule schedule = Schedule.builder()
-        .scheduleId(scheduleEditRequest.getScheduleId())
+    Schedule existingSchedule = scheduleRepository.findById(scheduleEditRequest.getScheduleId())
+        .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
+
+    Schedule updatedSchedule = Schedule.builder()
+        .scheduleId(existingSchedule.getScheduleId())
         .team(team)
         .scheduleCategory(category)
         .title(scheduleEditRequest.getTitle())
         .content(scheduleEditRequest.getContent())
         .startDt(scheduleEditRequest.getStartDt())
         .endDt(scheduleEditRequest.getEndDt())
-        .color(scheduleEditRequest.getColor())
         .place(scheduleEditRequest.getPlace())
         .isRepeat(scheduleEditRequest.isRepeat())
         .repeatCycle(scheduleEditRequest.getRepeatCycle())
-        .teamParticipants(scheduleEditRequest.getTeamParticipants())
+        .teamParticipantsSchedules(new ArrayList<>())
         .build();
 
-    return scheduleRepository.save(schedule);
+    List<TeamParticipantsSchedule> teamParticipantsSchedules = updatedSchedule.getTeamParticipantsSchedules();
+
+    for (Long teamParticipantsId : scheduleEditRequest.getTeamParticipantsIds()) {
+      TeamParticipants participants = validateTeamParticipants(teamParticipantsId);
+
+      TeamParticipantsSchedule teamParticipantsSchedule = TeamParticipantsSchedule.builder()
+          .teamParticipants(participants)
+          .schedule(updatedSchedule)
+          .build();
+
+      teamParticipantsSchedule.setSchedule(updatedSchedule);
+      teamParticipantsSchedule.setTeamParticipants(participants);
+      updatedSchedule.getTeamParticipantsSchedules().add(teamParticipantsSchedule);
+    }
+
+    updatedSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
+    return scheduleRepository.save(updatedSchedule);
   }
+
 
   @Override
   @Transactional
@@ -153,7 +194,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   public ScheduleCategory validateCategory(Long categoryId) {
     return categoryRepository.findById(categoryId)
-        .orElseThrow(() -> new CustomException(ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+        .orElseThrow(() -> new CustomException(SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+  }
+
+  public TeamParticipants validateTeamParticipants(Long teamParticipantsId) {
+    return teamParticipantsRepository.findById(teamParticipantsId)
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
   }
 
 }

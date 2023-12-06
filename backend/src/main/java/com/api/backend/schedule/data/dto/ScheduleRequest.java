@@ -1,8 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
-import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
-import com.api.backend.team.data.entity.TeamParticipants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,13 +24,12 @@ public class ScheduleRequest {
   @NotBlank(message = "시작 날짜를 입력해주세요.")
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
+  @NotBlank(message = "종료 날짜를 입력해주세요.")
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime endDt;
   private LocalTime time;
   private String place;
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
-
-  private String color;
-  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
+  private List<Long> teamParticipantsIds;
 }

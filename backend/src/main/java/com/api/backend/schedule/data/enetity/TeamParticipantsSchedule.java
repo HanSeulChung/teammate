@@ -3,6 +3,7 @@ package com.api.backend.schedule.data.enetity;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.team.data.entity.TeamParticipants;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,11 +27,19 @@ public class TeamParticipantsSchedule extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long teamParticipantsScheduleId;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_participants_id")
   private TeamParticipants teamParticipants;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "schedule_id")
   private Schedule schedule;
+
+  public void setTeamParticipants (TeamParticipants teamParticipants) {
+    this.teamParticipants = teamParticipants;
+  }
+
+  public void setSchedule(Schedule schedule) {
+    this.schedule = schedule;
+  }
 }

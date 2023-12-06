@@ -3,10 +3,9 @@ package com.api.backend.schedule.data.dto;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
-import com.api.backend.team.data.entity.TeamParticipants;
+import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -35,8 +34,11 @@ public class ScheduleDto {
   private RepeatCycle repeatCycle;
   private String color;
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
-
+  private List<Long> teamParticipantsIds;
+  private List<String> teamParticipantsName;
+  private List<TeamRole> teamRoles;
   public static ScheduleDto of(Schedule schedule) {
+
     return ScheduleDto.builder()
         .scheduleId(schedule.getScheduleId())
         .teamId(schedule.getTeam().getTeamId())
@@ -50,6 +52,9 @@ public class ScheduleDto {
         .repeatCycle(schedule.getRepeatCycle())
         .color(schedule.getColor())
         .teamParticipantsSchedules(schedule.getTeamParticipantsSchedules())
+        .teamParticipantsIds(getTeamParticipantsIdsFromSchedules(schedule.getTeamParticipantsSchedules()))
+        .teamParticipantsName(getTeamParticipantsNameFromSchedules(schedule.getTeamParticipantsSchedules()))
+        .teamRoles(getTeamParticipantsRoleFromSchedules(schedule.getTeamParticipantsSchedules()))
         .build();
   }
 
@@ -63,4 +68,35 @@ public class ScheduleDto {
     }
     return new ArrayList<>();
   }
+
+  private static List<Long> getTeamParticipantsIdsFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+    List<Long> teamParticipantsIds = new ArrayList<>();
+    if (teamParticipantsSchedules != null) {
+      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
+        teamParticipantsIds.add(teamParticipantsSchedule.getTeamParticipants().getTeamParticipantsId());
+      }
+    }
+    return teamParticipantsIds;
+  }
+
+  private static List<String> getTeamParticipantsNameFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+    List<String> teamParticipantsNames = new ArrayList<>();
+    if (teamParticipantsSchedules != null) {
+      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
+        teamParticipantsNames.add(teamParticipantsSchedule.getTeamParticipants().getMember().getName());
+      }
+    }
+    return teamParticipantsNames;
+  }
+
+  private static List<TeamRole> getTeamParticipantsRoleFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+    List<TeamRole> teamParticipantsRoles = new ArrayList<>();
+    if (teamParticipantsSchedules != null) {
+      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
+        teamParticipantsRoles.add(teamParticipantsSchedule.getTeamParticipants().getTeamRole());
+      }
+    }
+    return teamParticipantsRoles;
+  }
+
 }

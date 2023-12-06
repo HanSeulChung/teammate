@@ -56,4 +56,7 @@ public class Schedule extends BaseEntity {
   @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
+  public void setTeamParticipantsSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+    this.teamParticipantsSchedules = teamParticipantsSchedules;
+  }
 }
