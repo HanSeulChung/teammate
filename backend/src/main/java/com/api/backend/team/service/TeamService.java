@@ -5,6 +5,7 @@ import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EQUALS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
@@ -26,6 +27,7 @@ import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import com.api.backend.team.data.type.TeamRole;
+import java.time.LocalDate;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -187,5 +189,32 @@ public class TeamService {
         .equals(password)) {
       throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
     }
+  }
+
+  @Transactional
+  public Team restoreTeam(String userId, LocalDate restoreDt, Long teamId) {
+    TeamParticipants teamParticipants = teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+
+    if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION);
+    }
+
+    Team team = teamParticipants.getTeam();
+
+    if (team.isDelete()) {
+      throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
+    }
+
+    if (team.getRestorationDt() == null) {
+      throw new CustomException(TEAM_NOT_DELETEING_EXCEPTION);
+    } else if (!team.getRestorationDt().isAfter(restoreDt)) {
+      team.updateIsDelete();
+      return team;
+    }
+
+    team.deleteReservationTime();
+    return team;
   }
 }

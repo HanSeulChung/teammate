@@ -54,4 +54,13 @@ public class Team extends BaseEntity {
     this.restorationDt = LocalDate.now().plusDays(30);
   }
 
+  public void updateIsDelete() {
+    this.isDelete = true;
+  }
+
+  public void deleteReservationTime() {
+    this.restorationDt = null;
+  }
+
+
 }

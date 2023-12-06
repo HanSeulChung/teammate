@@ -8,14 +8,18 @@ import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamDisbandResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
+import com.api.backend.team.data.dto.TeamRestoreResponse;
 import com.api.backend.team.data.dto.UpdateTeamParticipantsResponse;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.service.TeamService;
 import java.security.Principal;
+import java.time.LocalDate;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -87,6 +91,20 @@ public class TeamController {
     return ResponseEntity.ok(
         TeamDisbandResponse.from(
             teamService.disbandTeam(principal.getName(), request)
+        )
+    );
+  }
+
+  @PatchMapping("/{teamId}/restore")
+  public ResponseEntity<TeamRestoreResponse> restoreTeamRequest(
+      Principal principal,
+      @RequestParam(value = "restoreDt") @DateTimeFormat(pattern = "yyyy-MM-dd")
+      LocalDate restoreDt,
+      @PathVariable("teamId") Long teamId
+  ) {
+    return ResponseEntity.ok(
+        TeamRestoreResponse.from(
+            teamService.restoreTeam(principal.getName(), restoreDt, teamId)
         )
     );
   }
