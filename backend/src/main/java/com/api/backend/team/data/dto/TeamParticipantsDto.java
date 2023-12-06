@@ -29,7 +29,7 @@ public class TeamParticipantsDto {
   public static TeamParticipantsDto from(TeamParticipants teamParticipants) {
     return TeamParticipantsDto.builder()
         .teamParticipantsId(teamParticipants.getTeamParticipantsId())
-        .memberName(teamParticipants.getMember().getName())
+        .memberName(teamParticipants.getTeamNickName())
         .teamRole(teamParticipants.getTeamRole())
         .participantsProfileUrl(teamParticipants.getParticipantsProfileUrl())
         .build();

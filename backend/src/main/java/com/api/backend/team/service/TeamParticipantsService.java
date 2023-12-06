@@ -75,4 +75,14 @@ public class TeamParticipantsService {
 
     return team.getTeamParticipants();
   }
+
+  public TeamParticipants getTeamParticipant(Long teamId, String userId) {
+    TeamParticipants teamParticipants = teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+
+    teamService.isDeletedCheck(teamParticipants.getTeam());
+
+    return teamParticipants;
+  }
 }

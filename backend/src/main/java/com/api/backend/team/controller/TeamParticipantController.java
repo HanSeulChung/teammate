@@ -35,7 +35,7 @@ public class TeamParticipantController {
   @PatchMapping("/{participantId}")
   public ResponseEntity<String> updateRoleTeamParticipantRequest(
       Principal principal,
-      @RequestParam(value = "participantId") Long participantId,
+      @PathVariable(value = "participantId") Long participantId,
       @PathVariable(value = "teamId") Long teamId
   ) {
     return ResponseEntity.ok(
@@ -52,6 +52,18 @@ public class TeamParticipantController {
         teamParticipantsService.getTeamParticipants(teamId, principal.getName())
             .stream().map(TeamParticipantsDto::from)
             .collect(Collectors.toList())
+    );
+  }
+
+  @GetMapping
+  public ResponseEntity<TeamParticipantsDto> getTeamParticipantRequest(
+      @PathVariable(value = "teamId") Long teamId,
+      Principal principal
+  ) {
+    return ResponseEntity.ok(
+        TeamParticipantsDto.from(
+            teamParticipantsService.getTeamParticipant(teamId, principal.getName())
+        )
     );
   }
 }
