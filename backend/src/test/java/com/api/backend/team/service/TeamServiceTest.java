@@ -4,11 +4,13 @@ import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -417,4 +419,121 @@ class TeamServiceTest {
     assertEquals(result.getErrorCode().getCode(), TEAM_IS_DELETE_TRUE_EXCEPTION.getCode());
   }
 
+
+  @Test
+  @DisplayName("팀 복구 로직 - 성공[복구 성공]")
+  void restoreTeam_success_restore_success(){
+    //given
+    String userId = "1";
+    LocalDate restoreDt = LocalDate.now().minusDays(19L);
+    Long teamId = 1L;
+
+    Member member = Member.builder().memberId(1L).password("test").build();
+    Team team = Team.builder()
+        .isDelete(false)
+        .restorationDt(LocalDate.now())
+        .build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamRole(TeamRole.READER)
+        .member(member)
+        .team(team)
+        .build();
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.of(teamParticipants));
+
+    //when
+    Team result = teamService.restoreTeam(userId, restoreDt, teamId);
+
+    //then
+    assertEquals(result.getTeamId(),team.getTeamId());
+    assertFalse(result.isDelete());
+  }
+
+  @Test
+  @DisplayName("팀 복구 로직 - 실패[권한 부족]")
+  void restoreTeam_fail_mate(){
+    //given
+    String userId = "1";
+    LocalDate restoreDt = LocalDate.now().minusDays(19L);
+    Long teamId = 1L;
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.restoreTeam(userId, restoreDt, teamId)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getCode(),TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION.getCode());
+    assertEquals(result.getErrorCode().getErrorMessage(),TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION.getErrorMessage());
+  }
+
+  @Test
+  @DisplayName("팀 복구 로직 - 실패[이미 해체된 팀]")
+  void restoreTeam_fail_isDelete(){
+    //given
+    String userId = "1";
+    LocalDate restoreDt = LocalDate.now().minusDays(19L);
+    Long teamId = 1L;
+    Member member = Member.builder().memberId(1L).password("test").build();
+    Team team = Team.builder()
+        .isDelete(true)
+        .restorationDt(LocalDate.now())
+        .build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamRole(TeamRole.READER)
+        .member(member)
+        .team(team)
+        .build();
+
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.of(teamParticipants));
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.restoreTeam(userId, restoreDt, teamId)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getCode(),TEAM_IS_DELETE_TRUE_EXCEPTION.getCode());
+    assertEquals(result.getErrorCode().getErrorMessage(),TEAM_IS_DELETE_TRUE_EXCEPTION.getErrorMessage());
+  }
+
+  @Test
+  @DisplayName("팀 복구 로직 - 실패[restoreDt null]")
+  void restoreTeam_fail_restoreDt(){
+    //given
+    String userId = "1";
+    LocalDate restoreDt = LocalDate.now().minusDays(19L);
+    Long teamId = 1L;
+    Member member = Member.builder().memberId(1L).password("test").build();
+    Team team = Team.builder()
+        .isDelete(false)
+        .build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamRole(TeamRole.READER)
+        .member(member)
+        .team(team)
+        .build();
+
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(), any()
+    )).thenReturn(Optional.of(teamParticipants));
+
+    //when
+    CustomException result = assertThrows(
+        CustomException.class,
+        () -> teamService.restoreTeam(userId, restoreDt, teamId)
+    );
+
+    //then
+    assertEquals(result.getErrorCode().getCode(),TEAM_NOT_DELETEING_EXCEPTION.getCode());
+    assertEquals(result.getErrorCode().getErrorMessage(),TEAM_NOT_DELETEING_EXCEPTION.getErrorMessage());
+  }
 }
