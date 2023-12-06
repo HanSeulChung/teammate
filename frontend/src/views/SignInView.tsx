@@ -1,7 +1,7 @@
 import SignIn from "../components/SignIn";
 import Kakao from "../components/Kakao";
-// import Naver from "../components/Naver";
-// import Google from "../components/Google";
+import Naver from "../components/Naver";
+import Google from "../components/Google";
 import styled from "styled-components";
 
 const SignInView = () => {
@@ -17,8 +17,8 @@ const SignInView = () => {
     <StyledSignInView>
       <SignIn />
       <Kakao />
-      {/* <Naver />
-      <Google /> */}
+      <Naver />
+      <Google />
     </StyledSignInView>
     </>
   )
