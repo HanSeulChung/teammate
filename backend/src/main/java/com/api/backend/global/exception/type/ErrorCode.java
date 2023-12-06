@@ -23,6 +23,7 @@ public enum ErrorCode {
   TEAM_PARTICIPANT_NOT_VALID_MATE_EXCEPTION(500, "팀원 권한이 있어야 합니다."),
 
   MEMBER_NOT_FOUND_EXCEPTION(500, "존재하지 않는 회원입니다."),
+  MEMBER_NOT_EQUALS_EXCEPTION(500, "회원 정보가 일치하지 않습니다."),
   TOKEN_EXPIRED_EXCEPTION(500, "토큰이 만료 되었습니다."),
   EMAIL_NOT_FOUND_EXCEPTION(400, "해당 이메일로 가입한 사용자가 존재하지 않습니다."),
   EMAIL_ALREADY_EXIST_EXCEPTION(409,"해당 이메일로 가입한 사용자가 존재합니다."),

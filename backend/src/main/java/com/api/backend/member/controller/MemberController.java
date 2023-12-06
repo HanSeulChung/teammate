@@ -4,10 +4,12 @@ import com.api.backend.member.data.dto.SignInRequest;
 import com.api.backend.member.data.dto.SignInResponse;
 import com.api.backend.member.data.dto.SignUpRequest;
 import com.api.backend.member.data.dto.SignUpResponse;
+import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
 import com.api.backend.member.service.MemberService;
 import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.service.TeamParticipantsService;
 import java.security.Principal;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,6 +65,19 @@ public class MemberController {
             TeamParticipantsDto.fromDtos(
                 teamParticipantsService
                     .getTeamParticipantsByUserId(principal, pageable)
+            )
+        );
+    }
+
+    @PatchMapping("/member/participant")
+    public ResponseEntity<TeamParticipantsDto> updateTeamParticipantContentRequest(
+        @RequestBody @Valid
+        TeamParticipantUpdateRequest teamParticipantUpdateRequest,
+        Principal principal
+    ) {
+        return ResponseEntity.ok(
+            TeamParticipantsDto.from(
+                teamParticipantsService.updateParticipantContent(teamParticipantUpdateRequest, principal.getName())
             )
         );
     }

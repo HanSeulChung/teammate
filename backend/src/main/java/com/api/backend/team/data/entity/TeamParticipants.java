@@ -46,4 +46,11 @@ public class TeamParticipants extends BaseEntity {
   public void updateRole(TeamRole teamRole) {
     this.teamRole = teamRole;
   }
+
+  public void changeNickName(String teamNickName) {
+    if (!this.teamNickName
+        .equals(teamNickName)) {
+      this.teamNickName = teamNickName;
+    }
+  }
 }

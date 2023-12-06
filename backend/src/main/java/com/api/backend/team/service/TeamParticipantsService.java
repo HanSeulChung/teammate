@@ -1,5 +1,6 @@
 package com.api.backend.team.service;
 
+import static com.api.backend.global.exception.type.ErrorCode.MEMBER_NOT_EQUALS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_EQUALS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION;
@@ -9,7 +10,7 @@ import static com.api.backend.team.data.ResponseMessage.DELETE_TEAM_PARTICIPANT;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_ROLE_TEAM_PARTICIPANT;
 
 import com.api.backend.global.exception.CustomException;
-import com.api.backend.team.data.dto.TeamParticipantsDto;
+import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
@@ -96,5 +97,26 @@ public class TeamParticipantsService {
         .findAllByMember_MemberIdAndTeam_IsDelete(
         Long.valueOf(principal.getName()),DELETE_FALSE_FLAG, pageable
     );
+  }
+
+  @Transactional
+  public TeamParticipants updateParticipantContent(
+      TeamParticipantUpdateRequest teamParticipantUpdateRequest, String userId
+  ) {
+    TeamParticipants teamParticipant = teamParticipantsRepository.findById(
+        teamParticipantUpdateRequest.getTeamParticipantsId()
+    ).orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+
+    teamService.isDeletedCheck(teamParticipant.getTeam());
+
+    if (!teamParticipant.getMember().getMemberId()
+        .equals(Long.valueOf(userId))) {
+      throw new CustomException(MEMBER_NOT_EQUALS_EXCEPTION);
+    }
+    teamParticipant.changeNickName(teamParticipantUpdateRequest.getTeamNickName());
+
+    // todo 이미지 처리
+
+    return teamParticipant;
   }
 }
