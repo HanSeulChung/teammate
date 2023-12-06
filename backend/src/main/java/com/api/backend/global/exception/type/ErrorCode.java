@@ -15,6 +15,8 @@ public enum ErrorCode {
   TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀원입니다."),
   TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION(500, "해당 팀의 팀원이 아닙니다."),
   TEAM_PARTICIPANTS_EXIST_EXCEPTION(500, "이미 해당 팀의 일원입니다."),
+  TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION(500, "팀장 권한을 위임해야지 팀 탈퇴가 가능합니다."),
+
   MEMBER_NOT_FOUND_EXCEPTION(500, "존재하지 않는 회원입니다."),
   TOKEN_EXPIRED_EXCEPTION(500, "토큰이 만료 되었습니다."),
   EMAIL_NOT_FOUND_EXCEPTION(400, "해당 이메일로 가입한 사용자가 존재하지 않습니다."),
