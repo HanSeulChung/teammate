@@ -1,93 +1,113 @@
-import React, { useState, ChangeEvent } from 'react';
-import axios from 'axios';
-import { StyledContainer, StyledFormItem } from '../styles/SignUpStyled.tsx'
-import MockAdapter from 'axios-mock-adapter';
-import * as Regex from '../common/Regex.ts';
-
-const mock = new MockAdapter(axios); // MockAdapter 인스턴스 생성
+import React, { useState, ChangeEvent } from "react";
+import axios from "axios";
+import { StyledContainer, StyledFormItem } from "../styles/SignUpStyled.tsx";
+import MockAdapter from "axios-mock-adapter";
+import * as Regex from "../common/Regex.ts";
 
 interface SignUpProps {}
 
 const SignUp: React.FC<SignUpProps> = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [repassword, setRepassword] = useState<string>('');
-  const [name, setName] = useState<string>('');
-  const [nickName, setNickname] = useState<string>('');
-  const [sexType, setSexType] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [repassword, setRepassword] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [nickName, setNickname] = useState<string>("");
+  const [sexType, setSexType] = useState<string>("");
   const [isIdAvailable, setIsIdAvailable] = useState<boolean | null>(null);
-  const [isEmailFormatValid, setIsEmailFormatValid] = useState<boolean | null>(null);
+  const [isEmailFormatValid, setIsEmailFormatValid] = useState<boolean | null>(
+    null,
+  );
   const [isRepasswordValid, setIsRepasswordValid] = useState<boolean>(true);
-  const [isNicknameAvailable, setIsNicknameAvailable] = useState<boolean | null>(null);
-  const [isNicknameFormatValid, setIsNicknameFormatValid] = useState<boolean | null>(null);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState<
+    boolean | null
+  >(null);
+  const [isNicknameFormatValid, setIsNicknameFormatValid] = useState<
+    boolean | null
+  >(null);
   const [signupMessage, setSignupMessage] = useState<string | null>(null);
 
-  mock.onPost('/sign-up').reply(200, { message: '가입 성공' });
-
-  const isEmailValid = (email: string): boolean => Regex.emailRegex.test(email.trim());
-  const isNicknameValid = (nickName: string): boolean => Regex.nicknameRegex.test(nickName.trim());
+  const isEmailValid = (email: string): boolean =>
+    Regex.emailRegex.test(email.trim());
+  const isNicknameValid = (nickName: string): boolean =>
+    Regex.nicknameRegex.test(nickName.trim());
 
   const handleSignUp = () => {
-    if ([email, password, repassword, name, nickName].some(value => value.trim() === '')) {
-      setSignupMessage('입력되지 않은 항목이 있습니다.');
+    if (
+      [email, password, repassword, name, nickName].some(
+        (value) => value.trim() === "",
+      )
+    ) {
+      setSignupMessage("입력되지 않은 항목이 있습니다.");
       return;
     }
     if (password !== repassword) {
-      setSignupMessage('비밀번호가 일치하지 않습니다.');
+      setSignupMessage("비밀번호가 일치하지 않습니다.");
       setIsRepasswordValid(false);
       return;
     }
     if (password.length < 4) {
-      setSignupMessage('비밀번호는 4자리 이상이어야 합니다.');
+      setSignupMessage("비밀번호는 4자리 이상이어야 합니다.");
       return;
     }
     if (!sexType) {
-      setSignupMessage('성별을 선택하세요.');
+      setSignupMessage("성별을 선택하세요.");
       return;
     }
     if (isIdAvailable === null) {
-      setSignupMessage('아이디 중복 확인이 필요합니다.');
-    } else if (isIdAvailable && isRepasswordValid && isEmailFormatValid && isNicknameAvailable) {
-      axios.post('/sign-up', {id: email,password,repassword,name,nickName,sex: sexType,
-      })
-      .then(response => {
-        console.log('회원가입 성공:', response.data);
-        setSignupMessage('회원가입 성공');
-      })
-      .catch(error => {
-        console.error('회원가입 실패:', error.response.data);
-        setSignupMessage('회원가입 실패');
-      });
+      setSignupMessage("아이디 중복 확인이 필요합니다.");
+    } else if (
+      isIdAvailable &&
+      isRepasswordValid &&
+      isEmailFormatValid &&
+      isNicknameAvailable
+    ) {
+      axios
+        .post("/sign-up", {
+          id: email,
+          password,
+          repassword,
+          name,
+          nickName,
+          sex: sexType,
+        })
+        .then((response) => {
+          console.log("회원가입 성공:", response.data);
+          setSignupMessage("회원가입 성공");
+        })
+        .catch((error) => {
+          console.error("회원가입 실패:", error.response.data);
+          setSignupMessage("회원가입 실패");
+        });
     } else if (!isIdAvailable) {
-      setSignupMessage('아이디가 이미 사용 중입니다.');
+      setSignupMessage("아이디가 이미 사용 중입니다.");
     }
     if (isNicknameAvailable === null) {
-      setSignupMessage('닉네임 중복 확인이 필요합니다.');
+      setSignupMessage("닉네임 중복 확인이 필요합니다.");
     } else if (!isNicknameAvailable) {
-      setSignupMessage('닉네임이 이미 사용 중입니다.');
+      setSignupMessage("닉네임이 이미 사용 중입니다.");
     }
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     switch (name) {
-      case 'email':
+      case "email":
         setEmail(value);
-        setIsIdAvailable(null); 
+        setIsIdAvailable(null);
         setIsEmailFormatValid(isEmailValid(value));
         break;
-      case 'password':
+      case "password":
         setPassword(value);
         setIsRepasswordValid(true);
         break;
-      case 'repassword':
+      case "repassword":
         setRepassword(value);
         setIsRepasswordValid(true);
         break;
-      case 'name':
+      case "name":
         setName(value);
         break;
-      case 'nickname':
+      case "nickname":
         setNickname(value);
         setIsNicknameAvailable(null);
         setIsNicknameFormatValid(value ? isNicknameValid(value) : null);
@@ -101,8 +121,9 @@ const SignUp: React.FC<SignUpProps> = () => {
     if (isEmailFormatValid === null || !isEmailFormatValid) {
       return;
     }
-    const dummyApiCall = () => Promise.resolve({ isAvailable: email !== 'test@naver.com' });
-    dummyApiCall().then(response => {
+    const dummyApiCall = () =>
+      Promise.resolve({ isAvailable: email !== "test@naver.com" });
+    dummyApiCall().then((response) => {
       setIsIdAvailable(response.isAvailable);
     });
   };
@@ -112,77 +133,137 @@ const SignUp: React.FC<SignUpProps> = () => {
       setIsNicknameAvailable(null);
       return;
     }
-    const dummyApiCall = () => Promise.resolve({ isAvailable: nickName !== '닉네임' });
-    dummyApiCall().then(response => {
+    const dummyApiCall = () =>
+      Promise.resolve({ isAvailable: nickName !== "닉네임" });
+    dummyApiCall().then((response) => {
       setIsNicknameAvailable(response.isAvailable);
     });
   };
 
   return (
     <StyledContainer>
-      <h2>회원가입</h2><br/>
+      <h2>회원가입</h2>
+      <br />
       <StyledFormItem>
-        <input type="email" id="email" name="email" value={email} onChange={handleInputChange} placeholder="이메일" />
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={email}
+          onChange={handleInputChange}
+          placeholder="이메일"
+        />
         <button onClick={handleCheckIdAvailability}>중복 확인</button>
       </StyledFormItem>
       {isIdAvailable !== null && (
-        <span style={{ color: isIdAvailable ? 'green' : 'red' }}>
-          {isIdAvailable ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.'}
+        <span style={{ color: isIdAvailable ? "green" : "red" }}>
+          {isIdAvailable
+            ? "사용 가능한 아이디입니다."
+            : "이미 사용 중인 아이디입니다."}
         </span>
       )}
       {isEmailFormatValid !== null && !isEmailFormatValid && (
-        <span style={{ color: 'red' }}>
-          {'올바른 이메일 형식이 아닙니다.'}
-        </span>
-      )}<br/>
-
-      <StyledFormItem>
-        <input type="password" id="password" name="password" value={password} onChange={handleInputChange}  placeholder="비밀번호 (4자 이상)" />
-      </StyledFormItem>
-      {password.length < 4 && password.length > 0 && <span style={{ color: 'red' }}>비밀번호는 4자리 이상이어야 합니다.</span>}
+        <span style={{ color: "red" }}>{"올바른 이메일 형식이 아닙니다."}</span>
+      )}
       <br />
 
       <StyledFormItem>
-        <input type="password" id="repassword" name="repassword" placeholder="비밀번호 확인" value={repassword} onChange={handleInputChange} onBlur={() => {
-          if (repassword && repassword !== password) {
-            setIsRepasswordValid(false);
-          } else {
-            setIsRepasswordValid(true);
-          }
-        }}/>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          value={password}
+          onChange={handleInputChange}
+          placeholder="비밀번호 (4자 이상)"
+        />
+      </StyledFormItem>
+      {password.length < 4 && password.length > 0 && (
+        <span style={{ color: "red" }}>
+          비밀번호는 4자리 이상이어야 합니다.
+        </span>
+      )}
+      <br />
+
+      <StyledFormItem>
+        <input
+          type="password"
+          id="repassword"
+          name="repassword"
+          placeholder="비밀번호 확인"
+          value={repassword}
+          onChange={handleInputChange}
+          onBlur={() => {
+            if (repassword && repassword !== password) {
+              setIsRepasswordValid(false);
+            } else {
+              setIsRepasswordValid(true);
+            }
+          }}
+        />
       </StyledFormItem>
       {isRepasswordValid !== null && (
-        <span style={{ color: isRepasswordValid ? 'green' : 'red' }}>
-          {!isRepasswordValid && '비밀번호가 일치하지 않습니다.'}
+        <span style={{ color: isRepasswordValid ? "green" : "red" }}>
+          {!isRepasswordValid && "비밀번호가 일치하지 않습니다."}
         </span>
-      )}<br />
+      )}
+      <br />
 
       <StyledFormItem>
-        <input type="text" id="name" name="name" value={name} onChange={handleInputChange}  placeholder="이름"/>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value={name}
+          onChange={handleInputChange}
+          placeholder="이름"
+        />
       </StyledFormItem>
       <br />
 
       <StyledFormItem>
-        <input type="text" id="nickname" name="nickname" value={nickName} onChange={handleInputChange}  placeholder="닉네임 (한글 2~10자)"/>
+        <input
+          type="text"
+          id="nickname"
+          name="nickname"
+          value={nickName}
+          onChange={handleInputChange}
+          placeholder="닉네임 (한글 2~10자)"
+        />
         <button onClick={handleCheckNicknameAvailability}>중복 확인</button>
       </StyledFormItem>
       {isNicknameAvailable !== null && (
-        <span style={{ color: isNicknameAvailable ? 'green' : 'red' }}>
-          {isNicknameAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용 중인 닉네임입니다.'}
+        <span style={{ color: isNicknameAvailable ? "green" : "red" }}>
+          {isNicknameAvailable
+            ? "사용 가능한 닉네임입니다."
+            : "이미 사용 중인 닉네임입니다."}
         </span>
       )}
       {isNicknameFormatValid !== null && !isNicknameFormatValid && (
-        <span style={{ color: 'red' }}>
-          {'한글로 2~10자 이내로 입력해주세요.'}
+        <span style={{ color: "red" }}>
+          {"한글로 2~10자 이내로 입력해주세요."}
         </span>
       )}
       <br />
 
       <StyledFormItem>
-        <input type="radio" id="male" name="sexType" value="MALE" checked={sexType === 'MALE'} onChange={() => setSexType('MALE')} />
+        <input
+          type="radio"
+          id="male"
+          name="sexType"
+          value="MALE"
+          checked={sexType === "MALE"}
+          onChange={() => setSexType("MALE")}
+        />
         <label htmlFor="male">남성</label>
 
-        <input type="radio" id="female" name="sexType" value="FEMALE" checked={sexType === 'FEMALE'} onChange={() => setSexType('FEMALE')} />
+        <input
+          type="radio"
+          id="female"
+          name="sexType"
+          value="FEMALE"
+          checked={sexType === "FEMALE"}
+          onChange={() => setSexType("FEMALE")}
+        />
         <label htmlFor="female">여성</label>
       </StyledFormItem>
       <br />
@@ -191,7 +272,7 @@ const SignUp: React.FC<SignUpProps> = () => {
         <button onClick={handleSignUp}>회원 가입</button>
       </StyledFormItem>
 
-      {signupMessage && <p style={{ color: 'red' }}>{signupMessage}</p>}
+      {signupMessage && <p style={{ color: "red" }}>{signupMessage}</p>}
     </StyledContainer>
   );
 };

@@ -10,8 +10,11 @@ export const handlers = [
   rest.get("/*", async (req, res, ctx) => {
     return res(
       ctx.status(200),
-      ctx.json({ message: "Mocked response for all GET requests" })
+      ctx.json({ message: "Mocked response for all GET requests" }),
     );
+  }),
+  rest.post("/sign-up", (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({ message: "가입 성공" }));
   }),
 ];
 
