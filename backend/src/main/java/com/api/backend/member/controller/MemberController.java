@@ -59,8 +59,10 @@ public class MemberController {
         Pageable pageable
     ) {
         return ResponseEntity.ok(
-            teamParticipantsService
-                .getTeamParticipantsByUserId(principal, pageable)
+            TeamParticipantsDto.fromDtos(
+                teamParticipantsService
+                    .getTeamParticipantsByUserId(principal, pageable)
+            )
         );
     }
 }

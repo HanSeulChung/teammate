@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,19 +21,22 @@ public class TeamParticipantsDto {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long teamParticipantsId;
-
+  private Long teamId;
   @Enumerated(EnumType.STRING)
   private TeamRole teamRole;
   private String participantsProfileUrl;
-  private String memberName;
+  private String teamNickName;
 
   public static TeamParticipantsDto from(TeamParticipants teamParticipants) {
     return TeamParticipantsDto.builder()
+        .teamId(teamParticipants.getTeam().getTeamId())
         .teamParticipantsId(teamParticipants.getTeamParticipantsId())
-        .memberName(teamParticipants.getTeamNickName())
+        .teamNickName(teamParticipants.getTeamNickName())
         .teamRole(teamParticipants.getTeamRole())
         .participantsProfileUrl(teamParticipants.getParticipantsProfileUrl())
         .build();
   }
-
+  public static Page<TeamParticipantsDto> fromDtos(Page<TeamParticipants> teamParticipantsPage){
+    return teamParticipantsPage.map(TeamParticipantsDto::from);
+  }
 }

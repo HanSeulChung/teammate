@@ -91,7 +91,7 @@ public class TeamParticipantsService {
     return teamParticipants;
   }
 
-  public Page<TeamParticipantsDto> getTeamParticipantsByUserId(Principal principal, Pageable pageable) {
+  public Page<TeamParticipants> getTeamParticipantsByUserId(Principal principal, Pageable pageable) {
     return teamParticipantsRepository
         .findAllByMember_MemberIdAndTeam_IsDelete(
         Long.valueOf(principal.getName()),DELETE_FALSE_FLAG, pageable
