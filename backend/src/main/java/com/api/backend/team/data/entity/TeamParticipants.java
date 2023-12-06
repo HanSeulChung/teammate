@@ -41,4 +41,8 @@ public class TeamParticipants extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
   private Team team;
+
+  public void updateRole(TeamRole teamRole) {
+    this.teamRole = teamRole;
+  }
 }
