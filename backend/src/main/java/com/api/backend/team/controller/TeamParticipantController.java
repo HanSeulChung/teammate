@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/team/{teamId}/participant")
 public class TeamParticipantController {
 
   private final TeamParticipantsService teamParticipantsService;
