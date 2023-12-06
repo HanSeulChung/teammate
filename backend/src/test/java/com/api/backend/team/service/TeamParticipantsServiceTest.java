@@ -8,10 +8,14 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
+import com.api.backend.member.data.entity.Member;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.type.TeamRole;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +29,8 @@ class TeamParticipantsServiceTest {
 
   @Mock
   private TeamParticipantsRepository teamParticipantsRepository;
+  @Mock
+  private TeamService teamService;
 
   @InjectMocks
   private TeamParticipantsService teamParticipantsService;
@@ -79,4 +85,43 @@ class TeamParticipantsServiceTest {
     //then
     assertEquals(result,UPDATE_ROLE_TEAM_PARTICIPANT);
   }
+
+  @Test
+  @DisplayName("내가 속한 팀의 모든 팀원 조회 로직")
+  void getTeamParticipants(){
+    //given
+    Long teamId = 1L;
+    String userId = "1";
+    List<TeamParticipants> teamParticipantsList = new ArrayList<>();
+
+    for (int i = 0; i < 3; i++) {
+      teamParticipantsList.add(
+          TeamParticipants.builder()
+              .teamNickName("test" + i)
+              .build()
+      );
+    }
+    Team team = Team.builder()
+        .isDelete(false)
+        .teamParticipants(teamParticipantsList)
+        .build();
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamNickName("test")
+        .team(team).build();
+
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(),anyLong()
+    )).thenReturn(Optional.of(teamParticipants));
+    doNothing().when(teamService).isDeletedCheck(team);
+
+    //when
+    List<TeamParticipants> result = teamParticipantsService.getTeamParticipants(teamId, userId);
+
+    //then
+    for (int i = 0; i < 3; i++) {
+      assertEquals(result.get(i).getTeamNickName(),
+          teamParticipantsList.get(i).getTeamNickName());
+    }
+  }
+
 }
