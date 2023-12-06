@@ -38,12 +38,15 @@ public class Team extends BaseEntity {
   private String profileUrl;
 
   @OneToMany(mappedBy = "team")
+  @Builder.Default
   private List<TeamParticipants> teamParticipants = new ArrayList<>();
 
   @OneToMany(mappedBy = "team")
+  @Builder.Default
   private List<Schedule> schedules = new ArrayList<>();
 
   @OneToMany(mappedBy = "team")
+  @Builder.Default
   private List<Documents> documents = new ArrayList<>();
 
 
