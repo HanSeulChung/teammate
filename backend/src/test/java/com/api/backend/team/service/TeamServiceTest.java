@@ -38,6 +38,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
@@ -535,5 +539,34 @@ class TeamServiceTest {
     //then
     assertEquals(result.getErrorCode().getCode(),TEAM_NOT_DELETEING_EXCEPTION.getCode());
     assertEquals(result.getErrorCode().getErrorMessage(),TEAM_NOT_DELETEING_EXCEPTION.getErrorMessage());
+  }
+
+  @Test
+  @DisplayName("자신이 속한 팀 조회시 팀 해체여부가 false 인 것만 받아온다.")
+  void getTimes(){
+    //given
+    String userId = "1";
+    Pageable pageable = PageRequest.of(0,10);
+    List<Team> teams = new ArrayList<>();
+    for (int i = 0; i < 3; i++) {
+      teams.add(
+          Team.builder()
+              .teamId((long) i)
+              .build()
+      );
+    }
+    Page<Team> teamPage = new PageImpl<>(teams);
+    when(teamRepository.findAllByTeamParticipants_Member_MemberIdAndIsDelete(
+        anyLong(), anyBoolean(), any()
+    )).thenReturn(teamPage);
+
+    //when
+    Page<Team> result = teamService.getTeams(userId, pageable);
+
+    //then
+    List<Team> resultTeam = result.getContent();
+    for (int i = 0; i < 3; i++) {
+      assertEquals(resultTeam.get(i).getTeamId(),i);
+    }
   }
 }
