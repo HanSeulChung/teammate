@@ -124,4 +124,30 @@ class TeamParticipantsServiceTest {
     }
   }
 
+  @Test
+  @DisplayName("내가 속한 단건 팀 참가자 조회")
+  void getTeamParticipant(){
+    //given
+    Long teamId = 1L;
+    String userId = "1";
+
+    Team team = Team.builder()
+        .isDelete(false)
+        .build();
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamNickName("test")
+        .team(team).build();
+
+    when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
+        anyLong(),anyLong()
+    )).thenReturn(Optional.of(teamParticipants));
+    doNothing().when(teamService).isDeletedCheck(team);
+
+    //when
+    TeamParticipants result = teamParticipantsService.getTeamParticipant(teamId, userId);
+
+    //then
+    assertEquals(result.getTeamNickName(),teamParticipants.getTeamNickName());
+  }
+
 }
