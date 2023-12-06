@@ -30,6 +30,8 @@ import com.api.backend.team.data.type.TeamRole;
 import java.time.LocalDate;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -217,4 +219,12 @@ public class TeamService {
     team.deleteReservationTime();
     return team;
   }
+
+  public Page<Team> getTeams(String userId, Pageable pageable) {
+    return teamRepository
+        .findAllByTeamParticipants_Member_MemberIdAndIsDelete(
+            Long.valueOf(userId), DELETE_FALSE_FLAG, pageable
+        );
+  }
+
 }

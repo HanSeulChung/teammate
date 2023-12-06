@@ -6,6 +6,7 @@ import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamDisbandResponse;
+import com.api.backend.team.data.dto.TeamDtoResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.TeamRestoreResponse;
@@ -16,6 +17,8 @@ import java.security.Principal;
 import java.time.LocalDate;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -109,4 +112,15 @@ public class TeamController {
     );
   }
 
+  @GetMapping("/list")
+  public ResponseEntity<Page<TeamDtoResponse>> getTeamsRequest(
+      Principal principal,
+      Pageable pageable
+  ){
+    return ResponseEntity.ok(
+        TeamDtoResponse.fromDtos(
+            teamService.getTeams(principal.getName(), pageable)
+        )
+    );
+  }
 }
