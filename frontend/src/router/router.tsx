@@ -12,7 +12,7 @@ const Router = () => {
         <Routes>
 			{/* <Route path='*' element={<Error />} /> */}
 			<Route path='/' element={<Index />} />
-			<Route path='/캘린더' element={<Calender />} />
+			<Route path='/schedules' element={<Calender />} />
 			<Route path='/signup' element={<SignUp />} />
 			<Route path='/signin' element={<SignInView />} />
 			<Route path='/kakaoLogin' element={<KakaoLogin />} />
