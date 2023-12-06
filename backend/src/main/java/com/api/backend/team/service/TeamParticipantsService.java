@@ -9,12 +9,16 @@ import static com.api.backend.team.data.ResponseMessage.DELETE_TEAM_PARTICIPANT;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_ROLE_TEAM_PARTICIPANT;
 
 import com.api.backend.global.exception.CustomException;
+import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.type.TeamRole;
+import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,7 @@ public class TeamParticipantsService {
 
   private final TeamService teamService;
   private final TeamParticipantsRepository teamParticipantsRepository;
+  private final boolean DELETE_FALSE_FLAG = false;
 
   public String deleteTeamParticipant(String userId, Long teamId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
@@ -84,5 +89,12 @@ public class TeamParticipantsService {
     teamService.isDeletedCheck(teamParticipants.getTeam());
 
     return teamParticipants;
+  }
+
+  public Page<TeamParticipantsDto> getTeamParticipantsByUserId(Principal principal, Pageable pageable) {
+    return teamParticipantsRepository
+        .findAllByMember_MemberIdAndTeam_IsDelete(
+        Long.valueOf(principal.getName()),DELETE_FALSE_FLAG, pageable
+    );
   }
 }
