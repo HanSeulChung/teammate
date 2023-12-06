@@ -28,16 +28,6 @@ const SignIn = () => {
     setIsAuthenticated(false);
   };
 
-  // const REST_API_KEY = '백엔드한테 달라하자1';
-  // const REDIRECT_URI = '백엔드한테 달라하자2';
-  // const kakaoLink = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-  // const googleLink = 'https://your-google-oauth-link';
-  // const naverLink = 'https://your-naver-oauth-link';
-
-  // const loginHandler = (oauthLink: string) => {
-  //   window.location.href = oauthLink;
-  // };
-
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
       setError('입력되지 않은 항목이 있습니다.');
@@ -103,21 +93,6 @@ const SignIn = () => {
           </span>
         </p>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        {/* <StyledFormItem>
-          <button type="button" onClick={() => loginHandler(googleLink)}>
-            구글 계정으로 로그인
-          </button>
-        </StyledFormItem>
-        <StyledFormItem>
-          <button type="button" onClick={() => loginHandler(kakaoLink)}>
-            카카오 계정으로 로그인
-          </button>
-        </StyledFormItem>
-        <StyledFormItem>
-          <button type="button" onClick={() => loginHandler(naverLink)}>
-            네이버 계정으로 로그인
-          </button>
-        </StyledFormItem> */}
       </StyledContainer>
     </>
   );
