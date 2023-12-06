@@ -4,26 +4,30 @@ import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.type.Authority;
 import com.api.backend.member.data.type.LoginType;
-import com.api.backend.member.data.type.converter.AuthorityConverter;
-import com.api.backend.member.data.type.converter.LoginTypeConverter;
+import com.api.backend.member.data.type.SexType;
 import com.api.backend.notification.data.entity.Notification;
 import com.api.backend.team.data.entity.TeamParticipants;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "member")
 public class Member extends BaseEntity {
 
   @Id
@@ -33,11 +37,14 @@ public class Member extends BaseEntity {
   private String password;
   private String name;
   private String nickName;
-  private String sex;
-  @Convert(converter = LoginTypeConverter.class)
+  private SexType sexType;
+
+  @Enumerated(EnumType.STRING)
   private LoginType loginType;
-  @Convert(converter = AuthorityConverter.class)
+
+  @Enumerated(EnumType.STRING)
   private Authority authority;
+  private String isAuthenticatedEmail;
   private String memberProfileUrl;
 
   @OneToMany(mappedBy = "member")
