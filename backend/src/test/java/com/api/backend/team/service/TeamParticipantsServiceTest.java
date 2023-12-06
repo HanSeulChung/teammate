@@ -150,4 +150,33 @@ class TeamParticipantsServiceTest {
     assertEquals(result.getTeamNickName(),teamParticipants.getTeamNickName());
   }
 
+  @Test
+  @DisplayName("팀 참가자 수정 로직")
+  void updateParticipantContent() {
+    //given
+    TeamParticipantUpdateRequest request = TeamParticipantUpdateRequest.builder()
+        .teamParticipantsId(1L)
+        .teamNickName("수정된 내용입니다.")
+        .build();
+    String userId = "1";
+
+    Team team = Team.builder()
+        .isDelete(false)
+        .build();
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .member(
+            Member.builder().memberId(1L).build()
+        )
+        .teamNickName("test")
+        .team(team).build();
+
+    when(teamParticipantsRepository.findById(anyLong()))
+        .thenReturn(Optional.of(teamParticipants));
+
+    //when
+    TeamParticipants result = teamParticipantsService.updateParticipantContent(request, userId);
+
+    //then
+    assertEquals(result.getTeamNickName(), request.getTeamNickName());
+  }
 }
