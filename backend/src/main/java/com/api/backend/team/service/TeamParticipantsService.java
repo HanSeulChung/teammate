@@ -9,9 +9,11 @@ import static com.api.backend.team.data.ResponseMessage.DELETE_TEAM_PARTICIPANT;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_ROLE_TEAM_PARTICIPANT;
 
 import com.api.backend.global.exception.CustomException;
+import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.type.TeamRole;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TeamParticipantsService {
 
+  private final TeamService teamService;
   private final TeamParticipantsRepository teamParticipantsRepository;
 
   public String deleteTeamParticipant(String userId, Long teamId) {
@@ -59,5 +62,17 @@ public class TeamParticipantsService {
     readerParticipant.updateRole(TeamRole.MATE);
     mateParticipant.updateRole(TeamRole.READER);
     return UPDATE_ROLE_TEAM_PARTICIPANT;
+  }
+
+  public List<TeamParticipants> getTeamParticipants(Long teamId, String userId) {
+    TeamParticipants teamParticipants = teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+
+    Team team = teamParticipants.getTeam();
+
+    teamService.isDeletedCheck(team);
+
+    return team.getTeamParticipants();
   }
 }

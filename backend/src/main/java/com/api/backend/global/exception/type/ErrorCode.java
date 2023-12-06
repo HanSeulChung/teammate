@@ -13,6 +13,8 @@ public enum ErrorCode {
   TEAM_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀입니다."),
   TEAM_CODE_NOT_VALID_EXCEPTION(500, "팀 코드가 일치하지 않습니다."),
   TEAM_NOT_EQUALS_EXCEPTION(500, "팀이 일치하지 않습니다."),
+  TEAM_IS_DELETE_TRUE_EXCEPTION(500, "해당 팀 이미 해체된 팀입니다."),
+  TEAM_IS_DELETEING_EXCEPTION(500, "해당 팀 이미 해체 중에 있습니다."),
   TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀원입니다."),
   TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION(500, "해당 팀의 팀원이 아닙니다."),
   TEAM_PARTICIPANTS_EXIST_EXCEPTION(500, "이미 해당 팀의 일원입니다."),

@@ -1,12 +1,17 @@
 package com.api.backend.team.controller;
 
+import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.service.TeamParticipantsService;
 import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +40,18 @@ public class TeamParticipantController {
   ) {
     return ResponseEntity.ok(
         teamParticipantsService.updateRoleTeamParticipant(principal.getName(), participantId, teamId)
+    );
+  }
+
+  @GetMapping("/list")
+  public ResponseEntity<List<TeamParticipantsDto>> getTeamParticipantsRequest(
+      @PathVariable(value = "teamId") Long teamId,
+      Principal principal
+  ) {
+    return ResponseEntity.ok(
+        teamParticipantsService.getTeamParticipants(teamId, principal.getName())
+            .stream().map(TeamParticipantsDto::from)
+            .collect(Collectors.toList())
     );
   }
 }
