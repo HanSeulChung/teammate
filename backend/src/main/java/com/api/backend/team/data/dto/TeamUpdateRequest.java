@@ -1,19 +1,14 @@
 package com.api.backend.team.data.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@ToString
-public class UpdateTeamParticipantsResponse {
-
+public class TeamUpdateRequest {
   private Long teamId;
   private String teamName;
-  private String message;
+  private String profileUrl;
 }

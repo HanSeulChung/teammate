@@ -1,5 +1,6 @@
 package com.api.backend.team.controller;
 
+import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM_PARTICIPANTS;
 
 import com.api.backend.team.data.dto.TeamCreateRequest;
@@ -10,7 +11,9 @@ import com.api.backend.team.data.dto.TeamDtoResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.TeamRestoreResponse;
-import com.api.backend.team.data.dto.UpdateTeamParticipantsResponse;
+import com.api.backend.team.data.dto.TeamUpdateRequest;
+import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
+import com.api.backend.team.data.dto.TeamUpdateResponse;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.service.TeamService;
 import java.security.Principal;
@@ -60,14 +63,14 @@ public class TeamController {
   }
 
   @PostMapping("/{teamId}/{code}")
-  public ResponseEntity<UpdateTeamParticipantsResponse> updateTeamParticipantRequest(
+  public ResponseEntity<TeamParticipantsUpdateResponse> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,
       @PathVariable("code") String code,
       Principal principal
   ) {
     Team team = teamService.updateTeamParticipants(teamId, code, principal.getName());
     return ResponseEntity.ok(
-        UpdateTeamParticipantsResponse
+        TeamParticipantsUpdateResponse
             .builder().teamName(team.getName())
             .teamId(teamId)
             .message(team.getName() + UPDATE_TEAM_PARTICIPANTS)
@@ -123,4 +126,19 @@ public class TeamController {
         )
     );
   }
+
+  @PutMapping
+  public ResponseEntity<TeamUpdateResponse> updateTeamRequest(
+      @RequestBody @Valid TeamUpdateRequest teamUpdateRequest,
+      @RequestParam(value = "userId") String userId
+  ) {
+    return ResponseEntity.ok(
+        TeamUpdateResponse.from(
+            teamService.updateTeam(teamUpdateRequest, userId)
+        )
+    );
+  }
+
+
+
 }

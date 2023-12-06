@@ -3,6 +3,7 @@ package com.api.backend.team.data.entity;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.schedule.data.enetity.Schedule;
+import com.api.backend.team.data.dto.TeamUpdateRequest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,5 +63,12 @@ public class Team extends BaseEntity {
     this.restorationDt = null;
   }
 
-
+  public void updateNameOrProfileUrl(TeamUpdateRequest teamUpdateRequest) {
+    if (!teamUpdateRequest.getTeamName().equals(this.name)) {
+      this.name = teamUpdateRequest.getTeamName();
+    }
+    if (!teamUpdateRequest.getProfileUrl().equals(this.profileUrl)) {
+      this.profileUrl = teamUpdateRequest.getProfileUrl();
+    }
+  }
 }

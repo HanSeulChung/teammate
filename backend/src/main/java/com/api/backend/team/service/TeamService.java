@@ -22,6 +22,7 @@ import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
+import com.api.backend.team.data.dto.TeamUpdateRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
@@ -227,4 +228,21 @@ public class TeamService {
         );
   }
 
+  @Transactional
+  public Team updateTeam(TeamUpdateRequest teamUpdateRequest, String userId) {
+    TeamParticipants teamParticipants = teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(teamUpdateRequest.getTeamId(), Long.valueOf(userId))
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+
+    if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+      throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
+    }
+
+    Team team = teamParticipants.getTeam();
+
+    isDeletedCheck(team);
+
+    team.updateNameOrProfileUrl(teamUpdateRequest);
+    return team;
+  }
 }
