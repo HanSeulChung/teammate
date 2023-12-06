@@ -98,7 +98,9 @@ public class TeamService {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
 
-    Member member = Member.builder().memberId(changedTypeUserId).build();
+    Member member = memberRepository.findById(changedTypeUserId)
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
     teamParticipantsRepository.save(
         TeamParticipants.builder()
             .member(member)
