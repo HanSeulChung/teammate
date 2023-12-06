@@ -5,6 +5,7 @@ import com.api.backend.member.data.entity.Member;
 import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
 import com.api.backend.team.data.type.TeamRole;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -45,7 +46,7 @@ public class TeamParticipants extends BaseEntity {
   @JoinColumn(name = "team_id")
   private Team team;
 
-  @OneToMany(mappedBy = "teamParticipants")
+  @OneToMany(mappedBy = "teamParticipants", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
 }
