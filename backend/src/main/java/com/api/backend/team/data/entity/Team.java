@@ -3,7 +3,8 @@ package com.api.backend.team.data.entity;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.schedule.data.enetity.Schedule;
-import java.time.LocalDateTime;
+import com.api.backend.team.data.dto.TeamUpdateRequest;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,24 +31,47 @@ public class Team extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long teamId;
   private String name;
-  private LocalDateTime restorationTime;
+  private LocalDate restorationDt;
   private boolean isDelete;
   private int memberLimit;
   private String inviteLink;
   private String profileUrl;
 
   @OneToMany(mappedBy = "team")
+  @Builder.Default
   private List<TeamParticipants> teamParticipants = new ArrayList<>();
 
   @OneToMany(mappedBy = "team")
+  @Builder.Default
   private List<Schedule> schedules = new ArrayList<>();
 
   @OneToMany(mappedBy = "team")
+  @Builder.Default
   private List<Documents> documents = new ArrayList<>();
 
 
   public void setInviteLink() {
     this.inviteLink = this.teamId +
         "/" + UUID.randomUUID();
+  }
+  public void updateReservationTime() {
+    this.restorationDt = LocalDate.now().plusDays(30);
+  }
+
+  public void updateIsDelete() {
+    this.isDelete = true;
+  }
+
+  public void deleteReservationTime() {
+    this.restorationDt = null;
+  }
+
+  public void updateNameOrProfileUrl(TeamUpdateRequest teamUpdateRequest) {
+    if (!teamUpdateRequest.getTeamName().equals(this.name)) {
+      this.name = teamUpdateRequest.getTeamName();
+    }
+    if (!teamUpdateRequest.getProfileUrl().equals(this.profileUrl)) {
+      this.profileUrl = teamUpdateRequest.getProfileUrl();
+    }
   }
 }
