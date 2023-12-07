@@ -1,5 +1,6 @@
 package com.api.backend.documents.data.dto;
 
+import com.api.backend.documents.data.entity.Documents;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,4 +29,17 @@ public class DocumentResponse {
   private LocalDateTime createdDt;
   private LocalDateTime updatedDt;
 
+  public static DocumentResponse from(Documents documents) {
+    return DocumentResponse.builder()
+        .id(documents.getId())
+        .documentIdx(documents.getDocumentIdx())
+        .title(documents.getTitle())
+        .content(documents.getContent())
+        .writerId(documents.getWriterId())
+        .modifierId(documents.getModifierId())
+        .teamId(documents.getTeamId())
+        .createdDt(documents.getCreatedDt())
+        .updatedDt(documents.getUpdatedDt())
+        .build();
+  }
 }
