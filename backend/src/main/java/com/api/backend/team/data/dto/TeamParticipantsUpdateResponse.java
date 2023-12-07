@@ -9,11 +9,11 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
-public class TeamKickOutResponse {
+@ToString
+public class TeamParticipantsUpdateResponse {
+
   private Long teamId;
-  private Long userId;
-  private String nickName;
+  private String teamName;
   private String message;
 }

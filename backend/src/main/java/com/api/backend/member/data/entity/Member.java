@@ -47,13 +47,17 @@ public class Member extends BaseEntity {
   private String isAuthenticatedEmail;
   private String memberProfileUrl;
 
+
   // TODO: 추후 재셋팅 예정
 //  @OneToMany(mappedBy = "member")
 //  private List<Comment> comments = new ArrayList<>();
 
+
   @OneToMany(mappedBy = "member")
+  @Builder.Default
   private List<Notification> notifications = new ArrayList<>();
 
   @OneToMany(mappedBy = "member")
+  @Builder.Default
   private List<TeamParticipants> teamParticipants = new ArrayList<>();
 }
