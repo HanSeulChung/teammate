@@ -43,7 +43,7 @@ public class TeamController {
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<TeamCreateResponse> createTeamRequest(
-      TeamCreateRequest teamRequest,
+      @Valid TeamCreateRequest teamRequest,
       Principal principal
   ) {
     return ResponseEntity.ok(
@@ -128,7 +128,7 @@ public class TeamController {
 
   @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<TeamUpdateResponse> updateTeamRequest(
-      TeamUpdateRequest teamUpdateRequest,
+      @Valid TeamUpdateRequest teamUpdateRequest,
       Principal principal
   ) {
     return ResponseEntity.ok(
