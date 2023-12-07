@@ -3,7 +3,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { StyledContainer, StyledFormItem } from "../../styles/SignInStyled";
 import { useRecoilState } from "recoil";
-import { isAuthenticatedState, saveAccessToken } from "../../state/authState";
+import {
+  isAuthenticatedState,
+  saveAccessToken,
+  useUser,
+} from "../../state/authState";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -11,12 +15,13 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] =
     useRecoilState(isAuthenticatedState);
+  const { setUser } = useUser();
   const navigate = useNavigate();
 
   // Mock users data for testing
   const mockUsers = [
-    { id: "user1@example.com", password: "password1" },
-    { id: "user2@example.com", password: "password2" },
+    { id: "user1@example.com", password: "password1", name: "김팀장" },
+    { id: "user2@example.com", password: "password2", name: "이팀원" },
   ];
 
   const handleLogout = () => {
@@ -52,6 +57,7 @@ const SignIn = () => {
         saveAccessToken(accessToken);
         setIsAuthenticated(true);
 
+        setUser({ id: email, name: user.name });
         navigate("/homeview");
       } else {
         setError("올바른 이메일 또는 비밀번호를 입력하세요.");
