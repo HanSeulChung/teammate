@@ -55,20 +55,18 @@ export const useSearchState = () => {
 // 팀 생성창
 export const teamNameState = atom({
   key: "teamNameState",
-  default: () => {
-    // 로컬 스토리지에서 팀 이름 가져오기
+  default: (() => {
     const storedTeamName = localStorage.getItem("teamName");
     return storedTeamName || "";
-  },
+  })(),
 });
 
 export const selectedTeamSizeState = atom({
   key: "selectedTeamSizeState",
-  default: () => {
-    // 로컬 스토리지에서 선택된 팀 크기 가져오기
+  default: (() => {
     const storedTeamSize = localStorage.getItem("selectedTeamSize");
     return storedTeamSize || "1-9";
-  },
+  })(),
 });
 
 export interface Team {
