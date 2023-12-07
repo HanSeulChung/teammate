@@ -37,6 +37,8 @@ public class Member extends BaseEntity {
   private String password;
   private String name;
   private String nickName;
+
+  @Enumerated(EnumType.STRING)
   private SexType sexType;
 
   @Enumerated(EnumType.STRING)
