@@ -74,7 +74,7 @@ public class DocumentService {
   }
 
   @Transactional
-  public DeleteDocsResponse deleteDocs(Long teamId, String documentId) {
+  public DeleteDocsResponse deleteDocs(Long teamId, String documentIdx) {
 
     Long authenticationId = getAuthenticationId();
     TeamParticipants teamParticipants = teamParticipantsRepository.findByMember_MemberId(
@@ -85,7 +85,7 @@ public class DocumentService {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
     }
 
-    Documents documents = documentsRepository.findByDocumentIdx(documentId)
+    Documents documents = documentsRepository.findByDocumentIdx(documentIdx)
         .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
 
     if (documents.getTeamId() != teamId) {
@@ -96,7 +96,7 @@ public class DocumentService {
       throw new CustomException(DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION);
     }
 
-    documentsRepository.deleteByDocumentIdx(documentId);
+    documentsRepository.deleteByDocumentIdx(documentIdx);
 
     return DeleteDocsResponse.builder()
         .id(documents.getId())
