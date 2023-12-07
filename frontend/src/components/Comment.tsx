@@ -22,7 +22,8 @@ const CommentButton = styled.button`
   border: 1px solid black;
   color: black;
   background-color: white;
-  font-size: 11px;
+  font-weight: 600;
+  font-size: 10px;
 `;
 
 const CommentText = styled.div`
