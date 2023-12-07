@@ -40,6 +40,7 @@ public class Documents extends BaseEntity {
   private Team team;
 
   @OneToMany(mappedBy = "documents")
+  @Builder.Default
   private List<Comment> comments = new ArrayList<>();
 
 }
