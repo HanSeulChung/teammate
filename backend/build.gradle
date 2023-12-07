@@ -30,6 +30,9 @@ dependencies {
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // mongoDB
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation "com.vladmihalcea:hibernate-types-52:2.16.2"
     compileOnly 'org.projectlombok:lombok:1.18.22'
