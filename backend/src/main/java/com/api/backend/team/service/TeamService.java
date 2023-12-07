@@ -28,6 +28,10 @@ import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import com.api.backend.team.data.type.TeamRole;
+import java.util.Objects;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import java.time.LocalDate;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +69,7 @@ public class TeamService {
         TeamParticipants.builder()
             .team(team)
             .member(member)
+            .teamNickName(getRandomNickName(member.getName()))
             .teamRole(TeamRole.READER)
             .build()
     );
@@ -72,6 +77,9 @@ public class TeamService {
     return TeamCreateResponse.from(team,changeTypeUserId);
   }
 
+  private String getRandomNickName(String name){
+    return RandomStringUtils.randomAlphanumeric(4) + "_" + name;
+  }
 
   private Team getTeam(Long id) {
     return teamRepository.findById(id)
@@ -109,10 +117,13 @@ public class TeamService {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
 
-    Member member = Member.builder().memberId(changedTypeUserId).build();
+    Member member = memberRepository.findById(changedTypeUserId)
+        .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
     teamParticipantsRepository.save(
         TeamParticipants.builder()
             .member(member)
+            .teamNickName(getRandomNickName(member.getName()))
             .team(team)
             .teamRole(TeamRole.MATE)
             .build()
