@@ -1,7 +1,6 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import { teamListState } from "../../state/authState";
-import { useSearchState } from "../../state/authState";
+import { teamListState, useSearchState } from "../../state/authState";
 
 const HomeContent = () => {
   const teamList = useRecoilValue(teamListState);
