@@ -66,12 +66,12 @@ public class Team extends BaseEntity {
     this.restorationDt = null;
   }
 
-  public void updateNameOrProfileUrl(TeamUpdateRequest teamUpdateRequest) {
-    if (!teamUpdateRequest.getTeamName().equals(this.name)) {
-      this.name = teamUpdateRequest.getTeamName();
+  public void updateNameOrProfileUrl(String nickName, String url) {
+    if (!nickName.equals(this.name)) {
+      this.name = nickName;
     }
-    if (!teamUpdateRequest.getProfileUrl().equals(this.profileUrl)) {
-      this.profileUrl = teamUpdateRequest.getProfileUrl();
+    if (!url.equals(this.profileUrl)) {
+      this.profileUrl = url;
     }
   }
 }

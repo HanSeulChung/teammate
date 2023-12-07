@@ -14,9 +14,12 @@ import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
+import com.api.backend.team.data.type.ImgType;
 import com.api.backend.team.data.type.TeamRole;
+import com.api.backend.team.service.file.impl.ImgStoreImpl;
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +33,7 @@ public class TeamParticipantsService {
   private final TeamService teamService;
   private final TeamParticipantsRepository teamParticipantsRepository;
   private final boolean DELETE_FALSE_FLAG = false;
+  private final ImgStoreImpl imgStore;
 
   public String deleteTeamParticipant(String userId, Long teamId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
@@ -113,10 +117,19 @@ public class TeamParticipantsService {
         .equals(Long.valueOf(userId))) {
       throw new CustomException(MEMBER_NOT_EQUALS_EXCEPTION);
     }
-    teamParticipant.changeNickName(teamParticipantUpdateRequest.getTeamNickName());
+    String participantNickName = teamParticipant.getTeamNickName();
+    if (!Objects.equals(teamParticipantUpdateRequest.getTeamNickName(), "")) {
+      teamParticipant.changeNickName(teamParticipantUpdateRequest.getTeamNickName());
+      participantNickName = teamParticipantUpdateRequest.getTeamNickName();
+    }
 
-    // todo 이미지 처리
-
+    if (teamParticipantUpdateRequest.getParticipantImg() != null) {
+      teamParticipant.changeProfileUrl(
+          imgStore.uploadImg(
+              teamParticipantUpdateRequest.getParticipantImg(), ImgType.PARTICIPANT, participantNickName
+          )
+      );
+    }
     return teamParticipant;
   }
 }

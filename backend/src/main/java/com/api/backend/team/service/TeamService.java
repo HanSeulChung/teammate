@@ -27,14 +27,13 @@ import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
+import com.api.backend.team.data.type.ImgType;
 import com.api.backend.team.data.type.TeamRole;
+import com.api.backend.team.service.file.impl.ImgStoreImpl;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import java.time.LocalDate;
-import java.util.Objects;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,19 +47,20 @@ public class TeamService {
   private final MemberRepository memberRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
   private final boolean DELETE_FALSE_FLAG = false;
-
+  private final ImgStoreImpl imgStore;
   @Transactional
   public TeamCreateResponse createTeam(TeamCreateRequest teamRequest, String userId) {
     Long changeTypeUserId = Long.valueOf(userId);
     Member member = memberRepository.findById(changeTypeUserId)
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
+    String imgUrl = imgStore.uploadImg(teamRequest.getTeamImg(), ImgType.TEAM, teamRequest.getTeamName());
+
     Team team = teamRepository.save(
         Team.builder()
             .memberLimit(teamRequest.getMemberLimit())
             .name(teamRequest.getTeamName())
-            // todo imge는 나중에 어떻게 처리를 해야할지 결정하면 다시 구현하겠다.
-            .profileUrl(teamRequest.getTeamImg())
+            .profileUrl(imgUrl)
             .build()
     );
     team.setInviteLink();
@@ -134,7 +134,7 @@ public class TeamService {
 
   @Transactional
   public TeamKickOutResponse kickOutTeamParticipants(TeamKickOutRequest request, String userId) {
-    if (teamRepository.existsByTeamIdAndIsDelete(request.getTeamId(), DELETE_FALSE_FLAG)) {
+    if (!teamRepository.existsByTeamIdAndIsDelete(request.getTeamId(), DELETE_FALSE_FLAG)) {
       throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
     }
 
@@ -158,9 +158,8 @@ public class TeamService {
     teamParticipantsRepository.delete(teamParticipants);
 
     return TeamKickOutResponse.builder()
-        .userId(request.getUserId())
         .teamId(request.getTeamId())
-        .nickName(teamParticipants.getMember().getNickName())
+        .nickName(teamParticipants.getTeamNickName())
         .message("해당 사용자가 팀에서 강퇴됐습니다.")
         .build();
   }
@@ -252,8 +251,12 @@ public class TeamService {
     Team team = teamParticipants.getTeam();
 
     isDeletedCheck(team);
+    String teamName = teamUpdateRequest.getTeamName() == null ? team.getName() : teamUpdateRequest.getTeamName();
 
-    team.updateNameOrProfileUrl(teamUpdateRequest);
+    String url = imgStore.uploadImg(
+        teamUpdateRequest.getProfileImg() ,ImgType.TEAM , teamName
+        );
+    team.updateNameOrProfileUrl(teamUpdateRequest.getTeamName(), url);
     return team;
   }
 }
