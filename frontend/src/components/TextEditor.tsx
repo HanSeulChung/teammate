@@ -47,7 +47,7 @@ const TextEditor: React.FC = () => {
   const [currentText, setCurrentText] = React.useState<string>("");
   const [title, setTitle] = React.useState<string>("");
 
-  const docsIdx = "907817ea-d525-417d-8f7f-f24ef4a6a7d4";
+  const docsIdx = "1aac3642-ef31-479a-8cf4-cfd93bb39e06";
 
   const data = testText;
   const initialState = data
@@ -81,16 +81,6 @@ const TextEditor: React.FC = () => {
     return "not-handled";
   };
 
-  const handleTogggleClick = (e: React.MouseEvent, inlineStyle: string) => {
-    e.preventDefault();
-    setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
-  };
-
-  const handleBlockClick = (e: React.MouseEvent, blockType: string) => {
-    e.preventDefault();
-    setEditorState(RichUtils.toggleBlockType(editorState, blockType));
-  };
-
   const onKeyUp = useCallback(
     (e: KeyboardEvent) => {
       e.preventDefault();
@@ -112,7 +102,6 @@ const TextEditor: React.FC = () => {
   }, [currentText]);
 
   const client = useRef<StompJs.Client | null>(null);
-  const [documentIdx, setDocumentIdx] = useState<string>("");
 
   const connect = (docsIdx: string) => {
     const trimmedDocsIdx = docsIdx;
@@ -146,8 +135,7 @@ const TextEditor: React.FC = () => {
       const docsIdxInput = document.getElementById(
         "docs-idx",
       ) as HTMLInputElement;
-      const trimmedDocsIdx = docsIdx;
-      onConnect(trimmedDocsIdx);
+      onConnect(docsIdx);
     };
 
     client.current.onStompError = onError;
@@ -166,6 +154,7 @@ const TextEditor: React.FC = () => {
   let contentText = "";
   const displayDocs = (docs: Docs) => {
     setTitle(docs.title);
+
     console.log(docs.content);
     contentText = docs.content;
     console.log("contentText : ", contentText);
@@ -188,6 +177,7 @@ const TextEditor: React.FC = () => {
 
     console.log("displaydocs");
   };
+
   useEffect(() => {
     connect(docsIdx);
   }, []);
@@ -207,67 +197,18 @@ const TextEditor: React.FC = () => {
   const handleButtonClick = () => {
     // 현재 에디터의 컨텐츠 가져오기
     const currentContentState = editorState.getCurrentContent();
-
-    // "ㅁㄴㅇㄻㄴㅇㄻㄴㅇㄹ"로 새로운 컨텐츠 생성
+    // 새로운 컨텐츠 생성
     const newContentState = ContentState.createFromText(contentText);
 
     // 새로운 컨텐츠로 에디터 업데이트
+    console.log("new! ", newContentState);
     handleContentChange(newContentState, "insert-characters");
   };
 
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle titleProps={title} />
-      <ButtonContainer>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-one")}>
-          H1
-        </StyledButton>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-two")}>
-          H2
-        </StyledButton>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-three")}>
-          H3
-        </StyledButton>
-        <StyledButton onMouseDown={(e) => handleBlockClick(e, "unstyled")}>
-          Normal
-        </StyledButton>
-        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "BOLD")}>
-          bold
-        </StyledButton>
-        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "UNDERLINE")}>
-          underline
-        </StyledButton>
-        <StyledButton onMouseDown={(e) => handleTogggleClick(e, "ITALIC")}>
-          italic
-        </StyledButton>
-        <StyledButton
-          onMouseDown={(e) => handleTogggleClick(e, "STRIKETHROUGH")}
-        >
-          strikethrough
-        </StyledButton>
-        <StyledButton
-          onMouseDown={(e) => handleBlockClick(e, "ordered-list-item")}
-        >
-          Ordered List
-        </StyledButton>
-        <StyledButton
-          onMouseDown={(e) => handleBlockClick(e, "unordered-list-item")}
-        >
-          Unordered List
-        </StyledButton>
-        <StyledButton
-          disabled={editorState.getUndoStack().size <= 0}
-          onMouseDown={() => setEditorState(EditorState.undo(editorState))}
-        >
-          undo
-        </StyledButton>
-        <StyledButton
-          disabled={editorState.getRedoStack().size <= 0}
-          onMouseDown={() => setEditorState(EditorState.redo(editorState))}
-        >
-          redo
-        </StyledButton>
-      </ButtonContainer>
+      <ButtonContainer></ButtonContainer>
       <Editor
         editorState={editorState}
         onChange={(newEditorState) => {
@@ -280,10 +221,6 @@ const TextEditor: React.FC = () => {
         className="save"
         type="button"
         onClick={(e) => {
-          console.log("btn click");
-          e.preventDefault();
-          handleSave();
-          connect(docsIdx);
           handleButtonClick();
         }}
       >
