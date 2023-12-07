@@ -2,24 +2,22 @@ package com.api.backend.member.service.impl;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.redis.RedisService;
+import com.api.backend.global.security.AuthService;
 import com.api.backend.global.security.jwt.JwtTokenProvider;
-import com.api.backend.member.data.dto.SignInRequest;
-import com.api.backend.member.data.dto.SignInResponse;
-import com.api.backend.member.data.dto.SignUpRequest;
-import com.api.backend.member.data.dto.SignUpResponse;
+import com.api.backend.member.data.dto.*;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.member.data.repository.MemberRepository;
 import com.api.backend.member.data.type.Authority;
 import com.api.backend.member.data.type.LoginType;
 import com.api.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static com.api.backend.global.exception.type.ErrorCode.EMAIL_ALREADY_EXIST_EXCEPTION;
@@ -34,7 +32,7 @@ public class MemberServiceImpl implements MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
-
+    private final AuthService authService;
 
     @Override
     public SignUpResponse register(SignUpRequest request) {
@@ -88,4 +86,25 @@ public class MemberServiceImpl implements MemberService {
 
         return signInResponse;
     }
+
+    public LogoutResponse logout(String requestAccessTokenInHeader) {
+        String requestAccessToken = authService.resolveToken(requestAccessTokenInHeader);
+        String principal = authService.getPrincipal(requestAccessToken);
+
+        String refreshTokenInRedis = redisService.getValues("RT:" + principal);
+        if (refreshTokenInRedis != null) {
+            redisService.deleteValues("RT:" + principal);
+        }
+
+        long expiration = jwtTokenProvider.getExpiration(requestAccessToken);
+        redisService.setValues(requestAccessToken,
+                "logout",
+                Duration.ofDays(expiration));
+
+        return LogoutResponse.builder()
+                .message("로그아웃되었습니다.")
+                .build();
+    }
+
+
 }
