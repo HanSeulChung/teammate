@@ -50,7 +50,7 @@ public class DocumentService {
         .documentIdx(uuid)
         .title(request.getTitle())
         .content(request.getContent())
-        .writerId(teamParticipants.getMember().getMemberId())
+        .writerId(teamParticipants.getTeamParticipantsId())
         .teamId(teamId)
         .build());
 
