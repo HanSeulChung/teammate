@@ -17,10 +17,10 @@ public class DocumentService {
     Page<Documents> allDocs = documentsRepository.findAll(pageable);
 
     if (allDocs == null) {
-      return Page.empty(pageable);
+      return Page.empty();
     }
     if (allDocs.getTotalElements() == 0) {
-      return Page.empty(pageable);
+      return Page.empty();
     }
     return allDocs;
   }
