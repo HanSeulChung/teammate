@@ -4,7 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import '../styles/teamCalender.css'
-import { Modal, Overlay, ModalContent, CloseModal, CalendarDiv } from '../styles/TeamCalenderStyled.tsx'
+import { Modal, Overlay, ModalContent, CloseModal, CalendarDiv } from '../../styles/TeamCalenderStyled.tsx'
 import CreateEvent from "./CreateEvent.tsx";
 import axios from "axios";
 

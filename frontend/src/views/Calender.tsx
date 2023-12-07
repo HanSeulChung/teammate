@@ -1,5 +1,5 @@
-import TeamCalender from "../components/TeamCalender"
-import CalendarCategory from "../components/CalendarCategory"
+import TeamCalender from "../components/Calendar/TeamCalender"
+import CalendarCategory from "../components/Calendar/CalendarCategory"
 
 const Calender = () => {
     return (

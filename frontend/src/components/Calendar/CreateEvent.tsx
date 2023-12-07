@@ -1,5 +1,5 @@
-import {EventInput, EventForm} from '../styles/CreateEventStyled'
-import { CommonSubmitBtn } from '../styles/CommonStyled';
+import {EventInput, EventForm} from '../../styles/CreateEventStyled'
+import { CommonSubmitBtn } from '../../styles/CommonStyled';
 
 const CreateEvent = () => {
     return (
