@@ -6,6 +6,13 @@ import {
   teamListState,
 } from "../../state/authState";
 import { useNavigate } from "react-router-dom";
+import {
+  StyledContainer,
+  StyledFormItem,
+  StyledImagePreview,
+  StyledErrorMessage,
+  StyledHeading,
+} from "../../styles/TeamInfoStyled";
 
 export default function TeamInfo() {
   const [teamName, setTeamName] = useRecoilState(teamNameState);
@@ -74,9 +81,9 @@ export default function TeamInfo() {
   };
 
   return (
-    <div>
-      <h2>팀 생성</h2>
-      <div>
+    <StyledContainer>
+      <StyledHeading>팀 생성</StyledHeading>
+      <StyledFormItem>
         <label htmlFor="teamName">팀 이름</label>
         <input
           type="text"
@@ -91,8 +98,8 @@ export default function TeamInfo() {
         {teamList.some((team) => team.name === teamName) && (
           <div style={{ color: "red" }}>이미 있는 팀 이름입니다.</div>
         )}
-      </div>
-      <div style={{ display: "flex", alignItems: "center" }}>
+      </StyledFormItem>
+      <StyledFormItem>
         <label htmlFor="teamSize">인원 수</label>
         <select
           id="teamSize"
@@ -116,20 +123,16 @@ export default function TeamInfo() {
           accept="image/*"
           onChange={handleImageUpload}
         />
-      </div>
+      </StyledFormItem>
       {selectedImage && (
-        <div>
-          <img
-            src={selectedImage}
-            alt="Selected"
-            style={{ maxWidth: "100px", maxHeight: "100px" }}
-          />
-        </div>
+        <StyledImagePreview>
+          <img src={selectedImage} alt="Selected" />
+        </StyledImagePreview>
       )}
-      <div>
+      <StyledFormItem>
         <button onClick={handleCreateTeam}>생성하기</button>
-        {error && <div style={{ color: "red" }}>{error}</div>}
-      </div>
-    </div>
+        {error && <StyledErrorMessage>{error}</StyledErrorMessage>}
+      </StyledFormItem>
+    </StyledContainer>
   );
 }

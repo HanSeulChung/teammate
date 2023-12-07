@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 
 interface TeamProfileProps {
   selectedTeam: string | null;
@@ -9,6 +10,53 @@ interface TeamProfileProps {
   handleUpdateProfile: (image: string | null, nickname: string) => void;
 }
 
+const TeamProfileContainer = styled.div`
+  padding: 20px;
+  border-radius: 8px;
+  margin: auto;
+  width: 25%;
+`;
+
+const TeamProfileTitle = styled.h3`
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #333;
+`;
+
+const ImageUploadContainer = styled.div`
+  margin-bottom: 15px;
+
+  input {
+    margin-bottom: 10px;
+  }
+
+  img {
+    max-width: 100px;
+    max-height: 100px;
+  }
+`;
+
+const NicknameContainer = styled.div`
+  input {
+    margin-bottom: 10px;
+    padding: 5px;
+  }
+`;
+const UpdateButton = styled.button`
+  flex: 1;
+  margin-left: 10px;
+  margin: 0 auto;
+  padding: 8px;
+  background-color: #a3cca3;
+  color: #333333;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #cccccc;
+  }
+`;
+
 const TeamProfile: React.FC<TeamProfileProps> = ({
   selectedTeam,
   selectedImage,
@@ -18,13 +66,14 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
   handleUpdateProfile,
 }) => {
   return (
-    <div>
+    <TeamProfileContainer>
       {selectedTeam && (
         <div>
-          <h3>{selectedTeam} 팀 프로필</h3>
-          <div>
-            <label htmlFor="imageUpload">이미지 업로드:</label>
+          <TeamProfileTitle>{selectedTeam} 팀 프로필</TeamProfileTitle>
+          <br />
+          <ImageUploadContainer>
             <input
+              title="imgupload"
               type="file"
               id="imageUpload"
               accept="image/*"
@@ -32,31 +81,27 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
             />
             {selectedImage && (
               <div>
-                <img
-                  src={selectedImage}
-                  alt="Selected"
-                  style={{ maxWidth: "100px", maxHeight: "100px" }}
-                />
+                <img src={selectedImage} alt="Selected" />
               </div>
             )}
-          </div>
-          <div>
-            <label htmlFor="nickname">닉네임 입력:</label>
+          </ImageUploadContainer>
+          <NicknameContainer>
             <input
               type="text"
+              placeholder="닉네임 입력"
               id="nickname"
               value={nickname}
               onChange={handleNicknameChange}
             />
-            <button
+            <UpdateButton
               onClick={() => handleUpdateProfile(selectedImage, nickname)}
             >
               변경 하기
-            </button>
-          </div>
+            </UpdateButton>
+          </NicknameContainer>
         </div>
       )}
-    </div>
+    </TeamProfileContainer>
   );
 };
 
