@@ -19,7 +19,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Documents {
 
   @Id
-  @Field(name = "id")
   private String id;
 
   @Field(name = "document_idx")
