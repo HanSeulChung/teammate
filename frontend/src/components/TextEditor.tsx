@@ -1,4 +1,10 @@
-import React, { useEffect, useCallback } from "react";
+import React, {
+  useEffect,
+  useCallback,
+  useRef,
+  useState,
+  FormEvent,
+} from "react";
 import {
   Editor,
   EditorState,
@@ -11,9 +17,11 @@ import "draft-js/dist/Draft.css";
 import styled from "styled-components";
 import "./TextEditor.css";
 import TextTitle from "./TextTitle";
+import * as StompJs from "@stomp/stompjs";
+import testText from "../assets/test-text.json";
 
 const StyledTexteditor = styled.div`
-  width: 40rem;
+  width: 41rem;
 `;
 
 const StyledButton = styled.button`
@@ -30,23 +38,24 @@ const SaveButton = styled.button`
 `;
 
 const ButtonContainer = styled.div`
-  width: 40rem;
+  width: 41rem;
 `;
 
 const TextEditor: React.FC = () => {
   const [currentText, setCurrentText] = React.useState<string>("");
+  const [title, setTitle] = React.useState<string>("");
 
   const TEXT_EDITOR_ITEM = "draft-js-example-item";
+  const docsIdx = "907817ea-d525-417d-8f7f-f24ef4a6a7d4";
 
-  const data = localStorage.getItem(TEXT_EDITOR_ITEM);
+  const data = testText;
   const initialState = data
-    ? EditorState.createWithContent(convertFromRaw(JSON.parse(data)))
+    ? EditorState.createWithContent(convertFromRaw(data))
     : EditorState.createEmpty();
   const [editorState, setEditorState] =
     React.useState<EditorState>(initialState);
 
   const handleSave = useCallback(() => {
-    console.log("save");
     const data = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
     localStorage.setItem(TEXT_EDITOR_ITEM, data);
   }, [editorState]);
@@ -84,7 +93,6 @@ const TextEditor: React.FC = () => {
 
   const onKeyUp = useCallback(
     (e: KeyboardEvent) => {
-      console.log("keyUp:", e);
       e.preventDefault();
       handleSave();
     },
@@ -103,37 +111,88 @@ const TextEditor: React.FC = () => {
     handleSave();
   }, [currentText]);
 
-  // const socket = new WebSocket('*websocket url*');
+  const client = useRef<StompJs.Client | null>(null);
+  const [documentIdx, setDocumentIdx] = useState<string>("");
 
-  // socket.addEventListener('open', (event: Event) => {
-  //   console.log('WebSocket connection opened', event);
-  // });
+  const connect = (docsIdx: string) => {
+    const trimmedDocsIdx = docsIdx;
 
-  // socket.addEventListener('message', (event: MessageEvent) => {
-  //   console.log(`Received message: ${event.data}`);
-  // });
+    if (trimmedDocsIdx && client.current) {
+      client.current.activate();
+    }
+  };
+  useEffect(() => {
+    client.current = new StompJs.Client({
+      brokerURL: "ws://localhost:8080/ws",
+    });
 
-  // socket.addEventListener('close', (event: CloseEvent) => {
-  //   console.log('WebSocket connection closed', event);
-  // });
+    const onConnect = (trimmedDocsIdx: string) => {
+      console.log("Connected to WebSocket with", trimmedDocsIdx);
+      const docsMessage = {
+        documentIdx: trimmedDocsIdx,
+      };
 
-  // function sendMessage() {
-  //   const messageInput = document.getElementById('messageInput') as HTMLInputElement | null;
+      client.current!.publish({
+        destination: "/app/chat.showDocs",
+        body: JSON.stringify(docsMessage),
+      });
 
-  //   if (messageInput) {
-  //     const message = messageInput.value;
+      client.current!.subscribe("/topic/public", (docs) => {
+        displayDocs(JSON.parse(docs.body));
+      });
+    };
 
-  //     // Send the message to the server
-  //     socket.send(message);
+    client.current.onConnect = () => {
+      const docsIdxInput = document.getElementById(
+        "docs-idx",
+      ) as HTMLInputElement;
+      const trimmedDocsIdx = docsIdx;
+      onConnect(trimmedDocsIdx);
+    };
 
-  //     // Clear the input field
-  //     messageInput.value = '';
-  //   }
-  // }
+    client.current.onStompError = onError;
+
+    return () => {
+      if (client.current) {
+        client.current.deactivate();
+      }
+    };
+  }, []);
+
+  const onError = (error: any) => {
+    console.error("Could not connect to WebSocket server:", error);
+  };
+
+  const displayDocs = (docs: Docs) => {
+    setTitle(docs.title);
+    console.log(docs.content);
+
+    try {
+      // Try parsing the content as JSON
+      const contentObject = JSON.parse(docs.content);
+      console.log("obj", contentObject);
+
+      // Check if the parsed content is an object (optional)
+      if (typeof contentObject === "object" && contentObject !== null) {
+        const contentState = convertFromRaw(contentObject);
+        const newEditorState = EditorState.createWithContent(contentState);
+        setEditorState(newEditorState);
+      } else {
+        console.error("Invalid JSON content:", docs.content);
+      }
+    } catch (error) {
+      console.error("Error parsing JSON content:", error);
+    }
+
+    console.log("displaydocs");
+  };
+  useEffect(() => {
+    connect(docsIdx);
+  }, []);
 
   return (
     <StyledTexteditor className="texteditor">
-      <TextTitle />
+      <TextTitle titleProps={title} />
       <ButtonContainer>
         <StyledButton onMouseDown={(e) => handleBlockClick(e, "header-one")}>
           H1
@@ -198,6 +257,7 @@ const TextEditor: React.FC = () => {
         onClick={(e) => {
           e.preventDefault();
           handleSave();
+          connect(docsIdx);
         }}
       >
         save
