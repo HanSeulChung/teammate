@@ -45,7 +45,6 @@ const TextEditor: React.FC = () => {
   const [currentText, setCurrentText] = React.useState<string>("");
   const [title, setTitle] = React.useState<string>("");
 
-  const TEXT_EDITOR_ITEM = "draft-js-example-item";
   const docsIdx = "907817ea-d525-417d-8f7f-f24ef4a6a7d4";
 
   const data = testText;
@@ -57,7 +56,6 @@ const TextEditor: React.FC = () => {
 
   const handleSave = useCallback(() => {
     const data = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
-    localStorage.setItem(TEXT_EDITOR_ITEM, data);
   }, [editorState]);
 
   const handleChange = (newEditorState: EditorState) => {
