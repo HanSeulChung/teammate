@@ -1,6 +1,6 @@
 package com.api.backend.member.data.entity;
 
-import com.api.backend.comment.data.entity.Comment;
+
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.type.Authority;
 import com.api.backend.member.data.type.LoginType;
@@ -47,8 +47,9 @@ public class Member extends BaseEntity {
   private String isAuthenticatedEmail;
   private String memberProfileUrl;
 
-  @OneToMany(mappedBy = "member")
-  private List<Comment> comments = new ArrayList<>();
+  // TODO: 추후 재셋팅 예정
+//  @OneToMany(mappedBy = "member")
+//  private List<Comment> comments = new ArrayList<>();
 
   @OneToMany(mappedBy = "member")
   private List<Notification> notifications = new ArrayList<>();
