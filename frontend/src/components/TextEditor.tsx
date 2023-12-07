@@ -12,6 +12,8 @@ import {
   DraftEditorCommand,
   convertToRaw,
   convertFromRaw,
+  ContentState,
+  EditorChangeType,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import styled from "styled-components";
@@ -161,10 +163,12 @@ const TextEditor: React.FC = () => {
     console.error("Could not connect to WebSocket server:", error);
   };
 
+  let contentText = "";
   const displayDocs = (docs: Docs) => {
     setTitle(docs.title);
     console.log(docs.content);
-
+    contentText = docs.content;
+    console.log("contentText : ", contentText);
     try {
       // Try parsing the content as JSON
       const contentObject = JSON.parse(docs.content);
@@ -187,6 +191,29 @@ const TextEditor: React.FC = () => {
   useEffect(() => {
     connect(docsIdx);
   }, []);
+
+  const handleContentChange = (
+    newContentState: ContentState,
+    changeType: EditorChangeType,
+  ) => {
+    const newEditorState = EditorState.push(
+      editorState,
+      newContentState,
+      changeType,
+    );
+    setEditorState(newEditorState);
+  };
+
+  const handleButtonClick = () => {
+    // 현재 에디터의 컨텐츠 가져오기
+    const currentContentState = editorState.getCurrentContent();
+
+    // "ㅁㄴㅇㄻㄴㅇㄻㄴㅇㄹ"로 새로운 컨텐츠 생성
+    const newContentState = ContentState.createFromText(contentText);
+
+    // 새로운 컨텐츠로 에디터 업데이트
+    handleContentChange(newContentState, "insert-characters");
+  };
 
   return (
     <StyledTexteditor className="texteditor">
@@ -253,9 +280,11 @@ const TextEditor: React.FC = () => {
         className="save"
         type="button"
         onClick={(e) => {
+          console.log("btn click");
           e.preventDefault();
           handleSave();
           connect(docsIdx);
+          handleButtonClick();
         }}
       >
         save
