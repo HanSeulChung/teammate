@@ -13,7 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CreateTeamRequest {
+public class TeamCreateRequest {
   @NotBlank(message = "팀 이름이 존재하지 않습니다.")
   private String teamName;
   @NotBlank(message = "팀 이미지가 존재하지 않습니다.")

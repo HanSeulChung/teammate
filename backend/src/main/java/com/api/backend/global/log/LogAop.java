@@ -38,6 +38,10 @@ public class LogAop {
     }
 
     for (Object arg : args) {
+      if (arg == null) {
+        continue;
+      }
+
       sb.append("[parameter type : ")
           .append(arg.getClass().getSimpleName())
           .append(" value : ").append(arg).append("] ");

@@ -18,12 +18,13 @@ public class TeamCreateResponse {
 
   private Long teamId;
   private String teamName;
-  private String leaderId;
+  private Long leaderId;
   private String inviteCode;
   // todo learderId는 추후 Security가 구현 된다면 넣도록하겠습니다.
-  public static TeamCreateResponse from(Team team) {
+  public static TeamCreateResponse from(Team team,Long userId) {
     return TeamCreateResponse.builder()
         .teamId(team.getTeamId())
+        .leaderId(userId)
         .inviteCode(team.getInviteLink())
         .teamName(team.getName())
         .build();

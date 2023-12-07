@@ -1,16 +1,24 @@
 package com.api.backend.member.controller;
 
 import com.api.backend.member.data.dto.*;
+import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
 import com.api.backend.member.service.MemberService;
+import com.api.backend.team.data.dto.TeamParticipantsDto;
+import com.api.backend.team.service.TeamParticipantsService;
+import java.security.Principal;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
+    private final TeamParticipantsService teamParticipantsService;
 
     private final long COOKIE_EXPIRATION = 7776000;
 
@@ -54,4 +62,29 @@ public class MemberController {
     }
 
 
+    @GetMapping("/member/participants")
+    public ResponseEntity<Page<TeamParticipantsDto>> getTeamParticipantRequest(
+        Principal principal,
+        Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+            TeamParticipantsDto.fromDtos(
+                teamParticipantsService
+                    .getTeamParticipantsByUserId(principal, pageable)
+            )
+        );
+    }
+
+    @PatchMapping("/member/participant")
+    public ResponseEntity<TeamParticipantsDto> updateTeamParticipantContentRequest(
+        @RequestBody @Valid
+        TeamParticipantUpdateRequest teamParticipantUpdateRequest,
+        Principal principal
+    ) {
+        return ResponseEntity.ok(
+            TeamParticipantsDto.from(
+                teamParticipantsService.updateParticipantContent(teamParticipantUpdateRequest, principal.getName())
+            )
+        );
+    }
 }

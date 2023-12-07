@@ -48,11 +48,14 @@ public class Member extends BaseEntity {
   private String memberProfileUrl;
 
   @OneToMany(mappedBy = "member")
+  @Builder.Default
   private List<Comment> comments = new ArrayList<>();
 
   @OneToMany(mappedBy = "member")
+  @Builder.Default
   private List<Notification> notifications = new ArrayList<>();
 
   @OneToMany(mappedBy = "member")
+  @Builder.Default
   private List<TeamParticipants> teamParticipants = new ArrayList<>();
 }

@@ -69,8 +69,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public SignInResponse login(SignInRequest signInRequest) {
 
+        Member member = memberRepository.findByEmail(signInRequest.getEmail()).orElseThrow();
+
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword());
+                new UsernamePasswordAuthenticationToken(member.getMemberId().toString(), signInRequest.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
