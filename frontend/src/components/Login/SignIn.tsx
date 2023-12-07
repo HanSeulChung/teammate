@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { StyledContainer, StyledFormItem } from "../styles/SignInStyled";
+import { StyledContainer, StyledFormItem } from "../../styles/SignInStyled";
 import { useRecoilState } from "recoil";
-import { isAuthenticatedState } from "../state/authState";
+import { isAuthenticatedState, saveAccessToken } from "../../state/authState";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -49,11 +49,10 @@ const SignIn = () => {
 
       if (user) {
         const accessToken = "가짜AccessToken";
-        const refreshToken = "가짜RefreshToken";
-
+        saveAccessToken(accessToken);
         setIsAuthenticated(true);
 
-        navigate("/main");
+        navigate("/homeview");
       } else {
         setError("올바른 이메일 또는 비밀번호를 입력하세요.");
       }

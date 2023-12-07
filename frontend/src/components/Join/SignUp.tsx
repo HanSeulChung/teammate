@@ -1,8 +1,7 @@
 import React, { useState, ChangeEvent } from "react";
 import axios from "axios";
-import { StyledContainer, StyledFormItem } from "../styles/SignUpStyled.tsx";
-import MockAdapter from "axios-mock-adapter";
-import * as Regex from "../common/Regex.ts";
+import { StyledContainer, StyledFormItem } from "../../styles/SignUpStyled.tsx";
+import * as Regex from "../../common/Regex.ts";
 
 interface SignUpProps {}
 
