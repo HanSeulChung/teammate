@@ -1,7 +1,6 @@
 package com.api.backend.team.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
-import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.team.data.dto.TeamUpdateRequest;
 import java.time.LocalDate;
@@ -45,9 +44,10 @@ public class Team extends BaseEntity {
   @Builder.Default
   private List<Schedule> schedules = new ArrayList<>();
 
-  @OneToMany(mappedBy = "team")
-  @Builder.Default
-  private List<Documents> documents = new ArrayList<>();
+
+  // TODO: 추후 재셋팅 예정
+//  @OneToMany(mappedBy = "team")
+//  private List<Documents> documents = new ArrayList<>();
 
 
   public void setInviteLink() {
