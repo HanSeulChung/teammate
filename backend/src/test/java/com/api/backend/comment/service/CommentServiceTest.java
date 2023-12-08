@@ -10,6 +10,7 @@ import com.api.backend.comment.data.repository.CommentRepository;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,5 +75,53 @@ class CommentServiceTest {
     assertEquals(23L, savedComment.getWriterId());
     assertEquals("아하 이런 회의를 했었군요.", savedComment.getContent());
     assertEquals(1, documents.getCommentIds().size());
+  }
+
+
+  @Test
+  @DisplayName("댓글 전체 조회 성공_댓글이 없을 때")
+  void getCommentList_Success_WhenCommentsNotExist() {
+    //given
+    Documents documents = Documents.builder()
+        .documentIdx("testDocumentIdx")
+        .teamId(1L)
+        .build();
+
+    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+    //when
+    Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
+    Page<Comment> commentPage = commentService.getCommentList(1L, "testDocumentIdx", pageable);
+
+    //then
+    assertNotNull(commentPage);
+    assertTrue(commentPage.isEmpty());
+  }
+
+  @Test
+  @DisplayName("댓글 전체 조회 성공_댓글이 있을 때(1 개)")
+  void getCommentList_Success_WhenCommentsExist() {
+    //given
+    Comment comment = Comment.builder()
+        .id("commentId")
+        .writerId(23L)
+        .content("아하 이런 회의를 했었군요.")
+        .teamId(1L)
+        .build();
+
+    Documents documents = Documents.builder()
+        .documentIdx("testDocumentIdx")
+        .teamId(1L)
+        .commentIds(Collections.singletonList(comment)) // Comment를 commentIds에 추가
+        .build();
+
+    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+
+    //when
+    Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
+    Page<Comment> commentPage = commentService.getCommentList(1L, "testDocumentIdx", pageable);
+
+    //then
+    assertNotNull(commentPage);
+    assertFalse(commentPage.isEmpty());
   }
 }
