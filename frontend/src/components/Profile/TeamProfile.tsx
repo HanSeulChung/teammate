@@ -1,5 +1,14 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
+import {
+  TeamProfileContainer,
+  TeamProfileTitle,
+  ImageUploadContainer,
+  NicknameContainer,
+  UpdateButton,
+  ContainerWrapper,
+  ButtonContainer,
+  DeleteButton,
+} from "../../styles/TeamProfileStyled";
 
 interface TeamProfileProps {
   selectedTeam: string | null;
@@ -10,53 +19,6 @@ interface TeamProfileProps {
   handleUpdateProfile: (image: string | null, nickname: string) => void;
 }
 
-const TeamProfileContainer = styled.div`
-  padding: 20px;
-  border-radius: 8px;
-  margin: auto;
-  width: 25%;
-`;
-
-const TeamProfileTitle = styled.h3`
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  text-align: center;
-  color: #333;
-`;
-
-const ImageUploadContainer = styled.div`
-  margin-bottom: 15px;
-
-  input {
-    margin-bottom: 10px;
-  }
-
-  img {
-    max-width: 100px;
-    max-height: 100px;
-  }
-`;
-
-const NicknameContainer = styled.div`
-  input {
-    margin-bottom: 10px;
-    padding: 5px;
-  }
-`;
-const UpdateButton = styled.button`
-  flex: 1;
-  margin-left: 10px;
-  margin: 0 auto;
-  padding: 8px;
-  background-color: #a3cca3;
-  color: #333333;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #cccccc;
-  }
-`;
-
 const TeamProfile: React.FC<TeamProfileProps> = ({
   selectedTeam,
   selectedImage,
@@ -65,40 +27,55 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
   handleNicknameChange,
   handleUpdateProfile,
 }) => {
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = e.target;
+    const file = fileInput.files && fileInput.files[0];
+
+    if (file) {
+      setSelectedFileName(file.name);
+      handleImageUpload(e);
+    }
+  };
   return (
     <TeamProfileContainer>
       {selectedTeam && (
         <div>
-          <TeamProfileTitle>{selectedTeam} 팀 프로필</TeamProfileTitle>
-          <br />
-          <ImageUploadContainer>
-            <input
-              title="imgupload"
-              type="file"
-              id="imageUpload"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
-            {selectedImage && (
-              <div>
-                <img src={selectedImage} alt="Selected" />
-              </div>
-            )}
-          </ImageUploadContainer>
-          <NicknameContainer>
-            <input
-              type="text"
-              placeholder="닉네임 입력"
-              id="nickname"
-              value={nickname}
-              onChange={handleNicknameChange}
-            />
+          <TeamProfileTitle>{selectedTeam} 프로필</TeamProfileTitle>
+          <ContainerWrapper>
+            <ImageUploadContainer>
+              <img
+                src={selectedImage || "/path/to/placeholder-image.jpg"}
+                alt="Selected"
+                onClick={() => document.getElementById("imageUpload")?.click()}
+              />
+              <input
+                title="imgupload"
+                type="file"
+                id="imageUpload"
+                accept="image/*"
+                onChange={handleFileInputChange}
+              />
+            </ImageUploadContainer>
+            <NicknameContainer>
+              <input
+                type="text"
+                placeholder="닉네임 입력"
+                id="nickname"
+                value={nickname}
+                onChange={handleNicknameChange}
+              />
+            </NicknameContainer>
+          </ContainerWrapper>
+          <ButtonContainer>
             <UpdateButton
               onClick={() => handleUpdateProfile(selectedImage, nickname)}
             >
-              변경 하기
+              변경하기
             </UpdateButton>
-          </NicknameContainer>
+            <DeleteButton>탈퇴하기</DeleteButton>
+          </ButtonContainer>
         </div>
       )}
     </TeamProfileContainer>
