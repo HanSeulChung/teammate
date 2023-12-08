@@ -49,7 +49,7 @@ const TextEditor: React.FC = () => {
 
   const docsIdx = "1aac3642-ef31-479a-8cf4-cfd93bb39e06";
 
-  const data = testText;
+  const data = "";
   const initialState = data
     ? EditorState.createWithContent(convertFromRaw(data))
     : EditorState.createEmpty();
@@ -151,29 +151,19 @@ const TextEditor: React.FC = () => {
     console.error("Could not connect to WebSocket server:", error);
   };
 
-  let contentText = "";
+  //
   const displayDocs = (docs: Docs) => {
     setTitle(docs.title);
-
     console.log(docs.content);
-    contentText = docs.content;
-    console.log("contentText : ", contentText);
-    try {
-      // Try parsing the content as JSON
-      const contentObject = JSON.parse(docs.content);
-      console.log("obj", contentObject);
 
-      // Check if the parsed content is an object (optional)
-      if (typeof contentObject === "object" && contentObject !== null) {
-        const contentState = convertFromRaw(contentObject);
-        const newEditorState = EditorState.createWithContent(contentState);
-        setEditorState(newEditorState);
-      } else {
-        console.error("Invalid JSON content:", docs.content);
-      }
-    } catch (error) {
-      console.error("Error parsing JSON content:", error);
-    }
+    // draft.js 내부 텍스트로 지정할 string형태의 데이터를 선언.
+    const contentText = docs.content;
+
+    // 문자열로부터 새로운 ContentState를 생성합니다.
+    const newContentState = ContentState.createFromText(contentText);
+
+    // 새로운 컨텐츠로 에디터 상태를 업데이트합니다.
+    setEditorState(EditorState.createWithContent(newContentState));
 
     console.log("displaydocs");
   };
@@ -181,29 +171,6 @@ const TextEditor: React.FC = () => {
   useEffect(() => {
     connect(docsIdx);
   }, []);
-
-  const handleContentChange = (
-    newContentState: ContentState,
-    changeType: EditorChangeType,
-  ) => {
-    const newEditorState = EditorState.push(
-      editorState,
-      newContentState,
-      changeType,
-    );
-    setEditorState(newEditorState);
-  };
-
-  const handleButtonClick = () => {
-    // 현재 에디터의 컨텐츠 가져오기
-    const currentContentState = editorState.getCurrentContent();
-    // 새로운 컨텐츠 생성
-    const newContentState = ContentState.createFromText(contentText);
-
-    // 새로운 컨텐츠로 에디터 업데이트
-    console.log("new! ", newContentState);
-    handleContentChange(newContentState, "insert-characters");
-  };
 
   return (
     <StyledTexteditor className="texteditor">
@@ -217,15 +184,14 @@ const TextEditor: React.FC = () => {
         }}
         handleKeyCommand={handleKeyCommand}
       />
-      <SaveButton
+      {/* <SaveButton
         className="save"
         type="button"
         onClick={(e) => {
-          handleButtonClick();
         }}
       >
         save
-      </SaveButton>
+      </SaveButton> */}
     </StyledTexteditor>
   );
 };

@@ -1,74 +1,8 @@
 {
   "blocks": [
       {
-          "key": "8bq0p",
-          "text": "ㅁㄴㅇㄻㅁㄴㅇㄹ",
-          "type": "unordered-list-item",
-          "depth": 0,
-          "inlineStyleRanges": [
-              {
-                  "offset": 0,
-                  "length": 8,
-                  "style": "BOLD"
-              },
-              {
-                  "offset": 0,
-                  "length": 8,
-                  "style": "UNDERLINE"
-              },
-              {
-                  "offset": 0,
-                  "length": 8,
-                  "style": "ITALIC"
-              },
-              {
-                  "offset": 0,
-                  "length": 8,
-                  "style": "STRIKETHROUGH"
-              }
-          ],
-          "entityRanges": [],
-          "data": {}
-      },
-      {
           "key": "87rh7",
-          "text": "ㅁㄴㅇㄹㄹㄴㅇㅁㄹㅇㄴ",
-          "type": "unstyled",
-          "depth": 0,
-          "inlineStyleRanges": [],
-          "entityRanges": [],
-          "data": {}
-      },
-      {
-          "key": "ed10j",
-          "text": "ㅁㅇㄹㄴㅇㅁㄻㄴㅇ",
-          "type": "unstyled",
-          "depth": 0,
-          "inlineStyleRanges": [],
-          "entityRanges": [],
-          "data": {}
-      },
-      {
-          "key": "elidj",
-          "text": "ㄴㅇㅁㄹㄻㄴㅇㅁㄹㄴㅇㅁㄹㄴㅇ",
-          "type": "unstyled",
-          "depth": 0,
-          "inlineStyleRanges": [],
-          "entityRanges": [],
-          "data": {}
-      },
-      {
-          "key": "amtk1",
-          "text": "ㅁㅇㄴㅇㅁㄴㄹ",
-          "type": "unstyled",
-          "depth": 0,
-          "inlineStyleRanges": [],
-          "entityRanges": [],
-          "data": {}
-      },
-      {
-          "key": "cskfp",
-          "text": "",
+          "text": "default text",
           "type": "unstyled",
           "depth": 0,
           "inlineStyleRanges": [],
