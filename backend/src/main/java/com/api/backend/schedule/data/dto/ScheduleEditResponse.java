@@ -4,26 +4,24 @@ import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class ScheduleResponse {
+public class ScheduleEditResponse {
 
   private Long scheduleId;
   private Long categoryId;
+  private String title;
+  private String content;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime endDt;
-  private String title;
-  private String content;
   private String place;
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
@@ -31,8 +29,8 @@ public class ScheduleResponse {
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
 
-  public static ScheduleResponse from(ScheduleDto scheduleDto) {
-    return ScheduleResponse.builder()
+  public static ScheduleEditResponse from(ScheduleDto scheduleDto) {
+    return ScheduleEditResponse.builder()
         .scheduleId(scheduleDto.getScheduleId())
         .categoryId(scheduleDto.getCategoryId())
         .startDt(scheduleDto.getStartDt())
@@ -46,9 +44,5 @@ public class ScheduleResponse {
         .teamParticipantsNames(scheduleDto.getTeamParticipantsName())
         .teamRoles(scheduleDto.getTeamRoles())
         .build();
-  }
-
-  public static Page<ScheduleResponse> from(Page<ScheduleDto> scheduleDtoList) {
-    return scheduleDtoList.map(ScheduleResponse::from);
   }
 }

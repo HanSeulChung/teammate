@@ -2,7 +2,10 @@ package com.api.backend.team.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.entity.Member;
+import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.team.data.type.TeamRole;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +47,10 @@ public class TeamParticipants extends BaseEntity {
   @JoinColumn(name = "team_id")
   private Team team;
 
+  @OneToMany(mappedBy = "teamParticipants", cascade = CascadeType.ALL)
+  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
+
+
   public void updateRole(TeamRole teamRole) {
     this.teamRole = teamRole;
   }
@@ -57,4 +65,5 @@ public class TeamParticipants extends BaseEntity {
   public void changeProfileUrl(String imgUrl) {
     participantsProfileUrl = imgUrl;
   }
+
 }
