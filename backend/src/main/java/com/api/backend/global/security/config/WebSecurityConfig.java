@@ -26,12 +26,13 @@ public class WebSecurityConfig {
                 .httpBasic().disable()
                 .csrf().disable()
                 .formLogin().disable()
+                .logout().disable()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
                 .authorizeRequests() // 요청에 대한 권한 설정
-                .antMatchers("/sign-in","/sign-up").permitAll()
+                .antMatchers("/sign-in","/sign-up","/logout").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();
