@@ -1,6 +1,5 @@
 package com.api.backend.team.controller;
 
-import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM_PARTICIPANTS;
 
 import com.api.backend.team.data.dto.TeamCreateRequest;
@@ -23,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,10 +41,9 @@ public class TeamController {
 
   private final TeamService teamService;
 
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<TeamCreateResponse> createTeamRequest(
-      @RequestBody @Valid
-      TeamCreateRequest teamRequest,
+      @Valid TeamCreateRequest teamRequest,
       Principal principal
   ) {
     return ResponseEntity.ok(
@@ -127,18 +126,15 @@ public class TeamController {
     );
   }
 
-  @PutMapping
+  @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<TeamUpdateResponse> updateTeamRequest(
-      @RequestBody @Valid TeamUpdateRequest teamUpdateRequest,
-      @RequestParam(value = "userId") String userId
+      @Valid TeamUpdateRequest teamUpdateRequest,
+      Principal principal
   ) {
     return ResponseEntity.ok(
         TeamUpdateResponse.from(
-            teamService.updateTeam(teamUpdateRequest, userId)
+            teamService.updateTeam(teamUpdateRequest, principal.getName())
         )
     );
   }
-
-
-
 }

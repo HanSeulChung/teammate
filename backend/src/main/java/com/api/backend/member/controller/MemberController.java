@@ -12,6 +12,16 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -75,10 +85,9 @@ public class MemberController {
         );
     }
 
-    @PatchMapping("/member/participant")
+    @PostMapping(value = "/member/participant",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TeamParticipantsDto> updateTeamParticipantContentRequest(
-        @RequestBody @Valid
-        TeamParticipantUpdateRequest teamParticipantUpdateRequest,
+        @Valid TeamParticipantUpdateRequest teamParticipantUpdateRequest,
         Principal principal
     ) {
         return ResponseEntity.ok(

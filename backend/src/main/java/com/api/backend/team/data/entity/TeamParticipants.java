@@ -53,4 +53,8 @@ public class TeamParticipants extends BaseEntity {
       this.teamNickName = teamNickName;
     }
   }
+
+  public void changeProfileUrl(String imgUrl) {
+    participantsProfileUrl = imgUrl;
+  }
 }
