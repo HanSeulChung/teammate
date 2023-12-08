@@ -1,15 +1,18 @@
 package com.api.backend.comment.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.api.backend.comment.data.dto.CommentRequest;
+import com.api.backend.comment.data.dto.CommentEditRequest;
+import com.api.backend.comment.data.dto.CommentInitRequest;
 import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.comment.data.repository.CommentRepository;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -22,9 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Update;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -39,27 +39,30 @@ class CommentServiceTest {
   @InjectMocks
   private CommentService commentService;
 
-  @Mock
-  private MongoTemplate mongoTemplate;
-
-
-  @Test
-  @DisplayName("댓글 생성 성공")
-  void createComment_Success() {
-    //given
-    Documents documents = Documents.builder()
+  private Documents createDocuments() {
+    return Documents.builder()
         .documentIdx("testDocumentIdx")
         .teamId(1L)
         .build();
-
-    Comment comment = Comment.builder()
+  }
+  private Comment createComment() {
+    return Comment.builder()
         .id("commentId")
         .writerId(23L)
         .content("아하 이런 회의를 했었군요.")
         .teamId(1L)
         .build();
+  }
 
-    CommentRequest commentRequest = CommentRequest.builder()
+  @Test
+  @DisplayName("댓글 생성 성공")
+  void createComment_Success() {
+    //given
+    Documents documents =createDocuments();
+
+    Comment comment = createComment();
+
+    CommentInitRequest commentInitRequest = CommentInitRequest.builder()
         .writerId(23L)
         .content("아하 이런 회의를 했었군요.")
         .build();
@@ -68,7 +71,7 @@ class CommentServiceTest {
     when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
     //when
-    Comment savedComment = commentService.createComment(1L, "testDocumentIdx", commentRequest);
+    Comment savedComment = commentService.createComment(1L, "testDocumentIdx", commentInitRequest);
 
     //then
     assertNotNull(savedComment);
@@ -82,10 +85,7 @@ class CommentServiceTest {
   @DisplayName("댓글 전체 조회 성공_댓글이 없을 때")
   void getCommentList_Success_WhenCommentsNotExist() {
     //given
-    Documents documents = Documents.builder()
-        .documentIdx("testDocumentIdx")
-        .teamId(1L)
-        .build();
+    Documents documents =createDocuments();
 
     when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
     //when
@@ -101,17 +101,11 @@ class CommentServiceTest {
   @DisplayName("댓글 전체 조회 성공_댓글이 있을 때(1 개)")
   void getCommentList_Success_WhenCommentsExist() {
     //given
-    Comment comment = Comment.builder()
-        .id("commentId")
-        .writerId(23L)
-        .content("아하 이런 회의를 했었군요.")
-        .teamId(1L)
-        .build();
-
+    Comment comment = createComment();
     Documents documents = Documents.builder()
         .documentIdx("testDocumentIdx")
         .teamId(1L)
-        .commentIds(Collections.singletonList(comment)) // Comment를 commentIds에 추가
+        .commentIds(Collections.singletonList(comment))
         .build();
 
     when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
@@ -123,5 +117,46 @@ class CommentServiceTest {
     //then
     assertNotNull(commentPage);
     assertFalse(commentPage.isEmpty());
+  }
+
+  @Test
+  @DisplayName("댓글 수정 성공")
+  void editComment_Success() {
+    //given
+    Comment comment = createComment();
+    Documents documents = Documents.builder()
+        .documentIdx("testDocumentIdx")
+        .teamId(1L)
+        .commentIds(Collections.singletonList(comment))
+        .build();
+
+    CommentEditRequest commentEditRequest = CommentEditRequest.builder()
+        .editorId(23L)
+        .content("수정한 댓글입니다.")
+        .build();
+
+    Comment editCommentMock = Comment.builder()
+        .id("commentId")
+        .writerId(23L)
+        .content("수정한 댓글입니다.")
+        .teamId(1L)
+        .build();
+
+    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+    when(commentRepository.findById("commentId")).thenReturn(Optional.of(comment));
+    when(commentRepository.save(any(Comment.class))).thenReturn(editCommentMock);
+    //when
+    Comment editComment = commentService.editComment(1L, "testDocumentIdx", "commentId",
+        commentEditRequest);
+
+    //then
+    assertNotNull(editComment);
+    assertEquals("commentId", editComment.getId());
+    assertEquals("수정한 댓글입니다.", editComment.getContent());
+    assertEquals(1, documents.getCommentIds().size());
+
+    // Todo : 데이터 베이스를 이용한 통합 테스트시 해야할 일
+//    assertEquals("수정한 댓글입니다.", documents.getCommentIds().get(0).getContent());
+
   }
 }
