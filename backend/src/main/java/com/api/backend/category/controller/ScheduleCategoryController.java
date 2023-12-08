@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +30,8 @@ public class ScheduleCategoryController {
 
   @PostMapping
   public ResponseEntity<ScheduleCategoryResponse> categoryAdd(
-      @RequestBody ScheduleCategoryRequest request, @RequestParam Long teamId) {
-    ScheduleCategoryDto dto = ScheduleCategoryDto.from(scheduleCategoryService.add(request, teamId));
+      @RequestBody ScheduleCategoryRequest request) {
+    ScheduleCategoryDto dto = ScheduleCategoryDto.from(scheduleCategoryService.add(request));
     return ResponseEntity.ok(ScheduleCategoryResponse.to(dto));
   }
 

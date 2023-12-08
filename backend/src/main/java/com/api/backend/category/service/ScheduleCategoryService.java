@@ -27,8 +27,8 @@ public class ScheduleCategoryService {
 
 
   @Transactional
-  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest, Long teamId) {
-    Team team = validateTeam(teamId);
+  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest) {
+    Team team = validateTeam(scheduleCategoryRequest.getTeamId());
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
         .scheduleCategoryId(scheduleCategoryRequest.getCategoryId())
