@@ -11,6 +11,7 @@ import lombok.Getter;
 public class ScheduleCategoryEditRequest {
 
   private Long categoryId;
+  private Long teamId;
   private String categoryName;
   private CategoryType categoryType;
   private String color;
