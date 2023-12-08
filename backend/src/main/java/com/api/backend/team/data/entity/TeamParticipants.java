@@ -65,4 +65,5 @@ public class TeamParticipants extends BaseEntity {
   public void changeProfileUrl(String imgUrl) {
     participantsProfileUrl = imgUrl;
   }
+
 }
