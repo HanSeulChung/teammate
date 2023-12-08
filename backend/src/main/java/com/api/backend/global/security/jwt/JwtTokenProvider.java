@@ -103,9 +103,13 @@ public class JwtTokenProvider {
         return getClaims(token).getExpiration().getTime();
     }
 
-    public boolean validateAccessToken(String token) {
+    public boolean validateAccessToken(String accessToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            if (redisService.getValues(accessToken) != null // NPE 방지
+                    && redisService.getValues(accessToken).equals("logout")) { // 로그아웃 했을 경우
+                return false;
+            }
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException |
                  MalformedJwtException e) {
