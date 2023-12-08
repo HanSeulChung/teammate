@@ -6,7 +6,10 @@ import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.comment.service.CommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,5 +29,17 @@ public class CommentController {
     Comment comment = commentService.createComment(teamId, documentId, request);
 
     return ResponseEntity.ok(CommentResponse.from(comment));
+  }
+
+  @GetMapping("/team/{teamId}/documents/{documentId}/comments")
+  public ResponseEntity<Page<CommentResponse>> getCommentsList(
+      @PathVariable Long teamId, @PathVariable String documentId,
+      Pageable pageable) {
+    Page<Comment> commentPage = commentService.getCommentList(teamId, documentId, pageable);
+    Page<CommentResponse> commentDtoPage = commentPage.map(
+        comment -> CommentResponse.from(comment)
+    );
+
+    return ResponseEntity.ok(commentDtoPage);
   }
 }
