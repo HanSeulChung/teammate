@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 
-
 import Calender from "../views/Calender";
 import SignInView from "../views/SignInView";
 import SignUp from "../components/Join/SignUp";
@@ -11,10 +10,14 @@ import Profile from "../components/Profile/Profile";
 import Mypage from "../components/Profile/Mypage";
 import HomeView from "../views/HomeView";
 import TeamCreateView from "../views/TeamCreateView";
+import TextEditorView from "../views/TextEditorView";
 
 const Router = () => {
   return (
     <Routes>
+      {/* <Route path='*' element={<Error />} /> */}
+      <Route path="/캘린더" element={<Calender />} />
+      <Route path="text-editor" element={<TextEditorView />} />
       <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />

@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 export const HeaderTag = styled.header`
     display: flex;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: 20px;
 `
 
 // 헤더 로고 이미지
@@ -20,15 +20,12 @@ export const HeaderUl = styled.ul`
     padding: 0;
     display: flex;
     margin-top: 25px;
-
-    & > li:first-child {
-        margin-right: 16px;
-    }
 `
 
 // 헤더 시작하기 버튼
 export const HeaderLink = styled(Link)`
     border: 3px solid #CCCCCC;
+    margin-left: 16px;
     padding: 2px 10px;
     border-radius: 5px;
 `

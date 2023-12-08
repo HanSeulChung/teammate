@@ -4,7 +4,6 @@ import './App.css'
 import { BrowserRouter } from "react-router-dom"
 import Router from './router/router'
 import Header from './components/common/Header'
-import Footer from './components/common/Footer'
 
 function App() {
   const [count, setCount] = useState(0);
@@ -12,13 +11,11 @@ function App() {
 
     return (
         <BrowserRouter>
-            <div className='wrapper'>
-                <Header />
-                <section >
-                    <Router />
-                </section>
-                <Footer />
-            </div>
+            <Header />
+            <section>
+                <Router />
+            </section>
+            {/* <Footer /> */}
         </BrowserRouter>
         
     )

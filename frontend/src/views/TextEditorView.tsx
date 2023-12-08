@@ -5,14 +5,14 @@ import styled from "styled-components";
 const TextEditorView = () => {
   const StyledTextEditorView = styled.section`
     display: flex;
-  `
+    justify-content: center;
+  `;
 
-  return(
+  return (
     <StyledTextEditorView>
       <TextEditor />
-      <Comment />
     </StyledTextEditorView>
-  )
-}
+  );
+};
 
 export default TextEditorView;
