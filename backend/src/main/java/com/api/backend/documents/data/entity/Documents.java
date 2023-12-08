@@ -1,45 +1,53 @@
 package com.api.backend.documents.data.entity;
 
-import com.api.backend.comment.data.entity.Comment;
-import com.api.backend.global.domain.BaseEntity;
-import com.api.backend.team.data.entity.Team;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import java.time.LocalDateTime;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Builder
-@Table(name = "documents")
-public class Documents extends BaseEntity {
+@Document(collection = "Documents")
+@AllArgsConstructor
+@NoArgsConstructor
+public class Documents {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long documentsId;
+  private String id;
+
+  @Field(name = "document_idx")
+  private String documentIdx;
+
+  @Field(name = "title")
   private String title;
+
+  @Field(name = "content")
   private String content;
+
+  @Field(name = "writer_id")
   private Long writerId;
+
+  @Field(name = "modifier_id")
   private Long modifierId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "team_id")
-  private Team team;
+  @Field(name = "team_id")
+  private Long teamId;
 
-  @OneToMany(mappedBy = "documents")
-  private List<Comment> comments = new ArrayList<>();
+  // Todo : Comment
+
+
+  @CreatedDate
+  @Field(name = "created_dt")
+  private LocalDateTime createdDt;
+  @LastModifiedDate
+  @Field(name = "updated_dt")
+  private LocalDateTime updatedDt;
+
 
 }

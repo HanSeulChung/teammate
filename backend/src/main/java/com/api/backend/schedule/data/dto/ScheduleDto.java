@@ -76,7 +76,7 @@ public class ScheduleDto {
     List<String> teamParticipantsNames = new ArrayList<>();
     if (teamParticipantsSchedules != null) {
       for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsNames.add(teamParticipantsSchedule.getTeamParticipants().getMember().getName());
+        teamParticipantsNames.add(teamParticipantsSchedule.getTeamParticipants().getTeamNickName());
       }
     }
     return teamParticipantsNames;

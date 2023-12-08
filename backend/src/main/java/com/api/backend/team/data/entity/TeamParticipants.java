@@ -36,6 +36,7 @@ public class TeamParticipants extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private TeamRole teamRole;
+  private String teamNickName;
   private String participantsProfileUrl;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -49,4 +50,19 @@ public class TeamParticipants extends BaseEntity {
   @OneToMany(mappedBy = "teamParticipants", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
+
+  public void updateRole(TeamRole teamRole) {
+    this.teamRole = teamRole;
+  }
+
+  public void changeNickName(String teamNickName) {
+    if (!this.teamNickName
+        .equals(teamNickName)) {
+      this.teamNickName = teamNickName;
+    }
+  }
+
+  public void changeProfileUrl(String imgUrl) {
+    participantsProfileUrl = imgUrl;
+  }
 }

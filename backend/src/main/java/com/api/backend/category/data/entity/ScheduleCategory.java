@@ -45,6 +45,7 @@ public class ScheduleCategory extends BaseEntity {
   private Team team;
 
   @OneToMany(mappedBy = "scheduleCategory")
+  @Builder.Default
   private List<Schedule> schedule = new ArrayList<>();
 
   public void editScheduleCategory(ScheduleCategoryEditRequest request) {

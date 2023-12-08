@@ -11,7 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
-public class UpdateTeamParticipantsResponse {
+public class TeamParticipantsUpdateResponse {
 
   private Long teamId;
   private String teamName;
