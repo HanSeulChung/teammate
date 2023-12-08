@@ -32,6 +32,7 @@ public class Comment {
   @CreatedDate
   @Field(name = "created_dt")
   private LocalDateTime createdDt;
+
   @LastModifiedDate
   @Field(name = "updated_dt")
   private LocalDateTime updatedDt;

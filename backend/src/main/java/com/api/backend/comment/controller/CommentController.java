@@ -1,6 +1,7 @@
 package com.api.backend.comment.controller;
 
-import com.api.backend.comment.data.dto.CommentRequest;
+import com.api.backend.comment.data.dto.CommentEditRequest;
+import com.api.backend.comment.data.dto.CommentInitRequest;
 import com.api.backend.comment.data.dto.CommentResponse;
 import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.comment.service.CommentService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +26,7 @@ public class CommentController {
   @PostMapping("/team/{teamId}/documents/{documentId}/comments")
   public ResponseEntity<CommentResponse> createComments(
       @PathVariable Long teamId, @PathVariable String documentId,
-      @RequestBody @Valid CommentRequest request
+      @RequestBody @Valid CommentInitRequest request
   ) {
     Comment comment = commentService.createComment(teamId, documentId, request);
 
@@ -42,4 +44,16 @@ public class CommentController {
 
     return ResponseEntity.ok(commentDtoPage);
   }
+
+  @PutMapping("/team/{teamId}/documents/{documentId}/comments/{commentId}")
+  public ResponseEntity<CommentResponse> editComment(
+      @PathVariable Long teamId, @PathVariable String documentId,
+      @PathVariable String commentId,
+      @RequestBody @Valid CommentEditRequest request
+  ) {
+    Comment comment = commentService.editComment(teamId, documentId, commentId, request);
+
+    return ResponseEntity.ok(CommentResponse.from(comment));
+  }
+
 }
