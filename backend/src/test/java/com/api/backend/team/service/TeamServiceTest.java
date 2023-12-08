@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
+import com.api.backend.member.data.repository.MemberRepository;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
@@ -29,6 +30,7 @@ import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import com.api.backend.team.data.type.TeamRole;
+import com.api.backend.team.service.file.impl.ImgStoreImpl;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
@@ -51,6 +55,12 @@ class TeamServiceTest {
   private TeamRepository teamRepository;
   @Mock
   private TeamParticipantsRepository teamParticipantsRepository;
+  @Mock
+  private ImgStoreImpl imgStore;
+  @Mock
+  private MemberRepository memberRepository;
+
+
   @InjectMocks
   private TeamService teamService;
 
@@ -119,6 +129,8 @@ class TeamServiceTest {
     when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(
         anyLong(), anyLong()
     )).thenReturn(false);
+    when(memberRepository.findById(anyLong()))
+        .thenReturn(Optional.of(Member.builder().build()));
     //when
     Team result = teamService.updateTeamParticipants(id, code, userId);
 
@@ -206,7 +218,7 @@ class TeamServiceTest {
         .teamId(1L)
         .build();
     when(teamRepository.existsByTeamIdAndIsDelete(anyLong(), anyBoolean()))
-        .thenReturn(false);
+        .thenReturn(true);
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))
         .thenReturn(Optional.of(teamParticipants2))
         .thenReturn(Optional.of(teamParticipants));
@@ -216,7 +228,6 @@ class TeamServiceTest {
 
     //then
     assertEquals(result.getTeamId(),request.getTeamId());
-    assertEquals(result.getUserId(),request.getUserId());
   }
   @Test
   @DisplayName("팀원 강퇴 로직 - 실패")
@@ -231,7 +242,7 @@ class TeamServiceTest {
         .build();
 
     when(teamRepository.existsByTeamIdAndIsDelete(anyLong(), anyBoolean()))
-        .thenReturn(false);
+        .thenReturn(true);
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))
         .thenReturn(Optional.empty());
     //when
@@ -575,25 +586,27 @@ class TeamServiceTest {
   @DisplayName("팀 내용수정 service로직")
   void updateTeam(){
     //given
+    MultipartFile multipartFile = new MockMultipartFile("Img", new byte[2]);
     TeamUpdateRequest teamUpdateRequest =
-        new TeamUpdateRequest(1L, "test", "testProfile");
+        new TeamUpdateRequest(1L, "test", multipartFile);
     String userId = "1";
     Team team = Team.builder()
         .name("test1")
         .profileUrl("test").build();
-
+    String testUrl = "teamUrl";
     TeamParticipants teamParticipants = TeamParticipants.builder()
         .team(team)
         .teamRole(TeamRole.READER)
         .build();
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))
         .thenReturn(Optional.of(teamParticipants));
-
+    when(imgStore.uploadImg(any(), any(), any()))
+        .thenReturn(testUrl);
     //when
     Team result = teamService.updateTeam(teamUpdateRequest, userId);
 
     //then
     assertEquals(result.getName(),teamUpdateRequest.getTeamName());
-    assertEquals(result.getProfileUrl(),teamUpdateRequest.getProfileUrl());
+    assertEquals(result.getProfileUrl() , testUrl);
   }
 }
