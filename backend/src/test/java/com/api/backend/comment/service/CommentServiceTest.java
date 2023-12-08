@@ -9,10 +9,14 @@ import static org.mockito.Mockito.when;
 
 import com.api.backend.comment.data.dto.CommentEditRequest;
 import com.api.backend.comment.data.dto.CommentInitRequest;
+import com.api.backend.comment.data.dto.DeleteCommentsResponse;
 import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.comment.data.repository.CommentRepository;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
+import com.api.backend.team.data.entity.TeamParticipants;
+import com.api.backend.team.data.repository.TeamParticipantsRepository;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +40,9 @@ class CommentServiceTest {
 
   @Mock
   private DocumentsRepository documentsRepository;
+
+  @Mock
+  private TeamParticipantsRepository teamParticipantsRepository;
 
   @InjectMocks
   private CommentService commentService;
@@ -157,6 +165,37 @@ class CommentServiceTest {
 
     // Todo : 데이터 베이스를 이용한 통합 테스트시 해야할 일
 //    assertEquals("수정한 댓글입니다.", documents.getCommentIds().get(0).getContent());
+  }
 
+  @Test
+  @DisplayName("댓글 삭제 성공")
+  void deleteComment_Success() {
+    //given
+    Comment comment = createComment();
+    Documents documents = Documents.builder()
+        .documentIdx("testDocumentIdx")
+        .teamId(1L)
+        .commentIds(Collections.singletonList(comment))
+        .build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamParticipantsId(23L)
+        .build();
+    Principal principal = Mockito.mock(Principal.class);
+    when(principal.getName()).thenReturn("1");
+    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+    when(commentRepository.findById("commentId")).thenReturn(Optional.of(comment));
+    when(teamParticipantsRepository.findByMember_MemberId(1L)).thenReturn(Optional.of(teamParticipants));
+    //when
+    DeleteCommentsResponse deleteCommentsResponse = commentService.deleteComment(1L,
+        "testDocumentIdx", "commentId", principal);
+
+    //then
+    assertNotNull(deleteCommentsResponse);
+    assertEquals(23L, deleteCommentsResponse.getWriterId());
+    assertEquals("아하 이런 회의를 했었군요.", deleteCommentsResponse.getContent());
+
+    // TODO : 데이터 베이스를 이용한 통합 테스트시 해야할 일
+//    assertEquals(0, documents.getCommentIds().size());
   }
 }
