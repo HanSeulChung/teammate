@@ -27,7 +27,6 @@ public class ScheduleRequest {
   @NotBlank(message = "종료 날짜를 입력해주세요.")
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime endDt;
-  private LocalTime time;
   private String place;
   private boolean isRepeat;
   private RepeatCycle repeatCycle;

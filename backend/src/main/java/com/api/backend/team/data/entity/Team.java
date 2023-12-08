@@ -2,7 +2,7 @@ package com.api.backend.team.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.documents.data.entity.Documents;
-import com.api.backend.schedule.data.enetity.Schedule;
+import com.api.backend.schedule.data.entity.Schedule;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

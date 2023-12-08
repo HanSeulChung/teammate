@@ -1,6 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
-import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
+import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;

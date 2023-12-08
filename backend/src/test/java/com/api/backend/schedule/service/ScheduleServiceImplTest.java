@@ -1,6 +1,7 @@
-package com.api.backend.schedule.service.impl;
+package com.api.backend.schedule.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -13,10 +14,12 @@ import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
-import com.api.backend.schedule.data.enetity.Schedule;
+import com.api.backend.schedule.data.entity.Schedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
 import com.api.backend.schedule.data.type.RepeatCycle;
+import com.api.backend.schedule.service.ScheduleService;
 import com.api.backend.team.data.entity.Team;
+import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,11 +33,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
-class ScheduleServiceTest {
+class ScheduleServiceImplTest {
 
   @Mock
   private TeamRepository teamRepository;
@@ -45,14 +47,19 @@ class ScheduleServiceTest {
   @Mock
   private ScheduleRepository scheduleRepository;
 
+  @Mock
+  private TeamParticipantsRepository teamParticipantsRepository;
+
   @InjectMocks
-  private ScheduleServiceImpl scheduleService;
+  private ScheduleService scheduleService;
 
   @Test
   @DisplayName("스케줄 추가 성공")
   public void addScheduleSuccess() {
+    // Given
     Long teamId = 1L;
     Long categoryId = 1L;
+    LocalDateTime now = LocalDateTime.now();
     ScheduleRequest scheduleRequest = ScheduleRequest.builder()
         .scheduleId(1L)
         .categoryId(categoryId)
@@ -62,9 +69,9 @@ class ScheduleServiceTest {
         .repeatCycle(RepeatCycle.YEARLY)
         .isRepeat(false)
         .place("집")
-        .startDt(LocalDateTime.now())
-        .endDt(LocalDateTime.now())
-        .color("PINK")
+        .startDt(now)
+        .endDt(now)
+        .teamParticipantsIds(new ArrayList<>())
         .build();
 
     Team mockTeam = Team.builder()
@@ -77,12 +84,20 @@ class ScheduleServiceTest {
     when(teamRepository.findById(teamId)).thenReturn(Optional.of(mockTeam));
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(scheduleCategory));
     when(scheduleRepository.save(any(Schedule.class))).thenAnswer(
-        invocation -> invocation.getArgument(0));
+        invocation -> {
+          Schedule savedSchedule = invocation.getArgument(0);
+          assertNotNull(savedSchedule.getStartDt(), "스케줄 시작일은 null일 수 없습니다.");
+          assertNotNull(savedSchedule.getEndDt(), "스케줄 종료일은 null일 수 없습니다.");
+          return savedSchedule;
+        });
 
+    // When
     Page<Schedule> resultPage = scheduleService.addSchedules(scheduleRequest);
 
-    // 결과 검증
-    assertEquals(1, resultPage.getTotalElements());  // 페이지에 포함된 스케줄의 총 개수는 1이어야 합니다.
+    // Then
+    assertEquals(1, resultPage.getTotalElements(),
+        "페이지에 포함된 스케줄의 총 개수는 1이어야 합니다.");
+
     Schedule result = resultPage.getContent().get(0);
     assertEquals(scheduleRequest.getTitle(), result.getTitle());
     assertEquals(scheduleRequest.getContent(), result.getContent());
@@ -92,12 +107,18 @@ class ScheduleServiceTest {
     assertEquals(scheduleRequest.isRepeat(), result.isRepeat());
     assertEquals(mockTeam, result.getTeam());
     assertEquals(scheduleCategory, result.getScheduleCategory());
+
+    verify(teamRepository, times(1)).findById(teamId);
+    verify(categoryRepository, times(1)).findById(categoryId);
+    verify(scheduleRepository, times(1)).save(any(Schedule.class));
   }
+
 
   @Test
   @DisplayName("일정 조회 - 성공")
   public void searchScheduleSuccess() {
-    Pageable pageable = PageRequest.of(0, 10);
+    // Given
+    Pageable pageable = Pageable.unpaged();
 
     List<Schedule> mockScheduleList = new ArrayList<>();
 
@@ -119,8 +140,6 @@ class ScheduleServiceTest {
         .startDt(startDt)
         .endDt(startDt.plusWeeks(1))
         .team(team)
-        .teamParticipants(team.getTeamParticipants())
-        .color("SKYBLUE")
         .isRepeat(false)
         .repeatCycle(null)
         .build();
@@ -133,8 +152,6 @@ class ScheduleServiceTest {
         .startDt(startDt)
         .endDt(startDt.plusWeeks(1))
         .team(team)
-        .teamParticipants(team.getTeamParticipants())
-        .color("SKYBLUE")
         .isRepeat(false)
         .repeatCycle(null)
         .build();
@@ -146,20 +163,26 @@ class ScheduleServiceTest {
 
     when(scheduleRepository.findAll(any(Pageable.class))).thenReturn(mockPage);
 
-    Page<Schedule> resultPage = scheduleService.searchSchedule(pageable);
-    List<Schedule> resultScheduleList = resultPage.getContent();
+    // When
+    Page<Schedule> resultPage = scheduleService.searchSchedule(pageable, team.getTeamId());
 
-    assertEquals(mockScheduleList.size(), resultScheduleList.size());
+    // Then
+    List<Schedule> resultScheduleList = resultPage.getContent();
+    assertEquals(mockScheduleList.size(), resultScheduleList.size(),
+        "결과 스케줄 목록의 크기는 예상과 일치해야 합니다.");
   }
+
 
   @Test
   @DisplayName("일정 수정 - 성공")
   void editScheduleSuccess() {
+    // Given
     Long teamId = 1L;
     Long categoryId = 1L;
+    Long scheduleId = 1L;
 
     ScheduleEditRequest request = ScheduleEditRequest.builder()
-        .scheduleId(1L)
+        .scheduleId(scheduleId)
         .categoryId(categoryId)
         .teamId(teamId)
         .title("김하나 휴가")
@@ -169,8 +192,7 @@ class ScheduleServiceTest {
         .place("집")
         .startDt(LocalDateTime.now())
         .endDt(LocalDateTime.now())
-        .color("PINK")
-        .teamParticipants(new ArrayList<>())
+        .teamParticipantsIds(new ArrayList<>())
         .build();
 
     Team mockTeam = Team.builder()
@@ -181,13 +203,18 @@ class ScheduleServiceTest {
         .scheduleCategoryId(categoryId)
         .build();
 
+    when(scheduleRepository.findById(scheduleId))
+        .thenReturn(Optional.of(Schedule.builder().build()));
+
     when(teamRepository.findById(teamId)).thenReturn(Optional.of(mockTeam));
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(scheduleCategory));
     when(scheduleRepository.save(any(Schedule.class))).thenAnswer(
         invocation -> invocation.getArgument(0));
 
+    // When
     Schedule editSchedule = scheduleService.editSchedule(request);
 
+    // Then
     assertEquals(request.getTitle(), editSchedule.getTitle());
     assertEquals(request.getContent(), editSchedule.getContent());
     assertEquals(request.getStartDt(), editSchedule.getStartDt());
@@ -197,29 +224,39 @@ class ScheduleServiceTest {
     assertEquals(mockTeam, editSchedule.getTeam());
     assertEquals(scheduleCategory, editSchedule.getScheduleCategory());
 
+    verify(scheduleRepository, times(1)).findById(scheduleId);
     verify(teamRepository, times(1)).findById(teamId);
     verify(categoryRepository, times(1)).findById(categoryId);
     verify(scheduleRepository, times(1)).save(any(Schedule.class));
   }
 
+
   @Test
   @DisplayName("일정 삭제 - 성공")
   void deleteScheduleSuccess() {
+    // Given
     Long scheduleId = 1L;
     Schedule mockSchedule = Schedule.builder()
         .scheduleId(scheduleId)
         .build();
 
     when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.of(mockSchedule));
+
+    // When
     scheduleService.deleteSchedule(scheduleId);
+
+    // Then
     verify(scheduleRepository, times(1)).delete(mockSchedule);
   }
 
   @Test
-  @DisplayName("일정 삭제 실패- 일정이 존재하지 않음")
+  @DisplayName("일정 삭제 실패 - 일정이 존재하지 않음")
   void deleteScheduleFailed() {
+    // Given
     Long scheduleId = 1L;
     when(scheduleRepository.findById(scheduleId)).thenReturn(Optional.empty());
+
+    // When, Then
     assertThrows(CustomException.class, () -> scheduleService.deleteSchedule(scheduleId));
     verify(scheduleRepository, never()).delete(any(Schedule.class));
   }

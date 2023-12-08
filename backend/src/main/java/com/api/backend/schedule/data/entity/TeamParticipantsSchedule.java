@@ -1,4 +1,4 @@
-package com.api.backend.schedule.data.enetity;
+package com.api.backend.schedule.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.team.data.entity.TeamParticipants;

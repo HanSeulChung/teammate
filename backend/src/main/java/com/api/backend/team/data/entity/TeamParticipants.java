@@ -2,7 +2,7 @@ package com.api.backend.team.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.entity.Member;
-import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
+import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.team.data.type.TeamRole;
 import java.util.List;
 import javax.persistence.CascadeType;

@@ -1,7 +1,7 @@
 package com.api.backend.schedule.data.dto;
 
-import com.api.backend.schedule.data.enetity.Schedule;
-import com.api.backend.schedule.data.enetity.TeamParticipantsSchedule;
+import com.api.backend.schedule.data.entity.Schedule;
+import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -58,15 +58,8 @@ public class ScheduleDto {
         .build();
   }
 
-  public static List<ScheduleDto> of(Page<Schedule> schedules) {
-    if (schedules != null) {
-      List<ScheduleDto> scheduleDtoList = new ArrayList<>();
-      for (Schedule schedule : schedules) {
-        scheduleDtoList.add(ScheduleDto.of(schedule));
-      }
-      return scheduleDtoList;
-    }
-    return new ArrayList<>();
+  public static Page<ScheduleDto> of(Page<Schedule> schedules) {
+    return schedules.map(ScheduleDto::of);
   }
 
   private static List<Long> getTeamParticipantsIdsFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {

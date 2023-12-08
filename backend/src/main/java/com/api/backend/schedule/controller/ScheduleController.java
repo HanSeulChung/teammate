@@ -5,12 +5,9 @@ import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
-import com.api.backend.schedule.data.enetity.Schedule;
 import com.api.backend.schedule.service.ScheduleService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,27 +29,23 @@ public class ScheduleController {
   @PostMapping
   public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody ScheduleRequest request,
       @PathVariable Long teamId) {
-    Page<Schedule> schedules = scheduleService.addSchedules(request);
-    List<ScheduleDto> scheduleDto = ScheduleDto.of(schedules);
-    List<ScheduleResponse> scheduleResponse = ScheduleResponse.from(scheduleDto);
-    return ResponseEntity.ok(new PageImpl<>(scheduleResponse));
+    Page<ScheduleDto> scheduleDto = ScheduleDto.of(scheduleService.addSchedules(request));
+    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(scheduleDto);
+    return ResponseEntity.ok(scheduleResponse);
   }
 
   @GetMapping("/{scheduleId}")
   public ResponseEntity<Page<ScheduleResponse>> searchSchedule(@PathVariable Long teamId,
       @PathVariable Long scheduleId, Pageable pageable) {
-    Page<Schedule> schedules = scheduleService.searchSchedule(pageable);
-    List<ScheduleDto> scheduleDtoList = ScheduleDto.of(schedules);
-    List<ScheduleResponse> scheduleResponses = ScheduleResponse.from(scheduleDtoList);
-    Page<ScheduleResponse> scheduleDtoPage = new PageImpl<>(scheduleResponses);
+    Page<ScheduleDto> scheduleDto = ScheduleDto.of(scheduleService.searchSchedule(pageable, teamId));
+    Page<ScheduleResponse> scheduleDtoPage = ScheduleResponse.from(scheduleDto);
     return ResponseEntity.ok(scheduleDtoPage);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
   ScheduleEditRequest request) {
-    Schedule schedule = scheduleService.editSchedule(request);
-    ScheduleDto scheduleDto = ScheduleDto.of(schedule);
+    ScheduleDto scheduleDto = ScheduleDto.of(scheduleService.editSchedule(request));
     ScheduleEditResponse response = ScheduleEditResponse.from(scheduleDto);
     return ResponseEntity.ok(response);
   }
@@ -63,5 +56,4 @@ public class ScheduleController {
     scheduleService.deleteSchedule(scheduleId);
     return ResponseEntity.ok("해당 일정이 정상적으로 삭제되었습니다.");
   }
-
 }

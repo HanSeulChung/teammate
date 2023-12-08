@@ -1,11 +1,10 @@
-package com.api.backend.schedule.data.enetity;
+package com.api.backend.schedule.data.entity;
 
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.Team;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -31,7 +30,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "schedule")
 public class Schedule extends BaseEntity {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long scheduleId;
