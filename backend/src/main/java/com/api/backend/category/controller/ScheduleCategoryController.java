@@ -35,23 +35,23 @@ public class ScheduleCategoryController {
     return ResponseEntity.ok(ScheduleCategoryResponse.to(dto));
   }
 
-  @GetMapping
+  @GetMapping("/{categoryType}")
   public ResponseEntity<Page<ScheduleCategoryResponse>> searchByCategoryType(
-      @RequestParam String categoryType, Pageable pageable) {
+      @PathVariable String categoryType, Pageable pageable, @RequestParam Long teamId) {
     CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
     Page<ScheduleCategoryDto> scheduleCategories = ScheduleCategoryDto.from(
-        scheduleCategoryService.searchByCategoryType(
-            enumCategoryType, pageable));
-    Page<ScheduleCategoryResponse> scheduleCategoryResponses = ScheduleCategoryResponse.to(
-        scheduleCategories);
-    return ResponseEntity.ok(scheduleCategoryResponses);
+        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable, teamId)
+    );
+    Page<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.to(scheduleCategories);
+    return ResponseEntity.ok(responses);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleCategoryEditResponse> editCategory(
-      @RequestBody ScheduleCategoryEditRequest request, @RequestParam Long teamId) {
+      @RequestBody ScheduleCategoryEditRequest request) {
     ScheduleCategoryDto scheduleCategoryDto = ScheduleCategoryDto.from(
-        scheduleCategoryService.edit(request, teamId));
+        scheduleCategoryService.edit(request)
+    );
     return ResponseEntity.ok(ScheduleCategoryEditResponse.to(scheduleCategoryDto));
   }
 

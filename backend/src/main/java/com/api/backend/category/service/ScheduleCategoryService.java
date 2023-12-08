@@ -31,7 +31,6 @@ public class ScheduleCategoryService {
     Team team = validateTeam(scheduleCategoryRequest.getTeamId());
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
-        .scheduleCategoryId(scheduleCategoryRequest.getCategoryId())
         .team(team)
         .categoryName(scheduleCategoryRequest.getCategoryName())
         .categoryType(scheduleCategoryRequest.getCategoryType())
@@ -43,14 +42,13 @@ public class ScheduleCategoryService {
 
 
   public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
-      Pageable pageable) {
-    return scheduleCategoryRepository.findAllByCategoryType(categoryType, pageable);
+      Pageable pageable, Long teamId) {
+    return scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable, teamId);
   }
 
   @Transactional
-  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest,
-      Long teamId) {
-    validateTeam(teamId);
+  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest) {
+    validateTeam(scheduleCategoryEditRequest.getTeamId());
     ScheduleCategory scheduleCategory = validateScheduleCategory(
         scheduleCategoryEditRequest.getCategoryId());
     scheduleCategory.editScheduleCategory(scheduleCategoryEditRequest);
