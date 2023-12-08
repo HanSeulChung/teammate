@@ -13,6 +13,7 @@ import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
+import java.security.Principal;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -65,20 +66,11 @@ public class DocumentService {
     return saveDocuments;
   }
 
-  private Long getAuthenticationId() {
-    SecurityContext securityContext = SecurityContextHolder.getContext();
-    Authentication authentication = securityContext.getAuthentication();
-    String authenticationName = authentication.getName();
-
-    return Long.parseLong(authenticationName);
-  }
-
   @Transactional
-  public DeleteDocsResponse deleteDocs(Long teamId, String documentIdx) {
+  public DeleteDocsResponse deleteDocs(Long teamId, String documentIdx, Principal princiPal) {
 
-    Long authenticationId = getAuthenticationId();
-    TeamParticipants teamParticipants = teamParticipantsRepository.findByMember_MemberId(
-            authenticationId)
+    Long memberId = Long.parseLong(princiPal.getName());
+    TeamParticipants teamParticipants = teamParticipantsRepository.findByMember_MemberId(memberId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     if (teamParticipants.getTeam().getTeamId() != teamId) {
@@ -105,6 +97,5 @@ public class DocumentService {
         .message("삭제 되었습니다.")
         .build();
   }
-
 
 }

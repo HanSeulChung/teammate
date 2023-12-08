@@ -51,9 +51,9 @@ public class DocumentsController {
   }
 
   @DeleteMapping("/team/{teamId}/documents/{documentsId}")
-  public ResponseEntity<DeleteDocsResponse> deleteDocs(@PathVariable Long teamId, @PathVariable String documentsId) {
+  public ResponseEntity<DeleteDocsResponse> deleteDocs(@PathVariable Long teamId, @PathVariable String documentsId, Principal principal) {
 
     return ResponseEntity.ok()
-        .body(documentService.deleteDocs(teamId, documentsId));
+        .body(documentService.deleteDocs(teamId, documentsId, principal));
   }
 }
