@@ -18,15 +18,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/team/{teamId}/documents/{documentId}/comments")
 public class CommentController {
 
   private final CommentService commentService;
 
-  @PostMapping("/team/{teamId}/documents/{documentId}/comments")
+  @PostMapping()
   public ResponseEntity<CommentResponse> createComments(
       @PathVariable Long teamId, @PathVariable String documentId,
       @RequestBody @Valid CommentInitRequest request
@@ -36,7 +38,7 @@ public class CommentController {
     return ResponseEntity.ok(CommentResponse.from(comment));
   }
 
-  @GetMapping("/team/{teamId}/documents/{documentId}/comments")
+  @GetMapping()
   public ResponseEntity<Page<CommentResponse>> getCommentsList(
       @PathVariable Long teamId, @PathVariable String documentId,
       Pageable pageable) {
@@ -48,7 +50,7 @@ public class CommentController {
     return ResponseEntity.ok(commentDtoPage);
   }
 
-  @PutMapping("/team/{teamId}/documents/{documentId}/comments/{commentId}")
+  @PutMapping("/{commentId}")
   public ResponseEntity<CommentResponse> editComment(
       @PathVariable Long teamId, @PathVariable String documentId,
       @PathVariable String commentId,
@@ -59,7 +61,7 @@ public class CommentController {
     return ResponseEntity.ok(CommentResponse.from(comment));
   }
 
-  @DeleteMapping("/team/{teamId}/documents/{documentId}/comments/{commentId}")
+  @DeleteMapping("/{commentId}")
   public ResponseEntity<DeleteCommentsResponse> deleteComment(
       @PathVariable Long teamId, @PathVariable String documentId,
       @PathVariable String commentId, Principal principal
