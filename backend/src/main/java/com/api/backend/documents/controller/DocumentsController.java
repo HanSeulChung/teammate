@@ -1,5 +1,6 @@
 package com.api.backend.documents.controller;
 
+import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentInitRequest;
 import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.documents.data.entity.Documents;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,5 +48,12 @@ public class DocumentsController {
   public ResponseEntity<DocumentResponse> createDocs(
           @PathVariable Long teamId, @RequestBody @Valid DocumentInitRequest request) {
     return ResponseEntity.ok(DocumentResponse.from(documentService.createDocs(request, teamId)));
+  }
+
+  @DeleteMapping("/team/{teamId}/documents/{documentsId}")
+  public ResponseEntity<DeleteDocsResponse> deleteDocs(@PathVariable Long teamId, @PathVariable String documentsId, Principal principal) {
+
+    return ResponseEntity.ok()
+        .body(documentService.deleteDocs(teamId, documentsId, principal));
   }
 }
