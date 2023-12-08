@@ -45,7 +45,11 @@ public enum ErrorCode {
   // documents
   DOCUMENT_NOT_IN_TEAM_EXCEPTION(400, "해당 팀에 속하지 않은 문서입니다."),
   DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION(400, "해당 문서의 생성자가 아닙니다."),
-  DOCUMENT_NOT_FOUND_EXCEPTION(400, "존재하지 않는 문서입니다.");
+  DOCUMENT_NOT_FOUND_EXCEPTION(400, "존재하지 않는 문서입니다."),
+
+  // comment
+  COMMENT_NOT_FOUND_EXCEPTION(400, "존재하지 않는 댓글 입니다."),
+  COMMENT_UNMATCH_WRITER_ID_EXCEPTION(400, "댓글의 작성자가 아닙니다.");
 
   private final int code;
   private final String errorMessage;
