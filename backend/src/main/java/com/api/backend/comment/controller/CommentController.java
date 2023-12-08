@@ -3,13 +3,16 @@ package com.api.backend.comment.controller;
 import com.api.backend.comment.data.dto.CommentEditRequest;
 import com.api.backend.comment.data.dto.CommentInitRequest;
 import com.api.backend.comment.data.dto.CommentResponse;
+import com.api.backend.comment.data.dto.DeleteCommentsResponse;
 import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.comment.service.CommentService;
+import java.security.Principal;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,4 +59,12 @@ public class CommentController {
     return ResponseEntity.ok(CommentResponse.from(comment));
   }
 
+  @DeleteMapping("/team/{teamId}/documents/{documentId}/comments/{commentId}")
+  public ResponseEntity<DeleteCommentsResponse> deleteComment(
+      @PathVariable Long teamId, @PathVariable String documentId,
+      @PathVariable String commentId, Principal principal
+  ) {
+
+    return ResponseEntity.ok(commentService.deleteComment(teamId, documentId, commentId, principal));
+  }
 }
