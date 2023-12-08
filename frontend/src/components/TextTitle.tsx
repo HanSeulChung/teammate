@@ -5,7 +5,7 @@ const TitleInput = styled.input`
   border: 1px solid black;
   background-color: white;
   color: black;
-  width: 40rem;
+  width: 39rem;
   font-size: 16px;
   margin-bottom: 4px;
   padding: 4px;
@@ -14,22 +14,15 @@ const TitleInput = styled.input`
   }
 `;
 
-interface TextTitleProps {
-  titleProps: string; // Corrected prop name
-}
-
-const TextTitle: React.FC<TextTitleProps> = ({ titleProps }) => {
+const TextTitle: React.FC = () => {
   const [title, setTitle] = useState<string>("");
-  
-  useEffect(() => {
-    // Set the titleProps initially when the component mounts
-    setTitle(titleProps);
 
+  useEffect(() => {
     const titleData = localStorage.getItem("title");
     if (titleData) {
       setTitle(titleData);
     }
-  }, [titleProps]);
+  }, []);
 
   const titleSave = () => {
     localStorage.setItem("title", title);

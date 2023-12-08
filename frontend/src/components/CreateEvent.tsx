@@ -1,4 +1,5 @@
 import {EventInput, EventForm} from '../styles/CreateEventStyled'
+import { CommonSubmitBtn } from '../styles/CommonStyled';
 
 const CreateEvent = () => {
     return (
@@ -30,7 +31,7 @@ const CreateEvent = () => {
                 <option value="third">미팅</option>
             </select>
 
-            <button>등록</button>
+            <CommonSubmitBtn>등록</CommonSubmitBtn>
         </EventForm>
     );
 };
