@@ -30,23 +30,28 @@ public class ScheduleCategoryController {
   @PostMapping
   public ResponseEntity<ScheduleCategoryResponse> categoryAdd(
       @RequestBody ScheduleCategoryRequest request, @RequestParam Long teamId) {
-    ScheduleCategoryDto scheduleCategoryDto = scheduleCategoryService.add(request, teamId);
-    return ResponseEntity.ok(ScheduleCategoryResponse.from(scheduleCategoryDto));
+    ScheduleCategoryDto dto = ScheduleCategoryDto.from(scheduleCategoryService.add(request, teamId));
+    return ResponseEntity.ok(ScheduleCategoryResponse.to(dto));
   }
 
   @GetMapping
   public ResponseEntity<Page<ScheduleCategoryResponse>> searchByCategoryType(
       @RequestParam String categoryType, Pageable pageable) {
     CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
-    return ResponseEntity.ok(
-        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable));
+    Page<ScheduleCategoryDto> scheduleCategories = ScheduleCategoryDto.from(
+        scheduleCategoryService.searchByCategoryType(
+            enumCategoryType, pageable));
+    Page<ScheduleCategoryResponse> scheduleCategoryResponses = ScheduleCategoryResponse.to(
+        scheduleCategories);
+    return ResponseEntity.ok(scheduleCategoryResponses);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleCategoryEditResponse> editCategory(
       @RequestBody ScheduleCategoryEditRequest request, @RequestParam Long teamId) {
-    ScheduleCategoryDto scheduleCategoryDto = scheduleCategoryService.edit(request, teamId);
-    return ResponseEntity.ok(ScheduleCategoryEditResponse.from(scheduleCategoryDto));
+    ScheduleCategoryDto scheduleCategoryDto = ScheduleCategoryDto.from(
+        scheduleCategoryService.edit(request, teamId));
+    return ResponseEntity.ok(ScheduleCategoryEditResponse.to(scheduleCategoryDto));
   }
 
   @DeleteMapping

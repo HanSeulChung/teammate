@@ -17,7 +17,7 @@ public class ScheduleCategoryEditResponse {
   private LocalDateTime updateDt;
   private String color;
 
-  public static ScheduleCategoryEditResponse from(ScheduleCategoryDto scheduleCategoryDto) {
+  public static ScheduleCategoryEditResponse to(ScheduleCategoryDto scheduleCategoryDto) {
     return ScheduleCategoryEditResponse.builder()
         .categoryId(scheduleCategoryDto.getCategoryId())
         .categoryName(scheduleCategoryDto.getCategoryName())
