@@ -35,9 +35,9 @@ public class TeamParticipantsService {
   private final boolean DELETE_FALSE_FLAG = false;
   private final ImgStoreImpl imgStore;
 
-  public String deleteTeamParticipant(String userId, Long teamId) {
+  public String deleteTeamParticipant(Long userId, Long teamId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))
+        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     if (teamParticipants.getTeamRole().equals(TeamRole.READER)) {
@@ -49,9 +49,9 @@ public class TeamParticipantsService {
   }
 
   @Transactional
-  public String updateRoleTeamParticipant(String userId, Long participantId, Long teamId) {
+  public String updateRoleTeamParticipant(Long userId, Long participantId, Long teamId) {
     TeamParticipants readerParticipant = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))
+        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     if (!readerParticipant.getTeamRole().equals(TeamRole.READER)) {
@@ -74,9 +74,9 @@ public class TeamParticipantsService {
     return UPDATE_ROLE_TEAM_PARTICIPANT;
   }
 
-  public List<TeamParticipants> getTeamParticipants(Long teamId, String userId) {
+  public List<TeamParticipants> getTeamParticipants(Long teamId, Long userId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))
+        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     Team team = teamParticipants.getTeam();
@@ -86,9 +86,9 @@ public class TeamParticipantsService {
     return team.getTeamParticipants();
   }
 
-  public TeamParticipants getTeamParticipant(Long teamId, String userId) {
+  public TeamParticipants getTeamParticipant(Long teamId, Long userId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))
+        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     teamService.isDeletedCheck(teamParticipants.getTeam());

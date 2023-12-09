@@ -74,7 +74,7 @@ class TeamServiceTest {
   void getTeamUrl_success() {
     //given
     Long id = 1L;
-    String userId = "1";
+    Long userId = 1L;
     Team team = Team.builder()
         .teamId(1L)
         .inviteLink("2/dsfefsefnklsd")
@@ -95,7 +95,7 @@ class TeamServiceTest {
   void getTeamUrl_fail() {
     //given
     Long id = 1L;
-    String userId = "1";
+    Long userId = 1L;
     Team team = Team.builder()
         .teamId(1L)
         .profileUrl("2/dsfefsefnklsd")
@@ -118,7 +118,7 @@ class TeamServiceTest {
   void updateTeamParticipants_success(){
     //given
     Long id = 1L;
-    String userId = "1";
+    Long userId = 1L;
     String code = "dsfefsefnklsd";
     Team team = Team.builder()
         .teamId(1L)
@@ -144,7 +144,7 @@ class TeamServiceTest {
   void updateTeamParticipants_fail_code(){
     //given
     Long id = 1L;
-    String userId = "1";
+    Long userId = 1L;
     String code = "sadsadasd";
     Team team = Team.builder()
         .teamId(1L)
@@ -169,7 +169,7 @@ class TeamServiceTest {
   void updateTeamParticipants_fail_exist_user(){
     //given
     Long id = 1L;
-    String userId = "1";
+    Long userId = 1L;
     String code = "dsfefsefnklsd";
     Team team = Team.builder()
         .teamId(1L)
@@ -195,6 +195,7 @@ class TeamServiceTest {
   @DisplayName("팀원 강퇴 로직 - 성공")
   void KickOutTeamParticipants_success(){
     //given
+    Long userId = 1L;
     TeamKickOutRequest request =
         new TeamKickOutRequest(1L, 1L, "testMessage");
     TeamParticipants teamParticipants = TeamParticipants
@@ -213,10 +214,6 @@ class TeamServiceTest {
         ).build();
     List<TeamParticipants> teamParticipantsList = List.of(teamParticipants);
 
-    Team team = Team.builder()
-        .teamParticipants(teamParticipantsList)
-        .teamId(1L)
-        .build();
     when(teamRepository.existsByTeamIdAndIsDelete(anyLong(), anyBoolean()))
         .thenReturn(true);
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))
@@ -224,7 +221,7 @@ class TeamServiceTest {
         .thenReturn(Optional.of(teamParticipants));
     doNothing().when(teamParticipantsRepository).delete(any());
     //when
-    TeamKickOutResponse result = teamService.kickOutTeamParticipants(request, "2");
+    TeamKickOutResponse result = teamService.kickOutTeamParticipants(request, userId);
 
     //then
     assertEquals(result.getTeamId(),request.getTeamId());
@@ -235,11 +232,7 @@ class TeamServiceTest {
     //given
     TeamKickOutRequest request =
         new TeamKickOutRequest(1L, 1L, "testMessage");
-
-    Team team = Team.builder()
-        .teamParticipants(new ArrayList<>())
-        .teamId(1L)
-        .build();
+    Long userId = 1L;
 
     when(teamRepository.existsByTeamIdAndIsDelete(anyLong(), anyBoolean()))
         .thenReturn(true);
@@ -248,7 +241,7 @@ class TeamServiceTest {
     //when
     CustomException result = assertThrows(
         CustomException.class,
-        () -> teamService.kickOutTeamParticipants(request, "2")
+        () -> teamService.kickOutTeamParticipants(request, userId)
     );
 
     //then
@@ -263,7 +256,7 @@ class TeamServiceTest {
   @DisplayName("팀 해체 로직 - 성공")
   void disbandTeam_success() {
     //given
-    String userId = "1";
+    Long userId = 1L;
     TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
     Member member = Member.builder().memberId(1L).password("test").build();
     Team team = Team.builder()
@@ -290,12 +283,8 @@ class TeamServiceTest {
   @DisplayName("팀 해체 로직 - 실패[팀원이 존재하지 않음]")
   void disbandTeam_fail_participants() {
     //given
-    String userId = "1";
+    Long userId = 1L;
     TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
-    Member member = Member.builder().memberId(1L).password("test").build();
-    Team team = Team.builder()
-        .isDelete(false)
-        .build();
 
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
         anyLong(), any()
@@ -316,7 +305,7 @@ class TeamServiceTest {
   @DisplayName("팀 해체 로직 - 실패[권한 부족]")
   void disbandTeam_fail_mate() {
     //given
-    String userId = "1";
+    Long userId = 1L;
     TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
     Member member = Member.builder().memberId(1L).password("test").build();
     Team team = Team.builder()
@@ -346,7 +335,7 @@ class TeamServiceTest {
   @DisplayName("팀 해체 로직 - 실패[비밀번호 불일치]")
   void disbandTeam_fail_password() {
     //given
-    String userId = "1";
+    Long userId = 1L;
     TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
     Member member = Member.builder().memberId(1L).password("asdasdswd").build();
     Team team = Team.builder()
@@ -376,7 +365,7 @@ class TeamServiceTest {
   @DisplayName("팀 해체 로직 - 실패[복구 시간 not null]")
   void disbandTeam_fail_restoreDt() {
     //given
-    String userId = "1";
+    Long userId = 1L;
     TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
     Member member = Member.builder().memberId(1L).password("test").build();
     Team team = Team.builder()
@@ -408,7 +397,7 @@ class TeamServiceTest {
   @DisplayName("팀 해체 로직 - 실패[팀이 이미 해체됨]")
   void disbandTeam_fail_delete() {
     //given
-    String userId = "1";
+    Long userId = 1L;
     TeamDisbandRequest teamDisbandRequest = new TeamDisbandRequest(1L, "test");
     Member member = Member.builder().memberId(1L).password("test").build();
     Team team = Team.builder()
@@ -440,7 +429,7 @@ class TeamServiceTest {
   @DisplayName("팀 복구 로직 - 성공[복구 성공]")
   void restoreTeam_success_restore_success(){
     //given
-    String userId = "1";
+    Long userId = 1L;
     LocalDate restoreDt = LocalDate.now().minusDays(19L);
     Long teamId = 1L;
 
@@ -471,7 +460,7 @@ class TeamServiceTest {
   @DisplayName("팀 복구 로직 - 실패[권한 부족]")
   void restoreTeam_fail_mate(){
     //given
-    String userId = "1";
+    Long userId = 1L;
     LocalDate restoreDt = LocalDate.now().minusDays(19L);
     Long teamId = 1L;
 
@@ -490,7 +479,7 @@ class TeamServiceTest {
   @DisplayName("팀 복구 로직 - 실패[이미 해체된 팀]")
   void restoreTeam_fail_isDelete(){
     //given
-    String userId = "1";
+    Long userId = 1L;
     LocalDate restoreDt = LocalDate.now().minusDays(19L);
     Long teamId = 1L;
     Member member = Member.builder().memberId(1L).password("test").build();
@@ -524,7 +513,7 @@ class TeamServiceTest {
   @DisplayName("팀 복구 로직 - 실패[restoreDt null]")
   void restoreTeam_fail_restoreDt(){
     //given
-    String userId = "1";
+    Long userId = 1L;
     LocalDate restoreDt = LocalDate.now().minusDays(19L);
     Long teamId = 1L;
     Member member = Member.builder().memberId(1L).password("test").build();
@@ -557,7 +546,7 @@ class TeamServiceTest {
   @DisplayName("자신이 속한 팀 조회시 팀 해체여부가 false 인 것만 받아온다.")
   void getTimes(){
     //given
-    String userId = "1";
+    Long userId = 1L;
     Pageable pageable = PageRequest.of(0,10);
     List<Team> teams = new ArrayList<>();
     for (int i = 0; i < 3; i++) {
@@ -589,7 +578,7 @@ class TeamServiceTest {
     MultipartFile multipartFile = new MockMultipartFile("Img", new byte[2]);
     TeamUpdateRequest teamUpdateRequest =
         new TeamUpdateRequest(1L, "test", multipartFile);
-    String userId = "1";
+    Long userId = 1L;
     Team team = Team.builder()
         .name("test1")
         .profileUrl("test").build();
