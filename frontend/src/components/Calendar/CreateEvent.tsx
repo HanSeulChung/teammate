@@ -1,6 +1,6 @@
 import {EventInput, EventForm} from '../../styles/CreateEventStyled'
 import { CommonSubmitBtn } from '../../styles/CommonStyled';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from "axios";
 
 import { schedules } from "../../recoil/atoms/schedules.tsx"
@@ -35,6 +35,26 @@ const CreateEvent = () => {
         console.log(e.target.value);
         setEventChange((prev) => ({...prev, [e.target.name] : e.target.value}));
     }
+
+    // 입력값 추적
+    useEffect(() => {
+        // console.log("useEffect 입력값 추적 : ", eventChange);
+        setNewEvent({
+            title: eventChange.title,
+            start: eventChange.start,
+            extendedProps: {
+                contents: eventChange.contents, 
+                place: eventChange.place, 
+                groupId: eventChange.groupId
+        }
+        })
+    }, [eventChange]);
+    
+    // // 전송 전 setData 추적
+    // useEffect(() => {
+    //     console.log("useEffect 전송값 추적 : ", newEvent);
+    // }, [newEvent]);
+    
 
     const handleScheduleSubmit = async (event) => {
         event.preventDefault();
