@@ -20,7 +20,6 @@ import styled from "styled-components";
 import "./TextEditor.css";
 import TextTitle from "./TextTitle";
 import * as StompJs from "@stomp/stompjs";
-import testText from "../assets/test-text.json";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -42,12 +41,17 @@ const SaveButton = styled.button`
 const ButtonContainer = styled.div`
   width: 41rem;
 `;
+interface TextEditorProps {
+  id: string;
+}
 
-const TextEditor: React.FC = () => {
+const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
   const [currentText, setCurrentText] = React.useState<string>("");
   const [title, setTitle] = React.useState<string>("");
 
-  const docsIdx = "1aac3642-ef31-479a-8cf4-cfd93bb39e06";
+  const docsIdx = id;
+  console.log(docsIdx);
+  // const docsIdx = "1aac3642-ef31-479a-8cf4-cfd93bb39e06";
 
   const data = "";
   const initialState = data
@@ -184,14 +188,9 @@ const TextEditor: React.FC = () => {
         }}
         handleKeyCommand={handleKeyCommand}
       />
-      {/* <SaveButton
-        className="save"
-        type="button"
-        onClick={(e) => {
-        }}
-      >
+      <SaveButton className="save" type="button" onClick={(e) => {}}>
         save
-      </SaveButton> */}
+      </SaveButton>
     </StyledTexteditor>
   );
 };
