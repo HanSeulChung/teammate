@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
 import Calender from "../views/Calender";
+
+import TextEditorView from "../views/TextEditorView";
 import SignInView from "../views/SignInView";
 import SignUp from "../components/Join/SignUp";
 import Index from "../views/Index";
@@ -13,6 +15,9 @@ import TeamCreateView from "../views/TeamCreateView";
 const Router = () => {
   return (
     <Routes>
+      {/* <Route path='*' element={<Error />} /> */}
+      <Route path="/캘린더" element={<Calender />} />
+      <Route path="text-editor/:id" element={<TextEditorView />} />
       <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />
@@ -21,7 +26,7 @@ const Router = () => {
       <Route path="/home" element={<Home />} />
       <Route path="/homeview" element={<HomeView />} />
       <Route path="/mypage" element={<Mypage />} />
-      <Route path="/teamcreateview" element={<TeamCreateView />} />
+      <Route path="/teamcreateview" element={<TeamCreateView />} /> */}
       <Route />
     </Routes>
   );
