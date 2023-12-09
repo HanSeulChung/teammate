@@ -3,18 +3,24 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import '../styles/teamCalender.css'
+import '../../styles/teamCalender.css'
 import { Modal, Overlay, ModalContent, CloseModal, CalendarDiv } from '../../styles/TeamCalenderStyled.tsx'
 import CreateEvent from "./CreateEvent.tsx";
 import axios from "axios";
 
+import { schedules } from "../../recoil/atoms/schedules.tsx"
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 const TeamCalender = () => {
     // 모달팝업 유무 값
     const [eventDetailModal, setEventDetailModal] = useState(false);
     const [eventFormModal, seteventFormModal] = useState(false);
     
-    // 달력 일정
+    // recoil 사용 선언부, 이벤트 목록
+    const eventList = useRecoilValue(schedules);
+    const setEventList = useSetRecoilState(schedules);
+
+    // 달력 일정 각각 state 핸들링용
     const [event, setEvent] = useState([]);
 
     // 모달팝업 관리
@@ -54,7 +60,7 @@ const TeamCalender = () => {
                 });
                 if (res.status === 200) {
                     console.log(res.data);
-                    setEvent(res.data);
+                    setEventList(res.data);
                 }
             } catch (error) {
                 console.log(error);
@@ -76,7 +82,7 @@ const TeamCalender = () => {
                     center: "title",
                     end: "dayGridMonth timeGridWeek"
                 }}
-                events={event}
+                events={eventList}
                 eventClick={(e) => HandleEventClick(e)}
                 dateClick={(e) => HandleDateClick(e)}
             />
