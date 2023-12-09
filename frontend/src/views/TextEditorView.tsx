@@ -19,11 +19,12 @@ const TextEditorView: React.FC<TextEditorViewProps> = () => {
     return <div>No ID provided</div>;
   }
 
-  return (
+
+  return(
     <StyledTextEditorView>
       <TextEditor id={id} />
     </StyledTextEditorView>
-  );
-};
+  )
+}
 
 export default TextEditorView;

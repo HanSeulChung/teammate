@@ -5,6 +5,9 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    
+    //main.tsx파일에서 browser.js파일을 가져오기 위해
+    "allowJs":true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
