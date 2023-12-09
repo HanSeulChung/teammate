@@ -2,7 +2,7 @@ package com.api.backend.notification.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.entity.Member;
-import com.api.backend.notification.data.type.Type;
+import com.api.backend.notification.data.type.NotificationType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -32,8 +32,10 @@ public class Notification extends BaseEntity {
   private Long receiverId;
 
   @Enumerated(EnumType.STRING)
-  private Type type;
+  private NotificationType notificationType;
   private String message;
+  private String targetUrl;
+  private boolean isRead;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id")
