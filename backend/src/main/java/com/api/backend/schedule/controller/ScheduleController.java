@@ -5,6 +5,7 @@ import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.service.ScheduleService;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class ScheduleController {
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
-  ScheduleEditRequest request) {
+  @Valid ScheduleEditRequest request) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
         scheduleService.editSchedule(request)
     );

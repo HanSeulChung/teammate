@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.customValidAnnotation.StartAndEndDtCheck;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,6 +11,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
+@StartAndEndDtCheck(scheduleStart = "startDt", scheduleEnd = "endDt")
 public class ScheduleEditRequest {
   private Long scheduleId;
   private Long teamId;
