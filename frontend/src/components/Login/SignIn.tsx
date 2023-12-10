@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { StyledContainer, StyledFormItem } from "../../styles/SignInStyled";
+import { StyledContainer, StyledFormItem } from "./SignInStyled";
 import { useRecoilState } from "recoil";
 import {
   isAuthenticatedState,

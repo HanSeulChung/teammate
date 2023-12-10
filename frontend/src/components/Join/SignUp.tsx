@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import axios from "axios";
-import { StyledContainer, StyledFormItem } from "../../styles/SignUpStyled.tsx";
+import { StyledContainer, StyledFormItem } from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
 
 interface SignUpProps {}

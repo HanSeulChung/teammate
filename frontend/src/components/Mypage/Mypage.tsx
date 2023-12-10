@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useUser, teamListState } from "../../state/authState";
 import { useRecoilValue } from "recoil";
-import UserProfile from "./UserProfile";
-import TeamProfile from "./TeamProfile";
+import UserProfile from "./MyUserProfile";
+import TeamProfile from "./MyTeamProfile";
 
 const Mypage = () => {
   const { user } = useUser();
