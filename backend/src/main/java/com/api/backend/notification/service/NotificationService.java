@@ -2,14 +2,19 @@ package com.api.backend.notification.service;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
+import com.api.backend.notification.data.entity.Notification;
 import com.api.backend.notification.data.repository.EmitterRepository;
+import com.api.backend.notification.data.repository.NotificationRepository;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.service.TeamParticipantsService;
 import com.api.backend.team.service.TeamService;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
@@ -22,6 +27,8 @@ public class NotificationService {
   private final TeamParticipantsService teamParticipantsService;
   private final TeamService teamService;
   private static final String DUMMY_DATA = "dummy data";
+  private final NotificationRepository notificationRepository;
+
 
   /**
    * 팀 참가자는 구독을 수행한다.
@@ -48,7 +55,7 @@ public class NotificationService {
         teamId,
         teamParticipant.getTeamParticipantsId()
     );
-    sendNotification(emitter, eventId, emitterId, DUMMY_DATA);
+    sendNotification(emitter, DUMMY_DATA);
 
     return emitter;
   }
@@ -57,17 +64,33 @@ public class NotificationService {
     return teamId + "_" + teamParticipantId;
   }
 
+  @Transactional
+  public void saveNotification(Notification notification) {
+    notificationRepository.save(notification);
+  }
+
   /**
    * 메시지 전송
    */
-  private void sendNotification(SseEmitter emitter, String eventId, String emitterId, Object data) {
+  public void sendNotification(SseEmitter emitter,Object data) {
     try {
-      emitter.send(SseEmitter.event()
-          .id(eventId)
-          .data(data)
+      emitter.send(
+          data, MediaType.APPLICATION_JSON
       );
     } catch (IOException exception) {
       log.info("발송 에러 : " + exception.getMessage());
     }
+  }
+
+  @Transactional
+  public void saveAllNotification(List<Notification> notifications) {
+    notificationRepository.saveAll(notifications);
+  }
+
+  public List<SseEmitter> getEmitters(Long teamId, Long participantsId) {
+
+    String excludeEmitterId = createTimeIncludeId(teamId,participantsId);
+
+    return emitterRepository.getAllByTeamIdAndExcludeEmitterId(teamId, excludeEmitterId);
   }
 }

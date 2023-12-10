@@ -1,6 +1,7 @@
 package com.api.backend.notification.data.repository;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
@@ -47,4 +48,16 @@ public class EmitterRepository {
     teamEmitters.put(teamId, teamParticipantMap);
   }
 
+  public List<SseEmitter> getAllByTeamIdAndExcludeEmitterId(Long teamId, String excludeEmitterId) {
+    Map<String, SseEmitter> teamParticipantsEmitters = teamEmitters.get(teamId);
+    List<SseEmitter> emitters = new ArrayList<>();
+
+    for (Map.Entry<String, SseEmitter> info : teamParticipantsEmitters.entrySet()) {
+      if (!info.getKey().equals(excludeEmitterId)) {
+        emitters.add(info.getValue());
+      }
+    }
+
+    return emitters;
+  }
 }
