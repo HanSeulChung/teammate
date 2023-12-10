@@ -9,6 +9,7 @@ import {
   ButtonContainer,
   DeleteButton,
 } from "./MyTeamProfileStyled";
+import profileImg from "../../assets/profileImg.png";
 
 interface TeamProfileProps {
   selectedTeam: string | null;
@@ -46,7 +47,7 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
           <ContainerWrapper>
             <ImageUploadContainer>
               <img
-                src={selectedImage || "/path/to/placeholder-image.jpg"}
+                src={selectedImage || profileImg}
                 alt="Selected"
                 onClick={() => document.getElementById("imageUpload")?.click()}
               />

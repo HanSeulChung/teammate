@@ -42,6 +42,10 @@ const UserProfileInfo = styled.div`
 
   select {
     padding: 5px;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #333333;
+    border-radius: 0;
   }
 `;
 const Email = styled.span`
@@ -53,13 +57,14 @@ const UpdateButton = styled.button`
   flex: 0.7;
   margin-left: 20px;
   padding: 0;
-  background-color: #a3cca3;
+  background-color: #cccccc;
   color: #333333;
   cursor: pointer;
+  border: none;
+  border-radius: 20px;
 
   &:hover {
-    background-color: #cccccc;
-    outline: #a3cca3; /* 커서를 갖다 댔을 때 테두리 제거 */
+    background-color: #a3cca3;
   }
 `;
 

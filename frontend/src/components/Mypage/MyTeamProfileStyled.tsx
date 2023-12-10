@@ -56,6 +56,10 @@ export const NicknameContainer = styled.span`
     margin-right: 10px;
     margin-bottom: 10px;
     padding: 5px;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #333333;
+    border-radius: 0;
   }
 `;
 
@@ -66,24 +70,26 @@ export const ButtonContainer = styled.div`
 `;
 
 export const UpdateButton = styled.button`
-  padding: 8px;
-  background-color: #a3cca3;
+  background-color: #cccccc;
   color: #333333;
   cursor: pointer;
   margin-right: 40px;
+  border: none;
+  border-radius: 20px;
 
   &:hover {
-    background-color: #cccccc;
+    background-color: #a3cca3;
   }
 `;
 
 export const DeleteButton = styled.button`
-  padding: 8px;
-  background-color: #e74c3c;
-  color: #ffffff;
+  background-color: #a3cca3;
+  color: #333333;
   cursor: pointer;
+  border: none;
+  border-radius: 20px;
 
   &:hover {
-    background-color: #cc0000;
+    background-color: #cccccc;
   }
 `;
