@@ -9,12 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentInitRequest;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
+import com.api.backend.documents.valid.DocumentAndCommentValidCheck;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.team.data.entity.Team;
@@ -23,7 +25,6 @@ import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,22 +37,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
 
   @Mock
+  private DocumentAndCommentValidCheck validCheck;
+
+  @Mock
   private DocumentsRepository documentsRepository;
   @Mock
   private TeamParticipantsRepository teamParticipantsRepository;
-
-  @Mock
-  private SecurityContext securityContext;
 
   @InjectMocks
   private DocumentService documentService;
@@ -65,9 +61,9 @@ class DocumentServiceTest {
     Principal principal = Mockito.mock(Principal.class);
     Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
     Page<Documents> documentsPage = new PageImpl<>(Collections.singletonList(document));
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
     when(documentsRepository.findAll(pageable)).thenReturn(documentsPage);
-    when(principal.getName()).thenReturn("1");
-    when(teamParticipantsRepository.findByMember_MemberId(1L)).thenReturn(Optional.of(teamParticipants));
     //when
     Page<Documents> docsPage = documentService.getDocsList(2L, principal, pageable);
 
@@ -84,8 +80,8 @@ class DocumentServiceTest {
     //given
     TeamParticipants teamParticipants = createTestSetting();
     Principal principal = Mockito.mock(Principal.class);
-    when(principal.getName()).thenReturn("1");
-    when(teamParticipantsRepository.findByMember_MemberId(1L)).thenReturn(Optional.of(teamParticipants));
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
     //when
     Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
     Page<Documents> docsPage = documentService.getDocsList(2L, principal, pageable);
@@ -104,9 +100,10 @@ class DocumentServiceTest {
     Documents documents = createtestDocuments();
 
     Principal principal = Mockito.mock(Principal.class);
-    when(principal.getName()).thenReturn("1");
-    when(teamParticipantsRepository.findByMember_MemberId(1L)).thenReturn(Optional.of(teamParticipants));
     when(documentsRepository.save(any())).thenReturn(documents);
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
+
     //when
     Documents savedDocuments = documentService.createDocs(request, 2L, principal);
 
@@ -124,9 +121,12 @@ class DocumentServiceTest {
     //given
     DocumentInitRequest request = createTestDocumentsRequest();
     createTestSetting();
+    TeamParticipants testSettingFail = createTestSetting_Fail();
 
     Principal principal = Mockito.mock(Principal.class);
-    when(principal.getName()).thenReturn("1");
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    doThrow(new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION)).when(validCheck)
+        .findValidTeamParticipantByMemberId(1L);
     //when
     CustomException exception = assertThrows(CustomException.class, () -> documentService.createDocs(request, 2L, principal));
 
@@ -140,11 +140,11 @@ class DocumentServiceTest {
   void createDocs_Fail_By_UnMatch_TeamId() {
     //given
     DocumentInitRequest request = createTestDocumentsRequest();
-    TeamParticipants teamParticipants = createTestSetting();
+    TeamParticipants teamParticipants = createTestSetting_Fail();
     Principal principal = Mockito.mock(Principal.class);
-    when(principal.getName()).thenReturn("1");
-    when(teamParticipantsRepository.findByMember_MemberId(1L)).thenReturn(Optional.of(teamParticipants));
-
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    doThrow(new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION)).when(validCheck)
+        .validTeamAndTeamParticipant(1L, teamParticipants);
     //when
     CustomException exception = assertThrows(CustomException.class, () -> documentService.createDocs(request, 213L, principal));
 
@@ -156,16 +156,16 @@ class DocumentServiceTest {
   @DisplayName("문서 삭제 성공")
   void deleteDocs_Success() {
     //given
-    Principal princiPal = Mockito.mock(Principal.class);
+    Principal principal = Mockito.mock(Principal.class);
     Documents documents = createtestDocuments();
     TeamParticipants teamParticipants = createTestSetting();
 
-    when(princiPal.getName()).thenReturn("1");
-    when(teamParticipantsRepository.findByMember_MemberId(1L)).thenReturn(Optional.of(teamParticipants));
-    when(documentsRepository.findById("testId")).thenReturn(Optional.of(documents));
 
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
+    when(validCheck.findValidDocument("testId")).thenReturn(documents);
     //when
-    DeleteDocsResponse deleteDocsResponse = documentService.deleteDocs(2L, "testId", princiPal);
+    DeleteDocsResponse deleteDocsResponse = documentService.deleteDocs(2L, "testId", principal);
 
     //then
     assertNotNull(deleteDocsResponse);
@@ -177,16 +177,17 @@ class DocumentServiceTest {
   @DisplayName("문서 삭제 실패_생성자가 아닐때")
   void deleteDocs_Fail_By_Not_WriterId() {
     //given
-    Principal princiPal = Mockito.mock(Principal.class);
+    Principal principal = Mockito.mock(Principal.class);
     Documents documents = createtestDocuments();
-    TeamParticipants teamParticipants = createTestSetting_Fail();
+    TeamParticipants failTeamParticipants = createTestSetting_Fail();
 
-    when(princiPal.getName()).thenReturn("1");
-    when(teamParticipantsRepository.findByMember_MemberId(1L)).thenReturn(Optional.of(teamParticipants));
-    when(documentsRepository.findById("testId")).thenReturn(Optional.of(documents));
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+//    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(failTeamParticipants);
 
+    doThrow(new CustomException(DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION)).when(validCheck).
+        validDocumentByWriterId(failTeamParticipants, documents);
     //when
-    CustomException exception = assertThrows(CustomException.class, () -> documentService.deleteDocs(2L, "testId", princiPal));
+    CustomException exception = assertThrows(CustomException.class, () -> documentService.deleteDocs(2L, "testId", principal));
 
     //then
     assertEquals(exception.getErrorCode(), DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION);
@@ -224,7 +225,7 @@ class DocumentServiceTest {
 
   private TeamParticipants createTestSetting_Fail() {
     Team team = Team.builder()
-        .teamId(2L)
+        .teamId(23L)
         .build();
 
     Member member  = Member.builder()
