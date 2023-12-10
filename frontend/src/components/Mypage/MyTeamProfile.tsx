@@ -8,7 +8,7 @@ import {
   ContainerWrapper,
   ButtonContainer,
   DeleteButton,
-} from "../../styles/TeamProfileStyled";
+} from "./TeamProfileStyled";
 
 interface TeamProfileProps {
   selectedTeam: string | null;
