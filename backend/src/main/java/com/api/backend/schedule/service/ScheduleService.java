@@ -44,6 +44,8 @@ public class ScheduleService {
     ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleRequest.getCategoryId());
     List<Schedule> schedules;
 
+    validateSameTeamOrElsThrow(scheduleRequest.getTeamParticipantsIds(), team);
+
     if (scheduleRequest.isRepeat()) {
       schedules = createRepeatingSchedules(scheduleRequest, team, category);
     } else {
@@ -65,6 +67,8 @@ public class ScheduleService {
 
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
+
+    validateSameTeamOrElsThrow(editRequest.getTeamParticipantsIds(), team);
 
     Schedule existingSchedule = scheduleRepository.findById(editRequest.getScheduleId())
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
@@ -194,5 +198,14 @@ public class ScheduleService {
   private TeamParticipants findTeamParticipantsOrElseThrow(Long teamParticipantsId) {
     return teamParticipantsRepository.findById(teamParticipantsId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+  }
+
+  private void validateSameTeamOrElsThrow(List<Long> teamParticipantsIds, Team team) {
+    for (Long teamParticipantsId : teamParticipantsIds) {
+      TeamParticipants participants = findTeamParticipantsOrElseThrow(teamParticipantsId);
+      if (!team.equals(participants.getTeam())) {
+        throw new CustomException(ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+      }
+    }
   }
 }
