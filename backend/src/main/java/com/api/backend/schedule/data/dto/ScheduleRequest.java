@@ -5,7 +5,9 @@ import com.api.backend.schedule.data.type.RepeatCycle;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,10 @@ import lombok.Getter;
 @StartAndEndDtCheck(scheduleStart = "startDt", scheduleEnd = "endDt")
 public class ScheduleRequest {
 
+  @NotBlank(message = "scheduleId는 필수입니다.")
   private Long scheduleId;
+
+  @NotBlank(message = "teamId는 필수입니다.")
   private Long teamId;
   private Long categoryId;
 
