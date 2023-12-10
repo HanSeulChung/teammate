@@ -7,9 +7,11 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_
 
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
+import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
+import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.entity.Schedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.repository.ScheduleRepository;
@@ -18,16 +20,22 @@ import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import java.time.temporal.TemporalAdjusters;
 
 @Service
 @AllArgsConstructor
@@ -60,11 +68,7 @@ public class ScheduleService {
     return scheduleRepository.findScheduleByScheduleIdAndTeam_TeamId(scheduleId, teamId);
   }
 
-  public Schedule editSchedule(ScheduleRequest editRequest) {
-    if (editRequest.getScheduleId() == null) {
-      throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
-    }
-
+  public Schedule editScheduleAndSave(ScheduleRequest editRequest) {
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
 
@@ -73,10 +77,12 @@ public class ScheduleService {
     Schedule existingSchedule = scheduleRepository.findById(editRequest.getScheduleId())
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
 
-    Schedule updatedSchedule = buildBaseSchedule(editRequest, team, category, editRequest.getStartDt());
+    Schedule updatedSchedule = buildBaseSchedule(editRequest, team, category,
+        editRequest.getStartDt());
 
     List<TeamParticipantsSchedule> existingTeamParticipantsSchedules =
-        teamParticipantsScheduleRepository.findAllBySchedule_ScheduleId(existingSchedule.getScheduleId());
+        teamParticipantsScheduleRepository.findAllBySchedule_ScheduleId(
+            existingSchedule.getScheduleId());
 
     List<TeamParticipantsSchedule> updatedTeamParticipantsSchedules =
         buildTeamParticipantsSchedules(updatedSchedule, editRequest.getTeamParticipantsIds());
@@ -99,6 +105,24 @@ public class ScheduleService {
     Schedule schedule = scheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
     scheduleRepository.delete(schedule);
+  }
+
+  public Page<ScheduleResponse> getSchedulesForMonth(Long teamId, LocalDate monthStart,
+      LocalDate monthEnd, CategoryType type, Pageable pageable) {
+    LocalDateTime startDt = monthStart.atStartOfDay();
+    LocalDateTime endDt = monthEnd.atTime(LocalTime.MAX);
+    return getSchedulesByDateRange(teamId, startDt, endDt, type, pageable);
+  }
+
+  public Page<ScheduleResponse> getSchedulesForWeek(Long teamId, LocalDate startDt, LocalDate endDt,
+      CategoryType type, Pageable pageable) {
+    LocalDate weekStart = startDt.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    LocalDate weekEnd = startDt.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+    LocalDateTime startDateTime = weekStart.atTime(LocalTime.MIN);
+    LocalDateTime endDateTime = weekEnd.atTime(LocalTime.MAX);
+
+    return getSchedulesByDateRange(teamId, startDateTime, endDateTime, type, pageable);
   }
 
 
@@ -208,4 +232,20 @@ public class ScheduleService {
       }
     }
   }
+
+
+  private Page<ScheduleResponse> getSchedulesByDateRange(Long teamId, LocalDateTime startDt,
+      LocalDateTime endDt, CategoryType type, Pageable pageable) {
+    Page<Schedule> schedules;
+
+    if (type != null) {
+      schedules = scheduleRepository.findByTeam_TeamIdAndStartDtBetweenAndScheduleCategory_CategoryType(
+          teamId, startDt, endDt, type, pageable);
+    } else {
+      schedules = scheduleRepository.findByTeam_TeamIdAndStartDtBetween(teamId, startDt, endDt, pageable);
+    }
+
+    return ScheduleResponse.from(schedules);
+  }
+
 }
