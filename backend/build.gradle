@@ -36,6 +36,10 @@ dependencies {
     // mongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+    // swagger
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation "com.vladmihalcea:hibernate-types-52:2.16.2"
     compileOnly 'org.projectlombok:lombok:1.18.22'
