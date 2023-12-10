@@ -1,6 +1,5 @@
 package com.api.backend.schedule.controller;
 
-import com.api.backend.schedule.data.dto.ScheduleDto;
 import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
@@ -8,7 +7,6 @@ import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,24 +27,27 @@ public class ScheduleController {
   @PostMapping
   public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody ScheduleRequest request,
       @PathVariable Long teamId) {
-    Page<ScheduleDto> scheduleDto = ScheduleDto.of(scheduleService.addSchedules(request));
-    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(scheduleDto);
+    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(
+        scheduleService.addSchedules(request)
+    );
     return ResponseEntity.ok(scheduleResponse);
   }
 
   @GetMapping("/{scheduleId}")
-  public ResponseEntity<Page<ScheduleResponse>> searchSchedule(@PathVariable Long teamId,
-      @PathVariable Long scheduleId, Pageable pageable) {
-    Page<ScheduleDto> scheduleDto = ScheduleDto.of(scheduleService.searchSchedule(pageable, teamId));
-    Page<ScheduleResponse> scheduleDtoPage = ScheduleResponse.from(scheduleDto);
-    return ResponseEntity.ok(scheduleDtoPage);
+  public ResponseEntity<ScheduleResponse> searchScheduleDetailInfo(@PathVariable Long teamId,
+      @PathVariable Long scheduleId) {
+    ScheduleResponse response = ScheduleResponse.from(
+        scheduleService.searchScheduleDetailInfo(scheduleId, teamId)
+    );
+    return ResponseEntity.ok(response);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
   ScheduleEditRequest request) {
-    ScheduleDto scheduleDto = ScheduleDto.of(scheduleService.editSchedule(request));
-    ScheduleEditResponse response = ScheduleEditResponse.from(scheduleDto);
+    ScheduleEditResponse response = ScheduleEditResponse.from(
+        scheduleService.editSchedule(request)
+    );
     return ResponseEntity.ok(response);
   }
 

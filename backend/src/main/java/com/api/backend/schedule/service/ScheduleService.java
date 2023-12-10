@@ -28,7 +28,6 @@ import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,9 +39,10 @@ public class ScheduleService {
   private final ScheduleCategoryRepository categoryRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
   private final TeamParticipantsScheduleRepository teamParticipantsScheduleRepository;
+
   public Page<Schedule> addSchedules(ScheduleRequest scheduleRequest) {
-    Team team = validateTeam(scheduleRequest.getTeamId());
-    ScheduleCategory category = validateCategory(scheduleRequest.getCategoryId());
+    Team team = findTeamOrElseThrow(scheduleRequest.getTeamId());
+    ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleRequest.getCategoryId());
     List<Schedule> schedules;
 
     if (scheduleRequest.isRepeat()) {
@@ -54,30 +54,78 @@ public class ScheduleService {
     return new PageImpl<>(schedules);
   }
 
-  private List<Schedule> createRepeatingSchedules(ScheduleRequest scheduleRequest, Team team,
-      ScheduleCategory category) {
-    List<Schedule> schedules = new ArrayList<>();
-    LocalDateTime currentStart = scheduleRequest.getStartDt();
+  public Schedule searchScheduleDetailInfo(Long scheduleId, Long teamId) {
+    findTeamOrElseThrow(teamId);
+    return scheduleRepository.findScheduleByScheduleIdAndTeam_TeamId(scheduleId, teamId);
+  }
 
-    while (currentStart.isBefore(scheduleRequest.getEndDt())) {
-      Schedule schedule = createSchedules(scheduleRequest, team, category, currentStart);
-      schedules.add(schedule);
-
-      switch (scheduleRequest.getRepeatCycle()) {
-        case WEEKLY:
-          currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
-          break;
-        case MONTHLY:
-          currentStart = currentStart.plus(1, ChronoUnit.MONTHS);
-          break;
-        case YEARLY:
-          currentStart = currentStart.plus(1, ChronoUnit.YEARS);
-          break;
-        default:
-          throw new CustomException(INVALID_REPEAT_CYCLE_EXCEPTION);
-      }
+  public Schedule editSchedule(ScheduleEditRequest scheduleEditRequest) {
+    if (scheduleEditRequest.getScheduleId() == null) {
+      throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
     }
-    return schedules;
+
+    Team team = findTeamOrElseThrow(scheduleEditRequest.getTeamId());
+    ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleEditRequest.getCategoryId());
+
+    Schedule existingSchedule = scheduleRepository.findById(scheduleEditRequest.getScheduleId())
+        .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
+
+    Schedule updatedSchedule = Schedule.builder()
+        .scheduleId(existingSchedule.getScheduleId())
+        .team(team)
+        .scheduleCategory(category)
+        .title(scheduleEditRequest.getTitle())
+        .content(scheduleEditRequest.getContent())
+        .startDt(scheduleEditRequest.getStartDt())
+        .endDt(scheduleEditRequest.getEndDt())
+        .place(scheduleEditRequest.getPlace())
+        .isRepeat(scheduleEditRequest.isRepeat())
+        .repeatCycle(scheduleEditRequest.getRepeatCycle())
+        .teamParticipantsSchedules(new ArrayList<>())
+        .build();
+
+    List<TeamParticipantsSchedule> existingTeamParticipantsSchedules =
+        teamParticipantsScheduleRepository.findAllBySchedule_ScheduleId(
+            existingSchedule.getScheduleId());
+
+    for (Long teamParticipantsId : scheduleEditRequest.getTeamParticipantsIds()) {
+      TeamParticipants participants = findTeamParticipantsOrElseThrow(teamParticipantsId);
+
+      TeamParticipantsSchedule teamParticipantsSchedule = existingTeamParticipantsSchedules.stream()
+          .filter(schedule -> schedule.getTeamParticipants().getTeamParticipantsId()
+              .equals(participants.getTeamParticipantsId()))
+          .findFirst()
+          .orElse(TeamParticipantsSchedule.builder().teamParticipants(participants)
+              .schedule(updatedSchedule).build());
+
+      updatedSchedule.getTeamParticipantsSchedules().add(teamParticipantsSchedule);
+    }
+
+    scheduleRepository.save(updatedSchedule);
+    return updatedSchedule;
+  }
+
+  @Transactional
+  public void deleteSchedule(Long scheduleId) {
+    Schedule schedule = scheduleRepository.findById(scheduleId)
+        .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
+    scheduleRepository.delete(schedule);
+  }
+
+
+  public Team findTeamOrElseThrow(Long teamId) {
+    return teamRepository.findById(teamId)
+        .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION));
+  }
+
+  public ScheduleCategory findScheduleCategoryOrElseThrow(Long categoryId) {
+    return categoryRepository.findById(categoryId)
+        .orElseThrow(() -> new CustomException(SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+  }
+
+  public TeamParticipants findTeamParticipantsOrElseThrow(Long teamParticipantsId) {
+    return teamParticipantsRepository.findById(teamParticipantsId)
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
   }
 
   private Schedule createSingleSchedule(ScheduleRequest scheduleRequest, Team team,
@@ -105,7 +153,7 @@ public class ScheduleService {
     List<TeamParticipantsSchedule> teamParticipantsSchedules = schedule.getTeamParticipantsSchedules();
 
     for (Long teamParticipantsId : scheduleRequest.getTeamParticipantsIds()) {
-      TeamParticipants participants = validateTeamParticipants(teamParticipantsId);
+      TeamParticipants participants = findTeamParticipantsOrElseThrow(teamParticipantsId);
 
       TeamParticipantsSchedule teamParticipantsSchedule = TeamParticipantsSchedule.builder()
           .teamParticipants(participants)
@@ -122,75 +170,30 @@ public class ScheduleService {
     return schedule;
   }
 
-  public Page<Schedule> searchSchedule(Pageable pageable, Long teamId) {
-    validateTeam(teamId);
-    return scheduleRepository.findAllByTeam_TeamId(pageable, teamId);
-  }
+  private List<Schedule> createRepeatingSchedules(ScheduleRequest scheduleRequest, Team team,
+      ScheduleCategory category) {
+    List<Schedule> schedules = new ArrayList<>();
+    LocalDateTime currentStart = scheduleRequest.getStartDt();
 
-  public Schedule editSchedule(ScheduleEditRequest scheduleEditRequest) {
-    if (scheduleEditRequest.getScheduleId() == null) {
-      throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
+    while (currentStart.isBefore(scheduleRequest.getEndDt())) {
+      Schedule schedule = createSchedules(scheduleRequest, team, category, currentStart);
+      schedules.add(schedule);
+
+      switch (scheduleRequest.getRepeatCycle()) {
+        case WEEKLY:
+          currentStart = currentStart.plus(1, ChronoUnit.WEEKS);
+          break;
+        case MONTHLY:
+          currentStart = currentStart.plus(1, ChronoUnit.MONTHS);
+          break;
+        case YEARLY:
+          currentStart = currentStart.plus(1, ChronoUnit.YEARS);
+          break;
+        default:
+          throw new CustomException(INVALID_REPEAT_CYCLE_EXCEPTION);
+      }
     }
-
-    Team team = validateTeam(scheduleEditRequest.getTeamId());
-    ScheduleCategory category = validateCategory(scheduleEditRequest.getCategoryId());
-
-    Schedule existingSchedule = scheduleRepository.findById(scheduleEditRequest.getScheduleId())
-        .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
-
-    Schedule updatedSchedule = Schedule.builder()
-        .scheduleId(existingSchedule.getScheduleId())
-        .team(team)
-        .scheduleCategory(category)
-        .title(scheduleEditRequest.getTitle())
-        .content(scheduleEditRequest.getContent())
-        .startDt(scheduleEditRequest.getStartDt())
-        .endDt(scheduleEditRequest.getEndDt())
-        .place(scheduleEditRequest.getPlace())
-        .isRepeat(scheduleEditRequest.isRepeat())
-        .repeatCycle(scheduleEditRequest.getRepeatCycle())
-        .teamParticipantsSchedules(new ArrayList<>())
-        .build();
-
-    List<TeamParticipantsSchedule> existingTeamParticipantsSchedules =
-        teamParticipantsScheduleRepository.findAllBySchedule_ScheduleId(existingSchedule.getScheduleId());
-
-    for (Long teamParticipantsId : scheduleEditRequest.getTeamParticipantsIds()) {
-      TeamParticipants participants = validateTeamParticipants(teamParticipantsId);
-
-      TeamParticipantsSchedule teamParticipantsSchedule = existingTeamParticipantsSchedules.stream()
-          .filter(schedule -> schedule.getTeamParticipants().getTeamParticipantsId().equals(participants.getTeamParticipantsId()))
-          .findFirst()
-          .orElse(TeamParticipantsSchedule.builder().teamParticipants(participants).schedule(updatedSchedule).build());
-
-      updatedSchedule.getTeamParticipantsSchedules().add(teamParticipantsSchedule);
-    }
-
-    scheduleRepository.save(updatedSchedule);
-    return updatedSchedule;
-  }
-
-  @Transactional
-  public void deleteSchedule(Long scheduleId) {
-    Schedule schedule = scheduleRepository.findById(scheduleId)
-        .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
-    scheduleRepository.delete(schedule);
-  }
-
-
-  public Team validateTeam(Long teamId) {
-    return teamRepository.findById(teamId)
-        .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION));
-  }
-
-  public ScheduleCategory validateCategory(Long categoryId) {
-    return categoryRepository.findById(categoryId)
-        .orElseThrow(() -> new CustomException(SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
-  }
-
-  public TeamParticipants validateTeamParticipants(Long teamParticipantsId) {
-    return teamParticipantsRepository.findById(teamParticipantsId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    return schedules;
   }
 
 }

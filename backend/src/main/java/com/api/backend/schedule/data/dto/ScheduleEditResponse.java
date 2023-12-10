@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.data.entity.Schedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -29,20 +30,20 @@ public class ScheduleEditResponse {
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
 
-  public static ScheduleEditResponse from(ScheduleDto scheduleDto) {
+  public static ScheduleEditResponse from(Schedule schedule) {
     return ScheduleEditResponse.builder()
-        .scheduleId(scheduleDto.getScheduleId())
-        .categoryId(scheduleDto.getCategoryId())
-        .startDt(scheduleDto.getStartDt())
-        .endDt(scheduleDto.getEndDt())
-        .title(scheduleDto.getTitle())
-        .content(scheduleDto.getContent())
-        .place(scheduleDto.getPlace())
-        .isRepeat(scheduleDto.isRepeat())
-        .repeatCycle(scheduleDto.getRepeatCycle())
-        .teamParticipantsIds(scheduleDto.getTeamParticipantsIds())
-        .teamParticipantsNames(scheduleDto.getTeamParticipantsName())
-        .teamRoles(scheduleDto.getTeamRoles())
+        .scheduleId(schedule.getScheduleId())
+        .categoryId(schedule.getScheduleCategory().getScheduleCategoryId())
+        .startDt(schedule.getStartDt())
+        .endDt(schedule.getEndDt())
+        .title(schedule.getTitle())
+        .content(schedule.getContent())
+        .place(schedule.getPlace())
+        .isRepeat(schedule.isRepeat())
+        .repeatCycle(schedule.getRepeatCycle())
+        .teamParticipantsIds(ScheduleResponse.getTeamParticipantsIdsFromSchedules(schedule.getTeamParticipantsSchedules()))
+        .teamParticipantsNames(ScheduleResponse.getTeamParticipantsNameFromSchedules(schedule.getTeamParticipantsSchedules()))
+        .teamRoles(ScheduleResponse.getTeamParticipantsRoleFromSchedules(schedule.getTeamParticipantsSchedules()))
         .build();
   }
 }
