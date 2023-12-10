@@ -31,9 +31,10 @@ public class CommentController {
   @PostMapping()
   public ResponseEntity<CommentResponse> createComments(
       @PathVariable Long teamId, @PathVariable String documentId,
-      @RequestBody @Valid CommentInitRequest request
+      @RequestBody @Valid CommentInitRequest request,
+      Principal principal
   ) {
-    Comment comment = commentService.createComment(teamId, documentId, request);
+    Comment comment = commentService.createComment(teamId, documentId, request, principal);
 
     return ResponseEntity.ok(CommentResponse.from(comment));
   }
@@ -41,8 +42,9 @@ public class CommentController {
   @GetMapping()
   public ResponseEntity<Page<CommentResponse>> getCommentsList(
       @PathVariable Long teamId, @PathVariable String documentId,
+      Principal principal,
       Pageable pageable) {
-    Page<Comment> commentPage = commentService.getCommentList(teamId, documentId, pageable);
+    Page<Comment> commentPage = commentService.getCommentList(teamId, documentId, principal, pageable);
     Page<CommentResponse> commentDtoPage = commentPage.map(
         comment -> CommentResponse.from(comment)
     );
@@ -54,9 +56,10 @@ public class CommentController {
   public ResponseEntity<CommentResponse> editComment(
       @PathVariable Long teamId, @PathVariable String documentId,
       @PathVariable String commentId,
-      @RequestBody @Valid CommentEditRequest request
+      @RequestBody @Valid CommentEditRequest request,
+      Principal principal
   ) {
-    Comment comment = commentService.editComment(teamId, documentId, commentId, request);
+    Comment comment = commentService.editComment(teamId, documentId, commentId, request, principal);
 
     return ResponseEntity.ok(CommentResponse.from(comment));
   }
@@ -64,7 +67,8 @@ public class CommentController {
   @DeleteMapping("/{commentId}")
   public ResponseEntity<DeleteCommentsResponse> deleteComment(
       @PathVariable Long teamId, @PathVariable String documentId,
-      @PathVariable String commentId, Principal principal
+      @PathVariable String commentId,
+      Principal principal
   ) {
 
     return ResponseEntity.ok(commentService.deleteComment(teamId, documentId, commentId, principal));
