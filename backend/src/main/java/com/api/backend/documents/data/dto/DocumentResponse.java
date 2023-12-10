@@ -19,8 +19,6 @@ public class DocumentResponse {
 
   private String id;
 
-  private String documentIdx;
-
   private String title;
 
   private String content;
@@ -39,7 +37,6 @@ public class DocumentResponse {
 
     DocumentResponse documentResponse = DocumentResponse.builder()
         .id(documents.getId())
-        .documentIdx(documents.getDocumentIdx())
         .title(documents.getTitle())
         .content(documents.getContent())
         .writerId(documents.getWriterId())

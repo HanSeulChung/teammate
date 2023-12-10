@@ -16,41 +16,36 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/team/{teamId}/documents")
 @RequiredArgsConstructor
 public class DocumentsController {
   private final DocumentService documentService;
 
-  @GetMapping("/team/{teamId}/documents")
+  @GetMapping()
   public ResponseEntity<Page<DocumentResponse>> getDocsList(
         @PathVariable Long teamId,
+        Principal principal,
         Pageable pageable) {
-    Page<Documents> docsPage = documentService.getDocsList(pageable);
+    Page<Documents> docsPage = documentService.getDocsList(teamId, principal, pageable);
     Page<DocumentResponse> documentDtoPage = docsPage.map(
-        document -> DocumentResponse.builder()
-                              .id(document.getId())
-                              .documentIdx(document.getDocumentIdx())
-                              .title(document.getTitle())
-                              .content(document.getContent())
-                              .writerId(document.getWriterId())
-                              .modifierId(document.getModifierId())
-                              .teamId(document.getTeamId())
-                              .createdDt(document.getCreatedDt())
-                              .updatedDt(document.getUpdatedDt())
-                              .build());
+        document -> DocumentResponse.from(document));
 
     return ResponseEntity.ok(documentDtoPage);
   }
 
-  @PostMapping("/team/{teamId}/documents")
+  @PostMapping()
   public ResponseEntity<DocumentResponse> createDocs(
-          @PathVariable Long teamId, @RequestBody @Valid DocumentInitRequest request) {
-    return ResponseEntity.ok(DocumentResponse.from(documentService.createDocs(request, teamId)));
+          @PathVariable Long teamId,
+          @RequestBody @Valid DocumentInitRequest request,
+          Principal principal) {
+    return ResponseEntity.ok(DocumentResponse.from(documentService.createDocs(request, teamId, principal)));
   }
 
-  @DeleteMapping("/team/{teamId}/documents/{documentsId}")
+  @DeleteMapping("/{documentsId}")
   public ResponseEntity<DeleteDocsResponse> deleteDocs(@PathVariable Long teamId, @PathVariable String documentsId, Principal principal) {
 
     return ResponseEntity.ok()

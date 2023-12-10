@@ -11,8 +11,6 @@ public class DeleteDocsResponse {
 
   private String id;
 
-  private String documentIdx;
-
   private String title;
 
   private String message;
