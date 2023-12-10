@@ -9,7 +9,6 @@ import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
-import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.entity.Schedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
@@ -59,28 +58,28 @@ public class ScheduleService {
     return scheduleRepository.findScheduleByScheduleIdAndTeam_TeamId(scheduleId, teamId);
   }
 
-  public Schedule editSchedule(ScheduleEditRequest scheduleEditRequest) {
-    if (scheduleEditRequest.getScheduleId() == null) {
+  public Schedule editSchedule(ScheduleRequest editRequest) {
+    if (editRequest.getScheduleId() == null) {
       throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
     }
 
-    Team team = findTeamOrElseThrow(scheduleEditRequest.getTeamId());
-    ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleEditRequest.getCategoryId());
+    Team team = findTeamOrElseThrow(editRequest.getTeamId());
+    ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
 
-    Schedule existingSchedule = scheduleRepository.findById(scheduleEditRequest.getScheduleId())
+    Schedule existingSchedule = scheduleRepository.findById(editRequest.getScheduleId())
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
 
     Schedule updatedSchedule = Schedule.builder()
         .scheduleId(existingSchedule.getScheduleId())
         .team(team)
         .scheduleCategory(category)
-        .title(scheduleEditRequest.getTitle())
-        .content(scheduleEditRequest.getContent())
-        .startDt(scheduleEditRequest.getStartDt())
-        .endDt(scheduleEditRequest.getEndDt())
-        .place(scheduleEditRequest.getPlace())
-        .isRepeat(scheduleEditRequest.isRepeat())
-        .repeatCycle(scheduleEditRequest.getRepeatCycle())
+        .title(editRequest.getTitle())
+        .content(editRequest.getContent())
+        .startDt(editRequest.getStartDt())
+        .endDt(editRequest.getEndDt())
+        .place(editRequest.getPlace())
+        .isRepeat(editRequest.isRepeat())
+        .repeatCycle(editRequest.getRepeatCycle())
         .teamParticipantsSchedules(new ArrayList<>())
         .build();
 
@@ -88,7 +87,7 @@ public class ScheduleService {
         teamParticipantsScheduleRepository.findAllBySchedule_ScheduleId(
             existingSchedule.getScheduleId());
 
-    for (Long teamParticipantsId : scheduleEditRequest.getTeamParticipantsIds()) {
+    for (Long teamParticipantsId : editRequest.getTeamParticipantsIds()) {
       TeamParticipants participants = findTeamParticipantsOrElseThrow(teamParticipantsId);
 
       TeamParticipantsSchedule teamParticipantsSchedule = existingTeamParticipantsSchedules.stream()

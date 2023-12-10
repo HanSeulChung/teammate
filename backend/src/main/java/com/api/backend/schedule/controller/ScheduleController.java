@@ -1,6 +1,5 @@
 package com.api.backend.schedule.controller;
 
-import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
@@ -45,9 +44,9 @@ public class ScheduleController {
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
-  @Valid ScheduleEditRequest request) {
+  @Valid ScheduleRequest editRequest) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
-        scheduleService.editSchedule(request)
+        scheduleService.editSchedule(editRequest)
     );
     return ResponseEntity.ok(response);
   }

@@ -29,7 +29,6 @@ public class ScheduleResponse {
   private String place;
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
-  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
   private List<Long> teamParticipantsIds;
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
@@ -45,7 +44,6 @@ public class ScheduleResponse {
         .place(schedule.getPlace())
         .isRepeat(schedule.isRepeat())
         .repeatCycle(schedule.getRepeatCycle())
-        .teamParticipantsSchedules(schedule.getTeamParticipantsSchedules())
         .teamParticipantsIds(getTeamParticipantsIdsFromSchedules(schedule.getTeamParticipantsSchedules()))
         .teamParticipantsNames(getTeamParticipantsNameFromSchedules(schedule.getTeamParticipantsSchedules()))
         .teamRoles(getTeamParticipantsRoleFromSchedules(schedule.getTeamParticipantsSchedules()))
