@@ -19,4 +19,6 @@ public interface TeamParticipantsRepository extends JpaRepository<TeamParticipan
 
   Optional<TeamParticipants> findByMember_Email(String email);
   Optional<TeamParticipants> findByMember_MemberId(Long memberId);
+
+  List<TeamParticipants> findByTeam_TeamIdAndTeamParticipantsIdNot(Long teamId, Long teamParticipantsId);
 }

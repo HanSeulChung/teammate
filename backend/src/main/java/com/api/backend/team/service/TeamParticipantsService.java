@@ -132,4 +132,8 @@ public class TeamParticipantsService {
     }
     return teamParticipant;
   }
+
+  public List<TeamParticipants> getTeamParticipantsExcludeId(Long teamParticipantId, Long teamId) {
+    return teamParticipantsRepository.findByTeam_TeamIdAndTeamParticipantsIdNot(teamId ,teamParticipantId);
+  }
 }
