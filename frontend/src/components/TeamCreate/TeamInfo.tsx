@@ -12,7 +12,7 @@ import {
   StyledImagePreview,
   StyledErrorMessage,
   StyledHeading,
-} from "../../styles/TeamInfoStyled";
+} from "./TeamInfoStyled";
 
 export default function TeamInfo() {
   const [teamName, setTeamName] = useRecoilState(teamNameState);
@@ -32,8 +32,11 @@ export default function TeamInfo() {
     setError(null);
   }, []);
 
+  const generateTeamId = () => {
+    return `team_${Date.now()}`;
+  };
+
   const handleCreateTeam = () => {
-    // 입력값 확인
     let errorMessage = "";
 
     if (!teamName) {
@@ -51,14 +54,14 @@ export default function TeamInfo() {
       return;
     }
 
-    setError(null); // 에러가 없다면 에러 상태 초기화
-    // 생성한 팀 정보를 Recoil 상태에 추가
+    setError(null);
+    const newTeamId = generateTeamId();
     const newTeam = {
+      id: newTeamId,
       name: teamName,
       size: selectedTeamSize,
       image: selectedImage,
     };
-
     setTeamList([...teamList, newTeam]);
 
     // 이동

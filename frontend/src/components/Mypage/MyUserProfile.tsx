@@ -15,7 +15,7 @@ const UserProfileContainer = styled.div`
   padding: 20px;
   border-radius: 8px;
   margin: auto;
-  width: 25%;
+  width: 35%;
 `;
 
 const UserProfileTitle = styled.h2`
@@ -30,14 +30,41 @@ const UserProfileInfo = styled.div`
     margin-bottom: 15px;
     text-align: left;
   }
+  span {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
 
   label {
     margin-right: 10px;
   }
 
   select {
-    margin-left: 10px;
     padding: 5px;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #333333;
+    border-radius: 0;
+  }
+`;
+const Email = styled.span`
+  flex: 1.3;
+  margin: 10px 0;
+`;
+
+const UpdateButton = styled.button`
+  flex: 0.7;
+  margin-left: 20px;
+  padding: 0;
+  background-color: #cccccc;
+  color: #333333;
+  cursor: pointer;
+  border: none;
+  border-radius: 20px;
+
+  &:hover {
+    background-color: #a3cca3;
   }
 `;
 
@@ -54,9 +81,12 @@ const UserProfile: React.FC<UserProfileProps> = ({
       {user && (
         <UserProfileInfo>
           <p>이름: {user.name}</p>
-          <p>Email: {user.id}</p>
-          <label htmlFor="teamSelect">소속 팀 선택:</label>
+          <span>
+            <Email>Email: {user.id}</Email>
+            <UpdateButton>비밀번호 변경</UpdateButton>
+          </span>
           <select
+            title="myteam"
             id="teamSelect"
             value={selectedTeam || ""}
             onChange={handleTeamSelect}

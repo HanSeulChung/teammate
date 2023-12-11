@@ -1,33 +1,75 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 import { teamListState, useSearchState } from "../../state/authState";
+
+const TeamListContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 16px;
+`;
+
+const TeamItem = styled.li`
+  list-style: none;
+  width: calc(20% - 16px);
+  margin-bottom: 16px;
+`;
+
+const TeamLink = styled(Link)`
+  text-decoration: none;
+  color: #333;
+`;
+
+const TeamCard = styled.div`
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.05);
+    color: #a3cca3;
+  }
+`;
+
+const TeamName = styled.h3`
+  margin-bottom: 8px;
+`;
+
+const TeamImage = styled.img`
+  max-width: 100%;
+  max-height: 100px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+`;
 
 const HomeContent = () => {
   const teamList = useRecoilValue(teamListState);
   const { search } = useSearchState();
 
+  const filteredTeamList = teamList.filter((team) =>
+    team.name.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
-    <div>
-      <h2>팀 목록</h2>
-      <ul>
-        {teamList
-          .filter((team) => team.name.includes(search)) // 여기에서 검색어와 일치하는 경우에만 필터링
-          .map((team, index) => (
-            <li key={index}>
-              <>
-                <h3>{team.name}</h3>
-                {team.image ? (
-                  <img
-                    src={team.image}
-                    alt={`${team.name} 이미지`}
-                    style={{ maxWidth: "100px", maxHeight: "100px" }}
-                  />
-                ) : null}
-              </>
-            </li>
-          ))}
-      </ul>
-    </div>
+    <TeamListContainer>
+      {filteredTeamList.map((team, index) => (
+        <TeamItem key={index}>
+          <TeamLink to={`/team/${team.id}`}>
+            <TeamCard>
+              <TeamName>{team.name}</TeamName>
+              {team.image && (
+                <TeamImage src={team.image} alt={`${team.name} 이미지`} />
+              )}
+            </TeamCard>
+          </TeamLink>
+        </TeamItem>
+      ))}
+    </TeamListContainer>
   );
 };
 
