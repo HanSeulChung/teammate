@@ -25,7 +25,7 @@ const TextEditor: React.FC<TextEditorProps> = () => {
   const [quill, setQuill] = useState<Quill | null>(null);
 
   useEffect(() => {
-    const s = io("http://localhost:3001");
+    const s = io("http://localhost:8080/ws");
     setSocket(s);
 
     return () => {
