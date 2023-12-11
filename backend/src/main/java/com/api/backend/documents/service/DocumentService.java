@@ -1,12 +1,5 @@
 package com.api.backend.documents.service;
 
-import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_FOUND_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_IN_TEAM_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.PRINCIPAL_IS_NULL;
-import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
-
 import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentInitRequest;
 import com.api.backend.documents.data.entity.Documents;
@@ -14,8 +7,9 @@ import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.documents.valid.DocumentAndCommentValidCheck;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.entity.TeamParticipants;
-import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,19 +22,31 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DocumentService {
   private final DocumentsRepository documentsRepository;
-  private final TeamParticipantsRepository teamParticipantsRepository;
   private final DocumentAndCommentValidCheck validCheck;
 
-  public Page<Documents> getDocsList(Long teamId, Principal principal, Pageable pageable) {
+  public Page<Documents> getDocsList(Long teamId, Principal principal, Pageable pageable, LocalDate startDt, LocalDate endDt) {
 
     Long memberId = validCheck.getMemberId(principal);
     TeamParticipants teamParticipant = validCheck.findValidTeamParticipantByMemberId(memberId);
 
     validCheck.validTeamAndTeamParticipant(teamId, teamParticipant);
 
-    Page<Documents> allDocs = documentsRepository.findAll(pageable);
-    if (allDocs != null) {
-      return allDocs;
+    Page<Documents> allDocsInTeam = null ;
+    if (startDt == null && endDt == null) {
+      return findAllDocumentInTeam(teamId, pageable, allDocsInTeam);
+    }
+
+    if (startDt != null && endDt == null) {
+      return findAllDocumentInTeamWithStartDt(teamId, startDt.atStartOfDay(), pageable, allDocsInTeam);
+    }
+
+    if (startDt == null && endDt != null) {
+      return findAllDocumentInTeamWithEndDt(teamId, endDt.plusDays(1).atStartOfDay(), pageable, allDocsInTeam);
+    }
+
+    if (startDt != null && endDt != null) {
+      return findAllDocumentInTeamBetweenStartDtAndEndDt(teamId, startDt.atStartOfDay(),
+          endDt.plusDays(1).atStartOfDay(), pageable, allDocsInTeam);
     }
     return Page.empty();
   }
@@ -79,5 +85,38 @@ public class DocumentService {
         .message("삭제 되었습니다.")
         .build();
   }
+  private Page<Documents> findAllDocumentInTeam(Long teamId, Pageable pageable, Page<Documents> allDocsInTeam) {
+    allDocsInTeam = documentsRepository.findAllByTeamId(teamId, pageable);
+    if (allDocsInTeam != null) {
+      return allDocsInTeam;
+    } else {
+      return Page.empty();
+    }
+  }
 
+  private Page<Documents> findAllDocumentInTeamWithStartDt(Long teamId, LocalDateTime startDt, Pageable pageable, Page<Documents> allDocsInTeam) {
+    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtGreaterThanEqual(teamId, startDt ,pageable);
+    if (allDocsInTeam != null) {
+      return allDocsInTeam;
+    } else {
+      return Page.empty();
+    }
+  }
+  private Page<Documents> findAllDocumentInTeamWithEndDt(Long teamId, LocalDateTime endDt, Pageable pageable, Page<Documents> allDocsInTeam) {
+    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtLessThanEqual(teamId, endDt, pageable);
+    if (allDocsInTeam != null) {
+      return allDocsInTeam;
+    } else {
+      return Page.empty();
+    }
+  }
+
+  private Page<Documents> findAllDocumentInTeamBetweenStartDtAndEndDt(Long teamId, LocalDateTime startDt, LocalDateTime endDt, Pageable pageable, Page<Documents> allDocsInTeam) {
+    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtBetween(teamId, startDt, endDt, pageable);
+    if (allDocsInTeam != null) {
+      return allDocsInTeam;
+    } else {
+      return Page.empty();
+    }
+  }
 }

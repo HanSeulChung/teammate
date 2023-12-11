@@ -21,8 +21,8 @@ import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
-import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
@@ -46,15 +46,13 @@ class DocumentServiceTest {
 
   @Mock
   private DocumentsRepository documentsRepository;
-  @Mock
-  private TeamParticipantsRepository teamParticipantsRepository;
 
   @InjectMocks
   private DocumentService documentService;
 
   @Test
-  @DisplayName("문서 전체 조회(문서가 존재할 때")
-  void getDocsListWhenDocsExists() {
+  @DisplayName("문서 전체 조회(문서가 존재할 때)_startDt == null && endDt == null")
+  void getDocsListWhenDocsExists1() {
       //given
     Documents document = createtestDocuments();
     TeamParticipants teamParticipants = createTestSetting();
@@ -63,9 +61,12 @@ class DocumentServiceTest {
     Page<Documents> documentsPage = new PageImpl<>(Collections.singletonList(document));
     when(validCheck.getMemberId(principal)).thenReturn(1L);
     when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
-    when(documentsRepository.findAll(pageable)).thenReturn(documentsPage);
+    when(documentsRepository.findAllByTeamId(2L, pageable)).thenReturn(documentsPage);
+
     //when
-    Page<Documents> docsPage = documentService.getDocsList(2L, principal, pageable);
+    LocalDate startDt = null;
+    LocalDate endDt = null;
+    Page<Documents> docsPage = documentService.getDocsList(2L, principal, pageable, startDt, endDt);
 
     //then
     assertNotNull(docsPage);
@@ -75,7 +76,68 @@ class DocumentServiceTest {
   }
 
   @Test
-  @DisplayName("문서 전체 조회(문서가 존재하지 않을 때")
+  @DisplayName("문서 전체 조회(문서가 존재할 때)_startDt != null && endDt == null")
+  void getDocsListWhenDocsExists2() {
+    // startDt= 11월 1일
+    //given
+    LocalDateTime specificDate = LocalDateTime.of(2023, 11, 1, 0, 0, 0);
+    Documents documentWithSpecificDate = createDocumentWithSpecificDate(specificDate);
+    TeamParticipants teamParticipants = createTestSetting();
+
+    Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
+    Page<Documents> documentsPage = new PageImpl<>(Collections.singletonList(documentWithSpecificDate));
+
+    Principal principal = Mockito.mock(Principal.class);
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
+    LocalDate startDt = LocalDate.of(2023, 11, 1);
+    when(documentsRepository.findAllByTeamIdAndCreatedDtGreaterThanEqual(2L, startDt.atStartOfDay(), pageable)).thenReturn(documentsPage);
+
+    //when
+
+    LocalDate endDt = null;
+    Page<Documents> docsPage = documentService.getDocsList(2L, principal, pageable, startDt, endDt);
+
+    //then
+    assertNotNull(docsPage);
+    assertFalse(docsPage.isEmpty());
+    assertEquals(1, docsPage.getContent().size());
+    assertEquals("testId", docsPage.getContent().get(0).getId());
+  }
+
+
+  @Test
+  @DisplayName("문서 전체 조회(문서가 존재할 때)_startDt != null && endDt != null")
+  void getDocsListWhenDocsExists3() {
+    // startDt= 11월 1일
+    //given
+    LocalDateTime specificDate = LocalDateTime.of(2023, 11, 1, 0, 0, 0);
+    Documents documentWithSpecificDate = createDocumentWithSpecificDate(specificDate);
+    TeamParticipants teamParticipants = createTestSetting();
+
+    Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
+    Page<Documents> documentsPage = new PageImpl<>(Collections.singletonList(documentWithSpecificDate));
+
+    Principal principal = Mockito.mock(Principal.class);
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
+    LocalDate startDt = LocalDate.of(2023, 10, 1);
+    LocalDate endDt =  LocalDate.of(2023, 12, 1);;
+    when(documentsRepository.findAllByTeamIdAndCreatedDtBetween(2L, startDt.atStartOfDay(), endDt.plusDays(1).atStartOfDay(), pageable)).thenReturn(documentsPage);
+
+    //when
+
+    Page<Documents> docsPage = documentService.getDocsList(2L, principal, pageable, startDt, endDt);
+
+    //then
+    assertNotNull(docsPage);
+    assertFalse(docsPage.isEmpty());
+    assertEquals(1, docsPage.getContent().size());
+    assertEquals("testId", docsPage.getContent().get(0).getId());
+  }
+
+  @Test
+  @DisplayName("문서 전체 조회(문서가 존재하지 않을 때)_startDt = null && endDt == null")
   void getDocsListWhenDocsNotExists() {
     //given
     TeamParticipants teamParticipants = createTestSetting();
@@ -84,7 +146,9 @@ class DocumentServiceTest {
     when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
     //when
     Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
-    Page<Documents> docsPage = documentService.getDocsList(2L, principal, pageable);
+    LocalDate startDt = null;
+    LocalDate endDt = null;
+    Page<Documents> docsPage = documentService.getDocsList(2L, principal, pageable, startDt, endDt);
 
     //then
     assertNotNull(docsPage);
@@ -248,5 +312,19 @@ class DocumentServiceTest {
         .content("testContent")
         .writerEmail("test@Email.com")
         .build();
+  }
+
+  private Documents createDocumentWithSpecificDate(LocalDateTime specificDate) {
+
+    return Documents.builder()
+        .id("testId")
+        .title("testTitle")
+        .content("testContent")
+        .writerId(1L)
+        .teamId(2L)
+        .createdDt(specificDate)
+        .updatedDt(LocalDateTime.now())
+        .build();
+
   }
 }
