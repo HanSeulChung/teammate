@@ -34,13 +34,13 @@ public class NotificationService {
    * 팀 참가자는 구독을 수행한다.
    **/
   public SseEmitter setTeamParticipantEmitter(
-      Long teamId, Long userId
+      Long teamId, Long memberId
   ) {
     if (teamService.existById(teamId)) {
       throw new CustomException(ErrorCode.TEAM_NOT_FOUND_EXCEPTION);
     }
 
-    TeamParticipants teamParticipant = teamParticipantsService.getTeamParticipant(teamId, userId);
+    TeamParticipants teamParticipant = teamParticipantsService.getTeamParticipant(teamId, memberId);
 
     String emitterId = createEmitterIdByTeamIdAndTeamParticipantId(teamId , teamParticipant.getTeamParticipantsId());
 
