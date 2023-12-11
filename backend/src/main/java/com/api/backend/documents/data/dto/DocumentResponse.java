@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,15 +20,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DocumentResponse {
 
-  @NotNull
+  @NotBlank
   @Schema(description = "document id", example = "1")
   private String id;
 
-  @NotNull
+  @NotBlank
   @Schema(description = "document title", example = "12월 10일 회의사항")
   private String title;
 
-  @NotNull
+  @NotBlank
   @Schema(description = "document content", example = "안녕하세요. 2023/12/10 회의 사항들입니다. \n 내용을 모두 숙지해 주시길 바랍니다.")
   private String content;
 
