@@ -55,7 +55,7 @@ public class MemberController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, httpCookie.toString())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + signInResponse.getAccessToken())
-                .build();
+            .body(signInResponse);
     }
 
     @PostMapping("/logout")

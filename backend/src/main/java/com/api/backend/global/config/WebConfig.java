@@ -16,9 +16,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-  @Value("frontend.host")
+  @Value("${frontend.host}")
   String host;
-  @Value("frontend.port")
+  @Value("${frontend.port}")
   String port;
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
