@@ -43,18 +43,15 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
     const content = quill.root.innerHTML; // Quill 에디터에서 내용 가져오기
     console.log(content);
+
     const requestData = {
-      title: title,
+      title: title, // Updated to use the 'title' state
       teamId: "팀_ID",
       writer: "작성자_이름",
-      category: "카테고리",
       content: content,
-      Participants: {
-        participant1Id: "참석자1_ID",
-        participant2Id: "참석자2_ID",
-        participant3Id: "참석자3_ID",
-      },
     };
+
+    console.log(requestData);
 
     try {
       const response = await fetch("/team/팀_ID/documents", {
@@ -82,7 +79,10 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
   return (
     <StyledTexteditor className="texteditor">
-      <TextTitle titleProps={title} />
+      <TextTitle
+        titleProps={title}
+        onTitleChange={(newTitle) => setTitle(newTitle)}
+      />
       <div id="quill-editor" />
       <SaveButton
         className="save"
