@@ -114,17 +114,6 @@ public class ScheduleService {
     return getSchedulesByDateRange(teamId, startDt, endDt, type, pageable);
   }
 
-  public Page<ScheduleResponse> getSchedulesForWeek(Long teamId, LocalDate startDt, LocalDate endDt,
-      CategoryType type, Pageable pageable) {
-    LocalDate weekStart = startDt.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-    LocalDate weekEnd = startDt.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-
-    LocalDateTime startDateTime = weekStart.atTime(LocalTime.MIN);
-    LocalDateTime endDateTime = weekEnd.atTime(LocalTime.MAX);
-
-    return getSchedulesByDateRange(teamId, startDateTime, endDateTime, type, pageable);
-  }
-
 
   private Schedule createSingleSchedule(ScheduleRequest scheduleRequest, Team team,
       ScheduleCategory category) {
@@ -233,7 +222,6 @@ public class ScheduleService {
     }
   }
 
-
   private Page<ScheduleResponse> getSchedulesByDateRange(Long teamId, LocalDateTime startDt,
       LocalDateTime endDt, CategoryType type, Pageable pageable) {
     Page<Schedule> schedules;
@@ -247,5 +235,4 @@ public class ScheduleService {
 
     return ScheduleResponse.from(schedules);
   }
-
 }

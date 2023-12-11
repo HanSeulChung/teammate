@@ -50,19 +50,8 @@ public class ScheduleController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/calendar/week")
-  public ResponseEntity<Page<ScheduleResponse>> getWeeklySchedules(
-      @PathVariable Long teamId,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDt,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDt,
-      @RequestParam(required = false) CategoryType type,
-      Pageable pageable) {
 
-    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForWeek(teamId, startDt, endDt, type, pageable);
-    return ResponseEntity.ok(schedules);
-  }
-
-  @GetMapping("/calendar/month")
+  @GetMapping("/calendar")
   public ResponseEntity<Page<ScheduleResponse>> getMonthlySchedules(
       @PathVariable Long teamId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDt,
