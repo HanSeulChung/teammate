@@ -42,7 +42,7 @@ public class NotificationService {
 
     TeamParticipants teamParticipant = teamParticipantsService.getTeamParticipant(teamId, userId);
 
-    String emitterId = createTimeIncludeId(teamId , teamParticipant.getTeamParticipantsId());
+    String emitterId = createEmitterIdByTeamIdAndTeamParticipantId(teamId , teamParticipant.getTeamParticipantsId());
 
     SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
     emitterRepository.save(teamId, emitterId, new SseEmitter(DEFAULT_TIMEOUT));
@@ -51,7 +51,7 @@ public class NotificationService {
     emitter.onTimeout(() -> emitterRepository.deleteById(teamId, emitterId));
 
     // 503 에러를 방지하기 위한 더미 이벤트 전송
-    String eventId = createTimeIncludeId(
+    String eventId = createEmitterIdByTeamIdAndTeamParticipantId(
         teamId,
         teamParticipant.getTeamParticipantsId()
     );
@@ -60,7 +60,7 @@ public class NotificationService {
     return emitter;
   }
 
-  public static String createTimeIncludeId(Long teamId, Long teamParticipantId) {
+  public static String createEmitterIdByTeamIdAndTeamParticipantId(Long teamId, Long teamParticipantId) {
     return teamId + "_" + teamParticipantId;
   }
 
@@ -89,7 +89,7 @@ public class NotificationService {
 
   public List<SseEmitter> getEmitters(Long teamId, Long participantsId) {
 
-    String excludeEmitterId = createTimeIncludeId(teamId,participantsId);
+    String excludeEmitterId = createEmitterIdByTeamIdAndTeamParticipantId(teamId,participantsId);
 
     return emitterRepository.getAllByTeamIdAndExcludeEmitterId(teamId, excludeEmitterId);
   }
