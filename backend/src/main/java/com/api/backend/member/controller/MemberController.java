@@ -24,7 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.Map;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -36,9 +40,20 @@ public class MemberController {
     private final long COOKIE_EXPIRATION = 7776000;
 
     @PostMapping("/sign-up")
-    public SignUpResponse signUp(
-            @RequestBody SignUpRequest request){
-        return this.memberService.register(request);
+    public ResponseEntity<?> signUp(
+            @ModelAttribute @Valid SignUpRequest request,
+            BindingResult bindingResult
+    ) {
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> validatorResult = memberService.validateHandling(bindingResult);
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(validatorResult);
+        }
+
+        return ResponseEntity.ok(this.memberService.register(request));
     }
 
     @PostMapping("/sign-in")

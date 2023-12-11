@@ -107,5 +107,16 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public Map<String, String> validateHandling(BindingResult bindingResult) {
+        Map<String, String> validatorResult = new HashMap<>();
+
+        for (FieldError error : bindingResult.getFieldErrors()) {
+            String validKeyName = String.format("valid_%s", error.getField());
+            validatorResult.put(validKeyName, error.getDefaultMessage());
+        }
+
+        return validatorResult;
+    }
 
 }

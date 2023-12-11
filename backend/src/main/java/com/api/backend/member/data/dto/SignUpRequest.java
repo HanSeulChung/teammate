@@ -1,14 +1,12 @@
 package com.api.backend.member.data.dto;
 
 
-import com.api.backend.member.data.entity.Member;
-import com.api.backend.member.data.type.Authority;
-import com.api.backend.member.data.type.LoginType;
 import com.api.backend.member.data.type.SexType;
 import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -28,6 +26,6 @@ public class SignUpRequest {
     private String name;
     @NotBlank(message = "별명은 필수 항목 입니다.")
     private String nickName;
-    @NotBlank(message = "성별은 필수 항목 입니다.")
+    @NotNull(message = "올바른 성별을 입력해주세요")
     private SexType sexType;
 }
