@@ -1,4 +1,3 @@
-// TextTitle 컴포넌트
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
@@ -25,10 +24,6 @@ const TextTitle: React.FC<TextTitleProps> = ({ titleProps, onTitleChange }) => {
 
   useEffect(() => {
     setTitle(titleProps);
-    const titleData = "title";
-    if (titleData) {
-      setTitle(titleData);
-    }
   }, [titleProps]);
 
   const titleSave = () => {
@@ -43,13 +38,9 @@ const TextTitle: React.FC<TextTitleProps> = ({ titleProps, onTitleChange }) => {
       value={title}
       onChange={(e) => {
         setTitle(e.target.value);
-        console.log("title: ", e.target.value);
+        onTitleChange(e.target.value); // 변경된 타이틀을 상위 컴포넌트에 전달
       }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          titleSave();
-        }
-      }}
+      onBlur={titleSave} // 포커스가 벗어나면 저장
     />
   );
 };
