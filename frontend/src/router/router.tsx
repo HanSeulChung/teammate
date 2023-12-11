@@ -17,7 +17,7 @@ import React from "react";
 const Router = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to={`/documents/${uuidV4()}`} />} />
+      <Route path="/" element={<Navigate to={`/text-editor/${uuidV4()}`} />} />
       <Route path="/캘린더" element={<Calender />} />
       <Route path="/text-editor/:id" element={<TextEditorView />} />
       {/* <Route path="/" element={<Index />} />

@@ -20,7 +20,7 @@ interface TextTitleProps {
 
 const TextTitle: React.FC<TextTitleProps> = ({ titleProps }) => {
   const [title, setTitle] = useState<string>("");
-  
+
   useEffect(() => {
     // Set the titleProps initially when the component mounts
     setTitle(titleProps);
