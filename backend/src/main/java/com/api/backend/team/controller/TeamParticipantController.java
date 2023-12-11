@@ -27,7 +27,7 @@ public class TeamParticipantController {
       @PathVariable(value = "teamId") Long teamId
   ) {
     return ResponseEntity.ok(
-        teamParticipantsService.deleteTeamParticipant(principal.getName(), teamId)
+        teamParticipantsService.deleteTeamParticipant(Long.valueOf(principal.getName()), teamId)
     );
   }
 
@@ -38,7 +38,7 @@ public class TeamParticipantController {
       @PathVariable(value = "teamId") Long teamId
   ) {
     return ResponseEntity.ok(
-        teamParticipantsService.updateRoleTeamParticipant(principal.getName(), participantId, teamId)
+        teamParticipantsService.updateRoleTeamParticipant(Long.valueOf(principal.getName()), participantId, teamId)
     );
   }
 
@@ -48,7 +48,7 @@ public class TeamParticipantController {
       Principal principal
   ) {
     return ResponseEntity.ok(
-        teamParticipantsService.getTeamParticipants(teamId, principal.getName())
+        teamParticipantsService.getTeamParticipants(teamId, Long.valueOf(principal.getName()))
             .stream().map(TeamParticipantsDto::from)
             .collect(Collectors.toList())
     );
@@ -61,7 +61,7 @@ public class TeamParticipantController {
   ) {
     return ResponseEntity.ok(
         TeamParticipantsDto.from(
-            teamParticipantsService.getTeamParticipant(teamId, principal.getName())
+            teamParticipantsService.getTeamParticipant(teamId, Long.valueOf(principal.getName()))
         )
     );
   }

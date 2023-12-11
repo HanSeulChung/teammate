@@ -39,7 +39,7 @@ class TeamParticipantsServiceTest {
   @DisplayName("나 자신을 해당 팀으로 부터 탈퇴 로직")
   void deleteTeamParticipant() {
     //given
-    String userId = "1";
+    Long userId = 1L;
     Long teamId = 1L;
     TeamParticipants teamParticipants = TeamParticipants.builder()
         .teamRole(TeamRole.MATE).build();
@@ -58,7 +58,7 @@ class TeamParticipantsServiceTest {
   @DisplayName("팀장이 팀원에게 권한부여 로직")
   void updateRoleTeamParticipant(){
     //given
-    String userId = "1";
+    Long userId = 1L;
     Long participantId = 1L;
     Long teamId = 1L;
     Team team = Team.builder().teamId(1L).build();
@@ -91,7 +91,7 @@ class TeamParticipantsServiceTest {
   void getTeamParticipants(){
     //given
     Long teamId = 1L;
-    String userId = "1";
+    Long userId = 1L;
     List<TeamParticipants> teamParticipantsList = new ArrayList<>();
 
     for (int i = 0; i < 3; i++) {
@@ -129,7 +129,7 @@ class TeamParticipantsServiceTest {
   void getTeamParticipant(){
     //given
     Long teamId = 1L;
-    String userId = "1";
+    Long userId = 1L;
 
     Team team = Team.builder()
         .isDelete(false)

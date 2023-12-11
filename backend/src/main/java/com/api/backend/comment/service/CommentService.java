@@ -1,11 +1,5 @@
 package com.api.backend.comment.service;
 
-import static com.api.backend.global.exception.type.ErrorCode.COMMENT_NOT_FOUND_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.COMMENT_UNMATCH_WRITER_ID_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_FOUND_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_IN_TEAM_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
-
 import com.api.backend.comment.data.dto.CommentEditRequest;
 import com.api.backend.comment.data.dto.CommentInitRequest;
 import com.api.backend.comment.data.dto.DeleteCommentsResponse;
@@ -13,10 +7,8 @@ import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.comment.data.repository.CommentRepository;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
-import com.api.backend.global.exception.CustomException;
-import com.api.backend.global.exception.type.ErrorCode;
+import com.api.backend.documents.valid.DocumentAndCommentValidCheck;
 import com.api.backend.team.data.entity.TeamParticipants;
-import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,18 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
   private final CommentRepository commentRepository;
   private final DocumentsRepository documentsRepository;
-  private final TeamParticipantsRepository teamParticipantsRepository;
+  private final DocumentAndCommentValidCheck validCheck;
 
 
   @Transactional
-  public Comment createComment(Long teamId, String documentIdx, CommentInitRequest commentInitRequest) {
+  public Comment createComment(Long teamId, String documentId, CommentInitRequest commentInitRequest, Principal principal) {
 
-    Documents documents = documentsRepository.findByDocumentIdx(documentIdx)
-        .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
+    Long memberId = validCheck.getMemberId(principal);
+    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberId(memberId);
 
-    if (documents.getTeamId() != teamId) {
-      throw new CustomException(DOCUMENT_NOT_IN_TEAM_EXCEPTION);
-    }
+    Documents validDocument = validCheck.findValidDocument(documentId);
+
+    validCheck.validDocumentByTeamId(teamId, validDocument);
 
     Comment comment = commentRepository.save(Comment.builder()
         .teamId(teamId)
@@ -50,19 +42,17 @@ public class CommentService {
         .writerId(commentInitRequest.getWriterId())
         .build());
 
-    documents.getCommentIds().add(comment);
-    documentsRepository.save(documents);
+    validDocument.getCommentIds().add(comment);
+    documentsRepository.save(validDocument);
     return comment;
   }
 
-  public Page<Comment> getCommentList(Long teamId, String documentIdx, Pageable pageable) {
+  public Page<Comment> getCommentList(Long teamId, String documentId,  Principal principal, Pageable pageable) {
 
-    Documents documents = documentsRepository.findByDocumentIdx(documentIdx)
-        .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
-
-    if (documents.getTeamId() != teamId) {
-      throw new CustomException(DOCUMENT_NOT_IN_TEAM_EXCEPTION);
-    }
+    Long memberId = validCheck.getMemberId(principal);
+    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberId(memberId);
+    Documents documents = validCheck.findValidDocument(documentId);
+    validCheck.validDocumentByTeamId(teamId, documents);
     List<Comment> commentIds = documents.getCommentIds();
 
     if (commentIds != null && !commentIds.isEmpty()) {
@@ -76,21 +66,16 @@ public class CommentService {
   }
 
   @Transactional
-  public Comment editComment(Long teamId, String documentIdx, String commentId, CommentEditRequest commentEditRequest) {
+  public Comment editComment(Long teamId, String documentId, String commentId, CommentEditRequest commentEditRequest, Principal principal) {
 
-    Documents documents = documentsRepository.findByDocumentIdx(documentIdx)
-        .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
+    Long memberId = validCheck.getMemberId(principal);
+    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberId(memberId);
+    Documents documents = validCheck.findValidDocument(documentId);
+    validCheck.validDocumentByTeamId(teamId, documents);
 
-    if (documents.getTeamId() != teamId) {
-      throw new CustomException(DOCUMENT_NOT_IN_TEAM_EXCEPTION);
-    }
+    Comment comment = validCheck.findValidComment(commentId);
 
-    Comment comment = commentRepository.findById(commentId)
-        .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND_EXCEPTION));
-
-    if (comment.getWriterId() != commentEditRequest.getEditorId()) {
-      throw new CustomException(COMMENT_UNMATCH_WRITER_ID_EXCEPTION);
-    }
+    validCheck.validCommentByWrterId(comment, commentEditRequest.getEditorId());
 
     return commentRepository.save(Comment.builder()
         .id(commentId)
@@ -102,27 +87,22 @@ public class CommentService {
   }
 
   @Transactional
-  public DeleteCommentsResponse deleteComment(Long teamId, String documentIdx, String commentId, Principal principal) {
+  public DeleteCommentsResponse deleteComment(Long teamId, String documentId, String commentId, Principal principal) {
 
-    Long memberId = Long.parseLong(principal.getName());
-    TeamParticipants teamParticipants = teamParticipantsRepository.findByMember_MemberId(memberId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    Long memberId = validCheck.getMemberId(principal);
+    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberId(memberId);
 
-    Documents documents = documentsRepository.findByDocumentIdx(documentIdx)
-        .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
+    Documents documents = validCheck.findValidDocument(documentId);
 
-    if (documents.getTeamId() != teamId) {
-      throw new CustomException(DOCUMENT_NOT_IN_TEAM_EXCEPTION);
-    }
+    validCheck.validDocumentByTeamId(teamId, documents);
 
-    Comment comment = commentRepository.findById(commentId)
-        .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND_EXCEPTION));
+    Comment comment = validCheck.findValidComment(commentId);
 
-    if (comment.getWriterId() != teamParticipants.getTeamParticipantsId()) {
-      throw new CustomException(COMMENT_UNMATCH_WRITER_ID_EXCEPTION);
-    }
+    validCheck.validCommentByWrterId(comment, teamParticipants.getTeamParticipantsId());
 
     commentRepository.deleteById(commentId);
+    documents.getCommentIds().removeIf(deletedComment -> deletedComment.getId().equals(commentId));
+    documentsRepository.save(documents);
 
     return DeleteCommentsResponse.builder()
         .id(commentId)

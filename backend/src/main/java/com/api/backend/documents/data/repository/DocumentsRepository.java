@@ -13,9 +13,8 @@ public interface DocumentsRepository extends MongoRepository<Documents, String> 
   @Override
   Page<Documents> findAll(Pageable pageable);
 
-  Optional<Documents> findByDocumentIdx(String documentIdx);
 
   @Transactional
-  void deleteByDocumentIdx(String documentIdx);
+  void deleteById(String documentId);
 
 }
