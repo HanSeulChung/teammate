@@ -1,5 +1,6 @@
 package com.api.backend.member.service.impl;
 
+import com.api.backend.global.email.MailService;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.redis.RedisService;
 import com.api.backend.global.security.AuthService;
@@ -34,6 +35,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
     private final AuthService authService;
+    private final MailService mailService;
 
     @Override
     public SignUpResponse register(SignUpRequest request) {
