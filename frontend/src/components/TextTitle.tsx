@@ -40,7 +40,10 @@ const TextTitle: React.FC<TextTitleProps> = ({ titleProps }) => {
       id="title"
       placeholder="Title"
       value={title}
-      onChange={(e) => setTitle(e.target.value)}
+      onChange={(e) => {
+        setTitle(e.target.value);
+        console.log("title: ", e.target.value);
+      }}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           titleSave();

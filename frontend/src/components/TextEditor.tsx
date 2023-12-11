@@ -28,11 +28,8 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
   const [title, setTitle] = useState<string>("");
   const [quill, setQuill] = useState<Quill | null>(null);
 
-  const docsIdx = id;
-  console.log(docsIdx);
-
   const client = useRef<StompJs.Client | null>(null);
-
+  const docsIdx = id;
   const connect = (docsIdx: string) => {
     const trimmedDocsIdx = docsIdx;
 
@@ -63,9 +60,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
     };
 
     client.current.onConnect = () => {
-      const docsIdxInput = document.getElementById(
-        "docs-idx",
-      ) as HTMLInputElement;
       onConnect(docsIdx);
     };
 
@@ -76,7 +70,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
         client.current.deactivate();
       }
     };
-  }, []);
+  }, [docsIdx]);
 
   const onError = (error: any) => {
     console.error("Could not connect to WebSocket server:", error);
@@ -84,23 +78,23 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
 
   const displayDocs = (docs: Docs) => {
     setTitle(docs.title);
-    console.log(docs.content);
 
     if (quill) {
-      quill.clipboard.dangerouslyPasteHTML(docs.content);
+      const delta = quill.clipboard.convert(docs.content);
+      quill.setContents(delta, "silent");
     }
 
     console.log("displaydocs");
   };
 
   useEffect(() => {
-    connect(docsIdx);
-  }, []);
+    const initializeQuill = () => {
+      if (quill) {
+        return;
+      }
 
-  useEffect(() => {
-    if (!quill) {
       const editor = new Quill("#quill-editor", {
-        // theme: "snow", // or use another theme if you prefer
+        theme: "snow",
       });
 
       editor.on("text-change", () => {
@@ -108,18 +102,20 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
       });
 
       setQuill(editor);
-    }
-  }, [quill]);
+    };
+
+    initializeQuill();
+    connect(docsIdx);
+  }, [quill, docsIdx, title]);
 
   const handleSave = (content: string) => {
-    // Handle save logic here with the content
     console.log("Saving content:", content);
   };
 
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle titleProps={title} />
-      <ButtonContainer></ButtonContainer>
+      <ButtonContainer />
       <div id="quill-editor" />
       <SaveButton
         className="save"

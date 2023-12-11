@@ -1,12 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
-import { Client, Message } from "@stomp/stompjs";
+import * as StompJs from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 import { useParams } from "react-router-dom";
-import TextTitle from "./TextTitle";
-import styled from "styled-components";
-
-const StyledTexteditor = styled.div``;
 
 interface TextEditorProps {}
 
@@ -25,72 +22,49 @@ const TOOLBAR_OPTIONS = [
 
 const TextEditor: React.FC<TextEditorProps> = () => {
   const { id: documentId } = useParams<{ id: string }>();
-  const [stompClient, setStompClient] = useState<Client | null>(null);
+  const [stompClient, setStompClient] = useState<StompJs.Client | null>(null);
   const [quill, setQuill] = useState<Quill | null>(null);
 
   useEffect(() => {
-    const stomp = new Client({
-      brokerURL: "ws://localhost:8080/ws",
-      connectHeaders: {},
-      debug: (str) => {
-        console.log(str);
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
-
+    const socket = new SockJS("http://localhost:8080/ws");
+    const stomp = StompJs.over(socket);
     setStompClient(stomp);
 
     return () => {
-      if (stomp.connected) {
-        stomp.deactivate();
-      }
+      stomp.disconnect();
     };
   }, []);
 
   useEffect(() => {
-    if (!stompClient || !quill) return;
+    if (stompClient == null || quill == null) return;
 
-    stompClient.onConnect = () => {
-      stompClient.subscribe(
-        `/topic/document/${documentId}`,
-        (message: Message) => {
-          const document = JSON.parse(message.body);
-          quill.setContents(document);
-          quill.enable();
-        },
-      );
-      stompClient.subscribe(
-        `/user/topic/document/${documentId}`,
-        (message: Message) => {
-          const delta = JSON.parse(message.body);
-          quill.updateContents(delta);
-        },
-      );
-
-      // Request the current document
-      stompClient.publish({
-        destination: `/app/document/${documentId}`,
-        body: JSON.stringify({}),
+    stompClient.connect({}, (frame) => {
+      console.log("Connected to WebSocket");
+      stompClient.subscribe(`/topic/document/${documentId}`, (message) => {
+        const document = JSON.parse(message.body);
+        quill.setContents(document);
+        quill.enable();
       });
-    };
 
-    stompClient.activate();
+      stompClient.send(`/app/document/${documentId}`, {}, "");
+    });
 
     return () => {
-      stompClient.deactivate();
+      if (stompClient) {
+        stompClient.disconnect();
+      }
     };
   }, [stompClient, quill, documentId]);
 
   useEffect(() => {
-    if (!stompClient || !quill) return;
+    if (stompClient == null || quill == null) return;
 
     const interval = setInterval(() => {
-      stompClient.publish({
-        destination: `/app/save/${documentId}`,
-        body: JSON.stringify(quill.getContents()),
-      });
+      stompClient.send(
+        `/app/save-document/${documentId}`,
+        {},
+        JSON.stringify(quill.getContents()),
+      );
     }, SAVE_INTERVAL_MS);
 
     return () => {
@@ -98,7 +72,41 @@ const TextEditor: React.FC<TextEditorProps> = () => {
     };
   }, [stompClient, quill, documentId]);
 
-  const wrapperRef = useCallback((wrapper) => {
+  useEffect(() => {
+    if (stompClient == null || quill == null) return;
+
+    const handler = (message: StompJs.Message) => {
+      const delta = JSON.parse(message.body);
+      quill.updateContents(delta);
+    };
+
+    stompClient.subscribe(`/topic/changes/${documentId}`, handler);
+
+    return () => {
+      stompClient.unsubscribe(`/topic/changes/${documentId}`, handler);
+    };
+  }, [stompClient, quill, documentId]);
+
+  useEffect(() => {
+    if (stompClient == null || quill == null) return;
+
+    const handler = (delta: any, oldDelta: any, source: string) => {
+      if (source !== "user") return;
+      stompClient.send(
+        `/app/send-changes/${documentId}`,
+        {},
+        JSON.stringify(delta),
+      );
+    };
+
+    quill.on("text-change", handler);
+
+    return () => {
+      quill.off("text-change", handler);
+    };
+  }, [stompClient, quill, documentId]);
+
+  const wrapperRef = useCallback((wrapper: HTMLDivElement | null) => {
     if (wrapper == null) return;
 
     wrapper.innerHTML = "";
@@ -113,61 +121,7 @@ const TextEditor: React.FC<TextEditorProps> = () => {
     setQuill(q);
   }, []);
 
-  // 콘솔에 메시지 출력
-  useEffect(() => {
-    if (!stompClient || !quill) return;
-
-    stompClient.onConnect = () => {
-      console.log("connected to server", documentId);
-
-      stompClient.subscribe(
-        `/topic/document/${documentId}`,
-        (message: Message) => {
-          const document = JSON.parse(message.body);
-          quill.setContents(document);
-          quill.enable();
-        },
-      );
-      stompClient.subscribe(
-        `/user/topic/document/${documentId}`,
-        (message: Message) => {
-          const delta = JSON.parse(message.body);
-          quill.updateContents(delta);
-        },
-      );
-
-      // Request the current document
-      stompClient.publish({
-        destination: `/app/document/${documentId}`,
-        body: JSON.stringify({}),
-      });
-    };
-
-    stompClient.onStompError = (frame) => {
-      console.log("Stomp error:", frame.headers["message"]);
-    };
-
-    stompClient.onWebSocketError = (event) => {
-      console.log("WebSocket error:", event);
-    };
-
-    stompClient.onUnhandledMessage = (message: Message) => {
-      console.log("Unhandled message:", message.body);
-    };
-
-    stompClient.activate();
-
-    return () => {
-      stompClient.deactivate();
-    };
-  }, [stompClient, quill, documentId]);
-
-  return (
-    <StyledTexteditor>
-      <TextTitle titleProps="default title" />
-      <div className="container" ref={wrapperRef}></div>
-    </StyledTexteditor>
-  );
+  return <div className="container" ref={wrapperRef}></div>;
 };
 
 export default TextEditor;
