@@ -42,6 +42,9 @@ public enum ErrorCode {
   TOKEN_NOT_FOUND_PERMISSION_INFORMATION(400,"권한 정보가 없는 토큰입니다."),
   TOKEN_INVALID_EXCEPTION(400,"유효하지 않는 토큰입니다."),
 
+  // principal
+  PRINCIPAL_IS_NULL(400, "인증이 되지 않았습니다."),
+
   // documents
   DOCUMENT_NOT_IN_TEAM_EXCEPTION(400, "해당 팀에 속하지 않은 문서입니다."),
   DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION(400, "해당 문서의 생성자가 아닙니다."),
