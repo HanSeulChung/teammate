@@ -38,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
+
 @Api(tags = "팀")
 @RestController
 @RequiredArgsConstructor
@@ -54,26 +56,14 @@ public class TeamController {
   @ApiImplicitParams(
       {
           @ApiImplicitParam(
-              name = "access token"
-              , value = "jwt access token"
-              , required = true
-              , dataType = "String"
-              , paramType = "header"
-              , defaultValue = "None"
-          ),
-          @ApiImplicitParam(
-              name = "teamId"
-              , value = "팀 id"
-              , required = true
-              , dataType = "Long"
-              , paramType = "path"
-              , defaultValue = "None"
-              , example = "1")
+              name = "teamId", value = "팀 id", required = true, dataType = "Long"
+              , paramType = "path", defaultValue = "None", example = "1"
+          )
       })
   @GetMapping("/{teamId}/code")
   public ResponseEntity<String> getTeamUrlRequest(
       @PathVariable("teamId") Long teamId,
-      Principal principal
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         teamService.getTeamUrl(teamId, Long.valueOf(principal.getName()))
@@ -84,17 +74,10 @@ public class TeamController {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "실패")
   })
-  @ApiImplicitParams(
-      {
-          @ApiImplicitParam(
-              name = "access token", value = "jwt access token", required = true
-              , dataType = "String", paramType = "header", defaultValue = "None"
-          )
-      })
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<TeamCreateResponse> createTeamRequest(
       @Valid TeamCreateRequest teamRequest,
-      Principal principal
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         teamService.createTeam(teamRequest,Long.valueOf(principal.getName()))
@@ -111,10 +94,6 @@ public class TeamController {
   @ApiImplicitParams(
       {
           @ApiImplicitParam(
-              name = "access token", value = "jwt access token", required = true
-              , dataType = "String", paramType = "header", defaultValue = "None"
-          ),
-          @ApiImplicitParam(
               name = "teamId", value = "팀 id", required = true, dataType = "Long"
               , paramType = "path", defaultValue = "None", example = "1"
           ),
@@ -127,7 +106,7 @@ public class TeamController {
   public ResponseEntity<TeamParticipantsUpdateResponse> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,
       @PathVariable("code") String code,
-      Principal principal
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         teamService.updateTeamParticipants(teamId, code, Long.valueOf(principal.getName()))
@@ -139,19 +118,12 @@ public class TeamController {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "팀장이 아닌경우, 회원이 없는 경우, 자기 자신을 강퇴하는 경우")
   })
-  @ApiImplicitParams(
-      {
-          @ApiImplicitParam(
-              name = "access token", value = "jwt access token", required = true,
-              dataType = "String", paramType = "header", defaultValue = "None"
-          )
-      })
   @PostMapping("/kick-out")
   @SendNotify
   public ResponseEntity<TeamKickOutResponse> kickOutTeamParticipantsRequest(
       @RequestBody @Valid
       TeamKickOutRequest teamKickOutRequest,
-      Principal principal
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         teamService.kickOutTeamParticipants(teamKickOutRequest, Long.valueOf(principal.getName()))
@@ -162,17 +134,10 @@ public class TeamController {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "권한이 옳바르지 않는 경우, 이미 해체된 경우")
   })
-  @ApiImplicitParams(
-      {
-          @ApiImplicitParam(
-              name = "access token", value = "jwt access token", required = true
-              , dataType = "String", paramType = "header", defaultValue = "None"
-          )
-      })
   @PutMapping("/disband")
   public ResponseEntity<TeamDisbandResponse> disbandTeamRequest(
       @RequestBody @Valid TeamDisbandRequest request,
-      Principal principal
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         TeamDisbandResponse.from(
@@ -189,10 +154,6 @@ public class TeamController {
   @ApiImplicitParams(
       {
           @ApiImplicitParam(
-              name = "access token", value = "jwt access token", required = true
-              , dataType = "String", paramType = "header", defaultValue = "None"
-          ),
-          @ApiImplicitParam(
               name = "teamId", value = "팀 id", required = true, dataType = "Long",
               paramType = "path", defaultValue = "None", example = "1"
           ),
@@ -203,7 +164,7 @@ public class TeamController {
       })
   @PatchMapping("/{teamId}/restore")
   public ResponseEntity<TeamRestoreResponse> restoreTeamRequest(
-      Principal principal,
+      @ApiIgnore Principal principal,
       @RequestParam(value = "restoreDt") @DateTimeFormat(pattern = "yyyy-MM-dd")
       LocalDate restoreDt,
       @PathVariable("teamId") Long teamId
@@ -219,16 +180,9 @@ public class TeamController {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
   })
-  @ApiImplicitParams(
-      {
-          @ApiImplicitParam(
-              name = "access token", value = "jwt access token", required = true
-              , dataType = "String", paramType = "header", defaultValue = "None"
-          )
-      })
   @GetMapping("/list")
   public ResponseEntity<Page<TeamDtoResponse>> getTeamsRequest(
-      Principal principal,
+      @ApiIgnore Principal principal,
       Pageable pageable
   ){
     return ResponseEntity.ok(
@@ -243,17 +197,10 @@ public class TeamController {
       @ApiResponse(code = 200, message = "업데이트된 팀 정보를 반환"),
       @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
   })
-  @ApiImplicitParams(
-      {
-          @ApiImplicitParam(
-              name = "access token", value = "jwt access token", required = true
-              , dataType = "String", paramType = "header", defaultValue = "None"
-          )
-      })
   @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<TeamUpdateResponse> updateTeamRequest(
       @Valid TeamUpdateRequest teamUpdateRequest,
-      Principal principal
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         TeamUpdateResponse.from(
