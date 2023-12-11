@@ -13,6 +13,8 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION;
+import static com.api.backend.team.data.ResponseMessage.KICK_OUT_TEAM_PARTICIPANTS;
+import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM_PARTICIPANTS;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
@@ -22,6 +24,8 @@ import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
+import com.api.backend.team.data.dto.TeamParticipantsDto;
+import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
 import com.api.backend.team.data.dto.TeamUpdateRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
@@ -99,7 +103,7 @@ public class TeamService {
   }
 
   @Transactional
-  public Team updateTeamParticipants(Long teamId, String code, Long userId) {
+  public TeamParticipantsUpdateResponse updateTeamParticipants(Long teamId, String code, Long userId) {
     Team team = getTeam(teamId);
     String entityCode = team.getInviteLink().split("/")[1];
 
@@ -118,7 +122,7 @@ public class TeamService {
     Member member = memberRepository.findById(userId)
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
-    teamParticipantsRepository.save(
+    TeamParticipants teamParticipants = teamParticipantsRepository.save(
         TeamParticipants.builder()
             .member(member)
             .teamNickName(getRandomNickName(member.getName()))
@@ -127,7 +131,13 @@ public class TeamService {
             .build()
     );
 
-    return team;
+    return TeamParticipantsUpdateResponse
+        .builder().teamName(team.getName())
+        .teamId(teamId)
+        .updateTeamParticipantId(teamParticipants.getTeamParticipantsId())
+        .updateTeamParticipantNickName(teamParticipants.getTeamNickName())
+        .message(team.getName() + UPDATE_TEAM_PARTICIPANTS)
+        .build();
   }
 
   @Transactional
@@ -157,8 +167,9 @@ public class TeamService {
 
     return TeamKickOutResponse.builder()
         .teamId(request.getTeamId())
+        .kickOutMemberId(teamParticipants.getMember().getMemberId())
         .nickName(teamParticipants.getTeamNickName())
-        .message("해당 사용자가 팀에서 강퇴됐습니다.")
+        .message(KICK_OUT_TEAM_PARTICIPANTS)
         .build();
   }
 

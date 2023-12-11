@@ -14,6 +14,8 @@ import lombok.ToString;
 public class TeamParticipantsUpdateResponse {
 
   private Long teamId;
+  private Long updateTeamParticipantId;
+  private String updateTeamParticipantNickName;
   private String teamName;
   private String message;
 }

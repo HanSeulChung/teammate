@@ -24,6 +24,7 @@ import com.api.backend.member.data.repository.MemberRepository;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
+import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
 import com.api.backend.team.data.dto.TeamUpdateRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
@@ -122,6 +123,7 @@ class TeamServiceTest {
     String code = "dsfefsefnklsd";
     Team team = Team.builder()
         .teamId(1L)
+        .name("test")
         .inviteLink("2/dsfefsefnklsd")
         .build();
     when(teamRepository.findById(anyLong()))
@@ -132,11 +134,11 @@ class TeamServiceTest {
     when(memberRepository.findById(anyLong()))
         .thenReturn(Optional.of(Member.builder().build()));
     //when
-    Team result = teamService.updateTeamParticipants(id, code, userId);
+    TeamParticipantsUpdateResponse result = teamService.updateTeamParticipants(id, code, userId);
 
     //then
     assertEquals(result.getTeamId(), team.getTeamId());
-    assertEquals(result.getInviteLink(), team.getInviteLink());
+    assertEquals(result.getTeamName(), team.getName());
   }
 
   @Test
@@ -212,7 +214,6 @@ class TeamServiceTest {
         .member(
             Member.builder().memberId(1L).name("testUser").build()
         ).build();
-    List<TeamParticipants> teamParticipantsList = List.of(teamParticipants);
 
     when(teamRepository.existsByTeamIdAndIsDelete(anyLong(), anyBoolean()))
         .thenReturn(true);
@@ -224,7 +225,7 @@ class TeamServiceTest {
     TeamKickOutResponse result = teamService.kickOutTeamParticipants(request, userId);
 
     //then
-    assertEquals(result.getTeamId(),request.getTeamId());
+    assertEquals(result.getKickOutMemberId(),1L);
   }
   @Test
   @DisplayName("팀원 강퇴 로직 - 실패")

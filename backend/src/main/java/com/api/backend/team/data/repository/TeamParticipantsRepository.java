@@ -1,7 +1,7 @@
 package com.api.backend.team.data.repository;
 
-import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.data.entity.TeamParticipants;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +19,7 @@ public interface TeamParticipantsRepository extends JpaRepository<TeamParticipan
 
   Optional<TeamParticipants> findByMember_Email(String email);
   Optional<TeamParticipants> findByMember_MemberId(Long memberId);
+
+  List<TeamParticipants> findByTeam_TeamIdAndTeamParticipantsIdNot(Long teamId, Long teamParticipantsId);
+
 }
