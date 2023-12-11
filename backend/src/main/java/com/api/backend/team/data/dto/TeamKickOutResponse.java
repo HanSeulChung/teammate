@@ -13,6 +13,7 @@ import lombok.ToString;
 @Builder
 public class TeamKickOutResponse {
   private Long teamId;
+  private Long kickOutMemberId;
   private String nickName;
   private String message;
 }

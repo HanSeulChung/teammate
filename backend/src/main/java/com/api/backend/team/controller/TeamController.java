@@ -1,7 +1,7 @@
 package com.api.backend.team.controller;
 
-import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM_PARTICIPANTS;
 
+import com.api.backend.global.aop.notify.SendNotify;
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
@@ -13,7 +13,6 @@ import com.api.backend.team.data.dto.TeamRestoreResponse;
 import com.api.backend.team.data.dto.TeamUpdateRequest;
 import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
 import com.api.backend.team.data.dto.TeamUpdateResponse;
-import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.service.TeamService;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -67,17 +66,13 @@ public class TeamController {
       @PathVariable("code") String code,
       Principal principal
   ) {
-    Team team = teamService.updateTeamParticipants(teamId, code, Long.valueOf(principal.getName()));
     return ResponseEntity.ok(
-        TeamParticipantsUpdateResponse
-            .builder().teamName(team.getName())
-            .teamId(teamId)
-            .message(team.getName() + UPDATE_TEAM_PARTICIPANTS)
-            .build()
+        teamService.updateTeamParticipants(teamId, code, Long.valueOf(principal.getName()))
     );
   }
 
   @PostMapping("/kick-out")
+  @SendNotify
   public ResponseEntity<TeamKickOutResponse> kickOutTeamParticipantsRequest(
       @RequestBody @Valid
       TeamKickOutRequest teamKickOutRequest,

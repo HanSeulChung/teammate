@@ -2,6 +2,7 @@ package com.api.backend.team.data.repository;
 
 import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.data.entity.TeamParticipants;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,6 @@ public interface TeamParticipantsRepository extends JpaRepository<TeamParticipan
   Page<TeamParticipants> findAllByMember_MemberIdAndTeam_IsDelete(Long memberId, boolean flag, Pageable pageable);
 
   Optional<TeamParticipants> findByMember_Email(String email);
+
+  List<TeamParticipants> findByTeam_TeamIdAndTeamParticipantsIdNot(Long teamId, Long teamParticipantsId);
 }
