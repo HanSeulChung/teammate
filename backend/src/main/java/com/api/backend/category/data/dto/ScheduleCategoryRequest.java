@@ -9,8 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class ScheduleCategoryRequest {
-
-  private Long categoryId;
+  private Long teamId;
   private String categoryName;
   private CategoryType categoryType;
   private String color;

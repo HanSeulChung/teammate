@@ -3,8 +3,6 @@ package com.api.backend.category.data.dto;
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.type.CategoryType;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +21,7 @@ public class ScheduleCategoryDto {
   private CategoryType categoryType;
   private String color;
 
-  public static ScheduleCategoryDto of(ScheduleCategory scheduleCategory) {
+  public static ScheduleCategoryDto from(ScheduleCategory scheduleCategory) {
     return ScheduleCategoryDto.builder()
         .categoryId(scheduleCategory.getScheduleCategoryId())
         .teamId(scheduleCategory.getTeam().getTeamId())
@@ -35,15 +33,7 @@ public class ScheduleCategoryDto {
         .build();
   }
 
-  public static List<ScheduleCategoryDto> of(Page<ScheduleCategory> scheduleCategories) {
-    if (scheduleCategories != null) {
-      List<ScheduleCategoryDto> scheduleCategoryDtoList = new ArrayList<>();
-      for (ScheduleCategory scheduleCategory : scheduleCategories) {
-        scheduleCategoryDtoList.add(ScheduleCategoryDto.of(scheduleCategory));
-      }
-      return scheduleCategoryDtoList;
-    }
-    return new ArrayList<>();
+  public static Page<ScheduleCategoryDto> from(Page<ScheduleCategory> scheduleCategories) {
+    return scheduleCategories.map(ScheduleCategoryDto::from);
   }
-
 }

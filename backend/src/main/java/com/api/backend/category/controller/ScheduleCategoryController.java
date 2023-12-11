@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,24 +30,29 @@ public class ScheduleCategoryController {
 
   @PostMapping
   public ResponseEntity<ScheduleCategoryResponse> categoryAdd(
-      @RequestBody ScheduleCategoryRequest request, @RequestParam Long teamId) {
-    ScheduleCategoryDto scheduleCategoryDto = scheduleCategoryService.add(request, teamId);
-    return ResponseEntity.ok(ScheduleCategoryResponse.from(scheduleCategoryDto));
+      @RequestBody ScheduleCategoryRequest request) {
+    ScheduleCategoryDto dto = ScheduleCategoryDto.from(scheduleCategoryService.add(request));
+    return ResponseEntity.ok(ScheduleCategoryResponse.to(dto));
   }
 
-  @GetMapping
+  @GetMapping("/{categoryType}")
   public ResponseEntity<Page<ScheduleCategoryResponse>> searchByCategoryType(
-      @RequestParam String categoryType, Pageable pageable) {
+      @PathVariable String categoryType, Pageable pageable, @RequestParam Long teamId) {
     CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
-    return ResponseEntity.ok(
-        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable));
+    Page<ScheduleCategoryDto> scheduleCategories = ScheduleCategoryDto.from(
+        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable, teamId)
+    );
+    Page<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.to(scheduleCategories);
+    return ResponseEntity.ok(responses);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleCategoryEditResponse> editCategory(
-      @RequestBody ScheduleCategoryEditRequest request, @RequestParam Long teamId) {
-    ScheduleCategoryDto scheduleCategoryDto = scheduleCategoryService.edit(request, teamId);
-    return ResponseEntity.ok(ScheduleCategoryEditResponse.from(scheduleCategoryDto));
+      @RequestBody ScheduleCategoryEditRequest request) {
+    ScheduleCategoryDto scheduleCategoryDto = ScheduleCategoryDto.from(
+        scheduleCategoryService.edit(request)
+    );
+    return ResponseEntity.ok(ScheduleCategoryEditResponse.to(scheduleCategoryDto));
   }
 
   @DeleteMapping

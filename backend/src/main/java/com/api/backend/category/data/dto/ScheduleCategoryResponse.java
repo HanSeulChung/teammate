@@ -2,11 +2,10 @@ package com.api.backend.category.data.dto;
 
 import com.api.backend.category.type.CategoryType;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 @Getter
 @AllArgsConstructor
@@ -20,7 +19,7 @@ public class ScheduleCategoryResponse {
   private LocalDateTime updateDt;
   private String color;
 
-  public static ScheduleCategoryResponse from(ScheduleCategoryDto scheduleCategoryDto) {
+  public static ScheduleCategoryResponse to(ScheduleCategoryDto scheduleCategoryDto) {
     return ScheduleCategoryResponse.builder()
         .categoryId(scheduleCategoryDto.getCategoryId())
         .categoryName(scheduleCategoryDto.getCategoryName())
@@ -31,15 +30,8 @@ public class ScheduleCategoryResponse {
         .build();
   }
 
-  public static List<ScheduleCategoryResponse> from(
-      List<ScheduleCategoryDto> scheduleCategoryDtoList) {
-    if (scheduleCategoryDtoList != null) {
-      List<ScheduleCategoryResponse> scheduleCategoryResponses = new ArrayList<>();
-      for (ScheduleCategoryDto dto : scheduleCategoryDtoList) {
-        scheduleCategoryResponses.add(from(dto));
-      }
-      return scheduleCategoryResponses;
-    }
-    return new ArrayList<>();
+  public static Page<ScheduleCategoryResponse> to(
+      Page<ScheduleCategoryDto> scheduleCategoryDtoList) {
+    return scheduleCategoryDtoList.map(ScheduleCategoryResponse::to);
   }
 }

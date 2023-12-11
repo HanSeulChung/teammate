@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScheduleCategoryRepository extends JpaRepository<ScheduleCategory, Long> {
 
-  Page<ScheduleCategory> findAllByCategoryType(CategoryType categoryType, Pageable pageable);
+  Page<ScheduleCategory> findAllByCategoryTypeAndTeam_TeamId(CategoryType categoryType, Pageable pageable, Long teamId);
 }

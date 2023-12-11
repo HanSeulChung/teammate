@@ -1,5 +1,7 @@
 package com.api.backend.member.controller;
 
+import com.api.backend.global.security.AuthService;
+import com.api.backend.global.security.data.dto.TokenDto;
 import com.api.backend.member.data.dto.*;
 import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
 import com.api.backend.member.service.MemberService;
@@ -29,6 +31,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final TeamParticipantsService teamParticipantsService;
+    private final AuthService authService;
 
     private final long COOKIE_EXPIRATION = 7776000;
 
@@ -38,7 +41,7 @@ public class MemberController {
         return this.memberService.register(request);
     }
 
-    @GetMapping("/sign-in")
+    @PostMapping("/sign-in")
     public ResponseEntity<SignInResponse> signIn(@RequestBody SignInRequest signInRequest) {
 
         SignInResponse signInResponse = memberService.login(signInRequest);
@@ -69,6 +72,45 @@ public class MemberController {
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                 .body(logoutResponse);
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<?> validate(@RequestHeader("Authorization") String requestAccessToken) {
+        if (!authService.validate(requestAccessToken)) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
+                                     @RequestHeader("Authorization") String requestAccessToken) {
+        TokenDto reissuedTokenDto = authService.reissue(requestAccessToken, requestRefreshToken);
+
+        if (reissuedTokenDto != null) {
+            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", reissuedTokenDto.getRefreshToken())
+                    .maxAge(COOKIE_EXPIRATION)
+                    .httpOnly(true)
+                    .secure(true)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                    // AT 저장
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + reissuedTokenDto.getAccessToken())
+                    .build();
+
+        } else {
+            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
+                    .maxAge(0)
+                    .path("/")
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                    .build();
+        }
     }
 
 

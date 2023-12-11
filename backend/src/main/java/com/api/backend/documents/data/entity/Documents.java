@@ -1,6 +1,9 @@
 package com.api.backend.documents.data.entity;
 
+import com.api.backend.comment.data.entity.Comment;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
@@ -20,9 +24,6 @@ public class Documents {
 
   @Id
   private String id;
-
-  @Field(name = "document_idx")
-  private String documentIdx;
 
   @Field(name = "title")
   private String title;
@@ -39,8 +40,10 @@ public class Documents {
   @Field(name = "team_id")
   private Long teamId;
 
-  // Todo : Comment
-
+  @DocumentReference
+  @Field(name = "comment_ids")
+  @Builder.Default
+  private List<Comment> commentIds = new ArrayList<>();;
 
   @CreatedDate
   @Field(name = "created_dt")
@@ -48,6 +51,5 @@ public class Documents {
   @LastModifiedDate
   @Field(name = "updated_dt")
   private LocalDateTime updatedDt;
-
 
 }

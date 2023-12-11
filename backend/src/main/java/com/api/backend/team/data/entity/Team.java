@@ -1,8 +1,7 @@
 package com.api.backend.team.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
-import com.api.backend.schedule.data.enetity.Schedule;
-import com.api.backend.team.data.dto.TeamUpdateRequest;
+import com.api.backend.schedule.data.entity.Schedule;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
