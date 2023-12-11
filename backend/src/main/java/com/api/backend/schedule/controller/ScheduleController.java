@@ -1,14 +1,19 @@
 package com.api.backend.schedule.controller;
 
-import com.api.backend.schedule.data.dto.ScheduleDto;
-import com.api.backend.schedule.data.dto.ScheduleEditRequest;
+import com.api.backend.category.type.CategoryType;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.service.ScheduleService;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,26 +33,54 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
 
   @PostMapping
-  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody ScheduleRequest request,
+  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId) {
-    Page<ScheduleDto> scheduleDto = ScheduleDto.of(scheduleService.addSchedules(request));
-    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(scheduleDto);
+    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(
+        scheduleService.addSchedules(request)
+    );
     return ResponseEntity.ok(scheduleResponse);
   }
 
   @GetMapping("/{scheduleId}")
-  public ResponseEntity<Page<ScheduleResponse>> searchSchedule(@PathVariable Long teamId,
-      @PathVariable Long scheduleId, Pageable pageable) {
-    Page<ScheduleDto> scheduleDto = ScheduleDto.of(scheduleService.searchSchedule(pageable, teamId));
-    Page<ScheduleResponse> scheduleDtoPage = ScheduleResponse.from(scheduleDto);
-    return ResponseEntity.ok(scheduleDtoPage);
+  public ResponseEntity<ScheduleResponse> searchScheduleDetailInfo(@PathVariable Long teamId,
+      @PathVariable Long scheduleId) {
+    ScheduleResponse response = ScheduleResponse.from(
+        scheduleService.searchScheduleDetailInfo(scheduleId, teamId)
+    );
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/calendar/week")
+  public ResponseEntity<Page<ScheduleResponse>> getWeeklySchedules(
+      @PathVariable Long teamId,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDt,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDt,
+      @RequestParam(required = false) CategoryType type,
+      Pageable pageable) {
+
+    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForWeek(teamId, startDt, endDt, type, pageable);
+    return ResponseEntity.ok(schedules);
+  }
+
+  @GetMapping("/calendar/month")
+  public ResponseEntity<Page<ScheduleResponse>> getMonthlySchedules(
+      @PathVariable Long teamId,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDt,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDt,
+      @RequestParam(required = false) CategoryType type,
+      Pageable pageable) {
+
+    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForMonth(teamId, startDt, endDt, type, pageable);
+
+    return ResponseEntity.ok(schedules);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
-  ScheduleEditRequest request) {
-    ScheduleDto scheduleDto = ScheduleDto.of(scheduleService.editSchedule(request));
-    ScheduleEditResponse response = ScheduleEditResponse.from(scheduleDto);
+  @Valid ScheduleRequest editRequest) {
+    ScheduleEditResponse response = ScheduleEditResponse.from(
+        scheduleService.editScheduleAndSave(editRequest)
+    );
     return ResponseEntity.ok(response);
   }
 

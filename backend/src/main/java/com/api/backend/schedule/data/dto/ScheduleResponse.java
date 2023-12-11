@@ -1,5 +1,7 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.data.entity.Schedule;
+import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,24 +33,55 @@ public class ScheduleResponse {
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
 
-  public static ScheduleResponse from(ScheduleDto scheduleDto) {
+  public static ScheduleResponse from(Schedule schedule) {
     return ScheduleResponse.builder()
-        .scheduleId(scheduleDto.getScheduleId())
-        .categoryId(scheduleDto.getCategoryId())
-        .startDt(scheduleDto.getStartDt())
-        .endDt(scheduleDto.getEndDt())
-        .title(scheduleDto.getTitle())
-        .content(scheduleDto.getContent())
-        .place(scheduleDto.getPlace())
-        .isRepeat(scheduleDto.isRepeat())
-        .repeatCycle(scheduleDto.getRepeatCycle())
-        .teamParticipantsIds(scheduleDto.getTeamParticipantsIds())
-        .teamParticipantsNames(scheduleDto.getTeamParticipantsName())
-        .teamRoles(scheduleDto.getTeamRoles())
+        .scheduleId(schedule.getScheduleId())
+        .categoryId(schedule.getScheduleCategory().getScheduleCategoryId())
+        .startDt(schedule.getStartDt())
+        .endDt(schedule.getEndDt())
+        .title(schedule.getTitle())
+        .content(schedule.getContent())
+        .place(schedule.getPlace())
+        .isRepeat(schedule.isRepeat())
+        .repeatCycle(schedule.getRepeatCycle())
+        .teamParticipantsIds(getTeamParticipantsIdsFromSchedules(schedule.getTeamParticipantsSchedules()))
+        .teamParticipantsNames(getTeamParticipantsNameFromSchedules(schedule.getTeamParticipantsSchedules()))
+        .teamRoles(getTeamParticipantsRoleFromSchedules(schedule.getTeamParticipantsSchedules()))
         .build();
   }
 
-  public static Page<ScheduleResponse> from(Page<ScheduleDto> scheduleDtoList) {
-    return scheduleDtoList.map(ScheduleResponse::from);
+  public static Page<ScheduleResponse> from (Page<Schedule> schedules) {
+    return schedules.map(ScheduleResponse::from);
   }
+
+  public static List<Long> getTeamParticipantsIdsFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+    List<Long> teamParticipantsIds = new ArrayList<>();
+    if (teamParticipantsSchedules != null) {
+      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
+        teamParticipantsIds.add(teamParticipantsSchedule.getTeamParticipants().getTeamParticipantsId());
+      }
+    }
+    return teamParticipantsIds;
+  }
+
+  public static List<String> getTeamParticipantsNameFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+    List<String> teamParticipantsNames = new ArrayList<>();
+    if (teamParticipantsSchedules != null) {
+      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
+        teamParticipantsNames.add(teamParticipantsSchedule.getTeamParticipants().getTeamNickName());
+      }
+    }
+    return teamParticipantsNames;
+  }
+
+  public static List<TeamRole> getTeamParticipantsRoleFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+    List<TeamRole> teamParticipantsRoles = new ArrayList<>();
+    if (teamParticipantsSchedules != null) {
+      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
+        teamParticipantsRoles.add(teamParticipantsSchedule.getTeamParticipants().getTeamRole());
+      }
+    }
+    return teamParticipantsRoles;
+  }
+
 }
