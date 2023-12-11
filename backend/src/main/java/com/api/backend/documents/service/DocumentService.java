@@ -16,6 +16,7 @@ import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import java.security.Principal;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,16 +32,48 @@ public class DocumentService {
   private final TeamParticipantsRepository teamParticipantsRepository;
   private final DocumentAndCommentValidCheck validCheck;
 
-  public Page<Documents> getDocsList(Long teamId, Principal principal, Pageable pageable) {
+  public Page<Documents> getDocsList(Long teamId, Principal principal, Pageable pageable, LocalDate startDt, LocalDate endDt) {
 
     Long memberId = validCheck.getMemberId(principal);
     TeamParticipants teamParticipant = validCheck.findValidTeamParticipantByMemberId(memberId);
 
     validCheck.validTeamAndTeamParticipant(teamId, teamParticipant);
 
-    Page<Documents> allDocs = documentsRepository.findAll(pageable);
-    if (allDocs != null) {
-      return allDocs;
+    Page<Documents> allDocsInTeam = null ;
+    if (startDt == null && endDt == null) {
+      allDocsInTeam = documentsRepository.findAllByTeamId(teamId, pageable);
+      if (allDocsInTeam != null) {
+        return allDocsInTeam;
+      } else {
+        return Page.empty();
+      }
+    }
+
+    if (startDt != null && endDt == null) {
+      allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtGreaterThanEqual(teamId, startDt.atStartOfDay() ,pageable);
+      if (allDocsInTeam != null) {
+        return allDocsInTeam;
+      } else {
+        return Page.empty();
+      }
+    }
+
+    if (startDt == null && endDt != null) {
+      allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtLessThanEqual(teamId, endDt.plusDays(1).atStartOfDay(), pageable);
+      if (allDocsInTeam != null) {
+        return allDocsInTeam;
+      } else {
+        return Page.empty();
+      }
+    }
+
+    if (startDt != null && endDt != null) {
+      allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtBetween(teamId, startDt.atStartOfDay(), endDt.plusDays(1).atStartOfDay(), pageable);
+      if (allDocsInTeam != null) {
+        return allDocsInTeam;
+      } else {
+        return Page.empty();
+      }
     }
     return Page.empty();
   }
