@@ -112,10 +112,13 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
     console.log("Saving content:", content);
   };
 
+  const toolbar = document.getElementsByClassName("ql-toolbar");
+  if (toolbar.length > 1) {
+    toolbar[0].parentNode.removeChild(toolbar[0]);
+  }
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle titleProps={title} />
-      <ButtonContainer />
       <div id="quill-editor" />
       <SaveButton
         className="save"
