@@ -3,6 +3,7 @@ package com.api.backend.member.service.impl;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.redis.RedisService;
 import com.api.backend.global.security.AuthService;
+import com.api.backend.global.security.data.dto.TokenDto;
 import com.api.backend.global.security.jwt.JwtTokenProvider;
 import com.api.backend.member.data.dto.*;
 import com.api.backend.member.data.entity.Member;
@@ -17,7 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import static com.api.backend.global.exception.type.ErrorCode.EMAIL_ALREADY_EXIST_EXCEPTION;
@@ -75,16 +76,15 @@ public class MemberServiceImpl implements MemberService {
                 new UsernamePasswordAuthenticationToken(member.getMemberId().toString(), signInRequest.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        // 비밀번호 틀렸을때 BadCredentialsException 던짐 이부분 처리하는 로직 구현해야함
 
-        SignInResponse signInResponse = jwtTokenProvider.generateToken(authentication);
+        TokenDto tokenDto = authService.generateToken(authentication.getName(), authService.getAuthorities(authentication));
 
-        redisService.setValues(
-                "RT:" + authentication.getName(),
-                signInResponse.getRefreshToken(),
-                signInResponse.getRefreshTokenExpirationTime(),
-                TimeUnit.MILLISECONDS);
-
-        return signInResponse;
+        return SignInResponse.builder()
+                .grantType("Bearer")
+                .accessToken(tokenDto.getAccessToken())
+                .refreshToken(tokenDto.getRefreshToken())
+                .build();
     }
 
     public LogoutResponse logout(String requestAccessTokenInHeader) {
@@ -96,10 +96,11 @@ public class MemberServiceImpl implements MemberService {
             redisService.deleteValues("RT:" + principal);
         }
 
-        long expiration = jwtTokenProvider.getExpiration(requestAccessToken);
+        long expiration = jwtTokenProvider.getTokenExpirationTime(requestAccessToken) - new Date().getTime();
         redisService.setValues(requestAccessToken,
                 "logout",
-                Duration.ofDays(expiration));
+                expiration,
+                TimeUnit.MILLISECONDS);
 
         return LogoutResponse.builder()
                 .message("로그아웃되었습니다.")
