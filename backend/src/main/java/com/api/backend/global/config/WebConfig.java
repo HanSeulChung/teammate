@@ -35,4 +35,10 @@ public class WebConfig implements WebMvcConfigurer {
     pageableHandlerMethodArgumentResolver.setFallbackPageable(PageRequest.of(0, 10));
     argumentResolvers.add(pageableHandlerMethodArgumentResolver);
   }
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    registry.addMapping("/**")
+        .allowedOrigins("http://" + host + ":" + port)
+        .allowedOriginPatterns("*");
+  }
 }
