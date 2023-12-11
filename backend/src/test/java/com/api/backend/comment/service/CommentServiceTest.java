@@ -19,6 +19,7 @@ import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,19 +48,10 @@ class CommentServiceTest {
   @InjectMocks
   private CommentService commentService;
 
-  private Documents createDocuments() {
-    return Documents.builder()
-        .documentIdx("testDocumentIdx")
-        .teamId(1L)
-        .build();
-  }
-  private Comment createComment() {
-    return Comment.builder()
-        .id("commentId")
-        .writerId(23L)
-        .content("아하 이런 회의를 했었군요.")
-        .teamId(1L)
-        .build();
+  private Principal principal;
+  @BeforeEach()
+  private void setUp() {
+    principal = Mockito.mock(Principal.class);
   }
 
   @Test
@@ -75,11 +67,11 @@ class CommentServiceTest {
         .content("아하 이런 회의를 했었군요.")
         .build();
 
-    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+    when(documentsRepository.findById("testDocumentId")).thenReturn(Optional.of(documents));
     when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
     //when
-    Comment savedComment = commentService.createComment(1L, "testDocumentIdx", commentInitRequest);
+    Comment savedComment = commentService.createComment(1L, "testDocumentIdx", commentInitRequest, principal);
 
     //then
     assertNotNull(savedComment);
@@ -95,10 +87,10 @@ class CommentServiceTest {
     //given
     Documents documents =createDocuments();
 
-    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+    when(documentsRepository.findById("testDocumentId")).thenReturn(Optional.of(documents));
     //when
     Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
-    Page<Comment> commentPage = commentService.getCommentList(1L, "testDocumentIdx", pageable);
+    Page<Comment> commentPage = commentService.getCommentList(1L, "testDocumentIdx", principal, pageable);
 
     //then
     assertNotNull(commentPage);
@@ -111,16 +103,16 @@ class CommentServiceTest {
     //given
     Comment comment = createComment();
     Documents documents = Documents.builder()
-        .documentIdx("testDocumentIdx")
+        .id("testDocumentId")
         .teamId(1L)
         .commentIds(Collections.singletonList(comment))
         .build();
 
-    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+    when(documentsRepository.findById("testDocumentId")).thenReturn(Optional.of(documents));
 
     //when
     Pageable pageable = PageRequest.of(0, 4, Sort.unsorted());
-    Page<Comment> commentPage = commentService.getCommentList(1L, "testDocumentIdx", pageable);
+    Page<Comment> commentPage = commentService.getCommentList(1L, "testDocumentIdx",  principal, pageable);
 
     //then
     assertNotNull(commentPage);
@@ -133,7 +125,7 @@ class CommentServiceTest {
     //given
     Comment comment = createComment();
     Documents documents = Documents.builder()
-        .documentIdx("testDocumentIdx")
+        .id("testDocumentId")
         .teamId(1L)
         .commentIds(Collections.singletonList(comment))
         .build();
@@ -150,12 +142,12 @@ class CommentServiceTest {
         .teamId(1L)
         .build();
 
-    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+    when(documentsRepository.findById("testDocumentId")).thenReturn(Optional.of(documents));
     when(commentRepository.findById("commentId")).thenReturn(Optional.of(comment));
     when(commentRepository.save(any(Comment.class))).thenReturn(editCommentMock);
     //when
     Comment editComment = commentService.editComment(1L, "testDocumentIdx", "commentId",
-        commentEditRequest);
+        commentEditRequest, principal);
 
     //then
     assertNotNull(editComment);
@@ -173,7 +165,7 @@ class CommentServiceTest {
     //given
     Comment comment = createComment();
     Documents documents = Documents.builder()
-        .documentIdx("testDocumentIdx")
+        .id("testDocumentId")
         .teamId(1L)
         .commentIds(Collections.singletonList(comment))
         .build();
@@ -183,7 +175,7 @@ class CommentServiceTest {
         .build();
     Principal principal = Mockito.mock(Principal.class);
     when(principal.getName()).thenReturn("1");
-    when(documentsRepository.findByDocumentIdx("testDocumentIdx")).thenReturn(Optional.of(documents));
+    when(documentsRepository.findById("testDocumentId")).thenReturn(Optional.of(documents));
     when(commentRepository.findById("commentId")).thenReturn(Optional.of(comment));
     when(teamParticipantsRepository.findByMember_MemberId(1L)).thenReturn(Optional.of(teamParticipants));
     //when
@@ -197,5 +189,20 @@ class CommentServiceTest {
 
     // TODO : 데이터 베이스를 이용한 통합 테스트시 해야할 일
 //    assertEquals(0, documents.getCommentIds().size());
+  }
+
+  private Documents createDocuments() {
+    return Documents.builder()
+        .id("testDocumentId")
+        .teamId(1L)
+        .build();
+  }
+  private Comment createComment() {
+    return Comment.builder()
+        .id("commentId")
+        .writerId(23L)
+        .content("아하 이런 회의를 했었군요.")
+        .teamId(1L)
+        .build();
   }
 }
