@@ -4,6 +4,7 @@ import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.notification.data.type.Type;
 import com.api.backend.team.data.entity.TeamParticipants;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -18,7 +19,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @NoArgsConstructor
@@ -37,7 +37,7 @@ public class Notification extends BaseEntity {
   private String teamName;
   private String message;
   private String targetUrl;
-  @ColumnDefault("0")
+  @Column(columnDefinition = "boolean default false")
   private boolean isRead;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -45,6 +45,6 @@ public class Notification extends BaseEntity {
   private Member member;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "teamParticipants_id")
+  @JoinColumn(name = "team_participants_id")
   private TeamParticipants teamParticipants;
 }

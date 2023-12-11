@@ -43,8 +43,7 @@ public class TeamParticipants extends BaseEntity {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  @OneToMany(mappedBy = "team_participants")
-  @JoinColumn(name = "member_id")
+  @OneToMany(mappedBy = "teamParticipants")
   private List<Notification> notifications = new ArrayList<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
