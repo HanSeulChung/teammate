@@ -13,6 +13,7 @@ import HomeView from "../views/HomeView";
 import TeamCreateView from "../views/TeamCreateView";
 import { v4 as uuidV4 } from "uuid";
 import React from "react";
+import CreateTextView from "../views/CreateTextView";
 
 const Router = () => {
   return (
@@ -20,6 +21,7 @@ const Router = () => {
       <Route path="/" element={<Navigate to={`/text-editor/${uuidV4()}`} />} />
       <Route path="/캘린더" element={<Calender />} />
       <Route path="/text-editor/:id" element={<TextEditorView />} />
+      <Route path="/create-text/" element={<CreateTextView />} />
       {/* <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />
