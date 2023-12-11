@@ -56,6 +56,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
 
       client.current!.subscribe("/topic/public", (docs) => {
         displayDocs(JSON.parse(docs.body));
+        console.log("docs.body : ", docs.body);
       });
     };
 
@@ -78,7 +79,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
 
   const displayDocs = (docs: Docs) => {
     setTitle(docs.title);
-
+    console.log(docs.content);
     if (quill) {
       const delta = quill.clipboard.convert(docs.content);
       quill.setContents(delta, "silent");
@@ -118,7 +119,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
   }
   return (
     <StyledTexteditor className="texteditor">
-      <TextTitle titleProps={title} />
+      <TextTitle
+        titleProps={title}
+        onTitleChange={(newTitle) => setTitle(newTitle)}
+      />
       <div id="quill-editor" />
       <SaveButton
         className="save"
