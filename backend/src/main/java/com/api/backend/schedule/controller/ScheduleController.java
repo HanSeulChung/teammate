@@ -33,7 +33,7 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
 
   @PostMapping
-  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody ScheduleRequest request,
+  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId) {
     Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(
         scheduleService.addSchedules(request)
