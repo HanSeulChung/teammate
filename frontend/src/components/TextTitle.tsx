@@ -1,3 +1,4 @@
+// TextTitle 컴포넌트
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
@@ -15,24 +16,24 @@ const TitleInput = styled.input`
 `;
 
 interface TextTitleProps {
-  titleProps: string; // Corrected prop name
+  titleProps: string;
+  onTitleChange: (newTitle: string) => void;
 }
 
-const TextTitle: React.FC<TextTitleProps> = ({ titleProps }) => {
-  const [title, setTitle] = useState<string>("");
+const TextTitle: React.FC<TextTitleProps> = ({ titleProps, onTitleChange }) => {
+  const [title, setTitle] = useState<string>(titleProps);
 
   useEffect(() => {
-    // Set the titleProps initially when the component mounts
     setTitle(titleProps);
-
-    const titleData = localStorage.getItem("title");
+    const titleData = "title";
     if (titleData) {
       setTitle(titleData);
     }
   }, [titleProps]);
 
   const titleSave = () => {
-    localStorage.setItem("title", title);
+    // localStorage.setItem("title", title);
+    onTitleChange(title);
   };
 
   return (
