@@ -17,7 +17,7 @@ const Router = () => {
     <Routes>
       {/* <Route path='*' element={<Error />} /> */}
       <Route path="/캘린더" element={<Calender />} />
-      <Route path="text-editor/:id" element={<TextEditorView />} />
+      <Route path="/text-editor" element={<TextEditorView />} />
       {/* <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />
