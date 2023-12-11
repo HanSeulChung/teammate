@@ -56,7 +56,7 @@ public class WebSecurityConfig {
                 .authorizeRequests() // 요청에 대한 권한 설정
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated();
-
+        http.cors();
         return http.build();
     }
     @Bean
