@@ -26,7 +26,8 @@ interface TextEditorProps {
 
 const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
   const [title, setTitle] = useState<string>("");
-  const [quill, setQuill] = useState<Quill | null>(null);
+  const [quilll, setQuill] = useState<Quill | null>(null);
+  const [content, setContent] = useState<string>("");
 
   const client = useRef<StompJs.Client | null>(null);
   const docsIdx = id;
@@ -78,19 +79,14 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
   };
 
   const displayDocs = (docs: Docs) => {
-    setTitle(docs.title);
-    console.log(docs.content);
-    if (quill) {
-      const delta = quill.clipboard.convert(docs.content);
-      quill.setContents(delta, "silent");
-    }
-
-    console.log("displaydocs");
+    setTitle(docs.title); // onchange로 inputtext를 위한 change 를 쓰고 싶으면
+    setContent(docs.content); // title, content 대신 객체를 받아와서 state로 관리
   };
 
   useEffect(() => {
     const initializeQuill = () => {
-      if (quill) {
+      if (!title || !content) {
+        // 여기도 객체로 관리 / 객체에서 꺼내서 디스트럭쳐링
         return;
       }
 
@@ -103,33 +99,44 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
       });
 
       setQuill(editor);
+
+      editor.setText(content);
     };
 
-    initializeQuill();
     connect(docsIdx);
-  }, [quill, docsIdx, title]);
+    initializeQuill();
+  }, [content]); // 디펜던시도 객체로 관리
 
   const handleSave = (content: string) => {
     console.log("Saving content:", content);
+
+    if (client.current && quilll) {
+      client.current.publish({
+        destination: "/app/chat.showDocs",
+        body: JSON.stringify({ documentIdx: docsIdx }),
+      });
+      console.log("json : ", JSON.stringify({ documentIdx: docsIdx }));
+    }
   };
 
-  const toolbar = document.getElementsByClassName("ql-toolbar");
-  if (toolbar.length > 1) {
-    toolbar[0].parentNode.removeChild(toolbar[0]);
-  }
+  // const toolbar = document.getElementsByClassName("ql-toolbar");
+  // if (toolbar.length > 1) {
+  //   toolbar[0].parentNode.removeChild(toolbar[0]);
+  // }
+
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle
         titleProps={title}
-        onTitleChange={(newTitle) => setTitle(newTitle)}
+        onTitleChange={(newTitle) => setTitle(newTitle)} // onInputChange() => setTitle()
       />
       <div id="quill-editor" />
       <SaveButton
         className="save"
         type="button"
         onClick={(e) => {
-          if (quill) {
-            handleSave(quill.root.innerHTML);
+          if (quilll) {
+            handleSave(quilll.root.innerHTML);
           }
         }}
       >
