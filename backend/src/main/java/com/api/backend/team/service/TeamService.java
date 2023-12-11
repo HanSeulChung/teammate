@@ -49,9 +49,8 @@ public class TeamService {
   private final boolean DELETE_FALSE_FLAG = false;
   private final ImgStoreImpl imgStore;
   @Transactional
-  public TeamCreateResponse createTeam(TeamCreateRequest teamRequest, String userId) {
-    Long changeTypeUserId = Long.valueOf(userId);
-    Member member = memberRepository.findById(changeTypeUserId)
+  public TeamCreateResponse createTeam(TeamCreateRequest teamRequest, Long userId) {
+    Member member = memberRepository.findById(userId)
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
     String imgUrl = imgStore.uploadImg(teamRequest.getTeamImg(), ImgType.TEAM, teamRequest.getTeamName());
@@ -74,7 +73,7 @@ public class TeamService {
             .build()
     );
 
-    return TeamCreateResponse.from(team,changeTypeUserId);
+    return TeamCreateResponse.from(team,userId);
   }
 
   private String getRandomNickName(String name){
@@ -86,23 +85,22 @@ public class TeamService {
         .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
   }
 
-  public String getTeamUrl(Long teamId,String userId) {
+  public String getTeamUrl(Long teamId,Long userId) {
     Team team = getTeam(teamId);
 
     if (team.isDelete()) {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
 
-    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))) {
+    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
     }
     return team.getInviteLink();
   }
 
   @Transactional
-  public Team updateTeamParticipants(Long teamId, String code, String userId) {
+  public Team updateTeamParticipants(Long teamId, String code, Long userId) {
     Team team = getTeam(teamId);
-    Long changedTypeUserId = Long.valueOf(userId);
     String entityCode = team.getInviteLink().split("/")[1];
 
     if (!entityCode.equals(code)) {
@@ -113,11 +111,11 @@ public class TeamService {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
 
-    if (teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId,changedTypeUserId)) {
+    if (teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
 
-    Member member = memberRepository.findById(changedTypeUserId)
+    Member member = memberRepository.findById(userId)
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
     teamParticipantsRepository.save(
@@ -133,13 +131,13 @@ public class TeamService {
   }
 
   @Transactional
-  public TeamKickOutResponse kickOutTeamParticipants(TeamKickOutRequest request, String userId) {
+  public TeamKickOutResponse kickOutTeamParticipants(TeamKickOutRequest request, Long userId) {
     if (!teamRepository.existsByTeamIdAndIsDelete(request.getTeamId(), DELETE_FALSE_FLAG)) {
       throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
     }
 
     TeamParticipants leaderParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), Long.valueOf(userId))
+        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     if (!leaderParticipants.getTeamRole().equals(TeamRole.READER)) {
@@ -165,11 +163,10 @@ public class TeamService {
   }
 
   @Transactional
-  public Team disbandTeam(String userId, TeamDisbandRequest request) {
-    Long changeTypeUserId = Long.valueOf(userId);
+  public Team disbandTeam(Long userId, TeamDisbandRequest request) {
 
     TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), changeTypeUserId)
+        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     disbandCheckPermission(request.getPassword(), teamParticipants);
@@ -182,32 +179,10 @@ public class TeamService {
     return team;
   }
 
-  public void isDeletedCheck(Team team) {
-    if (!Objects.isNull(team.getRestorationDt())) {
-      throw new CustomException(TEAM_IS_DELETEING_EXCEPTION);
-    }
-
-    if (team.isDelete()) {
-      throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
-    }
-  }
-
-  public void disbandCheckPermission(String password, TeamParticipants teamParticipants) {
-    if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
-      throw new CustomException(TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION);
-    }
-
-    // todo 복호화 작업이 필요하다...ㅠㅠ
-    if (!teamParticipants.getMember().getPassword()
-        .equals(password)) {
-      throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
-    }
-  }
-
   @Transactional
-  public Team restoreTeam(String userId, LocalDate restoreDt, Long teamId) {
+  public Team restoreTeam(Long userId, LocalDate restoreDt, Long teamId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, Long.valueOf(userId))
+        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
@@ -231,17 +206,21 @@ public class TeamService {
     return team;
   }
 
-  public Page<Team> getTeams(String userId, Pageable pageable) {
+  public boolean existById(Long teamId) {
+    return teamRepository.existsById(teamId);
+  }
+
+  public Page<Team> getTeams(Long userId, Pageable pageable) {
     return teamRepository
         .findAllByTeamParticipants_Member_MemberIdAndIsDelete(
-            Long.valueOf(userId), DELETE_FALSE_FLAG, pageable
+            userId, DELETE_FALSE_FLAG, pageable
         );
   }
 
   @Transactional
-  public Team updateTeam(TeamUpdateRequest teamUpdateRequest, String userId) {
+  public Team updateTeam(TeamUpdateRequest teamUpdateRequest, Long userId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamUpdateRequest.getTeamId(), Long.valueOf(userId))
+        .findByTeam_TeamIdAndMember_MemberId(teamUpdateRequest.getTeamId(), userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
@@ -258,5 +237,27 @@ public class TeamService {
         );
     team.updateNameOrProfileUrl(teamUpdateRequest.getTeamName(), url);
     return team;
+  }
+
+  public void isDeletedCheck(Team team) {
+    if (!Objects.isNull(team.getRestorationDt())) {
+      throw new CustomException(TEAM_IS_DELETEING_EXCEPTION);
+    }
+
+    if (team.isDelete()) {
+      throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
+    }
+  }
+
+  public void disbandCheckPermission(String password, TeamParticipants teamParticipants) {
+    if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION);
+    }
+
+    // todo 복호화 작업이 필요하다...ㅠㅠ
+    if (!teamParticipants.getMember().getPassword()
+        .equals(password)) {
+      throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
+    }
   }
 }

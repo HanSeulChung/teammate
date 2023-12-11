@@ -47,7 +47,7 @@ public class TeamController {
       Principal principal
   ) {
     return ResponseEntity.ok(
-            teamService.createTeam(teamRequest,principal.getName())
+            teamService.createTeam(teamRequest,Long.valueOf(principal.getName()))
     );
   }
 
@@ -57,7 +57,7 @@ public class TeamController {
       Principal principal
   ) {
     return ResponseEntity.ok(
-        teamService.getTeamUrl(teamId, principal.getName())
+        teamService.getTeamUrl(teamId, Long.valueOf(principal.getName()))
     );
   }
 
@@ -67,7 +67,7 @@ public class TeamController {
       @PathVariable("code") String code,
       Principal principal
   ) {
-    Team team = teamService.updateTeamParticipants(teamId, code, principal.getName());
+    Team team = teamService.updateTeamParticipants(teamId, code, Long.valueOf(principal.getName()));
     return ResponseEntity.ok(
         TeamParticipantsUpdateResponse
             .builder().teamName(team.getName())
@@ -84,7 +84,7 @@ public class TeamController {
       Principal principal
   ) {
     return ResponseEntity.ok(
-        teamService.kickOutTeamParticipants(teamKickOutRequest, principal.getName())
+        teamService.kickOutTeamParticipants(teamKickOutRequest, Long.valueOf(principal.getName()))
     );
   }
 
@@ -95,7 +95,7 @@ public class TeamController {
   ) {
     return ResponseEntity.ok(
         TeamDisbandResponse.from(
-            teamService.disbandTeam(principal.getName(), request)
+            teamService.disbandTeam(Long.valueOf(principal.getName()), request)
         )
     );
   }
@@ -109,7 +109,7 @@ public class TeamController {
   ) {
     return ResponseEntity.ok(
         TeamRestoreResponse.from(
-            teamService.restoreTeam(principal.getName(), restoreDt, teamId)
+            teamService.restoreTeam(Long.valueOf(principal.getName()), restoreDt, teamId)
         )
     );
   }
@@ -121,7 +121,7 @@ public class TeamController {
   ){
     return ResponseEntity.ok(
         TeamDtoResponse.fromDtos(
-            teamService.getTeams(principal.getName(), pageable)
+            teamService.getTeams(Long.valueOf(principal.getName()), pageable)
         )
     );
   }
@@ -133,7 +133,7 @@ public class TeamController {
   ) {
     return ResponseEntity.ok(
         TeamUpdateResponse.from(
-            teamService.updateTeam(teamUpdateRequest, principal.getName())
+            teamService.updateTeam(teamUpdateRequest, Long.valueOf(principal.getName()))
         )
     );
   }
