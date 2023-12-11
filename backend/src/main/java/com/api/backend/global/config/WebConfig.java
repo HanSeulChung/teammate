@@ -1,7 +1,11 @@
 package com.api.backend.global.config;
 
 import java.util.List;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
@@ -24,5 +28,20 @@ public class WebConfig implements WebMvcConfigurer {
     pageableHandlerMethodArgumentResolver.setMaxPageSize(500);
     pageableHandlerMethodArgumentResolver.setFallbackPageable(PageRequest.of(0, 10));
     argumentResolvers.add(pageableHandlerMethodArgumentResolver);
+  }
+
+  @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowCredentials(true);
+    config.addAllowedOriginPattern("http://127.0.0.1:5173");
+    config.addAllowedHeader("*");
+    config.addAllowedMethod("GET");
+    config.addAllowedMethod("POST");
+    config.addAllowedMethod("PUT");
+    config.addAllowedMethod("DELETE");
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
   }
 }
