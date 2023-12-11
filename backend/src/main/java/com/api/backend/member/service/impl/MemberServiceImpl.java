@@ -56,10 +56,12 @@ public class MemberServiceImpl implements MemberService {
                 .sexType(request.getSexType())
                 .loginType(LoginType.TEAMMATE)
                 .authority(Authority.USER)
+                .isAuthenticatedEmail(false)
                 .build();
 
         memberRepository.save(member);
 
+        sendVerificationMail(member.getEmail());
 
         return SignUpResponse.builder()
                 .email(member.getEmail())
@@ -67,10 +69,51 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+
+    private void sendVerificationMail(String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
+
+        String VERIFICATION_LINK = "http://localhost:8080/email-verify/";
+        UUID uuid = UUID.randomUUID();
+        redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
+        mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", VERIFICATION_LINK + uuid);
+
+
+    }
+
+    @Override
+    @Transactional
+    public boolean verifyEmail(String key) {
+        boolean result = false;
+
+        String email = redisService.getValues(key);
+        if(email == null){
+            return result;
+        }
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
+
+        member.setIsAuthenticatedEmail(true);
+
+        redisService.deleteValues(key);
+        result = true;
+
+        return result;
+    }
+
+
     @Override
     public SignInResponse login(SignInRequest signInRequest) {
+        Member member = memberRepository.findByEmail(signInRequest.getEmail())
+                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
-        Member member = memberRepository.findByEmail(signInRequest.getEmail()).orElseThrow();
+        if(!member.getIsAuthenticatedEmail()){
+            sendVerificationMail(member.getEmail());
+            throw new CustomException(EMAIL_NOT_VERIFICATION_EXCEPTION);
+        }
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getMemberId().toString(), signInRequest.getPassword());

@@ -43,7 +43,7 @@ public class WebSecurityConfig {
 
                 .and()
                 .authorizeRequests() // 요청에 대한 권한 설정
-                .antMatchers("/sign-in", "/sign-up", "/logout").permitAll()
+                .antMatchers("/sign-in", "/sign-up", "/logout","/email-verify/**").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();

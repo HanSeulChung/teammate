@@ -56,6 +56,19 @@ public class MemberController {
         return ResponseEntity.ok(this.memberService.register(request));
     }
 
+    @GetMapping("/email-verify/{key}")
+    public ResponseEntity<String> getVerify(@PathVariable("key") String key) {
+
+        boolean result = memberService.verifyEmail(key);
+
+        if (result) {
+            return ResponseEntity.ok("이메일 인증에 성공했습니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("이메일 인증에 실패했습니다.");
+        }
+    }
+
     @PostMapping("/sign-in")
     public ResponseEntity<SignInResponse> signIn(@RequestBody SignInRequest signInRequest) {
 
