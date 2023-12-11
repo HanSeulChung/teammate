@@ -3,12 +3,12 @@ import { CommonSubmitBtn } from '../../styles/CommonStyled';
 import { useState, useEffect } from 'react';
 import axios from "axios";
 
-import { schedules } from "../../recoil/atoms/schedules.tsx"
-import { useRecoilState } from 'recoil';
+// import { schedules } from "../../recoil/atoms/schedules.tsx"
+// import { useRecoilState } from 'recoil';
 
 const CreateEvent = () => {
     // 실제 등록할 state 값
-    const [newSchedule, setNewSchedule] = useRecoilState(schedules)
+    // const [newSchedule, setNewSchedule] = useRecoilState(schedules)
 
     // input값 담아둘 state
     const [eventChange, setEventChange] = useState({
