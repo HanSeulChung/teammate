@@ -1,11 +1,8 @@
 package com.api.backend.notification.data.entity;
 
-import static com.api.backend.notification.data.NotificationMessage.KICK_OUT_TEAM;
-
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.notification.data.type.Type;
-import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.entity.TeamParticipants;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +34,8 @@ public class Notification extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private Type type;
+
+  private String teamName;
   private String nickName;
   private String message;
   private String targetUrl;
@@ -51,19 +50,16 @@ public class Notification extends BaseEntity {
   @JoinColumn(name = "team_participants_id")
   private TeamParticipants teamParticipants;
 
-  public static Notification convertToNotifyByKickOutDto(TeamKickOutResponse teamKickOutResponse) {
+  public static Notification convertToMemberNotify(Member member, String teamName, String message, Type type) {
     return Notification.builder()
-        .member(
-            Member.builder()
-                .memberId(teamKickOutResponse.getKickOutMemberId())
-                .build()
-        )
-        .message(KICK_OUT_TEAM)
-        .type(Type.KICKOUT)
+        .member(member)
+        .teamName(teamName)
+        .message(message)
+        .type(type)
         .build();
   }
 
-  public static Notification convertToNotification(TeamParticipants teamParticipants,String updateParticipantNickName, String message, Type type) {
+  public static Notification convertToTeamParticipantsNotify(TeamParticipants teamParticipants,String updateParticipantNickName, String message, Type type) {
     return Notification.builder()
         .teamParticipants(teamParticipants)
         .nickName(updateParticipantNickName)
