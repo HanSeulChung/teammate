@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
+// 스타일 컴포넌트 정의
 const DocumentContainer = styled.div`
   box-sizing: border-box;
   width: 1024px;
-  height: 40rem;
+  height: 600px;
   display: flex;
   align-content: space-between;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 `;
 
 const DocumentItem = styled.div`
   width: 180px;
-  height: 50%;
+  height: calc(50% - 20px);
   border: 1px solid black;
   display: flex;
   flex-direction: column;
@@ -38,6 +40,7 @@ const DatesContainer = styled.div`
   align-self: flex-end;
 `;
 
+// 타입 정의
 type Document = {
   documentId: string;
   title: string;
@@ -49,15 +52,117 @@ type Document = {
 };
 
 type DocumentListProps = {
-  documents: Document[];
+  teamId: string;
 };
 
-const DocumentList: React.FC<DocumentListProps> = ({ documents }) => {
+const testdocument = [
+  {
+    documentId: "생성된 document id",
+    title: "제목",
+    content: "내용",
+    teamId: "team id",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜",
+    updatedDt: "수정 날짜",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+];
+
+// 컴포넌트
+const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
+  const [documents, setDocuments] = useState<Document[]>(testdocument);
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 10;
+
+  useEffect(() => {
+    const url = `/team/${teamId}/documents?page=${currentPage}&size=10`;
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => setDocuments(data))
+      .catch((error) => console.error("Error fetching data: ", error));
+  }, []);
+
+  const totalPages = Math.ceil(documents.length / pageSize);
+  const currentDocuments = documents.slice(
+    currentPage * pageSize,
+    (currentPage + 1) * pageSize,
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // 페이지네이션 UI
+  const renderPagination = () => {
+    let pages = [];
+    for (let i = 0; i < totalPages; i++) {
+      pages.push(
+        <button key={i} onClick={() => handlePageChange(i)}>
+          {i + 1}
+        </button>,
+      );
+    }
+    return <div>{pages}</div>;
+  };
+
   return (
     <>
       <StyledButton>Add docs</StyledButton>
       <DocumentContainer>
-        {documents.map((doc) => (
+        {currentDocuments.map((doc) => (
           <DocumentItem key={doc.documentId}>
             <TitleContentContainer>
               <h2>{doc.title}</h2>
@@ -70,6 +175,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ documents }) => {
           </DocumentItem>
         ))}
       </DocumentContainer>
+      {renderPagination()}
     </>
   );
 };
