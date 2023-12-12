@@ -2,7 +2,6 @@ package com.api.backend.notification.service;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
-import com.api.backend.notification.data.entity.Notification;
 import com.api.backend.notification.data.repository.EmitterRepository;
 import com.api.backend.notification.data.repository.NotificationRepository;
 import com.api.backend.team.data.entity.TeamParticipants;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
