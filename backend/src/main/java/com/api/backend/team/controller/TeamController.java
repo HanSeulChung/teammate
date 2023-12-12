@@ -136,15 +136,18 @@ public class TeamController {
       @ApiResponse(code = 500, message = "권한이 옳바르지 않는 경우, 이미 해체된 경우")
   })
   @PutMapping("/disband")
+  @SendNotify
   public ResponseEntity<TeamDisbandResponse> disbandTeamRequest(
       @RequestBody @Valid TeamDisbandRequest request,
       @ApiIgnore Principal principal
   ) {
+    Long memberId = Long.valueOf(principal.getName());
     return ResponseEntity.ok(
         TeamDisbandResponse.from(
-            teamService.disbandTeam(Long.valueOf(principal.getName()), request)
-        )
-    );
+            teamService.disbandTeam(memberId, request),
+            memberId)
+        );
+
   }
 
   @ApiOperation(value = "팀 복구 API",notes = "팀 해체 이후로 30일 이내로 복구가 가능하다.")

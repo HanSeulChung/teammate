@@ -22,4 +22,5 @@ public interface TeamParticipantsRepository extends JpaRepository<TeamParticipan
 
   List<TeamParticipants> findByTeam_TeamIdAndTeamParticipantsIdNot(Long teamId, Long teamParticipantsId);
 
+  List<TeamParticipants> findAllByTeam_TeamIdAndMember_MemberIdNot(Long teamId, Long memberId);
 }

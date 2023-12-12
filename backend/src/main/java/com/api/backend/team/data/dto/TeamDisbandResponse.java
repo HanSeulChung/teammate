@@ -19,14 +19,18 @@ import lombok.ToString;
 public class TeamDisbandResponse {
   @NotNull(message = "teamId는 비어있는 값입니다.")
   private Long teamId;
+  private Long memberId;
+  private String teamName;
   private LocalDate reservationDt;
   @NotNull(message = "비밀번호를 입력해주세요")
   private String message;
 
 
-  public static TeamDisbandResponse from(Team team) {
+  public static TeamDisbandResponse from(Team team, Long memberId) {
     return TeamDisbandResponse.builder()
         .teamId(team.getTeamId())
+        .memberId(memberId)
+        .teamName(team.getName())
         .reservationDt(team.getRestorationDt())
         .message(DISBANDING_TEAM).build();
   }
