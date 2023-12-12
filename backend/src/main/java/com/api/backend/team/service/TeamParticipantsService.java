@@ -35,7 +35,8 @@ public class TeamParticipantsService {
   private final boolean DELETE_FALSE_FLAG = false;
   private final ImgStoreImpl imgStore;
 
-  public String deleteTeamParticipant(Long userId, Long teamId) {
+  @Transactional
+  public TeamParticipants deleteTeamParticipant(Long userId, Long teamId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
         .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
@@ -45,7 +46,7 @@ public class TeamParticipantsService {
     }
     teamParticipantsRepository.delete(teamParticipants);
 
-    return DELETE_TEAM_PARTICIPANT;
+    return teamParticipants;
   }
 
   @Transactional

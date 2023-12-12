@@ -102,6 +102,7 @@ public class TeamController {
               , paramType = "path", defaultValue = "None", example = "nklndsiofnefm"
           )
       })
+  @SendNotify
   @PostMapping("/{teamId}/{code}")
   public ResponseEntity<TeamParticipantsUpdateResponse> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,

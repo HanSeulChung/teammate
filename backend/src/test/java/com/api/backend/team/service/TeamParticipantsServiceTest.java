@@ -48,10 +48,10 @@ class TeamParticipantsServiceTest {
     )).thenReturn(Optional.of(teamParticipants));
     doNothing().when(teamParticipantsRepository).delete(any());
     //when
-    String result = teamParticipantsService.deleteTeamParticipant(userId, teamId);
+    TeamParticipants result = teamParticipantsService.deleteTeamParticipant(userId, teamId);
 
     //then
-    assertEquals(result,DELETE_TEAM_PARTICIPANT);
+    assertEquals(result.getTeamRole() , TeamRole.MATE);
   }
 
   @Test
