@@ -21,16 +21,18 @@ const ButtonContainer = styled.div`
 `;
 
 interface TextEditorProps {
-  id: string;
+  teamId: string;
+  documentsId: string;
 }
 
-const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
+const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [title, setTitle] = useState<string>("");
   const [quilll, setQuill] = useState<Quill | null>(null);
   const [content, setContent] = useState<string>("");
 
   const client = useRef<StompJs.Client | null>(null);
-  const docsIdx = id;
+  const Id = teamId;
+  const docsIdx = documentsId;
   const connect = (docsIdx: string) => {
     const trimmedDocsIdx = docsIdx;
 
@@ -118,11 +120,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ id }) => {
       console.log("json : ", JSON.stringify({ documentIdx: docsIdx }));
     }
   };
-
-  // const toolbar = document.getElementsByClassName("ql-toolbar");
-  // if (toolbar.length > 1) {
-  //   toolbar[0].parentNode.removeChild(toolbar[0]);
-  // }
 
   return (
     <StyledTexteditor className="texteditor">
