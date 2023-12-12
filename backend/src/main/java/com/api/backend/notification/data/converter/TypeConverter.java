@@ -6,6 +6,7 @@ import static com.api.backend.notification.data.NotificationMessage.UPDATE_TEAM_
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.notification.data.entity.Notification;
 import com.api.backend.notification.data.type.Type;
+import com.api.backend.notification.service.EmitterService;
 import com.api.backend.notification.service.NotificationService;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class TypeConverter {
 
+  private final EmitterService emitterService;
   private final NotificationService notificationService;
   private final TeamParticipantsService teamParticipantsService;
 
@@ -44,13 +46,13 @@ public class TypeConverter {
 
       notificationService.saveAllNotification(notifications);
 
-      List<SseEmitter> sseEmitters = notificationService.getEmitters(
+      List<SseEmitter> sseEmitters = emitterService.getEmitters(
           response.getTeamId(),
           response.getUpdateTeamParticipantId()
       );
 
       List<String> emitterIds = teamParticipants.stream()
-          .map(i -> NotificationService
+          .map(i -> EmitterService
               .createEmitterIdByTeamIdAndTeamParticipantId(response.getTeamId(),i.getTeamParticipantsId())
           )
           .collect(Collectors.toList());
