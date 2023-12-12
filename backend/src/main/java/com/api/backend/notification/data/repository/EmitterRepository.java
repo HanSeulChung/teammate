@@ -1,7 +1,5 @@
 package com.api.backend.notification.data.repository;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
@@ -10,54 +8,62 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Repository
 public class EmitterRepository {
 
-  private final Map<Long, Map<String, SseEmitter>> teamEmitters = new ConcurrentHashMap<>();
-  private final Map<Long, Object> eventCache = new ConcurrentHashMap<>();
+  private final Map<Long, Map<String, SseEmitter>> teamEmitterMap = new ConcurrentHashMap<>();
+  private final Map<Long, SseEmitter> memberEmitterMap = new ConcurrentHashMap<>();
 
-  public void save(Long teamId, String emitterId, SseEmitter sseEmitter) {
-    if (!teamEmitters.containsKey(teamId)) {
+  public void saveTeamParticipantsEmitter(Long teamId, String emitterId, SseEmitter sseEmitter) {
+    if (!teamEmitterMap.containsKey(teamId)) {
       Map<String, SseEmitter> teamParticipantMap = new ConcurrentHashMap<>();
       teamParticipantMap.put(emitterId, sseEmitter);
 
-      teamEmitters.put(teamId, teamParticipantMap);
+      teamEmitterMap.put(teamId, teamParticipantMap);
     } else {
-      Map<String, SseEmitter> teamParticipantMap = teamEmitters.get(teamId);
+      Map<String, SseEmitter> teamParticipantMap = teamEmitterMap.get(teamId);
       teamParticipantMap.put(emitterId, sseEmitter);
 
-      teamEmitters.put(teamId, teamParticipantMap);
+      teamEmitterMap.put(teamId, teamParticipantMap);
     }
   }
 
+  public void saveMemberEmitter(Long memberId, SseEmitter sseEmitter) {
+    memberEmitterMap.put(memberId, sseEmitter);
+  }
 
-
-  /**
-   * emitter를 지움
-   */
-  public void deleteById(Long teamId, String emitterId) {
-    if (!teamEmitters.containsKey(teamId)) {
+  public void deleteTeamParticipantEmitter(Long teamId, String emitterId) {
+    if (!teamEmitterMap.containsKey(teamId)) {
       return;
     }
 
-    Map<String, SseEmitter> teamParticipantMap = teamEmitters.get(teamId);
+    Map<String, SseEmitter> teamParticipantMap = teamEmitterMap.get(teamId);
     teamParticipantMap.remove(emitterId);
 
     if (teamParticipantMap.isEmpty()) {
-      teamEmitters.remove(teamId);
+      teamEmitterMap.remove(teamId);
       return;
     }
 
-    teamEmitters.put(teamId, teamParticipantMap);
+    teamEmitterMap.put(teamId, teamParticipantMap);
   }
-
-  public List<SseEmitter> getAllByTeamIdAndExcludeEmitterId(Long teamId, String excludeEmitterId) {
-    Map<String, SseEmitter> teamParticipantsEmitters = teamEmitters.get(teamId);
-    List<SseEmitter> emitters = new ArrayList<>();
+  public void deleteMemberEmitter(Long memberId) {
+    memberEmitterMap.remove(memberId);
+  }
+  public Map<String,SseEmitter> getAllByTeamIdAndExcludeEmitterId(Long teamId, String excludeEmitterId) {
+    Map<String, SseEmitter> teamParticipantsEmitters = teamEmitterMap.get(teamId);
+    Map<String,SseEmitter> map = new ConcurrentHashMap<>();
 
     for (Map.Entry<String, SseEmitter> info : teamParticipantsEmitters.entrySet()) {
       if (!info.getKey().equals(excludeEmitterId)) {
-        emitters.add(info.getValue());
+        map.put(info.getKey(), info.getValue());
       }
     }
 
-    return emitters;
+    return map;
+  }
+
+  public SseEmitter getEmitter(Long memberId) {
+    if (memberEmitterMap.containsKey(memberId)) {
+      return memberEmitterMap.get(memberId);
+    }
+    return null;
   }
 }
