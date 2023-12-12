@@ -46,9 +46,8 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
     const requestData = {
       title: title, // Updated to use the 'title' state
-      teamId: "팀_ID",
-      writer: "작성자_이름",
       content: content,
+      wirterEmail: "작성자_이름",
     };
 
     console.log(requestData);
