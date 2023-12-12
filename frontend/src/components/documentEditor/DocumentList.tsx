@@ -22,6 +22,13 @@ const DocumentItem = styled.div`
 
 const TitleContentContainer = styled.div``;
 
+const StyledButton = styled.button`
+  background-color: rgb(163, 204, 163);
+  color: #333333;
+  border-radius: 0.5rem;
+  margin: 4px;
+`;
+
 const TitleDaytime = styled.p`
   margin: 4px;
   align-self: end;
@@ -47,20 +54,23 @@ type DocumentListProps = {
 
 const DocumentList: React.FC<DocumentListProps> = ({ documents }) => {
   return (
-    <DocumentContainer>
-      {documents.map((doc) => (
-        <DocumentItem key={doc.documentId}>
-          <TitleContentContainer>
-            <h2>{doc.title}</h2>
-            <p>{doc.content}</p>
-          </TitleContentContainer>
-          <DatesContainer>
-            <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
-            <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
-          </DatesContainer>
-        </DocumentItem>
-      ))}
-    </DocumentContainer>
+    <>
+      <StyledButton>Add docs</StyledButton>
+      <DocumentContainer>
+        {documents.map((doc) => (
+          <DocumentItem key={doc.documentId}>
+            <TitleContentContainer>
+              <h2>{doc.title}</h2>
+              <p>{doc.content}</p>
+            </TitleContentContainer>
+            <DatesContainer>
+              <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
+              <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
+            </DatesContainer>
+          </DocumentItem>
+        ))}
+      </DocumentContainer>
+    </>
   );
 };
 
