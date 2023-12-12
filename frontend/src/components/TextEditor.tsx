@@ -10,14 +10,18 @@ const StyledTexteditor = styled.div`
   width: 41rem;
 `;
 
-const SaveButton = styled.button`
+const StyledButton = styled.button`
   background-color: rgb(163, 204, 163);
   color: #333333;
   border-radius: 0.5rem;
+  margin: 4px;
 `;
 
 const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
   width: 41rem;
+  margin-top: 10px;
 `;
 
 interface TextEditorProps {
@@ -31,7 +35,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [content, setContent] = useState<string>("");
 
   const client = useRef<StompJs.Client | null>(null);
-  const Id = teamId;
+  const id = teamId;
   const docsIdx = documentsId;
   const connect = (docsIdx: string) => {
     const trimmedDocsIdx = docsIdx;
@@ -128,17 +132,24 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         onTitleChange={(newTitle) => setTitle(newTitle)} // onInputChange() => setTitle()
       />
       <div id="quill-editor" />
-      <SaveButton
-        className="save"
-        type="button"
-        onClick={(e) => {
-          if (quilll) {
-            handleSave(quilll.root.innerHTML);
-          }
-        }}
-      >
-        Save
-      </SaveButton>
+      <ButtonContainer>
+        <div>
+          <StyledButton
+            className="save"
+            type="button"
+            onClick={(e) => {
+              if (quilll) {
+                handleSave(quilll.root.innerHTML);
+              }
+            }}
+          >
+            Save
+          </StyledButton>
+          <StyledButton>comment</StyledButton>
+        </div>
+
+        <StyledButton>삭제하기</StyledButton>
+      </ButtonContainer>
     </StyledTexteditor>
   );
 };
