@@ -125,6 +125,13 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     }
   };
 
+  const handleDelete = () => {
+    const isConfirmed = window.confirm("삭제하시겠습니까?");
+    if (isConfirmed) {
+      console.log("삭제되었습니다");
+    }
+  };
+
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle
@@ -147,8 +154,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
           </StyledButton>
           <StyledButton>comment</StyledButton>
         </div>
-
-        <StyledButton>삭제하기</StyledButton>
+        <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
       </ButtonContainer>
     </StyledTexteditor>
   );
