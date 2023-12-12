@@ -13,16 +13,17 @@ const StyledTextEditorView = styled.section`
 `;
 
 const TextEditorView: React.FC<TextEditorViewProps> = () => {
-  const { id } = useParams<{ id: string }>();
+  const { teamId } = useParams<{ teamId: string }>();
+  const { documentsId } = useParams<{ documentsId: string }>();
 
-  if (!id) {
+  if (!documentsId) {
     // id가 없을 때의 처리
     return <div>No ID provided</div>;
   }
 
   return (
     <StyledTextEditorView>
-      <TextEditor id={id} />
+      <TextEditor teamId={teamId} documentsId={documentsId} />
       {/* <TextEditor /> */}
     </StyledTextEditorView>
   );
