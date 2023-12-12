@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
@@ -51,10 +52,20 @@ public class Schedule extends BaseEntity {
   @JoinColumn(name = "schedule_category_id")
   private ScheduleCategory scheduleCategory;
 
+  @Setter
   @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
-  public void setTeamParticipantsSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    this.teamParticipantsSchedules = teamParticipantsSchedules;
-  }
+  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+  private List<DailyRepeatSchedule> dailyRepeatSchedules;
+
+  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+  private List<WeeklyRepeatSchedule> weeklyRepeatSchedules;
+
+  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+  private List<MonthlyRepeatSchedule> monthlyRepeatSchedules;
+
+  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+  private List<YearlyRepeatSchedule> yearlyRepeatSchedules;
+
 }
