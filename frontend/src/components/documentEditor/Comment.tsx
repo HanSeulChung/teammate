@@ -22,7 +22,8 @@ const CommentButton = styled.button`
   border: 1px solid black;
   color: black;
   background-color: white;
-  font-size: 11px;
+  font-weight: 600;
+  font-size: 10px;
 `;
 
 const CommentText = styled.div`
@@ -30,24 +31,34 @@ const CommentText = styled.div`
   margin-left: 8px;
 `;
 
+const CommentTitle = styled.h3`
+  margin: 8px 0 0 0;
+`;
+
 interface CommentProps {}
 
 const Comment: React.FC<CommentProps> = () => {
-  const [comments, setComments] = useState<string[]>([]);
+  const [comments, setComments] = useState<{ user: string; comment: string }[]>(
+    [],
+  );
   const [newComment, setNewComment] = useState<string>("");
+  const [currentUser, setCurrentUser] = useState<string>("user"); // Assuming you have a state for the current user
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };
 
   const handleAddComment = () => {
-    setComments((prevComments) => [...prevComments, newComment]);
+    setComments((prevComments) => [
+      ...prevComments,
+      { user: currentUser, comment: newComment },
+    ]);
     setNewComment("");
   };
 
   return (
     <StyledCommentArea>
-      <h3>Comments</h3>
+      <CommentTitle>Comments</CommentTitle>
 
       <CommentInput
         type="text"
@@ -57,7 +68,9 @@ const Comment: React.FC<CommentProps> = () => {
       />
       <CommentButton onClick={handleAddComment}>확인</CommentButton>
       {comments.map((comment, index) => (
-        <CommentText key={index}>{comment}</CommentText>
+        <CommentText key={index}>
+          {comment.user} : {comment.comment}
+        </CommentText>
       ))}
     </StyledCommentArea>
   );

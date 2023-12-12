@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export const HeaderTag = styled.header`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 `;
 
 // 헤더 로고 이미지

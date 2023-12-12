@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Calender from "../views/Calender";
 
@@ -11,14 +11,23 @@ import Home from "../components/Home/HomeContent";
 import Mypage from "../components/Profile/Mypage";
 import HomeView from "../views/HomeView";
 import TeamCreateView from "../views/TeamCreateView";
+import { v4 as uuidV4 } from "uuid";
+import React from "react";
+import CreateTextView from "../views/CreateTextView";
+import DocumentListView from "../views/DocumentListView";
 
 const Router = () => {
   return (
     <Routes>
-      {/* <Route path='*' element={<Error />} /> */}
+      {/* <Route path="/" element={<Navigate to={`/text-editor/${uuidV4()}`} />} /> */}
       <Route path="/캘린더" element={<Calender />} />
-      <Route path="text-editor/:id" element={<TextEditorView />} />
-      <Route path="/" element={<Index />} />
+      <Route
+        path="/team/:teamId/documents/:documentsId"
+        element={<TextEditorView />}
+      />
+      <Route path="/create-text/" element={<CreateTextView />} />
+      <Route path="/text-list/" element={<DocumentListView />} />
+      {/* <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<SignInView />} />
