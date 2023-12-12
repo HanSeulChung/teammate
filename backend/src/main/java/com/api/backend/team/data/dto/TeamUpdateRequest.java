@@ -1,6 +1,5 @@
 package com.api.backend.team.data.dto;
 
-import com.api.backend.team.data.annotation.ValidFile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
