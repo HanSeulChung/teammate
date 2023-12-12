@@ -14,6 +14,7 @@ import TeamCreateView from "../views/TeamCreateView";
 import { v4 as uuidV4 } from "uuid";
 import React from "react";
 import CreateTextView from "../views/CreateTextView";
+import DocumentListView from "../views/DocumentListView";
 
 const Router = () => {
   return (
@@ -25,6 +26,7 @@ const Router = () => {
         element={<TextEditorView />}
       />
       <Route path="/create-text/" element={<CreateTextView />} />
+      <Route path="/text-list/" element={<DocumentListView />} />
       {/* <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />

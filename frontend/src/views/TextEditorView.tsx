@@ -1,32 +1,10 @@
 import React from "react";
-import { useParams } from "react-router-dom";
-import TextEditor from "../components/TextEditor";
-import Comment from "../components/Comment";
-import styled from "styled-components";
-// import TextEditor from "../components/QuillTextEditor";
+import TextEditorContainer from "../components/documentEditor/TextEditorContainer";
 
 interface TextEditorViewProps {}
 
-const StyledTextEditorView = styled.section`
-  display: flex;
-  justify-content: center;
-`;
-
 const TextEditorView: React.FC<TextEditorViewProps> = () => {
-  const { teamId } = useParams<{ teamId: string }>();
-  const { documentsId } = useParams<{ documentsId: string }>();
-
-  if (!documentsId) {
-    // id가 없을 때의 처리
-    return <div>No ID provided</div>;
-  }
-
-  return (
-    <StyledTextEditorView>
-      <TextEditor teamId={teamId} documentsId={documentsId} />
-      {/* <TextEditor /> */}
-    </StyledTextEditorView>
-  );
+  return <TextEditorContainer />;
 };
 
 export default TextEditorView;

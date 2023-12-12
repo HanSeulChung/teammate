@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import CreateText from "../components/CreateText";
+import CreateText from "../components/documentEditor/CreateText";
 
 interface TextEditorViewProps {}
 

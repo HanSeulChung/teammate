@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import DocumentListContainer from "../components/DocumentListContainer";
+import DocumentListContainer from "../components/documentEditor/DocumentListContainer";
 
 interface TextEditorViewProps {}
 
