@@ -46,7 +46,7 @@ public class TypeConverter {
 
       List<Notification> notifications = teamParticipants
           .stream().map(i ->
-              Notification.convertToNotification(i, nickName ,UPDATE_TEAM_PARTICIPANT_TEAM , Type.INVITE)
+              Notification.convertToTeamParticipantsNotify(i, nickName ,UPDATE_TEAM_PARTICIPANT_TEAM , Type.INVITE)
           )
           .collect(Collectors.toList());
 
@@ -67,16 +67,19 @@ public class TypeConverter {
           )
           .collect(Collectors.toList());
 
-      sendNotificationByEmitterMap(emitterIds, sseEmitterMap, notifications);
-    }else if (source instanceof TeamParticipantsDeleteResponse) {
+      // 보내야 할 알람
+      NotificationDto notificationDto = NotificationDto.from(notifications.get(0));
+
+      sendNotificationByEmitterMap(emitterIds, sseEmitterMap, notificationDto);
+    }else if (source instanceof TeamParticipantsDeleteResponse) { // 팀 탈퇴
       TeamParticipantsDeleteResponse response = (TeamParticipantsDeleteResponse) source;
       String nickName = response.getMessage();
-      List<TeamParticipants> teamParticipants = getSendTeamParticipantList(
+      List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsByExcludeMemberId(
           response.getTeamParticipantsId(),response.getTeamId());
 
       List<Notification> notifications = teamParticipants
           .stream().map(i ->
-              Notification.convertToNotification(i, nickName ,EXIT_TEAM_PARTICIPANT , Type.EXIT_TEAM_PARTICIPANT)
+              Notification.convertToTeamParticipantsNotify(i, nickName ,EXIT_TEAM_PARTICIPANT , Type.EXIT_TEAM_PARTICIPANT)
           )
           .collect(Collectors.toList());
 
@@ -97,23 +100,19 @@ public class TypeConverter {
           )
           .collect(Collectors.toList());
 
-      sendNotificationByEmitterMap(emitterIds, sseEmitterMap, notifications);
+      // 보내야 할 알람
+      NotificationDto notificationDto = NotificationDto.from(notifications.get(0));
+
+      sendNotificationByEmitterMap(emitterIds, sseEmitterMap, notificationDto);
     }
   }
 
-  private List<TeamParticipants> getSendTeamParticipantList(Long excludeTeamParticipantId, Long teamId) {
-    return teamParticipantsService.getTeamParticipantsExcludeId(
-        excludeTeamParticipantId, teamId
-    );
-  }
-
-
   private void sendNotificationByEmitterMap(
-      List<String> emitterIds, Map<String, SseEmitter> sseEmitterMap, List<Notification> notifications
+      List<String> emitterIds, Map<String, SseEmitter> sseEmitterMap, NotificationDto notificationDto
   ) {
     for (int i = 0; i < emitterIds.size(); i++) {
       if (sseEmitterMap.containsKey(emitterIds.get(i))) {
-        emitterService.sendNotification(sseEmitterMap.get(emitterIds.get(i)) , notifications.get(i));
+        emitterService.sendNotification(sseEmitterMap.get(emitterIds.get(i)) , notificationDto);
       }
     }
   }
