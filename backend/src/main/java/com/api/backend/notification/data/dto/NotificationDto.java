@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationDto {
+public class NotificationDto{
   private Type type;
   private String teamName;
   private String nickName;
@@ -22,7 +22,7 @@ public class NotificationDto {
     return NotificationDto.builder()
         .message(notification.getMessage())
         .teamName(notification.getTeamName() == null ? null : notification.getTeamName())
-        .teamName(notification.getTargetUrl() == null ? null : notification.getTargetUrl())
+        .targetUrl(notification.getTargetUrl() == null ? null : notification.getTargetUrl())
         .type(notification.getType())
         .build();
   }

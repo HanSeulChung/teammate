@@ -3,6 +3,10 @@ spring:
     import:
     - classpath:application-db.yml
     - classpath:application-jwt.yml
+    - classpath:application-local.yml
+    activate:
+      on-profile: dev
+
   jpa:
     open-in-view: true
     hibernate:
@@ -20,6 +24,10 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 logging:
   level:
     root: info
