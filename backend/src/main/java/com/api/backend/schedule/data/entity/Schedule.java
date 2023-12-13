@@ -5,6 +5,7 @@ import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.Team;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -42,6 +43,9 @@ public class Schedule extends BaseEntity {
   private boolean isRepeat;
   @Enumerated(EnumType.STRING)
   private RepeatCycle repeatCycle;
+  private Month month; //월: 연간 반복시 사용
+  private int day; //일: 연간, 월간 반복시 사용
+  private String dayOfWeek; //요일: 주간 반복시 사용
   private String color;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -55,17 +59,5 @@ public class Schedule extends BaseEntity {
   @Setter
   @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
-
-  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-  private List<DailyRepeatSchedule> dailyRepeatSchedules;
-
-  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-  private List<WeeklyRepeatSchedule> weeklyRepeatSchedules;
-
-  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-  private List<MonthlyRepeatSchedule> monthlyRepeatSchedules;
-
-  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-  private List<YearlyRepeatSchedule> yearlyRepeatSchedules;
 
 }
