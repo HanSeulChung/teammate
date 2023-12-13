@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import axios from "axios";
 import {
   teamNameState,
   selectedTeamSizeState,
   teamListState,
   userState,
 } from "../../state/authState";
+import { useTeamCreation } from "./useTeamCreation";
 import { useNavigate } from "react-router-dom";
 import {
   StyledContainer,
   StyledFormItem,
-  StyledImagePreview,
   StyledErrorMessage,
   StyledHeading,
   StyledLabel,
@@ -23,21 +22,17 @@ import profileImg from "../../assets/profileImg.png";
 
 export default function TeamInfo() {
   const [teamName, setTeamName] = useRecoilState(teamNameState);
-  const [selectedTeamSize, setSelectedTeamSize] = useRecoilState(
-    selectedTeamSizeState,
-  );
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [selectedTeamSize, setSelectedTeamSize] = useRecoilState(selectedTeamSizeState);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [teamList, setTeamList] = useRecoilState(teamListState);
   const [error, setError] = useState<string | null>(null);
   const user = useRecoilValue(userState);
   const navigate = useNavigate();
-
+  const handleTeamCreation = useTeamCreation();
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
-      // 이미지 파일을 선택한 경우
       const reader = new FileReader();
       reader.readAsDataURL(file);
 
@@ -79,10 +74,12 @@ export default function TeamInfo() {
       size: selectedTeamSize,
       image: selectedImage,
       leaderId: user?.id || null,
+      members: [],
     };
-    setTeamList([...teamList, newTeam]);
 
-    // 이동
+    setTeamList((prevTeamList) => [...prevTeamList, newTeam]);
+    handleTeamCreation(newTeam);
+
     navigate("/homeview");
   };
 
@@ -91,12 +88,10 @@ export default function TeamInfo() {
     const file = fileInput.files && fileInput.files[0];
 
     if (file) {
-      setSelectedFileName(file.name);
       handleImageUpload(e);
     }
   };
 
-  // 페이지 로드 시 초기값 설정
   useEffect(() => {
     setTeamName("");
     setSelectedTeamSize("");
@@ -116,12 +111,11 @@ export default function TeamInfo() {
           placeholder="팀 이름"
           onChange={(e) => {
             setTeamName(e.target.value);
-            setError(null); // 팀 이름이 변경될 때 에러 상태 초기화
+            setError(null);
           }}
         />
-        {/* 이미 있는 팀 이름인 경우 에러 메시지 표시 */}
         {teamList.some((team) => team.name === teamName) && (
-          <div style={{ color: "red" }}>이미 있는 팀 이름입니다.</div>
+          <StyledErrorMessage>이미 있는 팀 이름입니다.</StyledErrorMessage>
         )}
       </StyledFormItem>
       <StyledFormItem>
@@ -132,7 +126,7 @@ export default function TeamInfo() {
           value={selectedTeamSize}
           onChange={(e) => {
             setSelectedTeamSize(e.target.value);
-            setError(null); // 인원 수 선택 시 에러 상태 초기화
+            setError(null);
           }}
         >
           <option value="" disabled>

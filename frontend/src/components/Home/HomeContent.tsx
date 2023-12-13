@@ -1,21 +1,29 @@
 import React,{useEffect} from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue,useRecoilState } from "recoil";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { teamListState, useSearchState } from "../../state/authState";
+import { teamListState, useSearchState,userTeamsState, initialTeams} from "../../state/authState";
 
 const HomeContent = () => {
   const teamList = useRecoilValue(teamListState);
   const { search } = useSearchState();
+  const userTeams = useRecoilState(userTeamsState)[0];
 
   useEffect(() => {
     localStorage.setItem("teamList", JSON.stringify(teamList));
   }, [teamList]);
 
-  const filteredTeamList = teamList.filter((team) =>
-    team.name.toLowerCase().includes(search.toLowerCase()),
-  );
-
+//  // 현재 로그인된 사용자가 속한 팀만 필터링
+//  const userTeams = teamList.filter((team) =>
+//  team.members.some((member) => member.id === loggedInUserId)
+// );
+if (!Array.isArray(userTeams)) {
+  // userTeams가 배열이 아닌 경우에 대한 처리
+  return null;
+}
+const filteredTeamList = userTeams.filter((team) =>
+ team.name.toLowerCase().includes(search.toLowerCase())
+);
   return (
     <TeamListContainer>
       {filteredTeamList.map((team, index) => (
