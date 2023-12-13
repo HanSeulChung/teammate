@@ -34,7 +34,9 @@ public class Notification extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private Type type;
+
   private String teamName;
+  private String nickName;
   private String message;
   private String targetUrl;
   @Column(columnDefinition = "boolean default false")
@@ -47,4 +49,22 @@ public class Notification extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_participants_id")
   private TeamParticipants teamParticipants;
+
+  public static Notification convertToMemberNotify(Member member, String teamName, String message, Type type) {
+    return Notification.builder()
+        .member(member)
+        .teamName(teamName)
+        .message(message)
+        .type(type)
+        .build();
+  }
+
+  public static Notification convertToTeamParticipantsNotify(TeamParticipants teamParticipants,String updateParticipantNickName, String message, Type type) {
+    return Notification.builder()
+        .teamParticipants(teamParticipants)
+        .nickName(updateParticipantNickName)
+        .message(message)
+        .type(type)
+        .build();
+  }
 }

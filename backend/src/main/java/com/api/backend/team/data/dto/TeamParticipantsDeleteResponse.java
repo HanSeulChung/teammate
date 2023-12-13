@@ -4,18 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
 @Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@Builder
-public class TeamKickOutResponse {
+public class TeamParticipantsDeleteResponse {
   private Long teamId;
-  private Long userId;
-  private Long kickOutMemberId;
-  private String teamName;
+  private Long teamParticipantsId;
   private String nickName;
   private String message;
 }
