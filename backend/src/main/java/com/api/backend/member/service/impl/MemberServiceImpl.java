@@ -84,18 +84,19 @@ public class MemberServiceImpl implements MemberService {
         String VERIFICATION_LINK = "http://localhost:8080/email-verify/";
         UUID uuid = UUID.randomUUID();
         redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
-        mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", VERIFICATION_LINK + uuid);
+        mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", VERIFICATION_LINK + uuid +"/"+email);
 
 
     }
 
     @Override
     @Transactional
-    public boolean verifyEmail(String key) {
+    public boolean verifyEmail(String key, String email) {
         boolean result = false;
 
-        String email = redisService.getValues(key);
-        if(email == null){
+        String redisEmail = redisService.getValues(key);
+        if(email == null || !email.equals(redisEmail)){
+            sendVerificationMail(email);
             return result;
         }
 

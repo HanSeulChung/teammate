@@ -49,7 +49,7 @@ public class MemberController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(
-            @ModelAttribute @Valid SignUpRequest request,
+            @Valid @RequestBody SignUpRequest request,
             BindingResult bindingResult
     ) {
 
@@ -64,16 +64,16 @@ public class MemberController {
         return ResponseEntity.ok(this.memberService.register(request));
     }
 
-    @GetMapping("/email-verify/{key}")
-    public ResponseEntity<String> getVerify(@PathVariable("key") String key) {
+    @GetMapping("/email-verify/{key}/{email}")
+    public ResponseEntity<String> getVerify(@PathVariable("key") String key,@PathVariable("email") String email) {
 
-        boolean result = memberService.verifyEmail(key);
+        boolean result = memberService.verifyEmail(key, email);
 
         if (result) {
             return ResponseEntity.ok("이메일 인증에 성공했습니다.");
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("이메일 인증에 실패했습니다.");
+                    .body("이메일 인증에 실패했습니다. 이메일을 다시 확인해주세요");
         }
     }
 

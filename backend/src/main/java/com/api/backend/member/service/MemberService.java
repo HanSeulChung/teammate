@@ -10,7 +10,7 @@ import java.util.Map;
 public interface MemberService {
 
     SignUpResponse register(SignUpRequest request);
-    boolean verifyEmail(String key);
+    boolean verifyEmail(String key, String email);
     SignInResponse login(SignInRequest signInRequest);
 
     LogoutResponse logout(String requestAccessToken);

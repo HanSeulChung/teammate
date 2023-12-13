@@ -17,10 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 @Entity
 @Getter
@@ -46,12 +44,10 @@ public class Member extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private Authority authority;
+  @Setter
   private Boolean isAuthenticatedEmail;
   private String memberProfileUrl;
 
-  public void setIsAuthenticatedEmail(boolean bool) {
-    this.isAuthenticatedEmail = bool;
-  }
   // TODO: 추후 재셋팅 예정
 //  @OneToMany(mappedBy = "member")
 //  private List<Comment> comments = new ArrayList<>();
