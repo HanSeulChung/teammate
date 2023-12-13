@@ -59,7 +59,7 @@ public class Notification extends BaseEntity {
         .build();
   }
 
-  public static Notification convertToTeamParticipantsNotify(TeamParticipants teamParticipants,String updateParticipantNickName, String message, Type type) {
+  public static Notification convertNickNameToTeamParticipantsNotify(TeamParticipants teamParticipants,String updateParticipantNickName, String message, Type type) {
     return Notification.builder()
         .teamParticipants(teamParticipants)
         .nickName(updateParticipantNickName)

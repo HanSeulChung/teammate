@@ -48,7 +48,16 @@ public class EmitterRepository {
     memberEmitterMap.remove(memberId);
   }
   public SseEmitter getTeamParticipantEmitter(Long teamId, String emitterId) {
+    if (!teamEmitterMap.containsKey(teamId)) {
+      return null;
+    }
+
     Map<String, SseEmitter> emitterHashMap = teamEmitterMap.get(teamId);
+
+    if (emitterHashMap.isEmpty()) {
+      return null;
+    }
+
     if (emitterHashMap.containsKey(emitterId)) {
       return emitterHashMap.get(emitterId);
     }
