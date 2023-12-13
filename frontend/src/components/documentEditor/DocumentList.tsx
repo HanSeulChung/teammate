@@ -5,7 +5,7 @@ import styled from "styled-components";
 const DocumentContainer = styled.div`
   box-sizing: border-box;
   width: 1024px;
-  height: 600px;
+  height: auto;
   display: flex;
   align-content: space-between;
   flex-wrap: wrap;
@@ -13,17 +13,17 @@ const DocumentContainer = styled.div`
 `;
 
 const DocumentItem = styled.div`
-  width: 180px;
-  height: calc(50% - 20px);
+  width: 100%;
   border: 1px solid black;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
-  margin: 10px;
+  margin: 10px 0;
+  padding: 10px;
 `;
 
-const TitleContentContainer = styled.div``;
-
+const TitleContentContainer = styled.div`
+  flex-grow: 1;
+`;
 const StyledButton = styled.button`
   background-color: rgb(163, 204, 163);
   color: #333333;
@@ -37,7 +37,10 @@ const TitleDaytime = styled.p`
 `;
 
 const DatesContainer = styled.div`
-  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 150px;
 `;
 
 // 타입 정의
@@ -59,11 +62,155 @@ const testdocument = [
   {
     documentId: "생성된 document id",
     title: "제목",
-    content: "내용",
+    content: "내용aaaaaaaaaaaaaaaaaaaaaaa",
     teamId: "team id",
     commentsId: ["commentid 1", "commentid 2"],
     createdDt: "생성 날짜",
     updatedDt: "수정 날짜",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2aaaaaaaaaaaaaaaaaaa",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
+  },
+  {
+    documentId: "생성된 document id",
+    title: "제목2",
+    content: "내용2",
+    teamId: "team id2",
+    commentsId: ["commentid 1", "commentid 2"],
+    createdDt: "생성 날짜2",
+    updatedDt: "수정 날짜2",
   },
   {
     documentId: "생성된 document id",
