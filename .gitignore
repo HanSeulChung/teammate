@@ -267,3 +267,4 @@ application-db.yml
 application-jwt.yml
 application-aws.yml
 application-local.yml
+application-email.yml
