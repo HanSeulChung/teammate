@@ -4,6 +4,7 @@ import com.api.backend.schedule.customValidAnnotation.StartAndEndDtCheck;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -34,5 +35,8 @@ public class ScheduleRequest {
   private String place;
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
+  private Month month;
+  private int day;
+  private String dayOfWeek;
   private List<Long> teamParticipantsIds;
 }

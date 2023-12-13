@@ -6,6 +6,7 @@ import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,9 @@ public class ScheduleResponse {
   private String place;
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
+  private Month month; //월: 연간 반복시 사용
+  private int day; //일: 연간, 월간 반복시 사용
+  private String dayOfWeek; //요일: 주간 반복시 사용
   private List<Long> teamParticipantsIds;
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
@@ -44,27 +48,35 @@ public class ScheduleResponse {
         .place(schedule.getPlace())
         .isRepeat(schedule.isRepeat())
         .repeatCycle(schedule.getRepeatCycle())
-        .teamParticipantsIds(getTeamParticipantsIdsFromSchedules(schedule.getTeamParticipantsSchedules()))
-        .teamParticipantsNames(getTeamParticipantsNameFromSchedules(schedule.getTeamParticipantsSchedules()))
+        .month(schedule.getMonth())
+        .day(schedule.getDay())
+        .dayOfWeek(schedule.getDayOfWeek())
+        .teamParticipantsIds(
+            getTeamParticipantsIdsFromSchedules(schedule.getTeamParticipantsSchedules()))
+        .teamParticipantsNames(
+            getTeamParticipantsNameFromSchedules(schedule.getTeamParticipantsSchedules()))
         .teamRoles(getTeamParticipantsRoleFromSchedules(schedule.getTeamParticipantsSchedules()))
         .build();
   }
 
-  public static Page<ScheduleResponse> from (Page<Schedule> schedules) {
+  public static Page<ScheduleResponse> from(Page<Schedule> schedules) {
     return schedules.map(ScheduleResponse::from);
   }
 
-  public static List<Long> getTeamParticipantsIdsFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+  public static List<Long> getTeamParticipantsIdsFromSchedules(
+      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
     List<Long> teamParticipantsIds = new ArrayList<>();
     if (teamParticipantsSchedules != null) {
       for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsIds.add(teamParticipantsSchedule.getTeamParticipants().getTeamParticipantsId());
+        teamParticipantsIds.add(
+            teamParticipantsSchedule.getTeamParticipants().getTeamParticipantsId());
       }
     }
     return teamParticipantsIds;
   }
 
-  public static List<String> getTeamParticipantsNameFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+  public static List<String> getTeamParticipantsNameFromSchedules(
+      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
     List<String> teamParticipantsNames = new ArrayList<>();
     if (teamParticipantsSchedules != null) {
       for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
@@ -74,7 +86,8 @@ public class ScheduleResponse {
     return teamParticipantsNames;
   }
 
-  public static List<TeamRole> getTeamParticipantsRoleFromSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
+  public static List<TeamRole> getTeamParticipantsRoleFromSchedules(
+      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
     List<TeamRole> teamParticipantsRoles = new ArrayList<>();
     if (teamParticipantsSchedules != null) {
       for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
