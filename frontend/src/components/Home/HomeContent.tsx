@@ -1,8 +1,40 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { useRecoilValue } from "recoil";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { teamListState, useSearchState } from "../../state/authState";
+
+const HomeContent = () => {
+  const teamList = useRecoilValue(teamListState);
+  const { search } = useSearchState();
+
+  useEffect(() => {
+    localStorage.setItem("teamList", JSON.stringify(teamList));
+  }, [teamList]);
+
+  const filteredTeamList = teamList.filter((team) =>
+    team.name.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  return (
+    <TeamListContainer>
+      {filteredTeamList.map((team, index) => (
+        <TeamItem key={index}>
+          <TeamLink to={`/team/${team.id}`}>
+            <TeamCard>
+              <TeamName>{team.name}</TeamName>
+              {team.image && (
+                <TeamImage src={team.image} alt={`${team.name} 이미지`} />
+              )}
+            </TeamCard>
+          </TeamLink>
+        </TeamItem>
+      ))}
+    </TeamListContainer>
+  );
+};
+
+export default HomeContent;
 
 const TeamListContainer = styled.div`
   display: flex;
@@ -46,31 +78,3 @@ const TeamImage = styled.img`
   border-radius: 8px;
   margin-bottom: 8px;
 `;
-
-const HomeContent = () => {
-  const teamList = useRecoilValue(teamListState);
-  const { search } = useSearchState();
-
-  const filteredTeamList = teamList.filter((team) =>
-    team.name.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  return (
-    <TeamListContainer>
-      {filteredTeamList.map((team, index) => (
-        <TeamItem key={index}>
-          <TeamLink to={`/team/${team.id}`}>
-            <TeamCard>
-              <TeamName>{team.name}</TeamName>
-              {team.image && (
-                <TeamImage src={team.image} alt={`${team.name} 이미지`} />
-              )}
-            </TeamCard>
-          </TeamLink>
-        </TeamItem>
-      ))}
-    </TeamListContainer>
-  );
-};
-
-export default HomeContent;
