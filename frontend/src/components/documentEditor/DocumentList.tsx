@@ -1,33 +1,28 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
+// 스타일 컴포넌트 정의
 const DocumentContainer = styled.div`
   box-sizing: border-box;
   width: 1024px;
-  height: auto;
+  height: 600px;
   display: flex;
   align-content: space-between;
   flex-wrap: wrap;
   margin-bottom: 20px;
-  flex-direction: row;
 `;
 
 const DocumentItem = styled.div`
-  width: 100%;
+  width: 180px;
+  height: calc(50% - 20px);
   border: 1px solid black;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   margin: 10px;
 `;
 
-const TitleContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  flex-grow: 1;
-  margin-right: 10px;
-`;
+const TitleContentContainer = styled.div``;
 
 const StyledButton = styled.button`
   background-color: rgb(163, 204, 163);
@@ -42,21 +37,7 @@ const TitleDaytime = styled.p`
 `;
 
 const DatesContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-end;
-  flex-grow: 0;
-`;
-
-const TitleStyled = styled.h2`
-  text-align: left;
-  margin: 4px;
-`;
-
-const ContentStyled = styled.p`
-  text-align: left;
-  margin: 4px;
+  align-self: flex-end;
 `;
 
 // 타입 정의
@@ -78,7 +59,7 @@ const testdocument = [
   {
     documentId: "생성된 document id",
     title: "제목",
-    content: "내용aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    content: "내용",
     teamId: "team id",
     commentsId: ["commentid 1", "commentid 2"],
     createdDt: "생성 날짜",
@@ -87,7 +68,7 @@ const testdocument = [
   {
     documentId: "생성된 document id",
     title: "제목2",
-    content: "내용aaaaaaaaaaaaaaaaaaaaaaaaaa2",
+    content: "내용2",
     teamId: "team id2",
     commentsId: ["commentid 1", "commentid 2"],
     createdDt: "생성 날짜2",
@@ -184,8 +165,8 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         {currentDocuments.map((doc) => (
           <DocumentItem key={doc.documentId}>
             <TitleContentContainer>
-              <TitleStyled>{doc.title}</TitleStyled>
-              <ContentStyled>{doc.content}</ContentStyled>
+              <h2>{doc.title}</h2>
+              <p>{doc.content}</p>
             </TitleContentContainer>
             <DatesContainer>
               <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
