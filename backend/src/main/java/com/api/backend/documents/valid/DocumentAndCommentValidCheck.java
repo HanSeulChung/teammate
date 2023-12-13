@@ -15,6 +15,7 @@ import com.api.backend.comment.data.repository.CommentRepository;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.global.exception.CustomException;
+import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import java.security.Principal;
@@ -39,16 +40,17 @@ public class DocumentAndCommentValidCheck {
     return Long.parseLong(principal.getName());
   }
 
-  public TeamParticipants findValidTeamParticipantByMemberId(Long memberId) {
-    return teamParticipantsRepository.findByMember_MemberId(
-        memberId).orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
-  }
-
-  public void validTeamAndTeamParticipant(Long teamId, TeamParticipants teamParticipant){
-    if (teamId != teamParticipant.getTeam().getTeamId()) {
-      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+  public void validTeamParticipant(Long memberId) {
+    boolean existsTeamParticipants = teamParticipantsRepository.existsByMember_MemberId(memberId);
+    if (!existsTeamParticipants) {
+      throw new CustomException(ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION);
     }
   }
+  public TeamParticipants findValidTeamParticipantByMemberIdAndTeamId(Long memberId, Long teamId) {
+    return teamParticipantsRepository.findByMember_MemberIdAndTeam_TeamId(
+        memberId, teamId).orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+  }
+
 
   public Documents findValidDocument(String documentId) {
     return documentsRepository.findById(documentId)
