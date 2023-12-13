@@ -1,6 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
-import com.api.backend.schedule.data.entity.Schedule;
+import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
@@ -37,29 +37,24 @@ public class ScheduleResponse {
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
 
-  public static ScheduleResponse from(Schedule schedule) {
+  public static ScheduleResponse from(SimpleSchedule simpleSchedule) {
     return ScheduleResponse.builder()
-        .scheduleId(schedule.getScheduleId())
-        .categoryId(schedule.getScheduleCategory().getScheduleCategoryId())
-        .startDt(schedule.getStartDt())
-        .endDt(schedule.getEndDt())
-        .title(schedule.getTitle())
-        .content(schedule.getContent())
-        .place(schedule.getPlace())
-        .isRepeat(schedule.isRepeat())
-        .repeatCycle(schedule.getRepeatCycle())
-        .month(schedule.getMonth())
-        .day(schedule.getDay())
-        .dayOfWeek(schedule.getDayOfWeek())
+        .scheduleId(simpleSchedule.getSimpleScheduleId())
+        .categoryId(simpleSchedule.getScheduleCategory().getScheduleCategoryId())
+        .startDt(simpleSchedule.getStartDt())
+        .endDt(simpleSchedule.getEndDt())
+        .title(simpleSchedule.getTitle())
+        .content(simpleSchedule.getContent())
+        .place(simpleSchedule.getPlace())
         .teamParticipantsIds(
-            getTeamParticipantsIdsFromSchedules(schedule.getTeamParticipantsSchedules()))
+            getTeamParticipantsIdsFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .teamParticipantsNames(
-            getTeamParticipantsNameFromSchedules(schedule.getTeamParticipantsSchedules()))
-        .teamRoles(getTeamParticipantsRoleFromSchedules(schedule.getTeamParticipantsSchedules()))
+            getTeamParticipantsNameFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
+        .teamRoles(getTeamParticipantsRoleFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .build();
   }
 
-  public static Page<ScheduleResponse> from(Page<Schedule> schedules) {
+  public static Page<ScheduleResponse> from(Page<SimpleSchedule> schedules) {
     return schedules.map(ScheduleResponse::from);
   }
 

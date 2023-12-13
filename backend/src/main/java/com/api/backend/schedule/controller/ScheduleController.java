@@ -32,15 +32,20 @@ public class ScheduleController {
 
   private final ScheduleService scheduleService;
 
+//  @PostMapping
+//  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody @Valid ScheduleRequest request,
+//      @PathVariable Long teamId) {
+//    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(
+//        scheduleService.addSchedules(request)
+//    );
+//    return ResponseEntity.ok(scheduleResponse);
+//  }
+
   @PostMapping
-  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody @Valid ScheduleRequest request,
-      @PathVariable Long teamId) {
-    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(
-        scheduleService.addSchedules(request)
-    );
+  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request,  @PathVariable Long teamId ) {
+    ScheduleResponse scheduleResponse = ScheduleResponse.from(scheduleService.addSchedule(request));
     return ResponseEntity.ok(scheduleResponse);
   }
-
   @GetMapping("/{scheduleId}")
   public ResponseEntity<ScheduleResponse> searchScheduleDetailInfo(@PathVariable Long teamId,
       @PathVariable Long scheduleId) {

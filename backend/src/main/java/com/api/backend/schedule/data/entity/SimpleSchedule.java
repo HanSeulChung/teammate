@@ -2,15 +2,11 @@ package com.api.backend.schedule.data.entity;
 
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.global.domain.BaseEntity;
-import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.Team;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,11 +26,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Builder
-@Table(name = "schedule")
-public class Schedule extends BaseEntity {
+@Table(name = "simple_schedule")
+public class SimpleSchedule extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long scheduleId;
+  private Long simpleScheduleId;
   private String title;
   private String content;
   private String place;
@@ -51,7 +47,7 @@ public class Schedule extends BaseEntity {
   private ScheduleCategory scheduleCategory;
 
   @Setter
-  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "simpleSchedule", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
 }

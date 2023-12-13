@@ -34,9 +34,9 @@ public class TeamParticipantsSchedule extends BaseEntity {
   private TeamParticipants teamParticipants;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "schedule_id")
+  @JoinColumn(name = "simple_schedule_id")
   @Setter
-  private Schedule schedule;
+  private SimpleSchedule simpleSchedule;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "repeat_schedule_id")
