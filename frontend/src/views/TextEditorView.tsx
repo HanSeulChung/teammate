@@ -1,18 +1,10 @@
-import TextEditor from "../components/TextEditor";
-import Comment from "../components/Comment";
-import styled from "styled-components";
+import React from "react";
+import TextEditorContainer from "../components/documentEditor/TextEditorContainer";
 
-const TextEditorView = () => {
-  const StyledTextEditorView = styled.section`
-    display: flex;
-  `
+interface TextEditorViewProps {}
 
-  return(
-    <StyledTextEditorView>
-      <TextEditor />
-      <Comment />
-    </StyledTextEditorView>
-  )
-}
+const TextEditorView: React.FC<TextEditorViewProps> = () => {
+  return <TextEditorContainer />;
+};
 
 export default TextEditorView;

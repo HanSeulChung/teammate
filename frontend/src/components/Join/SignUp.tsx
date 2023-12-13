@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import axios from "axios";
-import { StyledContainer, StyledFormItem } from "../../styles/SignUpStyled.tsx";
+import { StyledContainer, StyledFormItem } from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
 
 interface SignUpProps {}
@@ -61,21 +61,37 @@ const SignUp: React.FC<SignUpProps> = () => {
       isNicknameAvailable
     ) {
       axios
-        .post("/sign-up", {
-          id: email,
-          password,
-          repassword,
-          name,
-          nickName,
-          sex: sexType,
-        })
-        .then((response) => {
-          console.log("회원가입 성공:", response.data);
-          setSignupMessage("회원가입 성공");
-        })
-        .catch((error) => {
-          console.error("회원가입 실패:", error.response.data);
-          setSignupMessage("회원가입 실패");
+      .post("/sign-up", {
+        id: email,
+        password,
+        repassword,
+        name,
+        nickName,
+        sex: sexType,
+      })
+      .then((response) => {
+        console.log("회원가입 성공:", response.data);
+        setSignupMessage("회원가입 성공");
+      })
+      .catch((error) => {
+        console.error("회원가입 실패:", error.response.data);
+        setSignupMessage("회원가입 실패");
+        // .post(
+        //   "http://localhost:8080/sign-up",
+        //   {
+        //     email: email,
+        //     password: password,
+        //     nickName: nickName,
+        //     name: name,
+        //     repassword: repassword,
+        //     sexType: sexType,
+        //   },
+        //   {
+        //     withCredentials: true,
+        //   },
+        // )
+        // .then((res) => {
+        //   console.log(res.data);
         });
     } else if (!isIdAvailable) {
       setSignupMessage("아이디가 이미 사용 중입니다.");

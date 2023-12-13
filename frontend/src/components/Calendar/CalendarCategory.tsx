@@ -77,29 +77,27 @@ const CalendarCategory = () => {
                         onClick={toggleCat}
                     ></Overlay>
                     <ModalContent>
-                        <h2>카테고리 추가</h2>
-                        <CategoryForm>
-                            <label>카테고리 이름</label>
-                            <input 
-                                placeholder='카테고리명'
-                                name="category"
-                                value={catOption.category}
-                                onChange={handleChangeOption}
-                            ></input>
-                            <label>색상</label>
-                            <select
-                                name="color"
-                                value={catOption.color}
-                                onChange={handleChangeOption}
-                            >
-                                <option value="red">red</option>
-                                <option value="yellow">yellow</option>
-                                <option value="blue">blue</option>
-                            </select>
-                            <CommonSubmitBtn
-                                onClick={AddOption}
-                            >등록</CommonSubmitBtn>
-                        </CategoryForm>
+                    <form>
+                        <input 
+                            placeholder='카테고리명'
+                            name="category"
+                            value={catOption.category}
+                            onChange={handleChangeOption}
+                        ></input>
+                        <label>색상</label>
+                        <select
+                            name="color"
+                            value={catOption.color}
+                            onChange={handleChangeOption}
+                        >
+                            <option value="red">red</option>
+                            <option value="yellow">yellow</option>
+                            <option value="blue">blue</option>
+                        </select>
+                        <button
+                            onClick={AddOption}
+                        >등록</button>
+                    </form>
                         <CloseModal
                             onClick={toggleCat}
                         >
