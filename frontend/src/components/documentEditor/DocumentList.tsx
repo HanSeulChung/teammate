@@ -17,8 +17,9 @@ const DocumentItem = styled.div`
   border: 1px solid black;
   display: flex;
   justify-content: space-between;
-  margin: 10px 0;
+  margin: 4px 0;
   padding: 10px;
+  border-radius: 12px;
 `;
 
 const TitleContentContainer = styled.div`
@@ -292,7 +293,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     setCurrentPage(page);
   };
 
-  // 페이지네이션 UI
   const renderPagination = () => {
     let pages = [];
     for (let i = 0; i < totalPages; i++) {
