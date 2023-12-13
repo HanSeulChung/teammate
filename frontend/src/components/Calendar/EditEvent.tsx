@@ -6,7 +6,7 @@ import axios from "axios";
 // import { schedules } from "../../recoil/atoms/schedules.tsx"
 // import { useRecoilState } from 'recoil';
 
-const CreateEvent = () => {
+const EditEvent = ({isEdit, originEvent}) => {
     // 실제 등록할 state 값
     // const [newSchedule, setNewSchedule] = useRecoilState(schedules)
 
@@ -49,6 +49,13 @@ const CreateEvent = () => {
         }
         })
     }, [eventChange]);
+
+    // 수정중 토글 여부
+    useEffect(() => {
+        if(isEdit) {
+            setEventChange(originEvent);
+        }
+    },[isEdit])
     
     // // 전송 전 setData 추적
     // useEffect(() => {
@@ -93,8 +100,12 @@ const CreateEvent = () => {
     };
 
     return (
-        <EventForm onSubmit={handleScheduleSubmit}>
-            <h2>새 일정 등록</h2>
+        <EventForm>
+            {isEdit ? (
+                <h2>일정 수정</h2>
+            ): (
+                <h2>새 일정 등록</h2>
+            )}
             <label htmlFor="start">시작시간 끝시간</label>
             <EventInput 
                 type="datetime-local" 
@@ -143,12 +154,18 @@ const CreateEvent = () => {
                 <option value="second">회의</option>
                 <option value="third">미팅</option>
             </select>
-
-            <CommonSubmitBtn 
-                // onClick={handleScheduleSubmit}
-            >등록</CommonSubmitBtn>
+            {isEdit ? (
+                <>
+                    <button>그냥버튼1</button>
+                    <button>그냥버튼2</button>
+                </>
+            ) : (
+                <CommonSubmitBtn 
+                    onClick={handleScheduleSubmit}
+                >등록</CommonSubmitBtn>
+            )}
         </EventForm>
     );
 };
 
-export default CreateEvent;
+export default EditEvent;

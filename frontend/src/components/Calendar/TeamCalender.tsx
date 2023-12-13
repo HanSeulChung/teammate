@@ -5,7 +5,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import '../../styles/teamCalender.css'
 import { Modal, Overlay, ModalContent, CloseModal, CalendarDiv } from '../../styles/TeamCalenderStyled.tsx'
-import CreateEvent from "./CreateEvent.tsx";
+import EditEvent from "./EditEvent.tsx";
 import axios from "axios";
 
 // import { schedules } from "../../recoil/atoms/schedules.tsx"
@@ -51,6 +51,10 @@ const TeamCalender = () => {
         toggleFormModal();
     }
 
+    // 수정중인지 여부
+    const [isEdit, setIsEdit] = useState(false);
+    const toggleIsEdit = () => setIsEdit(!isEdit);
+
     // 일정목록 불러오기
     useEffect(() => {
         const getAllEvents = async () => {
@@ -91,24 +95,37 @@ const TeamCalender = () => {
             {eventDetailModal && (
                 <Modal>
                     <Overlay
-                        onClick={toggleModal}
+                        // onClick={toggleModal}
                     ></Overlay>
                     <ModalContent>
-                        <h2>일정상세</h2>
-                        <p>
-                            이름: {event.title}<br />
-                            일시: {event.start}<br />
-                            내용: {event.contents}<br />
-                            장소: {event.place}<br />
-                            카테고리: {event.groupId}
-                        </p>
-                        <button>수정</button>
-                        <button>삭제</button>
-                        <CloseModal
-                            onClick={toggleModal}
-                        >
-                            CLOSE
-                        </CloseModal>
+                        {isEdit ? (
+                            <>
+                                {/* 에디터컴포넌트 */}
+                                <EditEvent isEdit={isEdit} originEvent={event}/>
+                                <button onClick={toggleIsEdit}>수정</button>
+                            </>
+                        ) : (
+                            <>
+                                <h2>일정상세</h2>
+                                <p>
+                                    이름: {event.title}<br />
+                                    일시: {event.start}<br />
+                                    내용: {event.contents}<br />
+                                    장소: {event.place}<br />
+                                    카테고리: {event.groupId}
+                                </p>
+                                <button onClick={toggleIsEdit}>수정</button>
+                                <button>삭제</button>
+                            </>
+                        )}
+                        {/* 수정중이 아닐때 close버튼 렌더링 */}
+                        { !isEdit && 
+                            <CloseModal
+                                onClick={toggleModal}
+                            >
+                                CLOSE
+                            </CloseModal>
+                        }
                     </ModalContent>
                 </Modal>
             )}
@@ -119,7 +136,7 @@ const TeamCalender = () => {
                         onClick={toggleFormModal}
                     ></Overlay>
                     <ModalContent>
-                        <CreateEvent />
+                        <EditEvent />
                         <CloseModal
                             onClick={toggleFormModal}
                         >
