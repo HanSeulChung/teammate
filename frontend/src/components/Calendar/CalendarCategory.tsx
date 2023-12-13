@@ -1,6 +1,7 @@
-import { CategoryUl } from '../styles/CalendarCategoryStyled.tsx'
-import { useState, useEffect } from 'react';
-import { Modal, Overlay, ModalContent, CloseModal} from '../styles/TeamCalenderStyled.tsx'
+import { useState } from 'react';
+import { Modal, Overlay, ModalContent, CloseModal} from '../../styles/TeamCalenderStyled.tsx'
+import { CategoryUl, CategoryForm } from '../../styles/CalendarCategoryStyled.tsx'
+import { CommonSubmitBtn } from '../../styles/CommonStyled.tsx';
 
 const CalendarCategory = () => {
     // 모달팝업 유무
