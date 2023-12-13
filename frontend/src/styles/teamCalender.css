@@ -1,0 +1,21 @@
+/* 일요일 날짜 빨간색 */
+.fc-day-sun a {
+    color: red;
+    text-decoration: none;
+}
+
+/* 토요일 날짜 파란색 */
+.fc-day-sat a {
+    color: blue;
+    text-decoration: none;
+}
+
+/* 달력 요일 스타일링 */
+.fc-col-header {
+    background-color: rgb(163, 204, 163);
+}
+
+/* 모달여부에 따른 스탈일 적용 */
+body.active-modal {
+    overflow-y: hidden;
+}
