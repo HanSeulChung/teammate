@@ -7,6 +7,10 @@ import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
 import com.api.backend.member.service.MemberService;
 import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.service.TeamParticipantsService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +27,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 
+@Api(tags = "회원")
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -114,9 +120,13 @@ public class MemberController {
     }
 
 
+    @ApiOperation(value = "내가 속한 팀 참가자 조회 API",notes = "내가 속한 팀 참가자의 정보들을 반환")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "팀 참가자 정보들을 반환")
+    })
     @GetMapping("/member/participants")
     public ResponseEntity<Page<TeamParticipantsDto>> getTeamParticipantRequest(
-        Principal principal,
+        @ApiIgnore Principal principal,
         Pageable pageable
     ) {
         return ResponseEntity.ok(
@@ -126,11 +136,15 @@ public class MemberController {
             )
         );
     }
-
+    @ApiOperation(value = "팀 참가자 수정 API",notes = "참가자 이미지, 닉네임을 할 수 있다.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "수정된 팀 참가자 정보를 반환"),
+        @ApiResponse(code = 200, message = "팀원이 아닌 경우, 허용되지 않은 회원,팀이 해체된 경우"),
+    })
     @PostMapping(value = "/member/participant",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TeamParticipantsDto> updateTeamParticipantContentRequest(
         @Valid TeamParticipantUpdateRequest teamParticipantUpdateRequest,
-        Principal principal
+        @ApiIgnore Principal principal
     ) {
         return ResponseEntity.ok(
             TeamParticipantsDto.from(
