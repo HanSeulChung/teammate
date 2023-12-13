@@ -11,6 +11,7 @@ const StyledCommentArea = styled.div`
   border: 1px solid black;
   border-radius: 10px;
 `;
+
 const CommentInput = styled.input`
   width: 10rem;
   margin: 0.5rem 0.25rem 0 0.25rem;
@@ -63,10 +64,8 @@ const Comment: React.FC<CommentProps> = () => {
   );
   const [newComment, setNewComment] = useState<string>("");
   const [currentUser, setCurrentUser] = useState<string>("user");
-
-  const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNewComment(e.target.value);
-  };
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingComment, setEditingComment] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -76,23 +75,33 @@ const Comment: React.FC<CommentProps> = () => {
     navigate(newPath);
   };
 
+  const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setNewComment(e.target.value);
+  };
+
   const handleAddComment = (e: FormEvent) => {
     e.preventDefault();
     if (newComment.trim() === "") {
       alert("댓글을 입력해주세요.");
       return;
     }
-    setComments((prevComments) => [
-      ...prevComments,
-      { user: currentUser, comment: newComment },
-    ]);
+    setComments([...comments, { user: currentUser, comment: newComment }]);
     setNewComment("");
   };
 
   const handleEditComment = (index: number) => {
-    const commentToEdit = comments[index];
-    setNewComment(commentToEdit.comment);
-    // 추가: 현재 수정 중인 댓글의 인덱스를 저장하는 상태가 필요할 수 있습니다.
+    setEditingIndex(index);
+    setEditingComment(comments[index].comment);
+  };
+
+  const handleUpdateComment = (e: FormEvent, index: number) => {
+    e.preventDefault();
+    const updatedComments = comments.map((comment, i) =>
+      i === index ? { ...comment, comment: editingComment } : comment,
+    );
+    setComments(updatedComments);
+    setEditingIndex(null);
+    setEditingComment("");
   };
 
   const handleDeleteComment = (index: number) => {
@@ -107,23 +116,45 @@ const Comment: React.FC<CommentProps> = () => {
           문서로 돌아가기
         </ReturnButton>
         <CommentTitle>Comments</CommentTitle>
-        <form onSubmit={handleAddComment}>
+        <form
+          onSubmit={
+            editingIndex !== null
+              ? (e) => handleUpdateComment(e, editingIndex)
+              : handleAddComment
+          }
+        >
           <CommentInput
             type="text"
             placeholder="댓글을 입력해주세요"
-            value={newComment}
+            value={editingIndex !== null ? editingComment : newComment}
             onChange={handleCommentChange}
           />
-          <CommentButton type="submit">확인</CommentButton>
+          <CommentButton type="submit">
+            {editingIndex !== null ? "확인" : "추가"}
+          </CommentButton>
         </form>
         {comments.map((comment, index) => (
           <CommentText key={index}>
-            <span>
-              {comment.user} : {comment.comment}
-            </span>
+            {editingIndex === index ? (
+              <span>
+                {currentUser} : {editingComment}
+              </span>
+            ) : (
+              <span>
+                {comment.user} : {comment.comment}
+              </span>
+            )}
             <CommentActions>
-              <button onClick={() => handleEditComment(index)}>수정</button>
-              <button onClick={() => handleDeleteComment(index)}>삭제</button>
+              {editingIndex === index ? (
+                <button onClick={() => setEditingIndex(null)}>취소</button>
+              ) : (
+                <>
+                  <button onClick={() => handleEditComment(index)}>수정</button>
+                  <button onClick={() => handleDeleteComment(index)}>
+                    삭제
+                  </button>
+                </>
+              )}
             </CommentActions>
           </CommentText>
         ))}
