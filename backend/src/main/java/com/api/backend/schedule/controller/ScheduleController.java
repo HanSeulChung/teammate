@@ -1,14 +1,12 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.category.type.CategoryType;
+import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.service.ScheduleService;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,20 +30,22 @@ public class ScheduleController {
 
   private final ScheduleService scheduleService;
 
-//  @PostMapping
-//  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody @Valid ScheduleRequest request,
-//      @PathVariable Long teamId) {
-//    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(
-//        scheduleService.addSchedules(request)
-//    );
-//    return ResponseEntity.ok(scheduleResponse);
-//  }
-
   @PostMapping
-  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request,  @PathVariable Long teamId ) {
-    ScheduleResponse scheduleResponse = ScheduleResponse.from(scheduleService.addSchedule(request));
+  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request,
+      @PathVariable Long teamId) {
+    ScheduleResponse scheduleResponse;
+    if (!request.isRepeat()) {
+      scheduleResponse = ScheduleResponse.from(
+          scheduleService.addSimpleSchedule(request)
+      );
+    } else {
+      scheduleResponse = ScheduleResponse.from(
+          scheduleService.addRepeatSchedule(request)
+      );
+    }
     return ResponseEntity.ok(scheduleResponse);
   }
+
   @GetMapping("/{scheduleId}")
   public ResponseEntity<ScheduleResponse> searchScheduleDetailInfo(@PathVariable Long teamId,
       @PathVariable Long scheduleId) {
@@ -64,14 +64,15 @@ public class ScheduleController {
       @RequestParam(required = false) CategoryType type,
       Pageable pageable) {
 
-    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForMonth(teamId, startDt, endDt, type, pageable);
+    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForMonth(teamId, startDt, endDt,
+        type, pageable);
 
     return ResponseEntity.ok(schedules);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
-  @Valid ScheduleRequest editRequest) {
+  @Valid ScheduleEditRequest editRequest) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
         scheduleService.editScheduleAndSave(editRequest)
     );
