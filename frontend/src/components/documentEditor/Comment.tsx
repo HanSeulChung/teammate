@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const StyledCommentArea = styled.div`
+  position: relative;
   width: 100%;
   max-width: 600px;
   margin: 1rem auto;
@@ -10,7 +11,6 @@ const StyledCommentArea = styled.div`
   border: 1px solid black;
   border-radius: 10px;
 `;
-
 const CommentInput = styled.input`
   width: 10rem;
   margin: 0.5rem 0.25rem 0 0.25rem;
@@ -30,6 +30,9 @@ const CommentButton = styled.button`
 `;
 
 const ReturnButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
   border: 1px solid black;
   color: black;
   background-color: white;
@@ -82,10 +85,10 @@ const Comment: React.FC<CommentProps> = () => {
 
   return (
     <>
-      <ReturnButton onClick={handleBackToDocument}>
-        문서로 돌아가기
-      </ReturnButton>
       <StyledCommentArea>
+        <ReturnButton onClick={handleBackToDocument}>
+          문서로 돌아가기
+        </ReturnButton>
         <CommentTitle>Comments</CommentTitle>
         <form onSubmit={handleAddComment}>
           <CommentInput
