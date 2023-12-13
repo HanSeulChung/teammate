@@ -1,6 +1,7 @@
 import { atom, useRecoilState, selector } from "recoil";
 import { useEffect } from "react";
 
+// 로그인 상태를 저장하는 atom
 export const isAuthenticatedState = atom({
   key: "isAuthenticated",
   default: false,
