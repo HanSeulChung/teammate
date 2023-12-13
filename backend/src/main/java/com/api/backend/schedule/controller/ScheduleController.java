@@ -74,7 +74,7 @@ public class ScheduleController {
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
   @Valid ScheduleEditRequest editRequest) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
-        scheduleService.editScheduleAndSave(editRequest)
+        scheduleService.editSimpleScheduleAndSave(editRequest)
     );
     return ResponseEntity.ok(response);
   }
@@ -82,7 +82,7 @@ public class ScheduleController {
   @DeleteMapping("/{scheduleId}")
   public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
       @PathVariable Long scheduleId) {
-    scheduleService.deleteSchedule(scheduleId);
+    scheduleService.deleteSimpleSchedule(scheduleId);
     return ResponseEntity.ok("해당 일정이 정상적으로 삭제되었습니다.");
   }
 }
