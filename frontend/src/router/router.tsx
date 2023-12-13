@@ -13,22 +13,27 @@ import { v4 as uuidV4 } from "uuid";
 import React from "react";
 import CreateTextView from "../views/CreateTextView";
 import DocumentListView from "../views/DocumentListView";
+import CommentView from "../views/CommentView";
 import TeamDetail from "../components/TeamPage/TeamDetail";
 import TeamLeader from "../components/ProfilePage/TeamLeader";
 import TeamMembers from "../components/ProfilePage/TeamMembers";
 import TeamCreateView from "../views/TeamCreateView";
 import Mypage from "../components/Mypage/Mypage";
 
+
 const Router = () => {
   return (
     <Routes>
-      {/* <Route path="/" element={<Navigate to={`/text-editor/${uuidV4()}`} />} /> */}
       <Route path="/캘린더" element={<Calender />} />
+      <Route path="/create-text/" element={<CreateTextView />} />
       <Route
         path="/team/:teamId/documents/:documentsId"
         element={<TextEditorView />}
       />
-      <Route path="/create-text/" element={<CreateTextView />} />
+      <Route
+        path="/team/:teamId/documents/:documentsId/comment"
+        element={<CommentView />}
+      />
       <Route path="/text-list/" element={<DocumentListView />} />
       <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />

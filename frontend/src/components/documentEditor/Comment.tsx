@@ -1,13 +1,16 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const StyledCommentArea = styled.div`
-  width: 15rem;
-  color: black;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 1rem auto;
+  padding: 1rem;
   border: 1px solid black;
-  margin: 1rem;
+  border-radius: 10px;
 `;
-
 const CommentInput = styled.input`
   width: 10rem;
   margin: 0.5rem 0.25rem 0 0.25rem;
@@ -19,6 +22,17 @@ const CommentInput = styled.input`
 const CommentButton = styled.button`
   width: 3rem;
   height: 2rem;
+  border: 1px solid black;
+  color: black;
+  background-color: white;
+  font-weight: 600;
+  font-size: 10px;
+`;
+
+const ReturnButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
   border: 1px solid black;
   color: black;
   background-color: white;
@@ -42,13 +56,26 @@ const Comment: React.FC<CommentProps> = () => {
     [],
   );
   const [newComment, setNewComment] = useState<string>("");
-  const [currentUser, setCurrentUser] = useState<string>("user"); // Assuming you have a state for the current user
+  const [currentUser, setCurrentUser] = useState<string>("user");
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };
 
-  const handleAddComment = () => {
+  const navigate = useNavigate();
+
+  const handleBackToDocument = () => {
+    const currentPath = window.location.pathname;
+    const newPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+    navigate(newPath);
+  };
+
+  const handleAddComment = (e: FormEvent) => {
+    e.preventDefault();
+    if (newComment.trim() === "") {
+      alert("댓글을 입력해주세요.");
+      return;
+    }
     setComments((prevComments) => [
       ...prevComments,
       { user: currentUser, comment: newComment },
@@ -57,22 +84,28 @@ const Comment: React.FC<CommentProps> = () => {
   };
 
   return (
-    <StyledCommentArea>
-      <CommentTitle>Comments</CommentTitle>
-
-      <CommentInput
-        type="text"
-        placeholder="댓글을 입력해주세요"
-        value={newComment}
-        onChange={handleCommentChange}
-      />
-      <CommentButton onClick={handleAddComment}>확인</CommentButton>
-      {comments.map((comment, index) => (
-        <CommentText key={index}>
-          {comment.user} : {comment.comment}
-        </CommentText>
-      ))}
-    </StyledCommentArea>
+    <>
+      <StyledCommentArea>
+        <ReturnButton onClick={handleBackToDocument}>
+          문서로 돌아가기
+        </ReturnButton>
+        <CommentTitle>Comments</CommentTitle>
+        <form onSubmit={handleAddComment}>
+          <CommentInput
+            type="text"
+            placeholder="댓글을 입력해주세요"
+            value={newComment}
+            onChange={handleCommentChange}
+          />
+          <CommentButton type="submit">확인</CommentButton>
+        </form>
+        {comments.map((comment, index) => (
+          <CommentText key={index}>
+            {comment.user} : {comment.comment}
+          </CommentText>
+        ))}
+      </StyledCommentArea>
+    </>
   );
 };
 
