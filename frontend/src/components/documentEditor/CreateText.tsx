@@ -71,11 +71,6 @@ const CreateText: React.FC<QuillEditorProps> = () => {
     }
   };
 
-  const toolbar = document.getElementsByClassName("ql-toolbar");
-  if (toolbar.length > 1) {
-    toolbar[0].parentNode.removeChild(toolbar[0]);
-  }
-
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle

@@ -5,6 +5,7 @@ import "./TextEditor.css";
 import TextTitle from "./TextTitle";
 import * as StompJs from "@stomp/stompjs";
 import Quill from "quill";
+import { useNavigate } from "react-router-dom";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -132,6 +133,13 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleCommentClick = () => {
+    const currentPath = window.location.pathname;
+    navigate(`${currentPath}/comment`);
+  };
+
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle
@@ -152,7 +160,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
           >
             Save
           </StyledButton>
-          <StyledButton>comment</StyledButton>
+          <StyledButton onClick={handleCommentClick}>comment</StyledButton>
         </div>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
       </ButtonContainer>
