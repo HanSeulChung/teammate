@@ -2,11 +2,13 @@ package com.api.backend.notification.data.converter;
 
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION;
 import static com.api.backend.notification.data.NotificationMessage.CREATE_DOCUMENT;
+import static com.api.backend.notification.data.NotificationMessage.DELETE_DOCUMENT;
 import static com.api.backend.notification.data.NotificationMessage.EXIT_TEAM_PARTICIPANT;
 import static com.api.backend.notification.data.NotificationMessage.KICK_OUT_TEAM;
 import static com.api.backend.notification.data.NotificationMessage.UPDATE_TEAM_PARTICIPANT_TEAM;
 import static com.api.backend.notification.data.type.Type.DOCUMENTS;
 
+import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
@@ -181,6 +183,40 @@ public class TypeConverter {
       notifications = teamParticipants
           .stream().map(i ->
               Notification.convertUrlToTeamParticipantsNotify(i, targetUrl ,CREATE_DOCUMENT , DOCUMENTS)
+          )
+          .collect(Collectors.toList());
+
+      List<String> emitterIds = teamParticipants.stream()
+          .map(i -> EmitterService
+              .createEmitterIdByTeamIdAndTeamParticipantId(response.getTeamId(),i.getTeamParticipantsId())
+          )
+          .collect(Collectors.toList());
+
+
+      for (String emitterId : emitterIds) {
+        SseEmitter sseEmitter = emitterService.getTeamParticipantEmitters(response.getTeamId(), emitterId);
+        if (sseEmitter != null) {
+          sseEmitters.add(sseEmitter);
+        }
+      }
+
+      // 보내야 할 알람
+      notificationDto = NotificationDto.from(notifications.get(0));
+    } else if (source instanceof DeleteDocsResponse) {
+      DeleteDocsResponse response = (DeleteDocsResponse) source;
+
+
+      teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
+          response.getDeleteParticipantId(), response.getTeamId()
+      );
+
+      if (teamParticipants.isEmpty()) {
+        return;
+      }
+
+      notifications = teamParticipants
+          .stream().map(i ->
+              Notification.convertNickNameToTeamParticipantsNotify(i, response.getDeleteParticipantNickName() ,DELETE_DOCUMENT , DOCUMENTS)
           )
           .collect(Collectors.toList());
 

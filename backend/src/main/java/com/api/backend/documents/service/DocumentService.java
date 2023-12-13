@@ -6,7 +6,6 @@ import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.documents.valid.DocumentAndCommentValidCheck;
 import com.api.backend.global.exception.CustomException;
-import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import java.security.Principal;
@@ -88,6 +87,9 @@ public class DocumentService {
 
     return DeleteDocsResponse.builder()
         .id(documents.getId())
+        .deleteParticipantId(teamParticipant.getTeamParticipantsId())
+        .teamId(teamId)
+        .deleteParticipantNickName(teamParticipant.getTeamNickName())
         .title(documents.getTitle())
         .message("삭제 되었습니다.")
         .build();

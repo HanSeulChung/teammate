@@ -28,8 +28,11 @@ public class NotifyAop {
   @Async
   @AfterReturning(pointcut = "pointCut()", returning = "result")
   public void checkNotify(JoinPoint joinPoint, Object result) {
-    typeConverter.convertToDtoAndSendOrThrowsNotFoundClass(
-        ((ResponseEntity) result).getBody()
-    );
+    if (result instanceof ResponseEntity) {
+      typeConverter.convertToDtoAndSendOrThrowsNotFoundClass(
+          ((ResponseEntity) result).getBody()
+      );
+    }
+
   }
 }
