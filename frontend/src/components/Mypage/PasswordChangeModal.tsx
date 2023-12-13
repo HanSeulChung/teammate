@@ -17,13 +17,14 @@ const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
   );
 
   const handleUpdatePassword = () => {
-    // 실제로 서버로 비밀번호 변경 요청을 보내는 코드 추가
-    // 간단한 예시로 성공/실패 여부를 확인하고 있습니다.
     if (currentPassword !== "password1") {
       setPasswordChangeError("기존 비밀번호와 일치하지 않습니다.");
       return;
     } else if (newPassword !== confirmPassword) {
       setPasswordChangeError("비밀번호를 재확인해주세요.");
+      return;
+    } else if (newPassword.length < 8) {
+      setPasswordChangeError("비밀번호는 최소 8자 이상이어야 합니다.");
       return;
     } else if (
       currentPassword === "password1" &&
@@ -39,65 +40,39 @@ const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
     }
   };
 
-  // const handleUpdatePassword = async () => {
-  //   try {
-  //     // 사용자 정보를 가져오는 API 호출
-  //     const response = await axios.get("/api/user");
-  //     const actualPassword = response.data.password;
-
-  //     if (currentPassword !== actualPassword) {
-  //       setPasswordChangeError("기존 비밀번호와 일치하지 않습니다.");
-  //       return;
-  //     }
-  //     if (newPassword !== confirmPassword) {
-  //       setPasswordChangeError("비밀번호를 재확인해주세요.");
-  //       return;
-  //     }
-  //
-  //     await axios.post("/api/updatePassword", {
-  //       newPassword: newPassword,
-  //     });
-
-  //     setPasswordChangeError("");
-  //     onClose();
-  //   } catch (error) {
-  //     console.error("Error updating password:", error);
-  //     setPasswordChangeError("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
-  //   }
-  // };
   return (
     <ModalOverlay>
       <ModalContent>
-        <h2>비밀번호 변경</h2>
-        <label>
-          기존 비밀번호:{" "}
-          <input
+        <ModalHeader>비밀번호 변경</ModalHeader>
+        <InputLabel>
+          기존 비밀번호:
+          <PasswordInput
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
           />
-        </label>
-        <label>
-          새로운 비밀번호:{" "}
-          <input
+        </InputLabel>
+        <InputLabel>
+          새로운 비밀번호:
+          <PasswordInput
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
-        </label>
-        <label>
-          비밀번호 확인:{" "}
-          <input
+        </InputLabel>
+        <InputLabel>
+          비밀번호 확인:
+          <PasswordInput
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-        </label>
-        <button onClick={handleUpdatePassword}>확인</button>
-        <button onClick={onClose}>취소</button>
-        {passwordChangeError && (
-          <p style={{ color: "red" }}>{passwordChangeError}</p>
-        )}
+        </InputLabel>
+        <ButtonContainer>
+          <Button onClick={handleUpdatePassword}>확인</Button>
+          <CancelButton onClick={onClose}>취소</CancelButton>
+        </ButtonContainer>
+        {passwordChangeError && <ErrorText>{passwordChangeError}</ErrorText>}
       </ModalContent>
     </ModalOverlay>
   );
@@ -120,7 +95,52 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   background: white;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 8px;
   width: 300px;
   text-align: center;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const ModalHeader = styled.h2`
+  margin-bottom: 20px;
+  color: #333;
+`;
+
+const InputLabel = styled.label`
+  display: block;
+  margin-bottom: 15px;
+  text-align: left;
+`;
+
+const PasswordInput = styled.input`
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+`;
+
+const Button = styled.button`
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+
+const CancelButton = styled(Button)`
+  background-color: #ccc;
+`;
+
+const ErrorText = styled.p`
+  color: red;
+  margin-top: 10px;
 `;
