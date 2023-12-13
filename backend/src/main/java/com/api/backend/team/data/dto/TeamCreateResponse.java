@@ -1,8 +1,6 @@
 package com.api.backend.team.data.dto;
 
 import com.api.backend.team.data.entity.Team;
-import com.api.backend.team.service.file.LocalImgService;
-import com.api.backend.team.service.file.impl.ImgStoreImpl;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
