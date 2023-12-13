@@ -35,16 +35,26 @@ public class RepeatSchedule extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long repeatScheduleId;
+  @Setter
   private String title;
+  @Setter
   private String content;
+  @Setter
   private String place;
+  @Setter
   private LocalDateTime startDt;
+  @Setter
   private LocalDateTime endDt;
   @Enumerated(EnumType.STRING)
+  @Setter
   private RepeatCycle repeatCycle;
+  @Setter
   private Month month;
+  @Setter
   private int day;
+  @Setter
   private String dayOfWeek;
+  @Setter
   private String color;
 
   @ManyToOne(fetch = FetchType.LAZY)
