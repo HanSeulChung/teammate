@@ -2,6 +2,7 @@
 import { rest } from "msw";
 import people from "./dummy.json";
 
+
 // 캘린더 테스트용 임시 데이터(db)
 const calendarSchedules = [
     { id: "1", title: "Meeting1", start: new Date('2023-11-29') },
@@ -16,6 +17,7 @@ export const handlers = [
     await sleep(200);
     return res(ctx.status(200), ctx.json(people));
   }),
+
 //   rest.get("/*", async (req, res, ctx) => {
 //     return res(
 //       ctx.status(200),

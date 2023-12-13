@@ -3,11 +3,8 @@ import { useEffect } from "react";
 
 // 로그인 상태를 저장하는 atom
 export const isAuthenticatedState = atom({
-  //실제는 이거
-  // key: "isAuthenticated",
-  // default: false,
-  key: "isAuthenticatedState",
-  default: Boolean(localStorage.getItem("accessToken")),
+  key: "isAuthenticated",
+  default: false,
 });
 
 //토큰을 저장
