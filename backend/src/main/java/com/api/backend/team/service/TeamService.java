@@ -181,7 +181,7 @@ public class TeamService {
         .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
-    disbandCheckPermission(request.getPassword(), teamParticipants);
+    disbandCheckPermission(request.getTeamName(), teamParticipants);
 
     Team team = teamParticipants.getTeam();
 
@@ -258,14 +258,13 @@ public class TeamService {
     }
   }
 
-  public void disbandCheckPermission(String password, TeamParticipants teamParticipants) {
+  public void disbandCheckPermission(String teamName, TeamParticipants teamParticipants) {
     if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION);
     }
 
-    // todo 복호화 작업이 필요하다...ㅠㅠ
-    if (!teamParticipants.getMember().getPassword()
-        .equals(password)) {
+    if (!teamParticipants.getTeam().getName()
+        .equals(teamName)) {
       throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
     }
   }

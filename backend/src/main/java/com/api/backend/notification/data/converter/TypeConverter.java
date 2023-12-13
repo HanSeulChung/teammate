@@ -1,9 +1,14 @@
 package com.api.backend.notification.data.converter;
 
+import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION;
+import static com.api.backend.notification.data.NotificationMessage.CREATE_DOCUMENT;
 import static com.api.backend.notification.data.NotificationMessage.EXIT_TEAM_PARTICIPANT;
 import static com.api.backend.notification.data.NotificationMessage.KICK_OUT_TEAM;
 import static com.api.backend.notification.data.NotificationMessage.UPDATE_TEAM_PARTICIPANT_TEAM;
+import static com.api.backend.notification.data.type.Type.DOCUMENTS;
 
+import com.api.backend.documents.data.dto.DocumentResponse;
+import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.notification.data.dto.NotificationDto;
 import com.api.backend.notification.data.entity.Notification;
@@ -16,8 +21,8 @@ import com.api.backend.team.data.dto.TeamParticipantsDeleteResponse;
 import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.service.TeamParticipantsService;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -54,7 +59,7 @@ public class TypeConverter {
           );
       notificationService.saveNotification(result);
 
-      SseEmitter emitter = emitterService.getMemberEmitter(result.getMember().getMemberId());
+      SseEmitter emitter = emitterService.getMemberEmitter(response.getKickOutMemberId());
 
       if (emitter == null) {
         return;
@@ -71,9 +76,10 @@ public class TypeConverter {
           response.getUpdateTeamParticipantId(), response.getTeamId()
       );
 
-      List<Notification> notifications = teamParticipants
+
+      notifications = teamParticipants
           .stream().map(i ->
-              Notification.convertToTeamParticipantsNotify(i, nickName ,UPDATE_TEAM_PARTICIPANT_TEAM , Type.INVITE)
+              Notification.convertNickNameToTeamParticipantsNotify(i, nickName ,UPDATE_TEAM_PARTICIPANT_TEAM , Type.INVITE)
           )
           .collect(Collectors.toList());
 
@@ -95,6 +101,10 @@ public class TypeConverter {
       String nickName = response.getNickName();
       teamParticipants = teamParticipantsService.getTeamParticipantsByExcludeMemberId(
           response.getTeamParticipantsId(),response.getTeamId());
+
+      if (teamParticipants.isEmpty()) {
+        return;
+      }
 
       notifications = teamParticipants
           .stream().map(i ->
@@ -123,6 +133,11 @@ public class TypeConverter {
           .map(TeamParticipants::getMember)
           .collect(Collectors.toList());
 
+
+      if (members.isEmpty()) {
+        return;
+      }
+
       // 각 맴버에게 보내는 알람
       notifications = members
           .stream().map(i ->
@@ -139,10 +154,52 @@ public class TypeConverter {
       notificationDto = NotificationDto.from(notifications.get(0));
 
       // 맴버별 emitter 객체 불러오기
-      sseEmitters = members.stream()
-          .map(i -> emitterService.getMemberEmitter(i.getMemberId()))
+      for (Member member : members) {
+        SseEmitter sseEmitter = emitterService.getMemberEmitter(member.getMemberId());
+        if (sseEmitter != null) {
+          sseEmitters.add(sseEmitter);
+        }
+      }
+
+
+    } else if (source instanceof DocumentResponse) {
+      DocumentResponse response = (DocumentResponse) source;
+
+      if (response.getTeamId() == null && response.getId() == null) {
+        throw new CustomException(DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION);
+      }
+      String targetUrl = "/team/" + response.getTeamId() +"/documents/" + response.getId();
+
+      teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
+          response.getWriterId(), response.getTeamId()
+      );
+
+      if (teamParticipants.isEmpty()) {
+        return;
+      }
+
+      notifications = teamParticipants
+          .stream().map(i ->
+              Notification.convertUrlToTeamParticipantsNotify(i, targetUrl ,CREATE_DOCUMENT , DOCUMENTS)
+          )
           .collect(Collectors.toList());
 
+      List<String> emitterIds = teamParticipants.stream()
+          .map(i -> EmitterService
+              .createEmitterIdByTeamIdAndTeamParticipantId(response.getTeamId(),i.getTeamParticipantsId())
+          )
+          .collect(Collectors.toList());
+
+
+      for (String emitterId : emitterIds) {
+        SseEmitter sseEmitter = emitterService.getTeamParticipantEmitters(response.getTeamId(), emitterId);
+        if (sseEmitter != null) {
+          sseEmitters.add(sseEmitter);
+        }
+      }
+
+      // 보내야 할 알람
+      notificationDto = NotificationDto.from(notifications.get(0));
     }
 
     // 맴버에게 알람 저장
@@ -155,16 +212,6 @@ public class TypeConverter {
     // emitter 별로 보내는 고정적인 dto 보내기
     for (SseEmitter emitter : sseEmitters) {
       emitterService.sendNotification(emitter,notificationDto);
-    }
-  }
-
-  private void sendNotificationByEmitterMap(
-      List<String> emitterIds, Map<String, SseEmitter> sseEmitterMap, NotificationDto notificationDto
-  ) {
-    for (int i = 0; i < emitterIds.size(); i++) {
-      if (sseEmitterMap.containsKey(emitterIds.get(i))) {
-        emitterService.sendNotification(sseEmitterMap.get(emitterIds.get(i)) , notificationDto);
-      }
     }
   }
 
