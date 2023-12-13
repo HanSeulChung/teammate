@@ -25,8 +25,8 @@ interface QuillEditorProps {}
 const CreateText: React.FC<QuillEditorProps> = () => {
   const [quill, setQuill] = useState<Quill | null>(null);
   const [title, setTitle] = useState<string>("");
-  const writerEmail = "작성자_이메일@example.com"; // 작성자 이메일, 동적으로 관리해야 함
-  const teamId = "팀_ID"; // 팀 ID, 동적으로 관리해야 함
+  const writerEmail = "작성자_이메일@example.com";
+  const teamId = "팀_ID";
 
   useEffect(() => {
     if (!quill) {
