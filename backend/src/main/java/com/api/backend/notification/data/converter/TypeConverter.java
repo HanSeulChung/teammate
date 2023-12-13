@@ -35,6 +35,13 @@ public class TypeConverter {
   @Async
   public void convertToDtoAndSendOrThrowsNotFoundClass(Object source) {
 
+    List<TeamParticipants> teamParticipants;
+    List<Notification> notifications = new ArrayList<>();
+    // 보내야 할 알람 data
+    NotificationDto notificationDto = new NotificationDto();
+    // 구독한 유저들
+    List<SseEmitter> sseEmitters = new ArrayList<>();
+
     if (source instanceof TeamKickOutResponse) { // 팀원 강퇴
       TeamKickOutResponse response = (TeamKickOutResponse) source;
 
@@ -55,11 +62,12 @@ public class TypeConverter {
 
       emitterService.sendNotification(emitter,result);
 
+      return;
     }else if (source instanceof TeamParticipantsUpdateResponse) { // 팀 참가
       TeamParticipantsUpdateResponse response = (TeamParticipantsUpdateResponse) source;
       String nickName = response.getUpdateTeamParticipantNickName();
 
-      List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
+      teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
           response.getUpdateTeamParticipantId(), response.getTeamId()
       );
 
@@ -69,49 +77,30 @@ public class TypeConverter {
           )
           .collect(Collectors.toList());
 
-      notificationService.saveAllNotification(notifications);
-
-      Map<String,SseEmitter> sseEmitterMap = emitterService.getTeamParticipantEmitters(
-          response.getTeamId(),
-          response.getUpdateTeamParticipantId()
-      );
-
-      if (sseEmitterMap.isEmpty()) {
-        return;
-      }
-
       List<String> emitterIds = teamParticipants.stream()
           .map(i -> EmitterService
-              .createEmitterIdByTeamIdAndTeamParticipantId(response.getTeamId(), i.getTeamParticipantsId())
+              .createEmitterIdByTeamIdAndTeamParticipantId(response.getTeamId(),i.getTeamParticipantsId())
           )
+          .collect(Collectors.toList());
+
+      sseEmitters = emitterIds.stream()
+          .map(i -> emitterService.getTeamParticipantEmitters(response.getTeamId(), i))
           .collect(Collectors.toList());
 
       // 보내야 할 알람
-      NotificationDto notificationDto = NotificationDto.from(notifications.get(0));
+      notificationDto = NotificationDto.from(notifications.get(0));
 
-      sendNotificationByEmitterMap(emitterIds, sseEmitterMap, notificationDto);
     }else if (source instanceof TeamParticipantsDeleteResponse) { // 팀 탈퇴
       TeamParticipantsDeleteResponse response = (TeamParticipantsDeleteResponse) source;
       String nickName = response.getNickName();
-      List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsByExcludeMemberId(
+      teamParticipants = teamParticipantsService.getTeamParticipantsByExcludeMemberId(
           response.getTeamParticipantsId(),response.getTeamId());
 
-      List<Notification> notifications = teamParticipants
+      notifications = teamParticipants
           .stream().map(i ->
-              Notification.convertToTeamParticipantsNotify(i, nickName ,EXIT_TEAM_PARTICIPANT , Type.EXIT_TEAM_PARTICIPANT)
+              Notification.convertNickNameToTeamParticipantsNotify(i, nickName ,EXIT_TEAM_PARTICIPANT , Type.EXIT_TEAM_PARTICIPANT)
           )
           .collect(Collectors.toList());
-
-      notificationService.saveAllNotification(notifications);
-
-      Map<String ,SseEmitter> sseEmitterMap = emitterService.getTeamParticipantEmitters(
-          response.getTeamId(),
-          response.getTeamParticipantsId()
-      );
-
-      if (sseEmitterMap.isEmpty()) {
-        return;
-      }
 
       List<String> emitterIds = teamParticipants.stream()
           .map(i -> EmitterService
@@ -119,10 +108,12 @@ public class TypeConverter {
           )
           .collect(Collectors.toList());
 
-      // 보내야 할 알람
-      NotificationDto notificationDto = NotificationDto.from(notifications.get(0));
+      sseEmitters = emitterIds.stream()
+          .map(i -> emitterService.getTeamParticipantEmitters(response.getTeamId(), i))
+          .collect(Collectors.toList());
 
-      sendNotificationByEmitterMap(emitterIds, sseEmitterMap, notificationDto);
+      notificationDto = NotificationDto.from(notifications.get(0));
+
     } else if (source instanceof TeamDisbandResponse) { // 팀 해체
       TeamDisbandResponse response = (TeamDisbandResponse) source;
 
@@ -133,7 +124,7 @@ public class TypeConverter {
           .collect(Collectors.toList());
 
       // 각 맴버에게 보내는 알람
-      List<Notification> notifications = members
+      notifications = members
           .stream().map(i ->
               Notification.convertToMemberNotify(
                   i,
@@ -144,21 +135,26 @@ public class TypeConverter {
           )
           .collect(Collectors.toList());
 
-      // 맴버에게 알람 일단은 저장
-      notificationService.saveAllNotification(notifications);
-
       // 맴버들에게 보내는 알람은 고정적이기에 하나의 DTO만 반환
-      NotificationDto notificationDto = NotificationDto.from(notifications.get(0));
+      notificationDto = NotificationDto.from(notifications.get(0));
 
       // 맴버별 emitter 객체 불러오기
-      List<SseEmitter> sseEmitters = members.stream()
+      sseEmitters = members.stream()
           .map(i -> emitterService.getMemberEmitter(i.getMemberId()))
           .collect(Collectors.toList());
 
-      // emitter 별로 보내는 고정적인 dto 보내기
-      for (SseEmitter emitter : sseEmitters) {
-        emitterService.sendNotification(emitter,notificationDto);
-      }
+    }
+
+    // 맴버에게 알람 저장
+    notificationService.saveAllNotification(notifications);
+
+    if (sseEmitters.isEmpty()) {
+      return;
+    }
+
+    // emitter 별로 보내는 고정적인 dto 보내기
+    for (SseEmitter emitter : sseEmitters) {
+      emitterService.sendNotification(emitter,notificationDto);
     }
   }
 

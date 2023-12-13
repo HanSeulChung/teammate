@@ -7,7 +7,6 @@ import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.service.TeamParticipantsService;
 import com.api.backend.team.service.TeamService;
 import java.io.IOException;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -74,10 +73,7 @@ public class EmitterService {
     return emitterRepository.getEmitter(memberId);
   }
 
-  public Map<String,SseEmitter> getTeamParticipantEmitters(Long teamId, Long participantsId) {
-
-    String excludeEmitterId = createEmitterIdByTeamIdAndTeamParticipantId(teamId,participantsId);
-
-    return emitterRepository.getAllByTeamIdAndExcludeEmitterId(teamId, excludeEmitterId);
+  public SseEmitter getTeamParticipantEmitters(Long teamId, String customId) {
+    return emitterRepository.getTeamParticipantEmitter(teamId, customId);
   }
 }

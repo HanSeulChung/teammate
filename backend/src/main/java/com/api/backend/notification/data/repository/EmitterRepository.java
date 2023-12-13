@@ -47,17 +47,12 @@ public class EmitterRepository {
   public void deleteMemberEmitter(Long memberId) {
     memberEmitterMap.remove(memberId);
   }
-  public Map<String,SseEmitter> getAllByTeamIdAndExcludeEmitterId(Long teamId, String excludeEmitterId) {
-    Map<String, SseEmitter> teamParticipantsEmitters = teamEmitterMap.get(teamId);
-    Map<String,SseEmitter> map = new ConcurrentHashMap<>();
-
-    for (Map.Entry<String, SseEmitter> info : teamParticipantsEmitters.entrySet()) {
-      if (!info.getKey().equals(excludeEmitterId)) {
-        map.put(info.getKey(), info.getValue());
-      }
+  public SseEmitter getTeamParticipantEmitter(Long teamId, String emitterId) {
+    Map<String, SseEmitter> emitterHashMap = teamEmitterMap.get(teamId);
+    if (emitterHashMap.containsKey(emitterId)) {
+      return emitterHashMap.get(emitterId);
     }
-
-    return map;
+    return null;
   }
 
   public SseEmitter getEmitter(Long memberId) {
