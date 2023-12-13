@@ -6,17 +6,16 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_NOT_VALID_MATE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION;
-import static com.api.backend.team.data.ResponseMessage.DELETE_TEAM_PARTICIPANT;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_ROLE_TEAM_PARTICIPANT;
 
+import com.api.backend.file.service.FileProcessService;
+import com.api.backend.file.type.FileFolder;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
-import com.api.backend.team.data.type.ImgType;
 import com.api.backend.team.data.type.TeamRole;
-import com.api.backend.team.service.file.impl.ImgStoreImpl;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
@@ -33,9 +32,11 @@ public class TeamParticipantsService {
   private final TeamService teamService;
   private final TeamParticipantsRepository teamParticipantsRepository;
   private final boolean DELETE_FALSE_FLAG = false;
-  private final ImgStoreImpl imgStore;
 
-  public String deleteTeamParticipant(Long userId, Long teamId) {
+  private final FileProcessService fileProcessService;
+
+  @Transactional
+  public TeamParticipants deleteTeamParticipant(Long userId, Long teamId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
         .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
@@ -45,7 +46,7 @@ public class TeamParticipantsService {
     }
     teamParticipantsRepository.delete(teamParticipants);
 
-    return DELETE_TEAM_PARTICIPANT;
+    return teamParticipants;
   }
 
   @Transactional
@@ -125,9 +126,8 @@ public class TeamParticipantsService {
 
     if (teamParticipantUpdateRequest.getParticipantImg() != null) {
       teamParticipant.changeProfileUrl(
-          imgStore.uploadImg(
-              teamParticipantUpdateRequest.getParticipantImg(), ImgType.PARTICIPANT, participantNickName
-          )
+          fileProcessService.uploadImage(
+              teamParticipantUpdateRequest.getParticipantImg(), FileFolder.PARTICIPANT)
       );
     }
     return teamParticipant;
@@ -135,5 +135,9 @@ public class TeamParticipantsService {
 
   public List<TeamParticipants> getTeamParticipantsExcludeId(Long teamParticipantId, Long teamId) {
     return teamParticipantsRepository.findByTeam_TeamIdAndTeamParticipantsIdNot(teamId ,teamParticipantId);
+  }
+
+  public List<TeamParticipants> getTeamParticipantsByExcludeMemberId(Long teamId , Long memberId) {
+    return teamParticipantsRepository.findAllByTeam_TeamIdAndMember_MemberIdNot(teamId, memberId);
   }
 }

@@ -36,6 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 .idea\
+
 application-db.yml
 application-jwt.yml
 application-email.yml
@@ -261,3 +262,8 @@ $RECYCLE.BIN/
 ### Log ###
 *.log
 
+## yml ##
+application-db.yml
+application-jwt.yml
+application-aws.yml
+application-local.yml

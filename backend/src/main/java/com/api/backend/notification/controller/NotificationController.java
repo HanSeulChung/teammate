@@ -1,5 +1,6 @@
 package com.api.backend.notification.controller;
 
+
 import com.api.backend.notification.service.EmitterService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

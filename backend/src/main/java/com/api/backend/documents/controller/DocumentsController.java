@@ -5,17 +5,16 @@ import com.api.backend.documents.data.dto.DocumentInitRequest;
 import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.service.DocumentService;
+import com.api.backend.global.aop.notify.SendNotify;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.security.Principal;
 import java.time.LocalDate;
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -105,6 +104,7 @@ public class DocumentsController {
               , example = "1")
             })
   @PostMapping()
+  @SendNotify
   public ResponseEntity<DocumentResponse> createDocs(
           @PathVariable
           Long teamId,
