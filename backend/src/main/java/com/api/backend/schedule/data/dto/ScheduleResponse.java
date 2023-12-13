@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.data.entity.RepeatSchedule;
 import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
@@ -18,7 +19,7 @@ import org.springframework.data.domain.Page;
 @Builder
 @AllArgsConstructor
 public class ScheduleResponse {
-
+  private String scheduleType;
   private Long scheduleId;
   private Long categoryId;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -30,7 +31,7 @@ public class ScheduleResponse {
   private String place;
   private boolean isRepeat;
   private RepeatCycle repeatCycle;
-  private Month month; //월: 연간 반복시 사용
+  private String month; //월: 연간 반복시 사용
   private int day; //일: 연간, 월간 반복시 사용
   private String dayOfWeek; //요일: 주간 반복시 사용
   private List<Long> teamParticipantsIds;
@@ -53,7 +54,25 @@ public class ScheduleResponse {
         .teamRoles(getTeamParticipantsRoleFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .build();
   }
-
+  public static ScheduleResponse from(RepeatSchedule repeatSchedule) {
+    return ScheduleResponse.builder()
+        .scheduleId(repeatSchedule.getRepeatScheduleId())
+        .categoryId(repeatSchedule.getScheduleCategory().getScheduleCategoryId())
+        .startDt(repeatSchedule.getStartDt())
+        .endDt(repeatSchedule.getEndDt())
+        .title(repeatSchedule.getTitle())
+        .content(repeatSchedule.getContent())
+        .place(repeatSchedule.getPlace())
+        .day(repeatSchedule.getDay())
+        .month(repeatSchedule.getMonth())
+        .dayOfWeek(repeatSchedule.getDayOfWeek())
+        .teamParticipantsIds(
+            getTeamParticipantsIdsFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .teamParticipantsNames(
+            getTeamParticipantsNameFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .teamRoles(getTeamParticipantsRoleFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .build();
+  }
   public static Page<ScheduleResponse> from(Page<SimpleSchedule> schedules) {
     return schedules.map(ScheduleResponse::from);
   }

@@ -49,7 +49,7 @@ public class RepeatSchedule extends BaseEntity {
   @Setter
   private RepeatCycle repeatCycle;
   @Setter
-  private Month month;
+  private String month;
   @Setter
   private int day;
   @Setter
