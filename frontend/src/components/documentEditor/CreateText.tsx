@@ -6,13 +6,16 @@ import TextTitle from "./TextTitle";
 import axios from "axios";
 
 const StyledTexteditor = styled.div`
+  displey: flex;
   width: 41rem;
+  text-align: center;
 `;
 
 const SaveButton = styled.button`
   background-color: rgb(163, 204, 163);
   color: #333333;
   border-radius: 0.5rem;
+  margin: 12px;
 `;
 
 const QuillStyled = styled.div`
@@ -25,8 +28,8 @@ interface QuillEditorProps {}
 const CreateText: React.FC<QuillEditorProps> = () => {
   const [quill, setQuill] = useState<Quill | null>(null);
   const [title, setTitle] = useState<string>("");
-  const writerEmail = "작성자_이메일@example.com";
-  const teamId = "팀_ID";
+  const writerEmail = "default@mail.com";
+  const teamId = "DefaultTeam_ID";
 
   useEffect(() => {
     if (!quill) {
