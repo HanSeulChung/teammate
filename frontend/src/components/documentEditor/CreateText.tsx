@@ -15,6 +15,11 @@ const SaveButton = styled.button`
   border-radius: 0.5rem;
 `;
 
+const QuillStyled = styled.div`
+  height: auto;
+  min-height: 300px;
+`;
+
 interface QuillEditorProps {}
 
 const CreateText: React.FC<QuillEditorProps> = () => {
@@ -61,7 +66,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle titleProps={title} onTitleChange={setTitle} />
-      <div id="quill-editor" />
+      <QuillStyled id="quill-editor" />
       <SaveButton className="save" onClick={handleSave}>
         Save
       </SaveButton>
