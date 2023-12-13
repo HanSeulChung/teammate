@@ -162,7 +162,46 @@ public class TypeConverter {
       }
 
 
+    } else if (source instanceof DocumentResponse) {
+      DocumentResponse response = (DocumentResponse) source;
+
+      if (response.getTeamId() == null && response.getId() == null) {
+        throw new CustomException(DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION);
+      }
+      String targetUrl = "/team/" + response.getTeamId() +"/documents/" + response.getId();
+
+      teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
+          response.getWriterId(), response.getTeamId()
+      );
+
+      if (teamParticipants.isEmpty()) {
+        return;
+      }
+
+      notifications = teamParticipants
+          .stream().map(i ->
+              Notification.convertUrlToTeamParticipantsNotify(i, targetUrl ,CREATE_DOCUMENT , DOCUMENTS)
+          )
+          .collect(Collectors.toList());
+
+      List<String> emitterIds = teamParticipants.stream()
+          .map(i -> EmitterService
+              .createEmitterIdByTeamIdAndTeamParticipantId(response.getTeamId(),i.getTeamParticipantsId())
+          )
+          .collect(Collectors.toList());
+
+
+      for (String emitterId : emitterIds) {
+        SseEmitter sseEmitter = emitterService.getTeamParticipantEmitters(response.getTeamId(), emitterId);
+        if (sseEmitter != null) {
+          sseEmitters.add(sseEmitter);
+        }
+      }
+
+      // 보내야 할 알람
+      notificationDto = NotificationDto.from(notifications.get(0));
     }
+
     // 맴버에게 알람 저장
     notificationService.saveAllNotification(notifications);
 

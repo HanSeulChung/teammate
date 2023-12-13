@@ -67,4 +67,13 @@ public class Notification extends BaseEntity {
         .type(type)
         .build();
   }
+
+  public static Notification convertUrlToTeamParticipantsNotify(TeamParticipants teamParticipants,String targetUrl, String message, Type type) {
+    return Notification.builder()
+        .teamParticipants(teamParticipants)
+        .targetUrl(targetUrl)
+        .message(message)
+        .type(type)
+        .build();
+  }
 }
