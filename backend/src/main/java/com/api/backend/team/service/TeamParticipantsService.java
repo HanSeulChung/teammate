@@ -6,7 +6,6 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_NOT_VALID_MATE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION;
-import static com.api.backend.team.data.ResponseMessage.DELETE_TEAM_PARTICIPANT;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_ROLE_TEAM_PARTICIPANT;
 
 import com.api.backend.global.exception.CustomException;
@@ -35,7 +34,8 @@ public class TeamParticipantsService {
   private final boolean DELETE_FALSE_FLAG = false;
   private final ImgStoreImpl imgStore;
 
-  public String deleteTeamParticipant(Long userId, Long teamId) {
+  @Transactional
+  public TeamParticipants deleteTeamParticipant(Long userId, Long teamId) {
     TeamParticipants teamParticipants = teamParticipantsRepository
         .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
@@ -45,7 +45,7 @@ public class TeamParticipantsService {
     }
     teamParticipantsRepository.delete(teamParticipants);
 
-    return DELETE_TEAM_PARTICIPANT;
+    return teamParticipants;
   }
 
   @Transactional
@@ -135,5 +135,9 @@ public class TeamParticipantsService {
 
   public List<TeamParticipants> getTeamParticipantsExcludeId(Long teamParticipantId, Long teamId) {
     return teamParticipantsRepository.findByTeam_TeamIdAndTeamParticipantsIdNot(teamId ,teamParticipantId);
+  }
+
+  public List<TeamParticipants> getTeamParticipantsByExcludeMemberId(Long teamId , Long memberId) {
+    return teamParticipantsRepository.findAllByTeam_TeamIdAndMember_MemberIdNot(teamId, memberId);
   }
 }

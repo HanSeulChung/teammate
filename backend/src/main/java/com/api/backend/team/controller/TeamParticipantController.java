@@ -1,6 +1,11 @@
 package com.api.backend.team.controller;
 
+import static com.api.backend.team.data.ResponseMessage.DELETE_TEAM_PARTICIPANT;
+
+import com.api.backend.global.aop.notify.SendNotify;
+import com.api.backend.team.data.dto.TeamParticipantsDeleteResponse;
 import com.api.backend.team.data.dto.TeamParticipantsDto;
+import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.service.TeamParticipantsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -42,12 +47,22 @@ public class TeamParticipantController {
           )
       })
   @DeleteMapping
-  public ResponseEntity<String> deleteTeamParticipantRequest(
+  @SendNotify
+  public ResponseEntity<TeamParticipantsDeleteResponse> deleteTeamParticipantRequest(
       @ApiIgnore Principal principal,
       @PathVariable(value = "teamId") Long teamId
   ) {
+    TeamParticipants teamParticipants = teamParticipantsService
+        .deleteTeamParticipant(Long.valueOf(principal.getName()), teamId);
+
     return ResponseEntity.ok(
-        teamParticipantsService.deleteTeamParticipant(Long.valueOf(principal.getName()), teamId)
+        TeamParticipantsDeleteResponse
+            .builder()
+            .teamId(teamId)
+            .nickName(teamParticipants.getTeamNickName())
+            .teamParticipantsId(teamParticipants.getTeamParticipantsId())
+            .message(DELETE_TEAM_PARTICIPANT)
+            .build()
     );
   }
   @ApiOperation(value = "팀장 위임 API")

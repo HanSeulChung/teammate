@@ -3,12 +3,10 @@ package com.api.backend.notification.service;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.notification.data.repository.EmitterRepository;
-import com.api.backend.notification.data.repository.NotificationRepository;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.service.TeamParticipantsService;
 import com.api.backend.team.service.TeamService;
 import java.io.IOException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -25,7 +23,6 @@ public class EmitterService {
   private final TeamParticipantsService teamParticipantsService;
   private final TeamService teamService;
   private static final String DUMMY_DATA = "dummy data";
-  private final NotificationRepository notificationRepository;
 
 
   /**
@@ -43,16 +40,12 @@ public class EmitterService {
     String emitterId = createEmitterIdByTeamIdAndTeamParticipantId(teamId , teamParticipant.getTeamParticipantsId());
 
     SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-    emitterRepository.save(teamId, emitterId, new SseEmitter(DEFAULT_TIMEOUT));
+    emitterRepository.saveTeamParticipantsEmitter(teamId, emitterId, new SseEmitter(DEFAULT_TIMEOUT));
 
-    emitter.onCompletion(() -> emitterRepository.deleteById(teamId, emitterId));
-    emitter.onTimeout(() -> emitterRepository.deleteById(teamId, emitterId));
+    emitter.onCompletion(() -> emitterRepository.deleteTeamParticipantEmitter(teamId, emitterId));
+    emitter.onTimeout(() -> emitterRepository.deleteTeamParticipantEmitter(teamId, emitterId));
 
-    // 503 에러를 방지하기 위한 더미 이벤트 전송
-    String eventId = createEmitterIdByTeamIdAndTeamParticipantId(
-        teamId,
-        teamParticipant.getTeamParticipantsId()
-    );
+
     sendNotification(emitter, DUMMY_DATA);
 
     return emitter;
@@ -76,10 +69,11 @@ public class EmitterService {
     }
   }
 
-  public List<SseEmitter> getEmitters(Long teamId, Long participantsId) {
+  public SseEmitter getMemberEmitter(Long memberId) {
+    return emitterRepository.getEmitter(memberId);
+  }
 
-    String excludeEmitterId = createEmitterIdByTeamIdAndTeamParticipantId(teamId,participantsId);
-
-    return emitterRepository.getAllByTeamIdAndExcludeEmitterId(teamId, excludeEmitterId);
+  public SseEmitter getTeamParticipantEmitters(Long teamId, String customId) {
+    return emitterRepository.getTeamParticipantEmitter(teamId, customId);
   }
 }
