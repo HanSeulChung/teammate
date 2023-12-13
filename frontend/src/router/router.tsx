@@ -20,12 +20,11 @@ import TeamMembers from "../components/ProfilePage/TeamMembers";
 import TeamCreateView from "../views/TeamCreateView";
 import Mypage from "../components/Mypage/Mypage";
 
-
 const Router = () => {
   return (
     <Routes>
       <Route path="/캘린더" element={<Calender />} />
-      <Route path="/create-text/" element={<CreateTextView />} />
+      <Route path="/team/:teamId/document" element={<CreateTextView />} />
       <Route
         path="/team/:teamId/documents/:documentsId"
         element={<TextEditorView />}
