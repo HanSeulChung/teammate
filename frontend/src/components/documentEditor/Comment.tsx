@@ -42,7 +42,13 @@ const ReturnButton = styled.button`
 
 const CommentText = styled.div`
   display: flex;
-  margin-left: 8px;
+  justify-content: space-between;
+  margin: 8px 0;
+`;
+
+const CommentActions = styled.div`
+  display: flex;
+  gap: 10px;
 `;
 
 const CommentTitle = styled.h3`
@@ -83,6 +89,17 @@ const Comment: React.FC<CommentProps> = () => {
     setNewComment("");
   };
 
+  const handleEditComment = (index: number) => {
+    const commentToEdit = comments[index];
+    setNewComment(commentToEdit.comment);
+    // 추가: 현재 수정 중인 댓글의 인덱스를 저장하는 상태가 필요할 수 있습니다.
+  };
+
+  const handleDeleteComment = (index: number) => {
+    const updatedComments = comments.filter((_, i) => i !== index);
+    setComments(updatedComments);
+  };
+
   return (
     <>
       <StyledCommentArea>
@@ -101,7 +118,13 @@ const Comment: React.FC<CommentProps> = () => {
         </form>
         {comments.map((comment, index) => (
           <CommentText key={index}>
-            {comment.user} : {comment.comment}
+            <span>
+              {comment.user} : {comment.comment}
+            </span>
+            <CommentActions>
+              <button onClick={() => handleEditComment(index)}>수정</button>
+              <button onClick={() => handleDeleteComment(index)}>삭제</button>
+            </CommentActions>
           </CommentText>
         ))}
       </StyledCommentArea>
