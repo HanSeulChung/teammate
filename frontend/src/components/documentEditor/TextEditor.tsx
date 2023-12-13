@@ -25,6 +25,10 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
+const QuillStyled = styled.div`
+  height: auto;
+`;
+
 interface TextEditorProps {
   teamId: string;
   documentsId: string;
@@ -146,7 +150,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         titleProps={title}
         onTitleChange={(newTitle) => setTitle(newTitle)} // onInputChange() => setTitle()
       />
-      <div id="quill-editor" />
+      <QuillStyled id="quill-editor" />
       <ButtonContainer>
         <div>
           <StyledButton
