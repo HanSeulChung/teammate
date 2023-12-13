@@ -112,6 +112,23 @@ public class MemberController {
                     .build();
         }
     }
+    @GetMapping("/my-page") ResponseEntity<?> getMemberInfo(
+            @RequestHeader("Authorization") String requestAccessTokenInHeader
+    ){
+        MemberInfoResponse memberInfo = memberService.getMemberInfo(requestAccessTokenInHeader);
+
+        return ResponseEntity.ok(memberInfo);
+    }
+    @PutMapping("/member/password")
+    public ResponseEntity<?> updateMemberPassword(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody UpdateMemberPasswordRequest updateMemberPasswordRequest
+    ){
+
+        memberService.updateMemberPassword(accessToken, updateMemberPasswordRequest);
+
+        return ResponseEntity.ok().build();
+    }
 
 
     @GetMapping("/member/participants")

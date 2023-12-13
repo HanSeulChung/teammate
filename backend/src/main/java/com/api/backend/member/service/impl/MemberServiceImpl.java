@@ -110,6 +110,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+        String encodePassword = passwordEncoder.encode(updateMemberPasswordRequest.getNewPassword());
+        updateMemberPasswordRequest.setNewPassword(encodePassword);
+        member.setPassword(updateMemberPasswordRequest.getNewPassword());
+        memberRepository.save(member);
+    }
     @Override
     public MemberInfoResponse getMemberInfo(String requestAccessTokenInHeader) {
         String accessToken = authService.resolveToken(requestAccessTokenInHeader);

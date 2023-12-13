@@ -41,7 +41,8 @@ public enum ErrorCode {
   PASSWORD_NOT_MATCH_EXCEPTION(400, "비밀번호가 일치하지 않습니다."),
   TOKEN_NOT_FOUND_PERMISSION_INFORMATION(400,"권한 정보가 없는 토큰입니다."),
   TOKEN_INVALID_EXCEPTION(400,"유효하지 않는 토큰입니다."),
-
+  MEMBER_NOT_MATCH_PASSWORD_EXCEPTION(400, "기존 비밀번호가 틀렸습니다."),
+  INCORRECT_FORM_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호 형식이 잘못되었습니다."),
   // principal
   PRINCIPAL_IS_NULL(400, "인증이 되지 않았습니다."),
 
