@@ -30,8 +30,8 @@ const Router = () => {
       />
       <Route path="/create-text/" element={<CreateTextView />} />
       <Route path="/text-list/" element={<DocumentListView />} />
-      {/* <Route path="/" element={<Index />} />
-      <Route path="/schedules" element={<Calender />} />*/}
+      <Route path="/" element={<Index />} />
+      <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<SignInView />} />
       <Route path="/kakaoLogin" element={<KakaoLogin />} />
