@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -32,19 +32,15 @@ const TeamCalender = () => {
         seteventFormModal(!eventFormModal);
     };
 
-    // 달력 일정 임시데이터
-    const events = [
-        { title: 'Meeting1', start: new Date('2023-11-29') },
-        { title: 'Meeting2', start: new Date('2023-11-30'), description: '백프로팀 회의 하는 날' },
-        { title: 'Meeting3', start: new Date('2023-11-30'), description: '화분 물 주는 날' }
-    ]
-
     // 일정클릭 핸들링
     const HandleEventClick = (e) => {
+        console.log(e.event.extendedProps);
         setEvent({
             title: e.event.title,
             start: e.event.start.toString(),
-            description: e.event.extendedProps.description,
+            contents: e.event.extendedProps.contents,
+            place: e.event.extendedProps.place,
+            groupId: e.event.extendedProps.groupId,
         });
         toggleModal();
     }
@@ -140,7 +136,7 @@ const TeamCalender = () => {
                         onClick={toggleFormModal}
                     ></Overlay>
                     <ModalContent>
-                        <EditEvent />
+                        <EditEvent isEdit={isEdit} originEvent={event} />
                         <CloseModal
                             onClick={toggleFormModal}
                         >
