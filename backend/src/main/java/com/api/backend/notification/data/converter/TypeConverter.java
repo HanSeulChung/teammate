@@ -92,7 +92,7 @@ public class TypeConverter {
       sendNotificationByEmitterMap(emitterIds, sseEmitterMap, notificationDto);
     }else if (source instanceof TeamParticipantsDeleteResponse) { // 팀 탈퇴
       TeamParticipantsDeleteResponse response = (TeamParticipantsDeleteResponse) source;
-      String nickName = response.getMessage();
+      String nickName = response.getNickName();
       List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsByExcludeMemberId(
           response.getTeamParticipantsId(),response.getTeamId());
 
