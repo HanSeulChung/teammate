@@ -3,7 +3,8 @@ package com.api.backend.category.data.entity;
 import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.domain.BaseEntity;
-import com.api.backend.schedule.data.entity.Schedule;
+import com.api.backend.schedule.data.entity.RepeatSchedule;
+import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.team.data.entity.Team;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,11 @@ public class ScheduleCategory extends BaseEntity {
 
   @OneToMany(mappedBy = "scheduleCategory")
   @Builder.Default
-  private List<Schedule> schedule = new ArrayList<>();
+  private List<SimpleSchedule> simpleSchedule = new ArrayList<>();
+
+  @OneToMany(mappedBy = "scheduleCategory")
+  @Builder.Default
+  private List<RepeatSchedule> repeatSchedules = new ArrayList<>();
 
   public void editScheduleCategory(ScheduleCategoryEditRequest request) {
     if (request.getCategoryId() != null) {
