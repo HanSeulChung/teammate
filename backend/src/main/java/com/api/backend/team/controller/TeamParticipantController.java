@@ -2,6 +2,12 @@ package com.api.backend.team.controller;
 
 import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.service.TeamParticipantsService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +19,9 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
+@Api(tags = "팀 참가자")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/team/{teamId}/participant")
@@ -21,19 +29,48 @@ public class TeamParticipantController {
 
   private final TeamParticipantsService teamParticipantsService;
 
+  @ApiOperation(value = "팀 탈퇴 API")
+  @ApiResponses(value ={
+      @ApiResponse(code = 200, message = "팀에서 탈퇴 되었다는 메시지를 반환"),
+      @ApiResponse(code = 500, message = "팀원이 아닌 경우, 팀장인 경우")
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "teamId", value = "팀 id", required = true, dataType = "Long"
+              , paramType = "path", defaultValue = "None", example = "1"
+          )
+      })
   @DeleteMapping
   public ResponseEntity<String> deleteTeamParticipantRequest(
-      Principal principal,
+      @ApiIgnore Principal principal,
       @PathVariable(value = "teamId") Long teamId
   ) {
     return ResponseEntity.ok(
         teamParticipantsService.deleteTeamParticipant(Long.valueOf(principal.getName()), teamId)
     );
   }
-
+  @ApiOperation(value = "팀장 위임 API")
+  @ApiResponses(value ={
+      @ApiResponse(code = 200, message = "성공적으로 팀장 위임이 됐다는 메시지"),
+      @ApiResponse(code = 500,
+          message = "팀원이 아닌 경우, 팀장인 경우, 위임 대상이 팀원이 아닌 경우,같은 팀이 아닌 경우"
+      )
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "teamId", value = "팀 id", required = true, dataType = "Long"
+              , paramType = "path", defaultValue = "None", example = "1"
+          ),
+          @ApiImplicitParam(
+              name = "participantId", value = "팀 참가자 id", required = true, dataType = "Long"
+              , paramType = "path", defaultValue = "None", example = "1"
+          )
+      })
   @PatchMapping("/{participantId}")
   public ResponseEntity<String> updateRoleTeamParticipantRequest(
-      Principal principal,
+      @ApiIgnore Principal principal,
       @PathVariable(value = "participantId") Long participantId,
       @PathVariable(value = "teamId") Long teamId
   ) {
@@ -41,11 +78,21 @@ public class TeamParticipantController {
         teamParticipantsService.updateRoleTeamParticipant(Long.valueOf(principal.getName()), participantId, teamId)
     );
   }
-
+  @ApiOperation(value = "여러 팀원 조회 API")
+  @ApiResponses(value ={
+      @ApiResponse(code = 200, message = "팀원을 반환")
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "teamId", value = "팀 id", required = true, dataType = "Long"
+              , paramType = "path", defaultValue = "None", example = "1"
+          )
+      })
   @GetMapping("/list")
   public ResponseEntity<List<TeamParticipantsDto>> getTeamParticipantsRequest(
       @PathVariable(value = "teamId") Long teamId,
-      Principal principal
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         teamParticipantsService.getTeamParticipants(teamId, Long.valueOf(principal.getName()))
@@ -53,11 +100,22 @@ public class TeamParticipantController {
             .collect(Collectors.toList())
     );
   }
-
+  @ApiOperation(value = "단일 팀 참가자 조회 API")
+  @ApiResponses(value ={
+      @ApiResponse(code = 200, message = "팀원을 반환"),
+      @ApiResponse(code = 500, message = "팀원이 아닌 경우, 팀이 해체된 경우")
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "teamId", value = "팀 id", required = true, dataType = "Long"
+              , paramType = "path", defaultValue = "None", example = "1"
+          )
+      })
   @GetMapping
   public ResponseEntity<TeamParticipantsDto> getTeamParticipantRequest(
       @PathVariable(value = "teamId") Long teamId,
-      Principal principal
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         TeamParticipantsDto.from(

@@ -197,7 +197,7 @@ public class TeamController {
       @ApiResponse(code = 200, message = "업데이트된 팀 정보를 반환"),
       @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
   })
-  @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<TeamUpdateResponse> updateTeamRequest(
       @Valid TeamUpdateRequest teamUpdateRequest,
       @ApiIgnore Principal principal
