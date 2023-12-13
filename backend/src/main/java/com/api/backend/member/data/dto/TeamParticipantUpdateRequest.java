@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @ToString
 public class TeamParticipantUpdateRequest {
 
-  @NotBlank(message = "팀 참가자 ID가 비어있습니다.")
+  @NotNull(message = "팀 참가자 ID가 비어있습니다.")
   @Schema(description = "팀 참가자 ID", example = "1", required = true)
   private Long teamParticipantsId;
   @NotBlank(message = "팀 닉네임이 null 입니다.")
