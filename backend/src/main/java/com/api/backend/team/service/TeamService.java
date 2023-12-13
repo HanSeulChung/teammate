@@ -16,6 +16,8 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANT_N
 import static com.api.backend.team.data.ResponseMessage.KICK_OUT_TEAM_PARTICIPANTS;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_TEAM_PARTICIPANTS;
 
+import com.api.backend.file.service.FileProcessService;
+import com.api.backend.file.type.FileFolder;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.member.data.repository.MemberRepository;
@@ -24,20 +26,17 @@ import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
-import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
 import com.api.backend.team.data.dto.TeamUpdateRequest;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
-import com.api.backend.team.data.type.ImgType;
 import com.api.backend.team.data.type.TeamRole;
-import com.api.backend.team.service.file.impl.ImgStoreImpl;
+import java.time.LocalDate;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import java.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -51,13 +50,15 @@ public class TeamService {
   private final MemberRepository memberRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
   private final boolean DELETE_FALSE_FLAG = false;
-  private final ImgStoreImpl imgStore;
+
+  private final FileProcessService fileProcessService;
+
   @Transactional
   public TeamCreateResponse createTeam(TeamCreateRequest teamRequest, Long userId) {
     Member member = memberRepository.findById(userId)
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
-    String imgUrl = imgStore.uploadImg(teamRequest.getTeamImg(), ImgType.TEAM, teamRequest.getTeamName());
+    String imgUrl = fileProcessService.uploadImage(teamRequest.getTeamImg(), FileFolder.TEAM);
 
     Team team = teamRepository.save(
         Team.builder()
@@ -242,11 +243,8 @@ public class TeamService {
 
     isDeletedCheck(team);
     String teamName = teamUpdateRequest.getTeamName() == null ? team.getName() : teamUpdateRequest.getTeamName();
-
-    String url = imgStore.uploadImg(
-        teamUpdateRequest.getProfileImg() ,ImgType.TEAM , teamName
-        );
-    team.updateNameOrProfileUrl(teamUpdateRequest.getTeamName(), url);
+    String imgUrl = fileProcessService.uploadImage(teamUpdateRequest.getProfileImg(), FileFolder.TEAM);
+    team.updateNameOrProfileUrl(teamUpdateRequest.getTeamName(), imgUrl);
     return team;
   }
 

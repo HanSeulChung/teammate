@@ -2,8 +2,8 @@ package com.api.backend.team.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.entity.Member;
-import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.notification.data.entity.Notification;
+import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.team.data.type.TeamRole;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +46,7 @@ public class TeamParticipants extends BaseEntity {
   private Member member;
 
   @OneToMany(mappedBy = "teamParticipants")
+  @Builder.Default
   private List<Notification> notifications = new ArrayList<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -53,7 +54,8 @@ public class TeamParticipants extends BaseEntity {
   private Team team;
 
   @OneToMany(mappedBy = "teamParticipants", cascade = CascadeType.ALL)
-  private List<TeamParticipantsSchedule> teamParticipantsSchedules;
+  @Builder.Default
+  private List<TeamParticipantsSchedule> teamParticipantsSchedules = new ArrayList<>();
 
 
   public void updateRole(TeamRole teamRole) {
