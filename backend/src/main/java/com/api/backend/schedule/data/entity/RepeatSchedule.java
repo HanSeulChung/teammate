@@ -30,16 +30,21 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Builder
-@Table(name = "schedule")
-public class Schedule extends BaseEntity {
+@Table(name = "repeat_schedule")
+public class RepeatSchedule extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long scheduleId;
+  private Long repeatScheduleId;
   private String title;
   private String content;
   private String place;
   private LocalDateTime startDt;
   private LocalDateTime endDt;
+  @Enumerated(EnumType.STRING)
+  private RepeatCycle repeatCycle;
+  private Month month;
+  private int day;
+  private String dayOfWeek;
   private String color;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -51,7 +56,7 @@ public class Schedule extends BaseEntity {
   private ScheduleCategory scheduleCategory;
 
   @Setter
-  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "repeatSchedule", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
 }
