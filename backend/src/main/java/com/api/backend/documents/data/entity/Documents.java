@@ -17,16 +17,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @Builder
-@Document(collection = "Document")
+@Document(collection = "Documents")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Documents {
 
   @Id
   private String id;
-
-  @Field(name = "document_idx")
-  private String documentIdx;
 
   @Field(name = "title")
   private String title;

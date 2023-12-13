@@ -26,6 +26,17 @@ public class WebSecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    private static final String[] AUTH_WHITELIST = {
+        "/swagger-resources/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/v2/api-docs",
+        "/webjars/**",
+        "/menus/**",
+        "/h2-console/**",
+        "/sign-in","/sign-up","/logout","/email-verify/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -43,9 +54,9 @@ public class WebSecurityConfig {
 
                 .and()
                 .authorizeRequests() // 요청에 대한 권한 설정
-                .antMatchers("/sign-in", "/sign-up", "/logout","/email-verify/**").permitAll()
+                .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated();
-
+        http.cors();
         return http.build();
     }
     @Bean

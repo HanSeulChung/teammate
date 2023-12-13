@@ -9,6 +9,6 @@ public class ResponseMessage {
   public static final String DISBAND_TEAM = "해당 팀은 이미 해체된 팀 입니다.";
   public static final String RESTORE_TEAM = "해당 팀이 복구되었습니다.";
   public static final String UPDATE_TEAM = "해당 팀은 성공적으로 수정 되었습니다.";
-
+  public static final String KICK_OUT_TEAM_PARTICIPANTS = "해당 사용자가 팀에서 강퇴 됐습니다.";
 
 }

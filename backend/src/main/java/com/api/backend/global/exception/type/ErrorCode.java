@@ -46,6 +46,9 @@ public enum ErrorCode {
   EMAIL_NOT_TRANSFER_EXCEPTION(400,"이메일 전송에 실패했습니다."),
   EMAIL_NOT_VERIFICATION_EXCEPTION(400, "이메일 인증이 되지 않았습니다."),
 
+  // principal
+  PRINCIPAL_IS_NULL(400, "인증이 되지 않았습니다."),
+
   // documents
   DOCUMENT_NOT_IN_TEAM_EXCEPTION(400, "해당 팀에 속하지 않은 문서입니다."),
   DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION(400, "해당 문서의 생성자가 아닙니다."),
