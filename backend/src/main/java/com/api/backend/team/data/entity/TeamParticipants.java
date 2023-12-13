@@ -2,10 +2,9 @@ package com.api.backend.team.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.entity.Member;
-import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.notification.data.entity.Notification;
+import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.team.data.type.TeamRole;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -46,7 +45,7 @@ public class TeamParticipants extends BaseEntity {
   private Member member;
 
   @OneToMany(mappedBy = "teamParticipants")
-  private List<Notification> notifications = new ArrayList<>();
+  private List<Notification> notifications;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
