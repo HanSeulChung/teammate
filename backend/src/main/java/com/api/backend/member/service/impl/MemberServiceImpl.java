@@ -109,6 +109,23 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    @Transactional
+    @Override
+    public void updateMemberPassword(String requestAccessTokenInHeader, UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+
+        String accessToken = authService.resolveToken(requestAccessTokenInHeader);
+        String principal = authService.getPrincipal(accessToken);
+
+        Member member = memberRepository.findById(Long.valueOf(principal))
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
+        if(!passwordEncoder.matches(updateMemberPasswordRequest.getOldPassword(),member.getPassword())){
+            throw new CustomException(MEMBER_NOT_MATCH_PASSWORD_EXCEPTION);
+        }
+
+        if(updateMemberPasswordRequest.getNewPassword() == null || updateMemberPasswordRequest.getNewPassword().length() < 4){
+            throw new CustomException(INCORRECT_FORM_NEW_PASSWORD_EXCEPTION);
+        }
 
         String encodePassword = passwordEncoder.encode(updateMemberPasswordRequest.getNewPassword());
         updateMemberPasswordRequest.setNewPassword(encodePassword);
