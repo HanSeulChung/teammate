@@ -36,8 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 .idea\
-application-db.yml
-application-jwt.yml
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,windows,react,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,react,node
@@ -260,3 +258,8 @@ $RECYCLE.BIN/
 ### Log ###
 *.log
 
+## yml ##
+application-db.yml
+application-jwt.yml
+application-aws.yml
+application-local.yml
