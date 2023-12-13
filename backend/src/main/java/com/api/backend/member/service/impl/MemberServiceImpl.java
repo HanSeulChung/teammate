@@ -12,18 +12,20 @@ import com.api.backend.member.data.type.Authority;
 import com.api.backend.member.data.type.LoginType;
 import com.api.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import static com.api.backend.global.exception.type.ErrorCode.EMAIL_ALREADY_EXIST_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -108,4 +110,16 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    @Override
+    public MemberInfoResponse getMemberInfo(String requestAccessTokenInHeader) {
+        String accessToken = authService.resolveToken(requestAccessTokenInHeader);
+        String principal = authService.getPrincipal(accessToken);
+        Member member = memberRepository.findById(Long.valueOf(principal))
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
+        return MemberInfoResponse.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .build();
+    }
 }

@@ -10,4 +10,8 @@ public interface MemberService {
     SignInResponse login(SignInRequest signInRequest);
 
     LogoutResponse logout(String requestAccessToken);
+
+    MemberInfoResponse getMemberInfo(String requestAccessTokenInHeader);
+
+    void updateMemberPassword(String accessToken, UpdateMemberPasswordRequest updateMemberPasswordRequest);
 }
