@@ -14,10 +14,12 @@ import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -29,8 +31,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.Map;
 
 @Api(tags = "회원")
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -42,13 +48,47 @@ public class MemberController {
     private final long COOKIE_EXPIRATION = 7776000;
 
     @PostMapping("/sign-up")
-    public SignUpResponse signUp(
-            @RequestBody SignUpRequest request){
-        return this.memberService.register(request);
+    public ResponseEntity<?> signUp(
+            @Valid @RequestBody SignUpRequest request,
+            BindingResult bindingResult
+    ) {
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> validatorResult = memberService.validateHandling(bindingResult);
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(validatorResult);
+        }
+
+        return ResponseEntity.ok(this.memberService.register(request));
+    }
+
+    @GetMapping("/email-verify/{key}/{email}")
+    public ResponseEntity<String> getVerify(@PathVariable("key") String key,@PathVariable("email") String email) {
+
+        boolean result = memberService.verifyEmail(key, email);
+
+        if (result) {
+            return ResponseEntity.ok("이메일 인증에 성공했습니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("이메일 인증에 실패했습니다. 이메일을 다시 확인해주세요");
+        }
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<SignInResponse> signIn(@RequestBody SignInRequest signInRequest) {
+    public ResponseEntity<?> signIn(
+            @RequestBody @Valid SignInRequest signInRequest,
+            BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> validatorResult = memberService.validateHandling(bindingResult);
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(validatorResult);
+        }
 
         SignInResponse signInResponse = memberService.login(signInRequest);
 

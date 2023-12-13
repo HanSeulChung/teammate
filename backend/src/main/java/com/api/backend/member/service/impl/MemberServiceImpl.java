@@ -1,5 +1,6 @@
 package com.api.backend.member.service.impl;
 
+import com.api.backend.global.email.MailService;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.redis.RedisService;
 import com.api.backend.global.security.AuthService;
@@ -12,18 +13,22 @@ import com.api.backend.member.data.type.Authority;
 import com.api.backend.member.data.type.LoginType;
 import com.api.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.api.backend.global.exception.type.ErrorCode.EMAIL_ALREADY_EXIST_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -34,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
     private final AuthService authService;
+    private final MailService mailService;
 
     @Override
     public SignUpResponse register(SignUpRequest request) {
@@ -56,10 +62,12 @@ public class MemberServiceImpl implements MemberService {
                 .sexType(request.getSexType())
                 .loginType(LoginType.TEAMMATE)
                 .authority(Authority.USER)
+                .isAuthenticatedEmail(false)
                 .build();
 
         memberRepository.save(member);
 
+        sendVerificationMail(member.getEmail());
 
         return SignUpResponse.builder()
                 .email(member.getEmail())
@@ -67,10 +75,52 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+
+    private void sendVerificationMail(String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
+
+        String VERIFICATION_LINK = "http://localhost:8080/email-verify/";
+        UUID uuid = UUID.randomUUID();
+        redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
+        mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", VERIFICATION_LINK + uuid +"/"+email);
+
+
+    }
+
+    @Override
+    @Transactional
+    public boolean verifyEmail(String key, String email) {
+        boolean result = false;
+
+        String redisEmail = redisService.getValues(key);
+        if(email == null || !email.equals(redisEmail)){
+            sendVerificationMail(email);
+            return result;
+        }
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
+
+        member.setIsAuthenticatedEmail(true);
+
+        redisService.deleteValues(key);
+        result = true;
+
+        return result;
+    }
+
+
     @Override
     public SignInResponse login(SignInRequest signInRequest) {
+        Member member = memberRepository.findByEmail(signInRequest.getEmail())
+                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
-        Member member = memberRepository.findByEmail(signInRequest.getEmail()).orElseThrow();
+        if(!member.getIsAuthenticatedEmail()){
+            sendVerificationMail(member.getEmail());
+            throw new CustomException(EMAIL_NOT_VERIFICATION_EXCEPTION);
+        }
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getMemberId().toString(), signInRequest.getPassword());
@@ -107,5 +157,16 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public Map<String, String> validateHandling(BindingResult bindingResult) {
+        Map<String, String> validatorResult = new HashMap<>();
+
+        for (FieldError error : bindingResult.getFieldErrors()) {
+            String validKeyName = String.format("valid_%s", error.getField());
+            validatorResult.put(validKeyName, error.getDefaultMessage());
+        }
+
+        return validatorResult;
+    }
 
 }

@@ -42,6 +42,10 @@ public enum ErrorCode {
   TOKEN_NOT_FOUND_PERMISSION_INFORMATION(400,"권한 정보가 없는 토큰입니다."),
   TOKEN_INVALID_EXCEPTION(400,"유효하지 않는 토큰입니다."),
 
+  //email
+  EMAIL_NOT_TRANSFER_EXCEPTION(400,"이메일 전송에 실패했습니다."),
+  EMAIL_NOT_VERIFICATION_EXCEPTION(400, "이메일 인증이 되지 않았습니다."),
+
   // principal
   PRINCIPAL_IS_NULL(400, "인증이 되지 않았습니다."),
 
