@@ -25,7 +25,7 @@ public class TeamCreateRequest {
   @ValidFile
   private MultipartFile teamImg;
 
-  @Min(0)
+  @Min(1)
   @Schema(description = "팀 제한 인원", example = "1")
   private int memberLimit;
 }
