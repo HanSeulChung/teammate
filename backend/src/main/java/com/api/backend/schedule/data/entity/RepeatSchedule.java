@@ -5,6 +5,7 @@ import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.entity.Team;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -22,25 +23,38 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
-@Table(name = "schedule")
-public class Schedule extends BaseEntity {
+@Table(name = "repeat_schedule")
+public class RepeatSchedule extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long scheduleId;
+  private Long repeatScheduleId;
+  @Setter
   private String title;
+  @Setter
   private String content;
+  @Setter
   private String place;
+  @Setter
   private LocalDateTime startDt;
+  @Setter
   private LocalDateTime endDt;
-  private boolean isRepeat;
   @Enumerated(EnumType.STRING)
+  @Setter
   private RepeatCycle repeatCycle;
+  @Setter
+  private String month;
+  @Setter
+  private int day;
+  @Setter
+  private String dayOfWeek;
+  @Setter
   private String color;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -51,10 +65,8 @@ public class Schedule extends BaseEntity {
   @JoinColumn(name = "schedule_category_id")
   private ScheduleCategory scheduleCategory;
 
-  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+  @Setter
+  @OneToMany(mappedBy = "repeatSchedule", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
-  public void setTeamParticipantsSchedules(List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    this.teamParticipantsSchedules = teamParticipantsSchedules;
-  }
 }
