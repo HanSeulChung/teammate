@@ -1,18 +1,17 @@
 import { atom, useRecoilState, selector } from "recoil";
-import { recoilPersist } from 'recoil-persist';
+import { recoilPersist } from "recoil-persist";
 import { useEffect } from "react";
+import { Team, User, TokenState } from "../interface/interface";
+
 const { persistAtom } = recoilPersist();
 
-// 사용자 정보
-export interface User {
-  id: string;
-}
-
+//로그인된 사용자 상태
 export const loggedInUserState = atom<User | null>({
   key: "loggedInUserState",
   default: null,
 });
 
+//리더인 팀 상태 선택기
 export const teamsByLeaderState = selector({
   key: "teamsByLeaderState",
   get: ({ get }) => {
@@ -28,65 +27,40 @@ export const teamsByLeaderState = selector({
   },
 });
 
-// 팀 목록 
-export interface Team {
-  id: string;
-  name: string;
-  size: string;
-  image: string | null;
-  leaderId: string | null;
-  nickname?: string | null;
-  members?:User[] // members 속성 추가
-}
-
 // 인증 상태
 export const isAuthenticatedState = atom({
   key: "isAuthenticatedState",
   default: Boolean(sessionStorage.getItem("accessToken")),
 });
 
-// 액세스 토큰 상태
-export const accessTokenState = atom({
-  key: "accessToken",
-  default: "",
+// 토큰 상태
+export const tokenState = atom<TokenState>({
+  key: "tokenState",
+  default: {
+    accessToken: sessionStorage.getItem("accessToken") || "",
+    refreshToken: sessionStorage.getItem("refreshToken") || "",
+  },
 });
 
-// 리프레시 토큰 상태
-export const refreshTokenState = atom({
-  key: "refreshToken",
-  default: "",
-});
-
-// 리프레시 토큰 저장 함수
-export const saveRefreshToken = (token: string | null) => {
-  if (token) {
-    sessionStorage.setItem("refreshToken", token);
-  } else {
-    sessionStorage.removeItem("refreshToken");
-  }
-};
-
-// 액세스 토큰 저장 함수
-export const saveAccessToken = (token: string | null) => {
-  if (token) {
-    sessionStorage.setItem("accessToken", token);
-  } else {
-    sessionStorage.removeItem("accessToken");
-  }
+// 토큰 저장 함수
+export const saveToken = ({ accessToken, refreshToken }: TokenState) => {
+  sessionStorage.setItem("accessToken", accessToken);
+  sessionStorage.setItem("refreshToken", refreshToken);
 };
 
 // 로그아웃 함수
 export const logout = () => {
-  sessionStorage.removeItem("accessToken");
+  saveToken({ accessToken: "", refreshToken: "" });
 };
 
 // 홈 화면 검색 상태
 export const searchState = atom({
   key: "searchState",
-  default: (() => {
-    const storedSearch = localStorage.getItem("search");
-    return storedSearch || "";
-  })() as string,
+  // default: (() => {
+  //   const storedSearch = localStorage.getItem("search");
+  //   return storedSearch || "";
+  // })() as string,
+  default: localStorage.getItem("search") || "",
 });
 
 // 검색 관련 상태 및 함수
@@ -111,60 +85,13 @@ export const useSearchState = () => {
 
 // 사용자 정보 상태
 export const userInfoState = atom({
-  key: 'userInfoState',
-  default: { teams: [] }, 
+  key: "userInfoState",
+  default: { teams: [] },
 });
-
-//팀 목록 상태
-export const teamListState = atom<Team[]>({
-  key: "teamListState",
-  default: [],
-
-  effects_UNSTABLE: [persistAtom],
-});
-
-
-// 팀 생성 상태
-export const teamNameState = atom({
-  key: "teamNameState",
-  default: (() => {
-    const storedTeamName = localStorage.getItem("teamName");
-    return storedTeamName || "";
-  })(),
-});
-
-// 팀 목록 상태
-export const initialTeams: Team[] = [
-  {
-    id: "1",
-    name: "Team A",
-    size: "1-9",
-    image: null,
-    leaderId: "user1",
-    members: [{ id: "user1", name: "User 1" }, { id: "user2", name: "User 2" }],
-  },
-  {
-    id: "2",
-    name: "Team B",
-    size: "10-99",
-    image: null,
-    leaderId: "user2",
-    members: [{ id: "user2", name: "User 2" }, { id: "user4", name: "User 4" }],
-  },
-  {
-    id: "3",
-    name: "Team c",
-    size: "100",
-    image: null,
-    leaderId: "user3",
-    members: [],
-  },
-  // ... 다른 팀들
-];
 
 export const userTeamsState = atom<Team[]>({
   key: "userTeamsState",
-  default: initialTeams,
+  default: [],
 });
 
 //선택된 팀 크기 상태
@@ -184,12 +111,6 @@ export const selectedTeamState = atom({
 
 // 선택된 팀 상태 관련 함수
 export const useSelectedTeamState = () => useRecoilState(selectedTeamState);
-
-// 사용자 정보 및 함수
-export interface User {
-  id: string;
-  name: string;
-}
 
 export const userState = atom<User | null>({
   key: "userState",
@@ -232,3 +153,19 @@ export const selectedTeamInfoState = atom({
   },
 });
 
+//팀 목록 상태
+export const teamListState = atom<Team[]>({
+  key: "teamListState",
+  default: [],
+
+  effects_UNSTABLE: [persistAtom],
+});
+
+// 팀 생성 상태
+export const teamNameState = atom({
+  key: "teamNameState",
+  default: (() => {
+    const storedTeamName = localStorage.getItem("teamName");
+    return storedTeamName || "";
+  })(),
+});
