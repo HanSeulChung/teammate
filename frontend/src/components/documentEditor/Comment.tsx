@@ -3,9 +3,11 @@ import styled from "styled-components";
 
 // Styled components
 const CommentSection = styled.div`
+  align-item: center;
   padding: 20px;
   max-width: 600px;
   margin: auto;
+  min-height: 800px;
 `;
 
 const CommentInputContainer = styled.form`
@@ -36,9 +38,12 @@ const CommentActions = styled.div`
 `;
 
 const CommentInput = styled.input`
-  width: 80%;
-  margin-bottom: 10px;
+  width: 520px;
   padding: 8px;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  font-size: 16px;
 `;
 
 const CommentButton = styled.button`
@@ -139,7 +144,7 @@ const Comment: React.FC = () => {
               </>
             ) : (
               <>
-                <CommentContent onClick={() => handleEdit(index)}>
+                <CommentContent>
                   <strong>{comment.user}</strong>: {comment.content}
                 </CommentContent>
                 <CommentActions>
