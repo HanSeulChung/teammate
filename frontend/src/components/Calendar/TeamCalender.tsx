@@ -35,9 +35,11 @@ const TeamCalender = () => {
     // 일정클릭 핸들링
     const HandleEventClick = (e) => {
         console.log(e.event.extendedProps);
+        console.log(e.event.start);
         setEvent({
+            id: e.event.id,
             title: e.event.title,
-            start: e.event.start.toString(),
+            start: e.event.start,
             contents: e.event.extendedProps.contents,
             place: e.event.extendedProps.place,
             groupId: e.event.extendedProps.groupId,
@@ -56,21 +58,22 @@ const TeamCalender = () => {
     const toggleIsEdit = () => setIsEdit(!isEdit);
 
     // 일정목록 불러오기
-    useEffect(() => {
-        const getAllEvents = async () => {
-            try {
-                const res = await axios({
-                    method: "get",
-                    url: "/schedules",
-                });
-                if (res.status === 200) {
-                    console.log(res.data);
-                    setEventList(res.data);
-                }
-            } catch (error) {
-                console.log(error);
+    const getAllEvents = async () => {
+        try {
+            const res = await axios({
+                method: "get",
+                url: "/schedules",
+            });
+            if (res.status === 200) {
+                console.log(res.data);
+                setEventList(res.data);
+                return;
             }
-        };
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
 
         getAllEvents();
     }, []);
@@ -81,6 +84,7 @@ const TeamCalender = () => {
             <FullCalendar
                 locale="kr"
                 plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+                timeZone= "UTC"
                 initialView="dayGridMonth"
                 headerToolbar={{
                     start: "today prev,next",
@@ -101,15 +105,15 @@ const TeamCalender = () => {
                         {isEdit ? (
                             <>
                                 {/* 에디터컴포넌트 */}
-                                <EditEvent isEdit={isEdit} originEvent={event}/>
-                                <button onClick={toggleIsEdit}>수정</button>
+                                <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit}/>
                             </>
                         ) : (
                             <>
                                 <h2>일정상세</h2>
                                 <p>
+                                    {/* 일정 번호: {event.id} */}
                                     이름: {event.title}<br />
-                                    일시: {event.start}<br />
+                                    일시: {event.start.toJSON()}<br />
                                     내용: {event.contents}<br />
                                     장소: {event.place}<br />
                                     카테고리: {event.groupId}
@@ -136,7 +140,7 @@ const TeamCalender = () => {
                         onClick={toggleFormModal}
                     ></Overlay>
                     <ModalContent>
-                        <EditEvent isEdit={isEdit} originEvent={event} />
+                        <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit}/>
                         <CloseModal
                             onClick={toggleFormModal}
                         >
