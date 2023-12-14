@@ -92,6 +92,9 @@ const TeamCalender = () => {
                     end: "dayGridMonth timeGridWeek"
                 }}
                 events={eventList}
+                dayMaxEvents={true}
+                height="90vh"
+                expandRows= {true}
                 eventClick={(e) => HandleEventClick(e)}
                 dateClick={(e) => HandleDateClick(e)}
             />
