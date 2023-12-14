@@ -128,7 +128,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const sendWebSocketMessage = (content: string) => {
     if (client.current) {
       client.current.publish({
-        destination: url, // 적절한 대상 URL 사용
+        destination: url,
         body: JSON.stringify({
           title: title,
           content: content,
