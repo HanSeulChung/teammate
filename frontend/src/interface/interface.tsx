@@ -2,6 +2,7 @@
 export interface TeamInfoData {
   teamName: string;
   memberLimit: number;
+  code: string;
   inviteLink: string;
   teamImg: string;
 }
@@ -27,4 +28,14 @@ export interface User {
 export interface TokenState {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface TeamProfileProps {
+  selectedTeam: string | null;
+  selectedImage: string | null;
+  nickname: string;
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleNicknameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleUpdateProfile: (image: string | null, nickname: string) => void;
+  teamList: Team[];
 }
