@@ -18,12 +18,13 @@ export const handlers = [
     return res(ctx.status(200), ctx.json(people));
   }),
 
-//   rest.get("/*", async (req, res, ctx) => {
-//     return res(
-//       ctx.status(200),
-//       ctx.json({ message: "Mocked response for all GET requests" }),
-//     );
-//   }),
+  //회원가입
+  rest.get('/signup', (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({ message: 'GET /signup 요청에 대한 응답' })
+    );
+  }),
   rest.post("/sign-up", (req, res, ctx) => {
     return res(ctx.status(200), ctx.json({ message: "가입 성공" }));
   }),

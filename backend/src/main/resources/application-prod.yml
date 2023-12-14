@@ -1,0 +1,13 @@
+spring:
+  config:
+    import:
+    - classpath:application-db.yml
+    - classpath:application-jwt.yml
+    - classpath:application-aws.yml
+    - classpath:application-email.yml
+    activate:
+      on-profile: prod
+
+logging:
+  level:
+    root: info
