@@ -138,18 +138,22 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const sendWebSocketMessage = (content: string) => {
     if (client.current) {
+      const formattedContent = content
+        .replace(/<p>/g, "")
+        .replace(/<\/p>/g, "\n");
+
       client.current.publish({
         destination: url,
         body: JSON.stringify({
           title: title,
-          content: content,
+          content: formattedContent,
         }),
       });
       console.log(
         "WebSocket message sent: ",
         JSON.stringify({
           title: title,
-          content: content,
+          content: formattedContent,
         }),
       );
     }
