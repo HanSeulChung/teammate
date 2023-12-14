@@ -25,6 +25,10 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
+const QuillStyled = styled.div`
+  height: auto;
+`;
+
 interface TextEditorProps {
   teamId: string;
   documentsId: string;
@@ -37,11 +41,14 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const client = useRef<StompJs.Client | null>(null);
   const id = teamId;
-  const docsIdx = documentsId;
-  const connect = (docsIdx: string) => {
-    const trimmedDocsIdx = docsIdx;
+  const document = documentsId;
+  const url = `/team/${id}/documents/${document}`;
 
-    if (trimmedDocsIdx && client.current) {
+  const docsId = documentsId;
+  const connect = (docsId: string) => {
+    const trimmedDocsId = docsId;
+
+    if (trimmedDocsId && client.current) {
       client.current.activate();
     }
   };
@@ -49,12 +56,15 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   useEffect(() => {
     client.current = new StompJs.Client({
       brokerURL: "ws://localhost:8080/ws",
+      // connectHeaders: {
+      //   Authorization: `Bearer ${accessToken}`,
+      // },
     });
 
-    const onConnect = (trimmedDocsIdx: string) => {
-      console.log("Connected to WebSocket with", trimmedDocsIdx);
+    const onConnect = (trimmedDocsId: string) => {
+      console.log("Connected to WebSocket with", trimmedDocsId);
       const docsMessage = {
-        documentIdx: trimmedDocsIdx,
+        documentId: trimmedDocsId,
       };
 
       client.current!.publish({
@@ -69,7 +79,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     client.current.onConnect = () => {
-      onConnect(docsIdx);
+      onConnect(docsId);
     };
 
     client.current.onStompError = onError;
@@ -79,7 +89,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         client.current.deactivate();
       }
     };
-  }, [docsIdx]);
+  }, [docsId]);
 
   const onError = (error: any) => {
     console.error("Could not connect to WebSocket server:", error);
@@ -103,6 +113,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
       editor.on("text-change", () => {
         handleSave(editor.root.innerHTML);
+        sendWebSocketMessage(editor.root.innerHTML); // 웹 소켓 메시지 보내기
       });
 
       setQuill(editor);
@@ -110,9 +121,28 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       editor.setText(content);
     };
 
-    connect(docsIdx);
+    connect(docsId);
     initializeQuill();
   }, [content]); // 디펜던시도 객체로 관리
+
+  const sendWebSocketMessage = (content: string) => {
+    if (client.current) {
+      client.current.publish({
+        destination: url,
+        body: JSON.stringify({
+          title: title,
+          content: content,
+        }),
+      });
+      console.log(
+        "WebSocket message sent: ",
+        JSON.stringify({
+          title: title,
+          content: content,
+        }),
+      );
+    }
+  };
 
   const handleSave = (content: string) => {
     console.log("Saving content:", content);
@@ -120,9 +150,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     if (client.current && quilll) {
       client.current.publish({
         destination: "/app/chat.showDocs",
-        body: JSON.stringify({ documentIdx: docsIdx }),
+        body: JSON.stringify({ documentId: docsId }),
       });
-      console.log("json : ", JSON.stringify({ documentIdx: docsIdx }));
+      console.log("json : ", JSON.stringify({ documentId: docsId }));
     }
   };
 
@@ -146,7 +176,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         titleProps={title}
         onTitleChange={(newTitle) => setTitle(newTitle)} // onInputChange() => setTitle()
       />
-      <div id="quill-editor" />
+      <QuillStyled id="quill-editor" />
       <ButtonContainer>
         <div>
           <StyledButton
