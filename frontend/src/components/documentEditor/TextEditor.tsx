@@ -110,8 +110,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       const editor = new Quill("#quill-editor", {
         theme: "snow",
       });
-
+      console.log("quill", editor);
       editor.on("text-change", () => {
+        console.log("textChange");
         handleSave(editor.root.innerHTML);
         sendWebSocketMessage(editor.root.innerHTML); // 웹 소켓 메시지 보내기
       });
