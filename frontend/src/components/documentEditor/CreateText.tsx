@@ -78,7 +78,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
       <TextTitle titleProps={title} onTitleChange={setTitle} />
       <QuillStyled id="quill-editor" />
       <SaveButton className="save" onClick={handleSave}>
-        Save
+        저장
       </SaveButton>
     </StyledTexteditor>
   );

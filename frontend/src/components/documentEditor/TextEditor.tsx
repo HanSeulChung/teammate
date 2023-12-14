@@ -188,9 +188,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
               }
             }}
           >
-            Save
+            저장
           </StyledButton>
-          <StyledButton onClick={handleCommentClick}>comment</StyledButton>
+          <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
         </div>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
       </ButtonContainer>
