@@ -36,7 +36,7 @@ interface TextEditorProps {
 
 const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [title, setTitle] = useState<string>("");
-  const [quilll, setQuill] = useState<Quill | null>(null);
+  const [quill, setQuill] = useState<Quill | null>(null);
   const [content, setContent] = useState<string>("");
 
   const client = useRef<StompJs.Client | null>(null);
@@ -147,7 +147,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const handleSave = (content: string) => {
     console.log("Saving content:", content);
 
-    if (client.current && quilll) {
+    if (client.current && quill) {
       client.current.publish({
         destination: "/app/chat.showDocs",
         body: JSON.stringify({ documentIdx: docsIdx }),
@@ -183,8 +183,8 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
             className="save"
             type="button"
             onClick={(e) => {
-              if (quilll) {
-                handleSave(quilll.root.innerHTML);
+              if (quill) {
+                handleSave(quill.root.innerHTML);
               }
             }}
           >
