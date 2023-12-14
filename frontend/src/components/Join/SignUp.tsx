@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent } from "react";
 import axios from "axios";
 import { StyledContainer, StyledFormItem } from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
+import { useNavigate } from "react-router-dom";
 
 interface SignUpProps {}
 
@@ -17,6 +18,8 @@ const SignUp: React.FC<SignUpProps> = () => {
   );
   const [isRepasswordValid, setIsRepasswordValid] = useState<boolean>(true);
   const [signupMessage, setSignupMessage] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const isEmailValid = (email: string): boolean =>
     Regex.emailRegex.test(email.trim());
@@ -51,37 +54,45 @@ const SignUp: React.FC<SignUpProps> = () => {
       isEmailFormatValid 
     ) {
       axios
-      .post("/sign-up", {
-        id: email,
-        password,
-        repassword,
-        name,
-        sex: sexType,
-      })
-      .then((response) => {
-        console.log("회원가입 성공:", response.data);
-        setSignupMessage("회원가입 성공");
-      })
-      .catch((error) => {
-        console.error("회원가입 실패:", error.response.data);
-        setSignupMessage("회원가입 실패");
-        // .post(
-        //   "http://localhost:8080/sign-up",
-        //   {
-        //     email: email,
-        //     password: password,
-        //     nickName: nickName,
-        //     name: name,
-        //     repassword: repassword,
-        //     sexType: sexType,
-        //   },
-        //   {
-        //     withCredentials: true,
-        //   },
-        // )
-        // .then((res) => {
-        //   console.log(res.data);
-        });
+      // .post("/sign-up", {
+      //   id: email,
+      //   password,
+      //   repassword,
+      //   name,
+      //   sex: sexType,
+      // })
+      // .then((response) => {
+      //   console.log("회원가입 성공:", response.data);
+      //   setSignupMessage("회원가입 성공");
+      //   openModal();
+      // })
+      // .catch((error) => {
+      //   console.error("회원가입 실패:", error.response.data);
+      //   setSignupMessage("회원가입 실패");
+      //   openModal();
+        .post(
+          "http://localhost:8080/sign-up",
+          {
+            email: email,
+            password: password,
+            name: name,
+            repassword: repassword,
+            sexType: sexType,
+          },
+          {
+            withCredentials: true,
+          },
+        )
+        .then((res) => {
+          console.log(res.data);
+          setSignupMessage("회원가입 성공");
+          openModal();
+        })
+        .catch((error) => {
+            console.error("회원가입 실패:", error.data);
+            setSignupMessage("회원가입 실패");
+        })
+        
     } else if (!isIdAvailable) {
       setSignupMessage("아이디가 이미 사용 중입니다.");
     }
@@ -120,6 +131,13 @@ const SignUp: React.FC<SignUpProps> = () => {
     dummyApiCall().then((response) => {
       setIsIdAvailable(response.isAvailable);
     });
+  };
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleModalConfirm = () => {
+    setIsModalOpen(false);
+      navigate("/signin");
   };
 
   return (
@@ -229,6 +247,14 @@ const SignUp: React.FC<SignUpProps> = () => {
       </StyledFormItem>
 
       {signupMessage && <p style={{ color: "red" }}>{signupMessage}</p>}
+      {isModalOpen && (
+        <div className="modal">
+          <p>
+            아이디로 이메일 인증을 보냈습니다. 확인해주세요.
+          </p>
+          <button onClick={handleModalConfirm}>확인</button>
+        </div>
+      )}
     </StyledContainer>
   );
 };

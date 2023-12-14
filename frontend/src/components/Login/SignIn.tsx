@@ -5,10 +5,10 @@ import { StyledContainer, StyledFormItem } from "./SignInStyled";
 import { useRecoilState } from "recoil";
 import {
   isAuthenticatedState,
-  // accessTokenState,
-  // refreshTokenState,
+  accessTokenState,
+  refreshTokenState,
   saveAccessToken,
-  // saveRefreshToken,
+  saveRefreshToken,
   useUser,
 } from "../../state/authState";
 
@@ -18,11 +18,12 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] =
     useRecoilState(isAuthenticatedState);
-  // const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-  // const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
   const { setUser } = useUser();
   const navigate = useNavigate();
-
+  const token = localStorage.getItem('accessToken');
+  
   //Mock users data for testing
   const mockUsers = [
     { id: "user1@example.com", password: "password1", name: "김팀장" },
@@ -64,6 +65,10 @@ const SignIn = () => {
   //       },
   //       {
   //         withCredentials: true,
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization': `Bearer ${token}`, // JWT 토큰을 Authorization 헤더에 포함
+  //         },
   //       },
   //     );
 
@@ -108,8 +113,20 @@ const SignIn = () => {
     if (user) {
       const accessToken = "가짜AccessToken";
       saveAccessToken(accessToken);
-      setIsAuthenticated(true);
-      setUser({ id: email, name: user.name });
+      // setIsAuthenticated(true);
+      // setUser({ id: email, name: user.name });
+      // 사용자 ID를 기반으로 사용자 팀 정보를 가져오거나 초기화
+    const userTeams = JSON.parse(localStorage.getItem(user.id) || '[]') as any;
+
+    // 사용자가 생성한 팀 정보를 추가
+    const newTeam = { id: "팀ID", name: "팀 이름", size: "팀 크기", image: "이미지" };
+    userTeams.push(newTeam);
+
+    // 사용자 ID를 기반으로 업데이트된 팀 정보를 저장
+    localStorage.setItem(user.id, JSON.stringify(userTeams));
+
+    setIsAuthenticated(true);
+    setUser({ id: email, name: user.name });
       navigate("/homeview");
     } else {
       setError("올바른 이메일 또는 비밀번호를 입력하세요.");

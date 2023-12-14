@@ -33,14 +33,35 @@ export const isAuthenticatedState = atom({
   default: Boolean(sessionStorage.getItem("accessToken")),
 });
 
-// 토큰 상태
-export const tokenState = atom<TokenState>({
-  key: "tokenState",
-  default: {
-    accessToken: sessionStorage.getItem("accessToken") || "",
-    refreshToken: sessionStorage.getItem("refreshToken") || "",
-  },
+// 액세스 토큰 상태
+export const accessTokenState = atom({
+  key: "accessToken",
+  default: "",
 });
+
+// 리프레시 토큰 상태
+export const refreshTokenState = atom({
+  key: "refreshToken",
+  default: "",
+});
+
+// 리프레시 토큰 저장 함수
+export const saveRefreshToken = (token: string | null) => {
+  if (token) {
+    sessionStorage.setItem("refreshToken", token);
+  } else {
+    sessionStorage.removeItem("refreshToken");
+  }
+};
+
+// 액세스 토큰 저장 함수
+export const saveAccessToken = (token: string | null) => {
+  if (token) {
+    sessionStorage.setItem("accessToken", token);
+  } else {
+    sessionStorage.removeItem("accessToken");
+  }
+};
 
 // 토큰 저장 함수
 export const saveToken = ({ accessToken, refreshToken }: TokenState) => {
