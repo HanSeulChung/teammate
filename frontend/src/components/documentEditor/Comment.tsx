@@ -1,50 +1,33 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, ChangeEvent } from "react";
 import styled from "styled-components";
 
-const StyledCommentArea = styled.div`
-  position: relative;
-  width: 100%;
+// Styled components
+const CommentSection = styled.div`
+  padding: 20px;
   max-width: 600px;
-  margin: 1rem auto;
-  padding: 1rem;
-  border: 1px solid black;
-  border-radius: 10px;
+  margin: auto;
 `;
 
-const CommentInput = styled.input`
-  width: 10rem;
-  margin: 0.5rem 0.25rem 0 0.25rem;
-  padding: 0.5rem;
-  background-color: white;
-  color: black;
+const CommentInputContainer = styled.form`
+  display: flex;
 `;
 
-const CommentButton = styled.button`
-  width: 3rem;
-  height: 2rem;
-  border: 1px solid black;
-  color: black;
-  background-color: white;
-  font-weight: 600;
-  font-size: 10px;
+const CommentList = styled.ul`
+  list-style-type: none;
+  padding: 0;
 `;
 
-const ReturnButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  border: 1px solid black;
-  color: black;
-  background-color: white;
-  font-weight: 600;
-  font-size: 10px;
-`;
-
-const CommentText = styled.div`
+const CommentListItem = styled.li`
   display: flex;
   justify-content: space-between;
-  margin: 8px 0;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+`;
+
+const CommentContent = styled.span`
+  flex-grow: 1;
 `;
 
 const CommentActions = styled.div`
@@ -52,114 +35,127 @@ const CommentActions = styled.div`
   gap: 10px;
 `;
 
-const CommentTitle = styled.h3`
-  margin: 8px 0 0 0;
+const CommentInput = styled.input`
+  width: 80%;
+  margin-bottom: 10px;
+  padding: 8px;
 `;
 
-interface CommentProps {}
+const CommentButton = styled.button`
+  float: right;
+  width: 80px;
+  margin-right: 5px;
+`;
 
-const Comment: React.FC<CommentProps> = () => {
-  const [comments, setComments] = useState<{ user: string; comment: string }[]>(
+// Component
+const Comment: React.FC = () => {
+  const [comments, setComments] = useState<{ user: string; content: string }[]>(
     [],
   );
-  const [newComment, setNewComment] = useState<string>("");
-  const [currentUser, setCurrentUser] = useState<string>("user");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editingComment, setEditingComment] = useState<string>("");
-
-  const navigate = useNavigate();
-
-  const handleBackToDocument = () => {
-    const currentPath = window.location.pathname;
-    const newPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
-    navigate(newPath);
-  };
+  const [editingComment, setEditingComment] = useState("");
+  const [newComment, setNewComment] = useState("");
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNewComment(e.target.value);
+    setEditingComment(e.target.value);
   };
 
-  const handleAddComment = (e: FormEvent) => {
-    e.preventDefault();
-    if (newComment.trim() === "") {
-      alert("댓글을 입력해주세요.");
-      return;
-    }
-    setComments([...comments, { user: currentUser, comment: newComment }]);
-    setNewComment("");
-  };
-
-  const handleEditComment = (index: number) => {
+  const handleEdit = (index: number) => {
     setEditingIndex(index);
-    setEditingComment(comments[index].comment);
+    setEditingComment(comments[index].content);
   };
 
-  const handleUpdateComment = (e: FormEvent, index: number) => {
-    e.preventDefault();
-    const updatedComments = comments.map((comment, i) =>
-      i === index ? { ...comment, comment: editingComment } : comment,
-    );
-    setComments(updatedComments);
+  const handleUpdateComment = () => {
+    if (editingComment.trim() && editingIndex !== null) {
+      const updatedComments = comments.map((comment, i) =>
+        i === editingIndex
+          ? { ...comment, content: editingComment.trim() }
+          : comment,
+      );
+      setComments(updatedComments);
+      setEditingIndex(null);
+      setEditingComment("");
+    }
+  };
+
+  const handleCancelEdit = () => {
     setEditingIndex(null);
     setEditingComment("");
   };
 
-  const handleDeleteComment = (index: number) => {
+  const handleDelete = (index: number) => {
     const updatedComments = comments.filter((_, i) => i !== index);
     setComments(updatedComments);
   };
 
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      const updatedComments = [
+        ...comments,
+        { user: "User", content: newComment.trim() },
+      ];
+      setComments(updatedComments);
+      setNewComment("");
+    }
+  };
+
+  const handleNewCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setNewComment(e.target.value);
+  };
+
   return (
-    <>
-      <StyledCommentArea>
-        <ReturnButton onClick={handleBackToDocument}>
-          문서로 돌아가기
-        </ReturnButton>
-        <CommentTitle>Comments</CommentTitle>
-        <form
-          onSubmit={
-            editingIndex !== null
-              ? (e) => handleUpdateComment(e, editingIndex)
-              : handleAddComment
-          }
-        >
-          <CommentInput
-            type="text"
-            placeholder="댓글을 입력해주세요"
-            value={editingIndex !== null ? editingComment : newComment}
-            onChange={handleCommentChange}
-          />
-          <CommentButton type="submit">
-            {editingIndex !== null ? "확인" : "추가"}
-          </CommentButton>
-        </form>
+    <CommentSection>
+      <CommentInputContainer
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleAddComment();
+        }}
+      >
+        <CommentInput
+          type="text"
+          value={newComment}
+          onChange={handleNewCommentChange}
+          placeholder="Write a comment..."
+        />
+        <CommentButton type="submit">확인</CommentButton>
+      </CommentInputContainer>
+
+      <CommentList>
         {comments.map((comment, index) => (
-          <CommentText key={index}>
+          <CommentListItem key={index}>
             {editingIndex === index ? (
-              <span>
-                {currentUser} : {editingComment}
-              </span>
+              <>
+                <CommentInput
+                  type="text"
+                  value={editingComment}
+                  onChange={handleCommentChange}
+                />
+                <CommentActions>
+                  <CommentButton onClick={handleUpdateComment}>
+                    확인
+                  </CommentButton>
+                  <CommentButton onClick={handleCancelEdit}>취소</CommentButton>
+                </CommentActions>
+              </>
             ) : (
-              <span>
-                {comment.user} : {comment.comment}
-              </span>
-            )}
-            <CommentActions>
-              {editingIndex === index ? (
-                <button onClick={() => setEditingIndex(null)}>취소</button>
-              ) : (
-                <>
-                  <button onClick={() => handleEditComment(index)}>수정</button>
-                  <button onClick={() => handleDeleteComment(index)}>
+              <>
+                <CommentContent onClick={() => handleEdit(index)}>
+                  <strong>{comment.user}</strong>: {comment.content}
+                </CommentContent>
+                <CommentActions>
+                  <CommentButton onClick={() => handleEdit(index)}>
+                    수정
+                  </CommentButton>
+                  <CommentButton onClick={() => handleDelete(index)}>
                     삭제
-                  </button>
-                </>
-              )}
-            </CommentActions>
-          </CommentText>
+                  </CommentButton>
+                </CommentActions>
+              </>
+            )}
+          </CommentListItem>
         ))}
-      </StyledCommentArea>
-    </>
+      </CommentList>
+    </CommentSection>
   );
 };
 
