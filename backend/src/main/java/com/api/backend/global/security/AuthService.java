@@ -4,14 +4,17 @@ import com.api.backend.global.redis.RedisService;
 import com.api.backend.global.security.data.dto.TokenDto;
 import com.api.backend.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -81,6 +84,11 @@ public class AuthService {
                 jwtTokenProvider.getTokenExpirationTime(refreshToken),
                 TimeUnit.MILLISECONDS);
     }
+    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.setStatus(HttpServletResponse.SC_OK);
 
-
+        response.setHeader("Authorization", accessToken);
+        //TODO refreshtoken값 어떻게 적용할지
+        log.info("재발급된 Access Token : {}", accessToken);
+    }
 }
