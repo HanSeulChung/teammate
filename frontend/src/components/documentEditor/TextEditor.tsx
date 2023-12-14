@@ -36,7 +36,6 @@ interface TextEditorProps {
 
 const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [title, setTitle] = useState<string>("");
-  const [quill, setQuill] = useState<Quill | null>(null);
   const [content, setContent] = useState<string>("");
 
   const client = useRef<StompJs.Client | null>(null);
@@ -110,15 +109,11 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       const editor = new Quill("#quill-editor", {
         theme: "snow",
       });
-      console.log("quill", editor);
       editor.on("text-change", () => {
         console.log("textChange");
         handleSave(editor.root.innerHTML);
         sendWebSocketMessage(editor.root.innerHTML); // 웹 소켓 메시지 보내기
       });
-
-      setQuill(editor);
-
       editor.setText(content);
     };
 
@@ -147,8 +142,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleSave = (content: string) => {
     console.log("Saving content:", content);
-
-    if (client.current && quill) {
+    if (client.current) {
       client.current.publish({
         destination: "/app/chat.showDocs",
         body: JSON.stringify({ documentIdx: docsIdx }),
@@ -180,17 +174,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       <QuillStyled id="quill-editor" />
       <ButtonContainer>
         <div>
-          <StyledButton
-            className="save"
-            type="button"
-            onClick={(e) => {
-              if (quill) {
-                handleSave(quill.root.innerHTML);
-              }
-            }}
-          >
-            저장
-          </StyledButton>
           <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
         </div>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
