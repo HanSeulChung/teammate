@@ -47,7 +47,6 @@ const CreateText: React.FC<QuillEditorProps> = () => {
       return;
     }
     const content = quill.root.innerHTML;
-    console.log("content: ", content);
     if (content === "<p><br></p>") {
       alert("내용을 입력해 주세요.");
       return;
