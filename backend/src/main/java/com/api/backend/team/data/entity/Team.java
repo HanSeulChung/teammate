@@ -1,7 +1,8 @@
 package com.api.backend.team.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
-import com.api.backend.schedule.data.entity.Schedule;
+import com.api.backend.schedule.data.entity.RepeatSchedule;
+import com.api.backend.schedule.data.entity.SimpleSchedule;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,11 @@ public class Team extends BaseEntity {
 
   @OneToMany(mappedBy = "team")
   @Builder.Default
-  private List<Schedule> schedules = new ArrayList<>();
+  private List<SimpleSchedule> simpleSchedules = new ArrayList<>();
+
+  @OneToMany(mappedBy = "team")
+  @Builder.Default
+  private List<RepeatSchedule> repeatSchedules = new ArrayList<>();
 
 
   // TODO: 추후 재셋팅 예정

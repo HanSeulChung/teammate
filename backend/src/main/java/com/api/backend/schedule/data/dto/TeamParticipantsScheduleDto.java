@@ -20,7 +20,7 @@ public class TeamParticipantsScheduleDto {
   public static TeamParticipantsScheduleDto of(TeamParticipantsSchedule teamParticipantsSchedule) {
     return TeamParticipantsScheduleDto.builder()
         .teamParticipantsScheduleId(teamParticipantsSchedule.getTeamParticipantsScheduleId())
-        .scheduleId(teamParticipantsSchedule.getSchedule().getScheduleId())
+        .scheduleId(teamParticipantsSchedule.getSimpleSchedule().getSimpleScheduleId())
         .teamParticipantsId(teamParticipantsSchedule.getTeamParticipants().getTeamParticipantsId())
         .build();
   }

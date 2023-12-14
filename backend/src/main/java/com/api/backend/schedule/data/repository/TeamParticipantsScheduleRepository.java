@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TeamParticipantsScheduleRepository extends JpaRepository<TeamParticipantsSchedule, Long> {
-  List<TeamParticipantsSchedule> findAllBySchedule_ScheduleId (Long scheduleId);
+  List<TeamParticipantsSchedule> findAllBySimpleSchedule_SimpleScheduleId (Long scheduleId);
 }
