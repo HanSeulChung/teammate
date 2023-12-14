@@ -22,20 +22,20 @@ const SignIn = () => {
   const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
   const { setUser } = useUser();
   const navigate = useNavigate();
-  const token = localStorage.getItem('accessToken');
-  
+  const token = localStorage.getItem("accessToken");
+
   //Mock users data for testing
-  const mockUsers = [
-    { id: "user1@example.com", password: "password1", name: "김팀장" },
-    { id: "user2@example.com", password: "password2", name: "이팀원" },
-  ];
+  // const mockUsers = [
+  //   { id: "user1@example.com", password: "password1", name: "김팀장" },
+  //   { id: "user2@example.com", password: "password2", name: "이팀원" },
+  // ];
 
   const handleLogout = () => {
     //실제론 여기 지워야함
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    // saveAccessToken("");
-    // saveRefreshToken("");
+    // localStorage.removeItem("accessToken");
+    // localStorage.removeItem("refreshToken");
+    saveAccessToken("");
+    saveRefreshToken("");
     navigate("/signin");
     setIsAuthenticated(false);
   };
@@ -57,85 +57,84 @@ const SignIn = () => {
         setError("비밀번호는 최소 8자 이상이어야 합니다.");
         return;
       }
-  //     const response = await axios.post(
-  //       "http://localhost:8080/sign-in",
-  //       {
-  //         email: email,
-  //         password: password,
-  //       },
-  //       {
-  //         withCredentials: true,
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'Authorization': `Bearer ${token}`, // JWT 토큰을 Authorization 헤더에 포함
-  //         },
-  //       },
-  //     );
+      const response = await axios.post(
+        "http://localhost:8080/sign-in",
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization 헤더에 포함
+          },
+        },
+      );
 
-  //     const newAccessToken = response.data.accessToken;
-  //     const newRefreshToken = response.data.refreshToken;
+      const newAccessToken = response.data.accessToken;
+      const newRefreshToken = response.data.refreshToken;
 
-  //     if (newAccessToken && newRefreshToken) {
-  //       // 토큰 저장
-  //       saveAccessToken(newAccessToken);
-  //       saveRefreshToken(newRefreshToken);
+      if (newAccessToken && newRefreshToken) {
+        // 토큰 저장
+        saveAccessToken(newAccessToken);
+        saveRefreshToken(newRefreshToken);
 
-  //       // Recoil 상태 업데이트
-  //       setAccessToken(newAccessToken);
-  //       setRefreshToken(newRefreshToken);
+        // Recoil 상태 업데이트
+        setAccessToken(newAccessToken);
+        setRefreshToken(newRefreshToken);
 
-  //       setIsAuthenticated(true);
-  //       setUser({ id: email, name: response.data.name });
-  //       navigate("/homeview");
-  //     } else {
-  //       setError("토큰이 올바르게 전달되지 않았습니다.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Sign In Error:", error);
+        setIsAuthenticated(true);
+        setUser({ id: email, name: response.data.name });
+        navigate("/homeview");
+      } else {
+        setError("토큰이 올바르게 전달되지 않았습니다.");
+      }
+    } catch (error) {
+      console.error("Sign In Error:", error);
 
-  //     if (axios.isAxiosError(error)) {
-  //       console.error("Axios Error Response:", error.response);
-  //     }
+      if (axios.isAxiosError(error)) {
+        console.error("Axios Error Response:", error.response);
+      }
 
-  //     const axiosError = error as AxiosError;
-  //     if (axiosError.response?.status === 401) {
-  //       setError("올바른 이메일 또는 비밀번호를 입력하세요.");
-  //     } else {
-  //       setError("로그인 중 오류가 발생했습니다.");
-  //     }
-  //   }
-  // };
-
-  //연습
-  const user = mockUsers.find(
-    (u) => u.id === email && u.password === password,
-    );
-    if (user) {
-      const accessToken = "가짜AccessToken";
-      saveAccessToken(accessToken);
-      // setIsAuthenticated(true);
-      // setUser({ id: email, name: user.name });
-      // 사용자 ID를 기반으로 사용자 팀 정보를 가져오거나 초기화
-    const userTeams = JSON.parse(localStorage.getItem(user.id) || '[]') as any;
-
-    // 사용자가 생성한 팀 정보를 추가
-    const newTeam = { id: "팀ID", name: "팀 이름", size: "팀 크기", image: "이미지" };
-    userTeams.push(newTeam);
-
-    // 사용자 ID를 기반으로 업데이트된 팀 정보를 저장
-    localStorage.setItem(user.id, JSON.stringify(userTeams));
-
-    setIsAuthenticated(true);
-    setUser({ id: email, name: user.name });
-      navigate("/homeview");
-    } else {
-      setError("올바른 이메일 또는 비밀번호를 입력하세요.");
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 401) {
+        setError("올바른 이메일 또는 비밀번호를 입력하세요.");
+      } else {
+        setError("로그인 중 오류가 발생했습니다.");
+      }
     }
-  } catch (error) {
-    console.error(error); 
-  }
   };
 
+  //연습
+  // const user = mockUsers.find(
+  //   (u) => u.id === email && u.password === password,
+  //   );
+  //   if (user) {
+  //     const accessToken = "가짜AccessToken";
+  //     saveAccessToken(accessToken);
+  //     // setIsAuthenticated(true);
+  //     // setUser({ id: email, name: user.name });
+  //     // 사용자 ID를 기반으로 사용자 팀 정보를 가져오거나 초기화
+  //   const userTeams = JSON.parse(localStorage.getItem(user.id) || '[]') as any;
+
+  //   // 사용자가 생성한 팀 정보를 추가
+  //   const newTeam = { id: "팀ID", name: "팀 이름", size: "팀 크기", image: "이미지" };
+  //   userTeams.push(newTeam);
+
+  //   // 사용자 ID를 기반으로 업데이트된 팀 정보를 저장
+  //   localStorage.setItem(user.id, JSON.stringify(userTeams));
+
+  //   setIsAuthenticated(true);
+  //   setUser({ id: email, name: user.name });
+  //     navigate("/homeview");
+  //   } else {
+  //     setError("올바른 이메일 또는 비밀번호를 입력하세요.");
+  //   }
+  // } catch (error) {
+  //   console.error(error);
+  // }
+  // };
 
   const handleSignUp = () => {
     navigate("/signup");
