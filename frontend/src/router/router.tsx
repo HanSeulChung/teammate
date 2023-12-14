@@ -33,7 +33,10 @@ const Router = () => {
         path="/team/:teamId/documents/:documentsId/comment"
         element={<CommentView />}
       />
-      <Route path="/text-list/" element={<DocumentListView />} />
+      <Route
+        path="/team/:teamId/documentsList/"
+        element={<DocumentListView />}
+      />
       <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />
