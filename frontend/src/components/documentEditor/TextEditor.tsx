@@ -41,6 +41,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const client = useRef<StompJs.Client | null>(null);
   const id = teamId;
+  const document = documentsId;
+  const url = `/team/${id}/documents/${document}`;
+
   const docsIdx = documentsId;
   const connect = (docsIdx: string) => {
     const trimmedDocsIdx = docsIdx;
@@ -53,6 +56,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   useEffect(() => {
     client.current = new StompJs.Client({
       brokerURL: "ws://localhost:8080/ws",
+      // connectHeaders: {
+      //   Authorization: `Bearer ${accessToken}`,
+      // },
     });
 
     const onConnect = (trimmedDocsIdx: string) => {
@@ -107,6 +113,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
       editor.on("text-change", () => {
         handleSave(editor.root.innerHTML);
+        sendWebSocketMessage(editor.root.innerHTML); // 웹 소켓 메시지 보내기
       });
 
       setQuill(editor);
@@ -117,6 +124,25 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     connect(docsIdx);
     initializeQuill();
   }, [content]); // 디펜던시도 객체로 관리
+
+  const sendWebSocketMessage = (content: string) => {
+    if (client.current) {
+      client.current.publish({
+        destination: url, // 적절한 대상 URL 사용
+        body: JSON.stringify({
+          title: title,
+          content: content,
+        }),
+      });
+      console.log(
+        "WebSocket message sent: ",
+        JSON.stringify({
+          title: title,
+          content: content,
+        }),
+      );
+    }
+  };
 
   const handleSave = (content: string) => {
     console.log("Saving content:", content);
