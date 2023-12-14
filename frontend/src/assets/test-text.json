@@ -1,0 +1,14 @@
+{
+  "blocks": [
+      {
+          "key": "87rh7",
+          "text": "default text",
+          "type": "unstyled",
+          "depth": 0,
+          "inlineStyleRanges": [],
+          "entityRanges": [],
+          "data": {}
+      }
+  ],
+  "entityMap": {}
+}
