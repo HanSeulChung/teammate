@@ -24,7 +24,7 @@ const Router = () => {
   return (
     <Routes>
       <Route path="/캘린더" element={<Calender />} />
-      <Route path="/team/:teamId/document" element={<CreateTextView />} />
+      <Route path="/team/:teamId/documents" element={<CreateTextView />} />
       <Route
         path="/team/:teamId/documents/:documentsId"
         element={<TextEditorView />}
