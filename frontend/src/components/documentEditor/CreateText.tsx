@@ -42,8 +42,16 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
   const handleSave = async () => {
     if (!quill) return;
-
+    if (title === "") {
+      alert("제목을 입력해 주세요.");
+      return;
+    }
     const content = quill.root.innerHTML;
+    console.log("content: ", content);
+    if (content === "<p><br></p>") {
+      alert("내용을 입력해 주세요.");
+      return;
+    }
     const requestData = {
       title: title,
       content: content,
