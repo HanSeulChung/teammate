@@ -6,6 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
+  // valid
+  PARAMETER_NOT_VALID_EXCEPTION(400, "잘못된 파라미터 값 입니다."),
+
   ENUM_NOT_VALID_EXCEPTION(500, "잘못된 ENUM요청이 들어왔습니다."),
   ENUM_NOT_FOUND_EXCEPTION(500, "비어있는 ENUM입니다."),
   SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION(500, "존재하지 않는 일정 카테고리 입니다."),
@@ -57,7 +60,11 @@ public enum ErrorCode {
 
   // comment
   COMMENT_NOT_FOUND_EXCEPTION(400, "존재하지 않는 댓글 입니다."),
-  COMMENT_UNMATCH_WRITER_ID_EXCEPTION(400, "댓글의 작성자가 아닙니다.");
+  COMMENT_UNMATCH_WRITER_ID_EXCEPTION(400, "댓글의 작성자가 아닙니다."),
+
+  // image
+  IMG_FILE_VOLUMNE_TOO_BIG_EXCEPTION(400, "이미지 용량이 제한 용량(10MB)보다 큽니다."),
+  IMG_FILE_NOT_UPLOAD_EXCEPTION(400, "이미지 파일이 업로드 되지 않았습니다.");
 
   private final int code;
   private final String errorMessage;

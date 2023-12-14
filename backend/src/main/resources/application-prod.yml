@@ -3,10 +3,10 @@ spring:
     import:
     - classpath:application-db.yml
     - classpath:application-jwt.yml
+    - classpath:application-aws.yml
     - classpath:application-email.yml
-    - classpath:application-local.yml
     activate:
-      on-profile: dev
+      on-profile: prod
 
 logging:
   level:

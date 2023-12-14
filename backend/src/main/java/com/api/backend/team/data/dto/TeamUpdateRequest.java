@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamUpdateRequest {
-  @NotBlank(message = "팀 id가 비어 있습니다.")
+  @NotNull(message = "팀 id가 비어 있습니다.")
   @Schema(description = "팀 ID", example = "1", required = true)
   private Long teamId;
   @NotBlank(message = "팀 이름이 비어 있습니다.")
