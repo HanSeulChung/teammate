@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface RepeatScheduleRepository extends JpaRepository<RepeatSchedule, Long> {
 
   RepeatSchedule findRepeatScheduleByRepeatScheduleIdAndTeam_TeamId(Long repeatScheduleId, Long teamId);
-
+  RepeatSchedule findByOriginRepeatScheduleId(Long originRepeatScheduleId);
 }
