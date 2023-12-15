@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent } from "react";
 import axios from "axios";
 import { StyledContainer, StyledFormItem } from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
+import { useNavigate } from "react-router-dom";
 
 interface SignUpProps {}
 
@@ -10,29 +11,22 @@ const SignUp: React.FC<SignUpProps> = () => {
   const [password, setPassword] = useState<string>("");
   const [repassword, setRepassword] = useState<string>("");
   const [name, setName] = useState<string>("");
-  const [nickName, setNickname] = useState<string>("");
   const [sexType, setSexType] = useState<string>("");
   const [isIdAvailable, setIsIdAvailable] = useState<boolean | null>(null);
   const [isEmailFormatValid, setIsEmailFormatValid] = useState<boolean | null>(
     null,
   );
   const [isRepasswordValid, setIsRepasswordValid] = useState<boolean>(true);
-  const [isNicknameAvailable, setIsNicknameAvailable] = useState<
-    boolean | null
-  >(null);
-  const [isNicknameFormatValid, setIsNicknameFormatValid] = useState<
-    boolean | null
-  >(null);
   const [signupMessage, setSignupMessage] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const isEmailValid = (email: string): boolean =>
     Regex.emailRegex.test(email.trim());
-  const isNicknameValid = (nickName: string): boolean =>
-    Regex.nicknameRegex.test(nickName.trim());
 
   const handleSignUp = () => {
     if (
-      [email, password, repassword, name, nickName].some(
+      [email, password, repassword, name].some(
         (value) => value.trim() === "",
       )
     ) {
@@ -44,8 +38,8 @@ const SignUp: React.FC<SignUpProps> = () => {
       setIsRepasswordValid(false);
       return;
     }
-    if (password.length < 4) {
-      setSignupMessage("비밀번호는 4자리 이상이어야 합니다.");
+    if (password.length < 8) {
+      setSignupMessage("비밀번호는 8자리 이상이어야 합니다.");
       return;
     }
     if (!sexType) {
@@ -57,49 +51,50 @@ const SignUp: React.FC<SignUpProps> = () => {
     } else if (
       isIdAvailable &&
       isRepasswordValid &&
-      isEmailFormatValid &&
-      isNicknameAvailable
+      isEmailFormatValid 
     ) {
       axios
-      .post("/sign-up", {
-        id: email,
-        password,
-        repassword,
-        name,
-        nickName,
-        sex: sexType,
-      })
-      .then((response) => {
-        console.log("회원가입 성공:", response.data);
-        setSignupMessage("회원가입 성공");
-      })
-      .catch((error) => {
-        console.error("회원가입 실패:", error.response.data);
-        setSignupMessage("회원가입 실패");
-        // .post(
-        //   "http://localhost:8080/sign-up",
-        //   {
-        //     email: email,
-        //     password: password,
-        //     nickName: nickName,
-        //     name: name,
-        //     repassword: repassword,
-        //     sexType: sexType,
-        //   },
-        //   {
-        //     withCredentials: true,
-        //   },
-        // )
-        // .then((res) => {
-        //   console.log(res.data);
-        });
+      // .post("/sign-up", {
+      //   id: email,
+      //   password,
+      //   repassword,
+      //   name,
+      //   sex: sexType,
+      // })
+      // .then((response) => {
+      //   console.log("회원가입 성공:", response.data);
+      //   setSignupMessage("회원가입 성공");
+      //   openModal();
+      // })
+      // .catch((error) => {
+      //   console.error("회원가입 실패:", error.response.data);
+      //   setSignupMessage("회원가입 실패");
+      //   openModal();
+        .post(
+          "http://localhost:8080/sign-up",
+          {
+            email: email,
+            password: password,
+            name: name,
+            repassword: repassword,
+            sexType: sexType,
+          },
+          {
+            withCredentials: true,
+          },
+        )
+        .then((res) => {
+          console.log(res.data);
+          setSignupMessage("회원가입 성공");
+          openModal();
+        })
+        .catch((error) => {
+            console.error("회원가입 실패:", error.data);
+            setSignupMessage("회원가입 실패");
+        })
+        
     } else if (!isIdAvailable) {
       setSignupMessage("아이디가 이미 사용 중입니다.");
-    }
-    if (isNicknameAvailable === null) {
-      setSignupMessage("닉네임 중복 확인이 필요합니다.");
-    } else if (!isNicknameAvailable) {
-      setSignupMessage("닉네임이 이미 사용 중입니다.");
     }
   };
 
@@ -122,11 +117,6 @@ const SignUp: React.FC<SignUpProps> = () => {
       case "name":
         setName(value);
         break;
-      case "nickname":
-        setNickname(value);
-        setIsNicknameAvailable(null);
-        setIsNicknameFormatValid(value ? isNicknameValid(value) : null);
-        break;
       default:
         break;
     }
@@ -142,17 +132,12 @@ const SignUp: React.FC<SignUpProps> = () => {
       setIsIdAvailable(response.isAvailable);
     });
   };
-
-  const handleCheckNicknameAvailability = () => {
-    if (!nickName || !isNicknameFormatValid) {
-      setIsNicknameAvailable(null);
-      return;
-    }
-    const dummyApiCall = () =>
-      Promise.resolve({ isAvailable: nickName !== "닉네임" });
-    dummyApiCall().then((response) => {
-      setIsNicknameAvailable(response.isAvailable);
-    });
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleModalConfirm = () => {
+    setIsModalOpen(false);
+      navigate("/signin");
   };
 
   return (
@@ -189,12 +174,12 @@ const SignUp: React.FC<SignUpProps> = () => {
           name="password"
           value={password}
           onChange={handleInputChange}
-          placeholder="비밀번호 (4자 이상)"
+          placeholder="비밀번호 (8자 이상)"
         />
       </StyledFormItem>
-      {password.length < 4 && password.length > 0 && (
+      {password.length < 8 && password.length > 0 && (
         <span style={{ color: "red" }}>
-          비밀번호는 4자리 이상이어야 합니다.
+          비밀번호는 8자리 이상이어야 합니다.
         </span>
       )}
       <br />
@@ -234,32 +219,6 @@ const SignUp: React.FC<SignUpProps> = () => {
         />
       </StyledFormItem>
       <br />
-
-      <StyledFormItem>
-        <input
-          type="text"
-          id="nickname"
-          name="nickname"
-          value={nickName}
-          onChange={handleInputChange}
-          placeholder="닉네임 (한글 2~10자)"
-        />
-        <button onClick={handleCheckNicknameAvailability}>중복 확인</button>
-      </StyledFormItem>
-      {isNicknameAvailable !== null && (
-        <span style={{ color: isNicknameAvailable ? "green" : "red" }}>
-          {isNicknameAvailable
-            ? "사용 가능한 닉네임입니다."
-            : "이미 사용 중인 닉네임입니다."}
-        </span>
-      )}
-      {isNicknameFormatValid !== null && !isNicknameFormatValid && (
-        <span style={{ color: "red" }}>
-          {"한글로 2~10자 이내로 입력해주세요."}
-        </span>
-      )}
-      <br />
-
       <StyledFormItem>
         <input
           type="radio"
@@ -288,6 +247,14 @@ const SignUp: React.FC<SignUpProps> = () => {
       </StyledFormItem>
 
       {signupMessage && <p style={{ color: "red" }}>{signupMessage}</p>}
+      {isModalOpen && (
+        <div className="modal">
+          <p>
+            아이디로 이메일 인증을 보냈습니다. 확인해주세요.
+          </p>
+          <button onClick={handleModalConfirm}>확인</button>
+        </div>
+      )}
     </StyledContainer>
   );
 };

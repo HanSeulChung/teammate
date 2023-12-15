@@ -6,12 +6,13 @@ import {
   selectedTeamSizeState,
   teamListState,
   userState,
+  accessTokenState,
 } from "../../state/authState";
+// import { useTeamCreation } from "./useTeamCreation";
 import { useNavigate } from "react-router-dom";
 import {
   StyledContainer,
   StyledFormItem,
-  StyledImagePreview,
   StyledErrorMessage,
   StyledHeading,
   StyledLabel,
@@ -20,24 +21,25 @@ import {
   StyledButton,
 } from "./TeamInfoStyled";
 import profileImg from "../../assets/profileImg.png";
+import { TeamInfoData } from "../../interface/interface";
 
 export default function TeamInfo() {
   const [teamName, setTeamName] = useRecoilState(teamNameState);
   const [selectedTeamSize, setSelectedTeamSize] = useRecoilState(
     selectedTeamSizeState,
   );
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [teamList, setTeamList] = useRecoilState(teamListState);
   const [error, setError] = useState<string | null>(null);
   const user = useRecoilValue(userState);
   const navigate = useNavigate();
+  const accessToken = useRecoilValue(accessTokenState);
 
+  // const handleTeamCreation = useTeamCreation();
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
-      // 이미지 파일을 선택한 경우
       const reader = new FileReader();
       reader.readAsDataURL(file);
 
@@ -48,11 +50,11 @@ export default function TeamInfo() {
     }
   };
 
-  const generateTeamId = () => {
-    return `team_${Date.now()}`;
-  };
+  // const generateTeamId = () => {
+  //   return `team_${Date.now()}`;
+  // };
 
-  const handleCreateTeam = () => {
+  const handleCreateTeam = async () => {
     let errorMessage = "";
 
     if (!teamName) {
@@ -72,31 +74,103 @@ export default function TeamInfo() {
 
     setError(null);
 
-    const newTeamId = generateTeamId();
-    const newTeam = {
-      id: newTeamId,
-      name: teamName,
-      size: selectedTeamSize,
-      image: selectedImage,
-      leaderId: user?.id || null,
-    };
-    setTeamList([...teamList, newTeam]);
+    try {
+      let memberLimit;
 
-    // 이동
-    navigate("/homeview");
+      if (selectedTeamSize === "1-9") {
+        memberLimit = 9;
+      } else if (selectedTeamSize === "10-99") {
+        memberLimit = 99;
+      } else if (selectedTeamSize === "100+") {
+        memberLimit = Infinity;
+      } else {
+        setError("올바르지 않은 teamSize 값입니다.");
+        return;
+      }
+      const response = await axios.post(
+        "http://localhost:8080/team",
+        {
+          teamName,
+          teamImg: selectedImage,
+          memberLimit,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const { teamId, code } = response.data;
+      const teamInfoResponse = await axios.get(
+        `http://localhost:8080/team/${teamId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      const teamInfoData = teamInfoResponse.data as TeamInfoData;
+      // 서버에서 팀 정보를 가져오는 API 호출
+      if (teamInfoData) {
+        const { teamName, memberLimit, code, inviteLink, teamImg } =
+          teamInfoData;
+        console.log(teamName, memberLimit, code, inviteLink, teamImg);
+        if (response.data.success) {
+          console.log("Team Info:", response.data);
+        } else {
+          console.error(
+            "Failed to fetch team information:",
+            response.data.error,
+          );
+        }
+        navigate("/homeview");
+      } else {
+        setError("서버에서 올바른 팀 정보를 받아오지 못했습니다.");
+      }
+    } catch (error) {
+      console.error("Team Creation Error:", error);
+
+      if (axios.isAxiosError(error)) {
+        console.error("Axios Error Response:", error.response);
+      }
+
+      const axiosError = error as any;
+      if (axiosError.response?.status === 401) {
+        setError("토큰이 유효하지 않습니다.");
+      } else {
+        setError("팀 생성 중 오류가 발생했습니다.");
+      }
+    }
   };
+
+  //   const newTeamId = generateTeamId();
+  //   const newTeam = {
+  //     id: newTeamId,
+  //     name: teamName,
+  //     size: selectedTeamSize,
+  //     image: selectedImage,
+  //     leaderId: user?.id || null,
+  //     members: [],
+  //   };
+
+  //   setTeamList((prevTeamList) => [...prevTeamList, newTeam]);
+  //   // handleTeamCreation(newTeam);
+
+  //   navigate("/homeview");
+  // };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
     const file = fileInput.files && fileInput.files[0];
 
     if (file) {
-      setSelectedFileName(file.name);
       handleImageUpload(e);
     }
   };
 
-  // 페이지 로드 시 초기값 설정
   useEffect(() => {
     setTeamName("");
     setSelectedTeamSize("");
@@ -116,12 +190,11 @@ export default function TeamInfo() {
           placeholder="팀 이름"
           onChange={(e) => {
             setTeamName(e.target.value);
-            setError(null); // 팀 이름이 변경될 때 에러 상태 초기화
+            setError(null);
           }}
         />
-        {/* 이미 있는 팀 이름인 경우 에러 메시지 표시 */}
         {teamList.some((team) => team.name === teamName) && (
-          <div style={{ color: "red" }}>이미 있는 팀 이름입니다.</div>
+          <StyledErrorMessage>이미 있는 팀 이름입니다.</StyledErrorMessage>
         )}
       </StyledFormItem>
       <StyledFormItem>
@@ -132,7 +205,7 @@ export default function TeamInfo() {
           value={selectedTeamSize}
           onChange={(e) => {
             setSelectedTeamSize(e.target.value);
-            setError(null); // 인원 수 선택 시 에러 상태 초기화
+            setError(null);
           }}
         >
           <option value="" disabled>

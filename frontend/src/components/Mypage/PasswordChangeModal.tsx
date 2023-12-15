@@ -1,6 +1,7 @@
 // PasswordChangeModal.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
 interface PasswordChangeModalProps {
   onClose: () => void;
@@ -15,28 +16,77 @@ const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({
   const [passwordChangeError, setPasswordChangeError] = useState<string | null>(
     null,
   );
+  const token = localStorage.getItem('accessToken');
 
-  const handleUpdatePassword = () => {
-    if (currentPassword !== "password1") {
-      setPasswordChangeError("기존 비밀번호와 일치하지 않습니다.");
-      return;
-    } else if (newPassword !== confirmPassword) {
-      setPasswordChangeError("비밀번호를 재확인해주세요.");
-      return;
-    } else if (newPassword.length < 8) {
-      setPasswordChangeError("비밀번호는 최소 8자 이상이어야 합니다.");
-      return;
-    } else if (
-      currentPassword === "password1" &&
-      newPassword === confirmPassword
-    ) {
-      setPasswordChangeError("");
-      onClose(); // 모달 닫기
-      // 서버로 실제 비밀번호 변경 요청을 보내는 코드를 추가
-    } else {
-      setPasswordChangeError(
-        "비밀번호 변경에 실패했습니다. 다시 시도해주세요.",
+  // const handleUpdatePassword = () => {
+  //   if (currentPassword !== "password1") {
+  //     setPasswordChangeError("기존 비밀번호와 일치하지 않습니다.");
+  //     return;
+  //   } else if (newPassword !== confirmPassword) {
+  //     setPasswordChangeError("비밀번호를 재확인해주세요.");
+  //     return;
+  //   } else if (newPassword.length < 8) {
+  //     setPasswordChangeError("비밀번호는 최소 8자 이상이어야 합니다.");
+  //     return;
+  //   } else if (
+  //     currentPassword === "password1" &&
+  //     newPassword === confirmPassword
+  //   ) {
+  //     setPasswordChangeError("");
+  //     onClose(); // 모달 닫기
+  //     // 서버로 실제 비밀번호 변경 요청을 보내는 코드를 추가
+  //   } else {
+  //     setPasswordChangeError(
+  //       "비밀번호 변경에 실패했습니다. 다시 시도해주세요.",
+  //     );
+  //   }
+  // };
+
+  const handleUpdatePassword = async () => {
+    try {
+      if (currentPassword !== "password1") {
+        setPasswordChangeError("기존 비밀번호와 일치하지 않습니다.");
+        return;
+      } else if (newPassword !== confirmPassword) {
+        setPasswordChangeError("비밀번호를 재확인해주세요.");
+        return;
+      } else if (newPassword.length < 8) {
+        setPasswordChangeError("비밀번호는 최소 8자 이상이어야 합니다.");
+        return;
+      }
+  
+      // 서버로 요청을 보내는 코드
+      const response = await axios.post(
+        'http://localhost:8080/member/password',
+        {
+          oldpassword: currentPassword,
+          newpassword: newPassword,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        }
       );
+  
+      //성공 여부만 확인
+      if (response.status === 200) {
+        setPasswordChangeError('');
+        onClose(); 
+      } else {
+        setPasswordChangeError('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          setPasswordChangeError('토큰이 유효하지 않습니다.');
+        } else {
+          setPasswordChangeError('서버 오류가 발생했습니다.');
+        }
+      } else {
+        setPasswordChangeError('네트워크 오류가 발생했습니다.');
+      }
     }
   };
 

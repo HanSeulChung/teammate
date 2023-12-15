@@ -126,10 +126,11 @@ public class ScheduleService {
     String month = editRequest.getStartDt().getMonth().name();
     int day = editRequest.getStartDt().getDayOfMonth();
     String dayOfWeek = String.valueOf(editRequest.getStartDt().getDayOfWeek());
+    RepeatSchedule scheduleByOriginRepeatScheduleId = repeatScheduleRepository.findByOriginRepeatScheduleId(
+        editRequest.getRepeatScheduleId());
 
+    //모든 일정 선택시 update
     if (editRequest.getEditOption().equals(EditOption.ALL_SCHEDULES)) {
-      RepeatSchedule scheduleByOriginRepeatScheduleId = repeatScheduleRepository.findByOriginRepeatScheduleId(
-          editRequest.getRepeatScheduleId());
 
       if (scheduleByOriginRepeatScheduleId != null) {
         repeatScheduleRepository.delete(scheduleByOriginRepeatScheduleId);
@@ -163,6 +164,7 @@ public class ScheduleService {
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
       return repeatScheduleRepository.save(updateRepeatSchedule);
 
+    //이 일정/이 일정 및 향후 일정 선택시 originRepeatId를 갖고 newRepeatSchedule Insert
     } else {
       RepeatSchedule updateRepeatSchedule = buildRepeatScheduleForEdit(editRequest, team, category);
 
@@ -177,6 +179,7 @@ public class ScheduleService {
           updateRepeatSchedule, teamParticipantsIds);
 
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
+      updateRepeatSchedule.setOriginRepeatScheduleId(scheduleByOriginRepeatScheduleId.getOriginRepeatScheduleId());
       return repeatScheduleRepository.save(updateRepeatSchedule);
     }
   }

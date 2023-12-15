@@ -6,13 +6,21 @@ import TextTitle from "./TextTitle";
 import axios from "axios";
 
 const StyledTexteditor = styled.div`
+  displey: flex;
   width: 41rem;
+  text-align: center;
 `;
 
 const SaveButton = styled.button`
   background-color: rgb(163, 204, 163);
   color: #333333;
   border-radius: 0.5rem;
+  margin: 12px;
+`;
+
+const QuillStyled = styled.div`
+  height: auto;
+  min-height: 300px;
 `;
 
 interface QuillEditorProps {}
@@ -20,8 +28,8 @@ interface QuillEditorProps {}
 const CreateText: React.FC<QuillEditorProps> = () => {
   const [quill, setQuill] = useState<Quill | null>(null);
   const [title, setTitle] = useState<string>("");
-  const writerEmail = "작성자_이메일@example.com"; // 작성자 이메일, 동적으로 관리해야 함
-  const teamId = "팀_ID"; // 팀 ID, 동적으로 관리해야 함
+  const writerEmail = "default@mail.com";
+  const teamId = "DefaultTeam_ID";
 
   useEffect(() => {
     if (!quill) {
@@ -34,8 +42,15 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
   const handleSave = async () => {
     if (!quill) return;
-
+    if (title === "") {
+      alert("제목을 입력해 주세요.");
+      return;
+    }
     const content = quill.root.innerHTML;
+    if (content === "<p><br></p>") {
+      alert("내용을 입력해 주세요.");
+      return;
+    }
     const requestData = {
       title: title,
       content: content,
@@ -61,9 +76,9 @@ const CreateText: React.FC<QuillEditorProps> = () => {
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle titleProps={title} onTitleChange={setTitle} />
-      <div id="quill-editor" />
+      <QuillStyled id="quill-editor" />
       <SaveButton className="save" onClick={handleSave}>
-        Save
+        저장
       </SaveButton>
     </StyledTexteditor>
   );

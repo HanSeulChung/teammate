@@ -34,7 +34,8 @@ public class WebSecurityConfig {
         "/webjars/**",
         "/menus/**",
         "/h2-console/**",
-        "/sign-in","/sign-up","/logout","/email-verify/**"
+        "/sign-in","/sign-up","/logout","/email-verify/**",
+        "/ws"
     };
 
     @Bean
