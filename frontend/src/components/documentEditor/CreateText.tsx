@@ -31,8 +31,8 @@ interface QuillEditorProps {}
 const CreateText: React.FC<QuillEditorProps> = () => {
   const [quill, setQuill] = useState<Quill | null>(null);
   const [title, setTitle] = useState<string>("");
-  const writerEmail = "default@mail.com";
-  const teamId = "DefaultTeam_ID";
+  const writerEmail = useState<string>("default@mail.com");
+  const teamId = useState<number>(0);
   const navigate = useNavigate();
   const accessToken = useRecoilValue(accessTokenState);
 
@@ -49,11 +49,13 @@ const CreateText: React.FC<QuillEditorProps> = () => {
       alert("제목을 입력해 주세요.");
       return;
     }
-    const content = quill.root.innerHTML;
+    let content = quill.root.innerHTML;
     if (content === "<p><br></p>") {
       alert("내용을 입력해 주세요.");
       return;
     }
+
+    content = content.replace(/<p>/g, "").replace(/<\/p>/g, "\n");
 
     const requestData = {
       title: title,
@@ -67,7 +69,6 @@ const CreateText: React.FC<QuillEditorProps> = () => {
         requestData,
         {
           headers: {
-            // 여기에 필요한 토큰을 포함시킵니다.
             Authorization: `Bearer ${accessToken}`,
           },
         },
@@ -75,7 +76,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
       if (response.status === 200) {
         console.log("문서 저장 성공:", response.data);
-        navigate(`/team/${teamId}/documentsList`); // 저장 후 이동할 페이지
+        navigate(`/team/${teamId}/documentsList`);
       } else {
         console.error("문서 저장 실패:", response.status);
       }
