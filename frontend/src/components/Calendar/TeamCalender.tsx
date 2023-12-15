@@ -8,17 +8,12 @@ import { Modal, Overlay, ModalContent, CloseModal, CalendarDiv } from '../../sty
 import EditEvent from "./EditEvent.tsx";
 import axios from "axios";
 
-// import { schedules } from "../../recoil/atoms/schedules.tsx"
-// import { useRecoilValue, useSetRecoilState } from 'recoil';
-
 const TeamCalender = () => {
     // 모달팝업 유무 값
     const [eventDetailModal, setEventDetailModal] = useState(false);
-    const [eventFormModal, seteventFormModal] = useState(false);
+    const [eventFormModal, setEventFormModal] = useState(false);
     
-    // recoil 사용 선언부, 이벤트 목록
-    // const eventList = useRecoilValue(schedules);
-    // const setEventList = useSetRecoilState(schedules);
+    // 일정 전체 목록
     const [eventList, setEventList] = useState([]);
 
     // 달력 일정 각각 state 핸들링용
@@ -29,13 +24,13 @@ const TeamCalender = () => {
         setEventDetailModal(!eventDetailModal);
     };
     const toggleFormModal = () => {
-        seteventFormModal(!eventFormModal);
+        setEventFormModal(!eventFormModal);
     };
 
     // 일정클릭 핸들링
     const HandleEventClick = (e) => {
-        console.log(e.event.extendedProps);
-        console.log(e.event.start);
+        // console.log(e.event.extendedProps);
+        // console.log(e.event.start);
         setEvent({
             id: e.event.id,
             title: e.event.title,
@@ -74,7 +69,6 @@ const TeamCalender = () => {
         }
     };
     useEffect(() => {
-
         getAllEvents();
     }, []);
 

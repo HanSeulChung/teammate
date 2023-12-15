@@ -3,13 +3,7 @@ import { CommonSubmitBtn } from '../../styles/CommonStyled';
 import { useState, useEffect } from 'react';
 import axios from "axios";
 
-// import { schedules } from "../../recoil/atoms/schedules.tsx"
-// import { useRecoilState } from 'recoil';
-
 const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
-    // 실제 등록할 state 값
-    // const [newSchedule, setNewSchedule] = useRecoilState(schedules)
-
     // input값 담아둘 state
     const [eventChange, setEventChange] = useState({
         id: originEvent.id,
@@ -33,14 +27,11 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
     })
 
     const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.name);
-        console.log(e.target.value);
         setEventChange((prev) => ({...prev, [e.target.name] : e.target.value}));
     }
 
     // 입력값 추적
     useEffect(() => {
-        // console.log("useEffect 입력값 추적 : ", eventChange);
         setNewEvent({
             id: originEvent.id,
             title: eventChange.title,
@@ -49,7 +40,7 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
                 contents: eventChange.contents, 
                 place: eventChange.place, 
                 groupId: eventChange.groupId
-        }
+            }
         })
     }, [eventChange]);
 
@@ -63,8 +54,8 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
     // 새 일정 등록 요청
     const handleScheduleSubmit = async (event) => {
         event.preventDefault();
-        console.log("입력제목값000000000000 => "+eventChange.title);
-        console.log("0000000000000000"+JSON.stringify(newEvent));
+        // console.log("입력제목값000000000000 => "+eventChange.title);
+        // console.log("0000000000000000"+JSON.stringify(newEvent));
         setNewEvent({
             id: "",
             title: eventChange.title,
@@ -75,7 +66,7 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
                 groupId: eventChange.groupId,
             }
         });
-        console.log("111111111111111111111111111"+JSON.stringify(newEvent));
+        // console.log("111111111111111111111111111"+JSON.stringify(newEvent));
         try {
             const res = await axios.post("/schedules", newEvent, {
                 headers:{
@@ -91,7 +82,6 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
                     place: "", 
                     groupId: ""
                 });
-                // setNewEvent()
                 console.log(res.data);
                 setEventList(res.data);
             }

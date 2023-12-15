@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Calender from "../views/Calender";
-
 import TextEditorView from "../views/TextEditorView";
 import SignInView from "../views/SignInView";
 import SignUp from "../components/Join/SignUp";
@@ -19,7 +18,6 @@ import TeamLeader from "../components/ProfilePage/TeamLeader";
 import TeamMembers from "../components/ProfilePage/TeamMembers";
 import TeamCreateView from "../views/TeamCreateView";
 import Mypage from "../components/Mypage/Mypage";
-
 
 const Router = () => {
   return (
