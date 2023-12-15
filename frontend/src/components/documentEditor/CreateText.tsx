@@ -4,6 +4,9 @@ import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import TextTitle from "./TextTitle";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { accessTokenState } from "../../state/authState";
+import { useRecoilValue } from "recoil";
 
 const StyledTexteditor = styled.div`
   displey: flex;
@@ -30,15 +33,15 @@ const CreateText: React.FC<QuillEditorProps> = () => {
   const [title, setTitle] = useState<string>("");
   const writerEmail = "default@mail.com";
   const teamId = "DefaultTeam_ID";
+  const navigate = useNavigate();
+  const accessToken = useRecoilValue(accessTokenState);
 
   useEffect(() => {
-    if (!quill) {
-      const editor = new Quill("#quill-editor", {
-        theme: "snow",
-      });
-      setQuill(editor);
-    }
-  }, [quill]);
+    const editor = new Quill("#quill-editor", {
+      theme: "snow",
+    });
+    setQuill(editor);
+  }, []);
 
   const handleSave = async () => {
     if (!quill) return;
@@ -51,6 +54,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
       alert("내용을 입력해 주세요.");
       return;
     }
+
     const requestData = {
       title: title,
       content: content,
@@ -59,12 +63,19 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
     try {
       const response = await axios.post(
-        `/team/${teamId}/documents`,
+        `http://118.67.128.124:8080/team/${teamId}/documents`,
         requestData,
+        {
+          headers: {
+            // 여기에 필요한 토큰을 포함시킵니다.
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
       );
-      console.log(response);
+
       if (response.status === 200) {
         console.log("문서 저장 성공:", response.data);
+        navigate(`/team/${teamId}/documentsList`); // 저장 후 이동할 페이지
       } else {
         console.error("문서 저장 실패:", response.status);
       }
@@ -77,9 +88,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
     <StyledTexteditor className="texteditor">
       <TextTitle titleProps={title} onTitleChange={setTitle} />
       <QuillStyled id="quill-editor" />
-      <SaveButton className="save" onClick={handleSave}>
-        저장
-      </SaveButton>
+      <SaveButton onClick={handleSave}>저장</SaveButton>
     </StyledTexteditor>
   );
 };
