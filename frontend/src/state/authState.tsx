@@ -30,7 +30,7 @@ export const teamsByLeaderState = selector({
 // 인증 상태
 export const isAuthenticatedState = atom({
   key: "isAuthenticatedState",
-  default: Boolean(sessionStorage.getItem("accessToken")),
+  default: false,
 });
 
 // 액세스 토큰 상태
@@ -43,6 +43,12 @@ export const accessTokenState = atom({
 export const refreshTokenState = atom({
   key: "refreshToken",
   default: "",
+});
+
+// 사용자 정보 상태
+export const userState = atom({
+  key: "userState",
+  default: null as { id: string; name: string } | null,
 });
 
 // 리프레시 토큰 저장 함수
@@ -137,18 +143,18 @@ export const selectedTeamState = atom<string | null>({
 // 선택된 팀 상태 관련 함수
 export const useSelectedTeamState = () => useRecoilState(selectedTeamState);
 
-export const userState = atom<User | null>({
-  key: "userState",
-  default: null,
+// export const userState = atom<User | null>({
+//   key: "userState",
+//   default: null,
 
-  effects_UNSTABLE: [
-    ({ onSet }) => {
-      onSet((newValue) => {
-        localStorage.setItem("user", JSON.stringify(newValue));
-      });
-    },
-  ],
-});
+//   effects_UNSTABLE: [
+//     ({ onSet }) => {
+//       onSet((newValue) => {
+//         localStorage.setItem("user", JSON.stringify(newValue));
+//       });
+//     },
+//   ],
+// });
 
 export const useUser = () => {
   const [user, setUser] = useRecoilState(userState);
