@@ -11,6 +11,6 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DocumentMessage {
+public class RequestedDocument {
   private String documentId;
 }
