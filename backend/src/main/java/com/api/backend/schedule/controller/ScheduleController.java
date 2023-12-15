@@ -89,10 +89,17 @@ public class ScheduleController {
     return ResponseEntity.ok(response);
   }
 
-  @DeleteMapping("/{scheduleId}")
-  public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
+  @DeleteMapping("/simple/{scheduleId}")
+  public ResponseEntity<String> deleteSimpleSchedule(@PathVariable Long teamId,
       @PathVariable Long scheduleId) {
     scheduleService.deleteSimpleSchedule(scheduleId);
-    return ResponseEntity.ok("해당 일정이 정상적으로 삭제되었습니다.");
+    return ResponseEntity.ok("해당 단순 일정이 정상적으로 삭제되었습니다.");
+  }
+
+  @DeleteMapping("/repeat/{scheduleId}")
+  public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
+      @PathVariable Long scheduleId) {
+    scheduleService.deleteRepeatSchedule(scheduleId);
+    return ResponseEntity.ok("해당 반복 일정이 정상적으로 삭제되었습니다.");
   }
 }

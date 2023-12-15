@@ -266,8 +266,18 @@ public class ScheduleService {
   public void deleteSimpleSchedule(Long scheduleId) {
     SimpleSchedule simpleSchedule = simpleScheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
+    teamParticipantsScheduleRepository.deleteAll(simpleSchedule.getTeamParticipantsSchedules());
     simpleScheduleRepository.delete(simpleSchedule);
   }
+
+  @Transactional
+  public void deleteRepeatSchedule(Long scheduleId) {
+    RepeatSchedule repeatSchedule = repeatScheduleRepository.findById(scheduleId)
+        .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
+    teamParticipantsScheduleRepository.deleteAll(repeatSchedule.getTeamParticipantsSchedules());
+    repeatScheduleRepository.delete(repeatSchedule);
+  }
+
 
   private RepeatSchedule buildRepeatScheduleForAdd(ScheduleRequest request, Team team,
       ScheduleCategory category) {
