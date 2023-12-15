@@ -125,9 +125,13 @@ export const selectedTeamSizeState = atom({
 });
 
 // 마이페이지 선택된 팀 상태
-export const selectedTeamState = atom({
-  key: "selectedTeam",
-  default: "",
+// export const selectedTeamState = atom({
+//   key: "selectedTeam",
+//   default: "",
+// });
+export const selectedTeamState = atom<string | null>({
+  key: "selectedTeamState",
+  default: null,
 });
 
 // 선택된 팀 상태 관련 함수
