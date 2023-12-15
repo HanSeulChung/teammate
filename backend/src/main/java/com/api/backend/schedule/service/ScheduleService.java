@@ -53,7 +53,7 @@ public class ScheduleService {
 
 
   @Transactional
-  public SimpleSchedule addSimpleSchedule(ScheduleRequest scheduleRequest) {
+  public SimpleSchedule addSimpleScheduleAndSave(ScheduleRequest scheduleRequest) {
     Team team = findTeamOrElseThrow(scheduleRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleRequest.getCategoryId());
 
@@ -67,7 +67,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public RepeatSchedule addRepeatSchedule(ScheduleRequest scheduleRequest) {
+  public RepeatSchedule addRepeatScheduleAndSave(ScheduleRequest scheduleRequest) {
     Team team = findTeamOrElseThrow(scheduleRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleRequest.getCategoryId());
 
@@ -85,7 +85,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public SimpleSchedule editSimpleSchedule(SimpleScheduleInfoEditRequest editRequest) {
+  public SimpleSchedule editSimpleScheduleInfoAndSave(SimpleScheduleInfoEditRequest editRequest) {
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
     List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
@@ -117,7 +117,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public RepeatSchedule editRepeatSchedule(RepeatScheduleInfoEditRequest editRequest) {
+  public RepeatSchedule editRepeatScheduleInfoAndSave(RepeatScheduleInfoEditRequest editRequest) {
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
     List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();

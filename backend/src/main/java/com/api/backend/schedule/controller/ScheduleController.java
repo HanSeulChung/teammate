@@ -37,11 +37,11 @@ public class ScheduleController {
     ScheduleResponse scheduleResponse;
     if (!request.isRepeat()) {
       scheduleResponse = ScheduleResponse.from(
-          scheduleService.addSimpleSchedule(request)
+          scheduleService.addSimpleScheduleAndSave(request)
       );
     } else {
       scheduleResponse = ScheduleResponse.from(
-          scheduleService.addRepeatSchedule(request)
+          scheduleService.addRepeatScheduleAndSave(request)
       );
     }
     return ResponseEntity.ok(scheduleResponse);
@@ -76,7 +76,7 @@ public class ScheduleController {
       @RequestBody
       @Valid SimpleScheduleInfoEditRequest editRequest) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
-        scheduleService.editSimpleSchedule(editRequest));
+        scheduleService.editSimpleScheduleInfoAndSave(editRequest));
     return ResponseEntity.ok(response);
   }
 
@@ -85,7 +85,7 @@ public class ScheduleController {
       @RequestBody
       @Valid RepeatScheduleInfoEditRequest editRequest) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
-        scheduleService.editRepeatSchedule(editRequest));
+        scheduleService.editRepeatScheduleInfoAndSave(editRequest));
     return ResponseEntity.ok(response);
   }
 
