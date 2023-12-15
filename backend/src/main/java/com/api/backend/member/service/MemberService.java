@@ -17,4 +17,5 @@ public interface MemberService {
 
     Map<String, String> validateHandling(BindingResult bindingResult);
 
+    void checkEamilDuplicate(String email);
 }

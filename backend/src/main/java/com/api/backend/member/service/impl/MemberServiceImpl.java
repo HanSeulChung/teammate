@@ -169,4 +169,13 @@ public class MemberServiceImpl implements MemberService {
         return validatorResult;
     }
 
+    @Override
+    public void checkEamilDuplicate(String email) {
+        if(memberRepository.existsByEmail(email)){
+            throw new CustomException(EMAIL_ALREADY_EXIST_EXCEPTION);
+        }
+
+        return;
+    }
+
 }
