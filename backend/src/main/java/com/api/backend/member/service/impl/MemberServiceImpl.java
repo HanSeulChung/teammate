@@ -58,7 +58,6 @@ public class MemberServiceImpl implements MemberService {
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .name(request.getName())
-                .nickName(request.getNickName())
                 .sexType(request.getSexType())
                 .loginType(LoginType.TEAMMATE)
                 .authority(Authority.USER)
@@ -167,6 +166,13 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return validatorResult;
+    }
+
+    @Override
+    public void checkEamilDuplicate(String email) {
+        if(memberRepository.existsByEmail(email)){
+            throw new CustomException(EMAIL_ALREADY_EXIST_EXCEPTION);
+        }
     }
 
 }
