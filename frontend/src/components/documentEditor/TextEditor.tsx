@@ -69,12 +69,20 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   };
 
   useEffect(() => {
+
     client.current = new StompJs.Client({
-      brokerURL: "ws://localhost:8080/ws",
+      brokerURL: "ws://118.67.128.124:8080/ws",
       // connectHeaders: {
       //   Authorization: `Bearer ${accessToken}`,
       // },
     });
+
+    // client.current = new StompJs.Client({
+    //   brokerURL: "ws://localhost:8080/ws",
+    //   // connectHeaders: {
+    //   //   Authorization: `Bearer ${accessToken}`,
+    //   // },
+    // });
 
     const onConnect = (trimmedDocsId: string) => {
       console.log("Connected to WebSocket with", trimmedDocsId);
@@ -83,7 +91,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       };
 
       client.current!.publish({
-        destination: "/app/doc.showDocs",
+        destination: "/app/chat.showDocs",
         body: JSON.stringify(docsMessage),
         
       });
@@ -177,6 +185,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
           .insert(textChangeData.ops[1].insert);
           console.log(insertDelta);
           // editor.updateContents(insertDelta);
+
         } else {
           const deleteDelta = new Delta()
             .retain(textChangeData.ops[0].retain)
