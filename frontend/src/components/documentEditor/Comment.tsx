@@ -1,7 +1,10 @@
-import React, { useState, ChangeEvent } from "react";
+import axios from "axios";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { accessTokenState } from "../../state/authState";
 
-// Styled components
 const CommentSection = styled.div`
   align-item: center;
   padding: 20px;
@@ -51,15 +54,42 @@ const CommentButton = styled.button`
   width: 80px;
   margin-right: 5px;
 `;
+interface CommentType {
+  id: number;
+  comment: string;
+  writerId: number;
+  createdDT: string;
+  updatedDT: string;
+}
 
-// Component
 const Comment: React.FC = () => {
-  const [comments, setComments] = useState<{ user: string; content: string }[]>(
-    [],
-  );
+  const [comments, setComments] = useState<CommentType[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingComment, setEditingComment] = useState("");
   const [newComment, setNewComment] = useState("");
+  const accessToken = useRecoilValue(accessTokenState);
+
+  const { teamId, documentsId } = useParams<{
+    teamId: string;
+    documentsId: string;
+  }>();
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(
+          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        );
+        console.log("data?", response.data); // 응답 데이터의 형식 확인
+        setComments(response.data);
+      } catch (error) {
+        console.error("댓글 가져오기 실패:", error);
+      }
+    };
+
+    fetchComments();
+  }, [teamId, documentsId, accessToken]);
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEditingComment(e.target.value);
@@ -67,19 +97,27 @@ const Comment: React.FC = () => {
 
   const handleEdit = (index: number) => {
     setEditingIndex(index);
-    setEditingComment(comments[index].content);
+    setEditingComment(comments[index].comment);
   };
 
-  const handleUpdateComment = () => {
+  const handleUpdateComment = async () => {
     if (editingComment.trim() && editingIndex !== null) {
-      const updatedComments = comments.map((comment, i) =>
-        i === editingIndex
-          ? { ...comment, content: editingComment.trim() }
-          : comment,
-      );
-      setComments(updatedComments);
-      setEditingIndex(null);
-      setEditingComment("");
+      const commentToUpdate = comments[editingIndex];
+      try {
+        const response = await axios.put(
+          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
+          { comment: editingComment, editorId: commentToUpdate.writerId },
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        );
+        const updatedComments = comments.map((comment, index) =>
+          index === editingIndex ? response.data : comment,
+        );
+        setComments(updatedComments);
+        setEditingIndex(null);
+        setEditingComment("");
+      } catch (error) {
+        console.error("댓글 수정 실패:", error);
+      }
     }
   };
 
@@ -88,19 +126,33 @@ const Comment: React.FC = () => {
     setEditingComment("");
   };
 
-  const handleDelete = (index: number) => {
-    const updatedComments = comments.filter((_, i) => i !== index);
-    setComments(updatedComments);
+  const handleDelete = async (commentId: number) => {
+    try {
+      await axios.delete(
+        `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      const updatedComments = comments.filter(
+        (comment) => comment.id !== commentId,
+      );
+      setComments(updatedComments);
+    } catch (error) {
+      console.error("댓글 삭제 실패:", error);
+    }
   };
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const updatedComments = [
-        ...comments,
-        { user: "User", content: newComment.trim() },
-      ];
-      setComments(updatedComments);
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+    try {
+      const response = await axios.post(
+        `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+        { comment: newComment, writerId: 1 }, // 여기서 writerId는 현재 사용자의 ID로 대체해야 합니다.
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      setComments([...comments, response.data]);
       setNewComment("");
+    } catch (error) {
+      console.error("댓글 추가 실패:", error);
     }
   };
 
@@ -126,39 +178,45 @@ const Comment: React.FC = () => {
       </CommentInputContainer>
 
       <CommentList>
-        {comments.map((comment, index) => (
-          <CommentListItem key={index}>
-            {editingIndex === index ? (
-              <>
-                <CommentInput
-                  type="text"
-                  value={editingComment}
-                  onChange={handleCommentChange}
-                />
-                <CommentActions>
-                  <CommentButton onClick={handleUpdateComment}>
-                    확인
-                  </CommentButton>
-                  <CommentButton onClick={handleCancelEdit}>취소</CommentButton>
-                </CommentActions>
-              </>
-            ) : (
-              <>
-                <CommentContent>
-                  <strong>{comment.user}</strong>: {comment.content}
-                </CommentContent>
-                <CommentActions>
-                  <CommentButton onClick={() => handleEdit(index)}>
-                    수정
-                  </CommentButton>
-                  <CommentButton onClick={() => handleDelete(index)}>
-                    삭제
-                  </CommentButton>
-                </CommentActions>
-              </>
-            )}
-          </CommentListItem>
-        ))}
+        {comments.length > 0 ? (
+          comments.map((comment, index) => (
+            <CommentListItem key={comment.id}>
+              {editingIndex === index ? (
+                <>
+                  <CommentInput
+                    type="text"
+                    value={editingComment}
+                    onChange={handleCommentChange}
+                  />
+                  <CommentActions>
+                    <CommentButton onClick={handleUpdateComment}>
+                      확인
+                    </CommentButton>
+                    <CommentButton onClick={handleCancelEdit}>
+                      취소
+                    </CommentButton>
+                  </CommentActions>
+                </>
+              ) : (
+                <>
+                  <CommentContent>
+                    <strong>{comment.writerId}</strong>: {comment.comment}
+                  </CommentContent>
+                  <CommentActions>
+                    <CommentButton onClick={() => handleEdit(index)}>
+                      수정
+                    </CommentButton>
+                    <CommentButton onClick={() => handleDelete(comment.id)}>
+                      삭제
+                    </CommentButton>
+                  </CommentActions>
+                </>
+              )}
+            </CommentListItem>
+          ))
+        ) : (
+          <div>댓글이 없습니다.</div>
+        )}
       </CommentList>
     </CommentSection>
   );
