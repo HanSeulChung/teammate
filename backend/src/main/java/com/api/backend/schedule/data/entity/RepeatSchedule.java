@@ -65,6 +65,7 @@ public class RepeatSchedule extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "schedule_category_id")
+  @Setter
   private ScheduleCategory scheduleCategory;
 
   @Setter
