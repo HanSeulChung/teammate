@@ -31,11 +31,17 @@ public class SimpleSchedule extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long simpleScheduleId;
+  @Setter
   private String title;
+  @Setter
   private String content;
+  @Setter
   private String place;
+  @Setter
   private LocalDateTime startDt;
+  @Setter
   private LocalDateTime endDt;
+  @Setter
   private String color;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -44,6 +50,7 @@ public class SimpleSchedule extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "schedule_category_id")
+  @Setter
   private ScheduleCategory scheduleCategory;
 
   @Setter
