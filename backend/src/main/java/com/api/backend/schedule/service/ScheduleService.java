@@ -109,20 +109,8 @@ public class ScheduleService {
     int day = scheduleRequest.getStartDt().getDayOfMonth();
     String dayOfWeek = String.valueOf(scheduleRequest.getStartDt().getDayOfWeek());
 
-    switch (scheduleRequest.getRepeatCycle()) {
-      case WEEKLY:
-        repeatSchedule.setDayOfWeek(dayOfWeek);
-        break;
-      case MONTHLY:
-        repeatSchedule.setDay(day);
-        break;
-      case YEARLY:
-        repeatSchedule.setMonth(month);
-        repeatSchedule.setDay(day);
-        break;
-      default:
-        throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
-    }
+    setRepeatScheduleFieldsByCycle(repeatSchedule, month, day, dayOfWeek,
+        scheduleRequest.getRepeatCycle());
 
     List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesByRepeatSchedule(
         repeatSchedule, scheduleRequest.getTeamParticipantsIds()
@@ -376,8 +364,6 @@ public class ScheduleService {
     }
   }
 
-  // ...
-
   private void setRepeatScheduleFieldsByCycle(RepeatSchedule repeatSchedule, String month, int day, String dayOfWeek, RepeatCycle repeatCycle) {
     switch (repeatCycle) {
       case WEEKLY:
@@ -394,5 +380,4 @@ public class ScheduleService {
         throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
     }
   }
-
 }
