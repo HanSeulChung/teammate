@@ -1,10 +1,10 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.category.type.CategoryType;
-import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
+import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.service.ScheduleService;
 import java.time.LocalDate;
 import javax.validation.Valid;
@@ -70,14 +70,15 @@ public class ScheduleController {
     return ResponseEntity.ok(schedules);
   }
 
-  @PutMapping
-  public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
-  @Valid ScheduleEditRequest editRequest) {
+  @PutMapping("/simple-")
+  public ResponseEntity<ScheduleEditResponse> editSimpleSchedule(@PathVariable Long teamId,
+      @RequestBody
+      @Valid SimpleScheduleInfoEditRequest editRequest) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
-        scheduleService.editSimpleScheduleAndSave(editRequest)
-    );
+        scheduleService.editSimpleSchedule(editRequest));
     return ResponseEntity.ok(response);
   }
+
 
   @DeleteMapping("/{scheduleId}")
   public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
