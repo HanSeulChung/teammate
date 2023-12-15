@@ -3,6 +3,7 @@ package com.api.backend.schedule.service;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 import static com.api.backend.schedule.data.type.RepeatCycle.WEEKLY;
 
@@ -31,7 +32,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -284,28 +287,18 @@ public class ScheduleService {
         .color(request.getColor())
         .build();
 
-    switch (request.getRepeatCycle()) {
-      case WEEKLY:
-        newRepeatSchedule.setDayOfWeek(dayOfWeek);
-        break;
-      case MONTHLY:
-        newRepeatSchedule.setDay(day);
-        break;
-      case YEARLY:
-        newRepeatSchedule.setMonth(month);
-        newRepeatSchedule.setDay(day);
-        break;
-      default:
-        throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
-
-    }
+    setRepeatScheduleFieldsByCycle(newRepeatSchedule, month, day, dayOfWeek,
+        request.getRepeatCycle()
+    );
     return newRepeatSchedule;
   }
 
   private List<TeamParticipantsSchedule> buildTeamParticipantsSchedulesBySimpleSchedule(
       SimpleSchedule simpleSchedule,
       List<Long> teamParticipantsIds) {
-
+    if (hasDuplicateTeamParticipantsIds(teamParticipantsIds)) {
+      throw new CustomException(TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION);
+    }
     List<TeamParticipantsSchedule> teamParticipantsSchedules = new ArrayList<>();
     for (Long teamParticipantsId : teamParticipantsIds) {
       TeamParticipants participants = findTeamParticipantsOrElseThrow(teamParticipantsId);
@@ -324,6 +317,9 @@ public class ScheduleService {
   private List<TeamParticipantsSchedule> buildTeamParticipantsSchedulesByRepeatSchedule(
       RepeatSchedule repeatSchedule,
       List<Long> teamParticipantsIds) {
+    if (hasDuplicateTeamParticipantsIds(teamParticipantsIds)) {
+      throw new CustomException(TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION);
+    }
     List<TeamParticipantsSchedule> teamParticipantsSchedules = new ArrayList<>();
     for (Long teamParticipantsId : teamParticipantsIds) {
       TeamParticipants participants = findTeamParticipantsOrElseThrow(teamParticipantsId);
@@ -379,5 +375,15 @@ public class ScheduleService {
       default:
         throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
     }
+  }
+
+  private boolean hasDuplicateTeamParticipantsIds(List<Long> teamParticipantsIds) {
+    Set<Long> uniqueIds = new HashSet<>();
+    for (Long teamParticipantsId : teamParticipantsIds) {
+      if (!uniqueIds.add(teamParticipantsId)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
