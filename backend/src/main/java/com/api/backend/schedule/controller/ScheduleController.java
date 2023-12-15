@@ -1,6 +1,7 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.category.type.CategoryType;
+import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
@@ -70,7 +71,7 @@ public class ScheduleController {
     return ResponseEntity.ok(schedules);
   }
 
-  @PutMapping("/simple-")
+  @PutMapping("/simple")
   public ResponseEntity<ScheduleEditResponse> editSimpleSchedule(@PathVariable Long teamId,
       @RequestBody
       @Valid SimpleScheduleInfoEditRequest editRequest) {
@@ -79,6 +80,14 @@ public class ScheduleController {
     return ResponseEntity.ok(response);
   }
 
+  @PutMapping("/repeat")
+  public ResponseEntity<ScheduleEditResponse> editRepeatSchedule(@PathVariable Long teamId,
+      @RequestBody
+      @Valid RepeatScheduleInfoEditRequest editRequest) {
+    ScheduleEditResponse response = ScheduleEditResponse.from(
+        scheduleService.editRepeatSchedule(editRequest));
+    return ResponseEntity.ok(response);
+  }
 
   @DeleteMapping("/{scheduleId}")
   public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
