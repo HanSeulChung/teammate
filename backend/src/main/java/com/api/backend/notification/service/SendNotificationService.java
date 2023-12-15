@@ -28,14 +28,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Component
+@Async
 @RequiredArgsConstructor
 public class SendNotificationService {
 
   private final EmitterService emitterService;
   private final NotificationService notificationService;
   private final TeamParticipantsService teamParticipantsService;
-
-  @Async
+  @Async("EMITTER_SEND_EXECUTOR")
   public void convertToDtoAndSendOrThrowsNotFoundClass(Object source) {
 
     List<Notification> notifications = new ArrayList<>();
@@ -58,7 +58,6 @@ public class SendNotificationService {
     notificationService.saveAllNotification(notifications);
   }
 
-  @Async
   public void handleTeamKickOutAndNotifySend(TeamKickOutResponse response) {
     Notification result = Notification
         .convertToMemberNotify(
@@ -78,7 +77,6 @@ public class SendNotificationService {
     emitterService.sendNotification(emitter,result);
   }
 
-  @Async
   public List<Notification> handleTeamParticipantsUpdateAndNotifySend(TeamParticipantsUpdateResponse response) {
     String nickName = response.getUpdateTeamParticipantNickName();
 
@@ -111,7 +109,6 @@ public class SendNotificationService {
     return notifications;
   }
 
-  @Async
   public List<Notification> handleTeamParticipantsDeleteAndNotifySend(TeamParticipantsDeleteResponse response) {
     String nickName = response.getNickName();
 
@@ -142,7 +139,6 @@ public class SendNotificationService {
     return notifications;
   }
 
-  @Async
   public List<Notification> handleTeamDisbandAndNotifySend(TeamDisbandResponse response) {
     List<Member> members = teamParticipantsService.getTeamParticipantsByExcludeMemberId(
             response.getTeamId(), response.getMemberId()).stream()
@@ -172,7 +168,6 @@ public class SendNotificationService {
 
     return notifications;
   }
-  @Async
   public List<Notification> handleDocumentAndNotifySend(DocumentResponse response) {
     if (response.getTeamId() == null && response.getId() == null) {
       throw new CustomException(DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION);
@@ -200,7 +195,7 @@ public class SendNotificationService {
     return notifications;
   }
 
-  private void sendNotifications(List<SseEmitter> sseEmitters, NotificationDto notificationDto) {
+  public void sendNotifications(List<SseEmitter> sseEmitters, NotificationDto notificationDto) {
 
     if (sseEmitters.isEmpty()) {
       return;
@@ -211,7 +206,7 @@ public class SendNotificationService {
     }
   }
 
-  private List<SseEmitter> getTeamEmitters(Long teamId,
+  public List<SseEmitter> getTeamEmitters(Long teamId,
       List<TeamParticipants> teamParticipants) {
 
     List<SseEmitter> sseEmitters = new ArrayList<>();
@@ -227,7 +222,7 @@ public class SendNotificationService {
     }
     return sseEmitters;
   }
-  private List<SseEmitter> getMemberEmitters(List<Member> members) {
+  public List<SseEmitter> getMemberEmitters(List<Member> members) {
     List<SseEmitter> sseEmitters = new ArrayList<>();
 
     for (Member member : members) {
