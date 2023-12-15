@@ -74,7 +74,7 @@ type Document = {
 };
 
 type DocumentListProps = {
-  teamId: string;
+  teamId: number;
 };
 
 const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
@@ -84,12 +84,13 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 10;
   const accessToken = useRecoilValue(accessTokenState);
+  const [Id, setId] = useState<number>(1);
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/team/${teamId}/documents?page=${currentPage}&size=10`,
+          `${API_BASE_URL}/team/${Id}/documents?page=${currentPage}&size=10`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
