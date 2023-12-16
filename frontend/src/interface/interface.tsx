@@ -38,4 +38,13 @@ export interface TeamProfileProps {
   handleNicknameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleUpdateProfile: (image: string | null, nickname: string) => void;
   teamList: Team[];
+  teamId: string;
+  accessToken: string;
+}
+
+export interface UserProfileProps {
+  user: User | null;
+  teamList: Team[];
+  selectedTeam: string | null;
+  handleTeamSelect: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }

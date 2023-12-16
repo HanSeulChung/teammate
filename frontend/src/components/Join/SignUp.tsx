@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 
 interface SignUpProps {}
 
+const TEST = "EMAIL_ALREADY_EXIST_EXCEPTION";
+//이메일 사용자가 있다고 암시하는 변수명
+
 const SignUp: React.FC<SignUpProps> = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -26,9 +29,7 @@ const SignUp: React.FC<SignUpProps> = () => {
 
   const handleSignUp = () => {
     if (
-      [email, password, repassword, name].some(
-        (value) => value.trim() === "",
-      )
+      [email, password, repassword, name].some((value) => value.trim() === "")
     ) {
       setSignupMessage("입력되지 않은 항목이 있습니다.");
       return;
@@ -48,54 +49,52 @@ const SignUp: React.FC<SignUpProps> = () => {
     }
     if (isIdAvailable === null) {
       setSignupMessage("아이디 중복 확인이 필요합니다.");
-    } else if (
-      isIdAvailable &&
-      isRepasswordValid &&
-      isEmailFormatValid 
-    ) {
-      axios
-      // .post("/sign-up", {
-      //   id: email,
-      //   password,
-      //   repassword,
-      //   name,
-      //   sex: sexType,
-      // })
-      // .then((response) => {
-      //   console.log("회원가입 성공:", response.data);
-      //   setSignupMessage("회원가입 성공");
-      //   openModal();
-      // })
-      // .catch((error) => {
-      //   console.error("회원가입 실패:", error.response.data);
-      //   setSignupMessage("회원가입 실패");
-      //   openModal();
-        .post(
-          "http://localhost:8080/sign-up",
-          {
-            email: email,
-            password: password,
-            name: name,
-            repassword: repassword,
-            sexType: sexType,
-          },
-          {
-            withCredentials: true,
-          },
-        )
-        .then((res) => {
-          console.log(res.data);
-          setSignupMessage("회원가입 성공");
-          openModal();
-        })
-        .catch((error) => {
-            console.error("회원가입 실패:", error.data);
-            setSignupMessage("회원가입 실패");
-        })
-        
+      return;
     } else if (!isIdAvailable) {
-      setSignupMessage("아이디가 이미 사용 중입니다.");
+      setSignupMessage("이미 가입된 이메일입니다.");
+      return;
     }
+    axios
+      .post(
+        "http://118.67.128.124:8080/sign-up",
+        {
+          email: email,
+          password: password,
+          name: name,
+          repassword: repassword,
+          sexType: sexType,
+        },
+        {
+          withCredentials: true,
+        },
+      )
+      .then((res) => {
+        console.log(res.data);
+        setSignupMessage("회원가입 성공");
+        openModal();
+      })
+      .catch((error) => {
+        if (error.response && error.response.data.errorCode === TEST) {
+          setSignupMessage("이미 가입된 이메일입니다.");
+        } else {
+          console.error("회원가입 실패:", error);
+          if (error.response) {
+            // 서버 응답이 있을 경우
+            console.error("서버 응답 데이터:", error.response.data);
+            console.error("서버 응답 상태 코드:", error.response.status);
+            console.error("서버 응답 헤더:", error.response.headers);
+          } else if (error.request) {
+            // 요청이 전송되었지만 응답을 받지 못한 경우
+            console.error("서버 응답이 없습니다.");
+            console.error("요청 데이터:", error.request);
+          } else {
+            // 오류가 발생한 경우
+            console.error("에러 메세지:", error.message);
+          }
+
+          setSignupMessage("회원가입 실패");
+        }
+      });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -123,21 +122,45 @@ const SignUp: React.FC<SignUpProps> = () => {
   };
 
   const handleCheckIdAvailability = () => {
-    if (isEmailFormatValid === null || !isEmailFormatValid) {
-      return;
-    }
-    const dummyApiCall = () =>
-      Promise.resolve({ isAvailable: email !== "test@naver.com" });
-    dummyApiCall().then((response) => {
-      setIsIdAvailable(response.isAvailable);
-    });
+    // if (isEmailFormatValid === null || !isEmailFormatValid) {
+    //   return;
+    // }
+    axios
+      .post(`http://118.67.128.124:8080/sign-up/email-check`, { email })
+      .then((response) => {
+        const isEmailAvailable = response.data.errorCode;
+        console.log(isEmailAvailable);
+        if (isEmailAvailable === TEST) {
+          console.log("중복된 이메일입니다.");
+          setIsIdAvailable(false);
+        } else {
+          setIsIdAvailable(true);
+          console.log("사용가능한 이메일입니다.");
+        }
+      })
+      .catch((error) => {
+        console.error("이메일 중복 확인 실패:", error);
+        if (error.response) {
+          // 서버 응답이 있을 경우
+          console.error("서버 응답 데이터:", error.response.data);
+          console.error("서버 응답 상태 코드:", error.response.status);
+          console.error("서버 응답 헤더:", error.response.headers);
+        } else if (error.request) {
+          // 요청이 전송되었지만 응답을 받지 못한 경우
+          console.error("서버 응답이 없습니다.");
+          console.error("요청 데이터:", error.request);
+        } else {
+          // 오류가 발생한 경우
+          console.error("에러 메세지:", error.message);
+        }
+      });
   };
   const openModal = () => {
     setIsModalOpen(true);
   };
   const handleModalConfirm = () => {
     setIsModalOpen(false);
-      navigate("/signin");
+    navigate("/signin");
   };
 
   return (
@@ -249,9 +272,7 @@ const SignUp: React.FC<SignUpProps> = () => {
       {signupMessage && <p style={{ color: "red" }}>{signupMessage}</p>}
       {isModalOpen && (
         <div className="modal">
-          <p>
-            아이디로 이메일 인증을 보냈습니다. 확인해주세요.
-          </p>
+          <p>아이디로 이메일 인증을 보냈습니다. 확인해주세요.</p>
           <button onClick={handleModalConfirm}>확인</button>
         </div>
       )}
