@@ -81,7 +81,7 @@ const Comment: React.FC = () => {
           `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
           { headers: { Authorization: `Bearer ${accessToken}` } },
         );
-        console.log("data?", response.data); // 응답 데이터의 형식 확인
+        console.log("data?", response.data);
         setComments(response.data);
       } catch (error) {
         console.error("댓글 가져오기 실패:", error);
@@ -146,7 +146,7 @@ const Comment: React.FC = () => {
     try {
       const response = await axios.post(
         `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
-        { comment: newComment, writerId: 1 }, // 여기서 writerId는 현재 사용자의 ID로 대체해야 합니다.
+        { comment: newComment, writerId: 1 }, // writerId 교체하기!!!!!!!
         { headers: { Authorization: `Bearer ${accessToken}` } },
       );
       setComments([...comments, response.data]);
