@@ -72,6 +72,29 @@ const TeamCalender = () => {
         getAllEvents();
     }, []);
 
+    // 일정 삭제
+    const handleEventDelete = async (e) => {
+        e.preventDefault();
+        if (!window.confirm(`번째 일정을 삭제하시겠습니까?`)) return;
+        const eventId = event.id;
+        try {
+            const res = await axios.delete(`/schedules`, {
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                data:{
+                    eventId
+                }
+            });
+            if (res.status === 201) {
+                // setNewEvent()
+                console.log(res.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <CalendarDiv>
             {/* <h2>캘린더입니다.</h2> */}
@@ -116,7 +139,7 @@ const TeamCalender = () => {
                                     카테고리: {event.groupId}
                                 </p>
                                 <button onClick={toggleIsEdit}>수정</button>
-                                <button>삭제</button>
+                                <button onClick={handleEventDelete}>삭제</button>
                             </>
                         )}
                         {/* 수정중이 아닐때 close버튼 렌더링 */}

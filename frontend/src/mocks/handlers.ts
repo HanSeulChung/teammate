@@ -73,6 +73,20 @@ export const handlers = [
         )
     }
   }),
+
+  // 달력 일정 삭제
+  rest.delete(`/schedules`, async (req, res, ctx) => {
+    const deleteEventId = await req.json();
+    // const deleteEventId = deleteEvent.id;
+    const eventIndex = calendarSchedules.findIndex((event) => event.id === deleteEventId);
+
+    calendarSchedules.splice(eventIndex, 1);
+
+    return res(
+        ctx.json({ message: "Deleted successfully" }),
+        ctx.json({calendarSchedules}),
+    )
+  })
 ];
 
 async function sleep(timeout: number) {

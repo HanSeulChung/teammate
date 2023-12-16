@@ -52,8 +52,8 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
     },[isEdit])
     
     // 새 일정 등록 요청
-    const handleScheduleSubmit = async (event) => {
-        event.preventDefault();
+    const handleScheduleSubmit = async (e) => {
+        e.preventDefault();
         // console.log("입력제목값000000000000 => "+eventChange.title);
         // console.log("0000000000000000"+JSON.stringify(newEvent));
         setNewEvent({
@@ -91,8 +91,8 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
     };
 
     // 일정 수정 요청
-    const handleScheduleModify = async (event) => {
-        event.preventDefault();
+    const handleScheduleModify = async (e) => {
+        e.preventDefault();
         setNewEvent({
             id: originEvent.id,
             title: eventChange.title,
