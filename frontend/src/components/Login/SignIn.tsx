@@ -5,8 +5,8 @@ import { StyledContainer, StyledFormItem } from "./SignInStyled";
 import { useRecoilState } from "recoil";
 import {
   isAuthenticatedState,
-  // accessTokenState,
-  // refreshTokenState,
+  accessTokenState,
+  refreshTokenState,
   saveAccessToken,
   saveRefreshToken,
   useUser,
@@ -18,8 +18,8 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] =
     useRecoilState(isAuthenticatedState);
-  // const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-  // const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
   const { setUser } = useUser();
   const navigate = useNavigate();
 
@@ -56,18 +56,19 @@ const SignIn = () => {
 
       const { token } = response.data;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      // const newAccessToken = response.data.accessToken;
-      // const newRefreshToken = response.data.refreshToken;
+      console.log("토큰이 발급되었습니다:", response.data.token);
+      const newAccessToken = response.data.accessToken;
+      const newRefreshToken = response.data.refreshToken;
 
-      // if (newAccessToken && newRefreshToken) {
-      //   // 토큰 저장
-      //   saveAccessToken(newAccessToken);
-      //   saveRefreshToken(newRefreshToken);
+      if (newAccessToken && newRefreshToken) {
+        // 토큰 저장
+        saveAccessToken(newAccessToken);
+        saveRefreshToken(newRefreshToken);
 
-      //   // Recoil 상태 업데이트
-      //   setAccessToken(newAccessToken);
-      //   setRefreshToken(newRefreshToken);
-
+        // Recoil 상태 업데이트
+        setAccessToken(newAccessToken);
+        setRefreshToken(newRefreshToken);
+      }
       setIsAuthenticated(true);
       setUser({ id: email, name: response.data.name });
       navigate("/homeview");

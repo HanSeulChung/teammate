@@ -166,11 +166,16 @@ export const useUser = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Error parsing user from localStorage:", error);
+      }
     }
   }, [setUser]);
-
   return { user, setUser, saveUser };
 };
 
