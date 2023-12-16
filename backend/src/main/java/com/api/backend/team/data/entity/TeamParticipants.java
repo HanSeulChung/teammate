@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
@@ -38,7 +39,9 @@ public class TeamParticipants extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private TeamRole teamRole;
+  @Setter
   private String teamNickName;
+  @Setter
   private String participantsProfileUrl;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -61,16 +64,4 @@ public class TeamParticipants extends BaseEntity {
   public void updateRole(TeamRole teamRole) {
     this.teamRole = teamRole;
   }
-
-  public void changeNickName(String teamNickName) {
-    if (!this.teamNickName
-        .equals(teamNickName)) {
-      this.teamNickName = teamNickName;
-    }
-  }
-
-  public void changeProfileUrl(String imgUrl) {
-    participantsProfileUrl = imgUrl;
-  }
-
 }

@@ -16,13 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
-@Lazy
 @Profile("dev")
 @Configuration
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class EmbeddedS3Config {
   @Value("${embedded.aws.s3.mock.port}")
   private int port;
 
-  @Value("${embedded.aws.s3.bucket}")
+  @Value("${cloud.aws.s3.bucket}")
   private String bucket;
 
   private final S3Mock s3Mock;

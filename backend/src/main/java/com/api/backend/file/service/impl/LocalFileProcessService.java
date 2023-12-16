@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class LocalFileProcessService implements FileProcessService {
 
-  @Value("${embedded.aws.s3.bucket}")
+  @Value("${cloud.aws.s3.bucket}")
   private String mockBucket;
 
   private final AmazonS3 amazonS3;

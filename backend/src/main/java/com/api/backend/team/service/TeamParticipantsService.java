@@ -118,14 +118,16 @@ public class TeamParticipantsService {
         .equals(Long.valueOf(userId))) {
       throw new CustomException(MEMBER_NOT_EQUALS_EXCEPTION);
     }
-    String participantNickName = teamParticipant.getTeamNickName();
-    if (!Objects.equals(teamParticipantUpdateRequest.getTeamNickName(), "")) {
-      teamParticipant.changeNickName(teamParticipantUpdateRequest.getTeamNickName());
-      participantNickName = teamParticipantUpdateRequest.getTeamNickName();
+
+    if (!Objects.equals(
+        teamParticipantUpdateRequest.getTeamNickName(),
+        teamParticipant.getTeamNickName())
+    ) {
+      teamParticipant.setTeamNickName(teamParticipantUpdateRequest.getTeamNickName());
     }
 
     if (teamParticipantUpdateRequest.getParticipantImg() != null) {
-      teamParticipant.changeProfileUrl(
+      teamParticipant.setParticipantsProfileUrl(
           fileProcessService.uploadImage(
               teamParticipantUpdateRequest.getParticipantImg(), FileFolder.PARTICIPANT)
       );

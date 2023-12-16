@@ -1,6 +1,6 @@
 package com.api.backend.global.aop.notify;
 
-import com.api.backend.notification.data.converter.TypeConverter;
+import com.api.backend.notification.service.SendNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotifyAop {
 
-  private final TypeConverter typeConverter;
+  private final SendNotificationService sendNotificationService;
 
   @Pointcut("@annotation(com.api.backend.global.aop.notify.SendNotify)")
   public void pointCut() {
@@ -28,11 +28,8 @@ public class NotifyAop {
   @Async
   @AfterReturning(pointcut = "pointCut()", returning = "result")
   public void checkNotify(JoinPoint joinPoint, Object result) {
-    if (result instanceof ResponseEntity) {
-      typeConverter.convertToDtoAndSendOrThrowsNotFoundClass(
-          ((ResponseEntity) result).getBody()
-      );
-    }
-
+    sendNotificationService.convertToDtoAndSendOrThrowsNotFoundClass(
+        ((ResponseEntity) result).getBody()
+    );
   }
 }

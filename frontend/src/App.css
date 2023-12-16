@@ -1,8 +1,9 @@
 #root {
   max-width: 1280px;
+  min-width: 1024px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  /* padding: 2rem; */
+  /* text-align: center; */
 }
 
 .logo {
@@ -39,4 +40,12 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* 231204 페이지 전체 레이아웃 */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
 }

@@ -13,6 +13,7 @@ public class CorsConfig {
 
   @Value("${frontend.host}")
   String host;
+
   @Value("${frontend.port}")
   String port;
 
@@ -26,4 +27,5 @@ public class CorsConfig {
     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
     source.registerCorsConfiguration("/**", config);
     return new CorsFilter(source);
-  }}
+  }
+}

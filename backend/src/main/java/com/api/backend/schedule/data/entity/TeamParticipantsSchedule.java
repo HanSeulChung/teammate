@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
@@ -29,17 +30,17 @@ public class TeamParticipantsSchedule extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_participants_id")
+  @Setter
   private TeamParticipants teamParticipants;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "schedule_id")
-  private Schedule schedule;
+  @JoinColumn(name = "simple_schedule_id")
+  @Setter
+  private SimpleSchedule simpleSchedule;
 
-  public void setTeamParticipants (TeamParticipants teamParticipants) {
-    this.teamParticipants = teamParticipants;
-  }
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "repeat_schedule_id")
+  @Setter
+  private RepeatSchedule repeatSchedule;
 
-  public void setSchedule(Schedule schedule) {
-    this.schedule = schedule;
-  }
 }

@@ -17,10 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 @Entity
 @Getter
@@ -36,7 +34,6 @@ public class Member extends BaseEntity {
   private String email;
   private String password;
   private String name;
-  private String nickName;
 
   @Enumerated(EnumType.STRING)
   private SexType sexType;
@@ -46,9 +43,8 @@ public class Member extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private Authority authority;
-  private String isAuthenticatedEmail;
-  private String memberProfileUrl;
-
+  @Setter
+  private Boolean isAuthenticatedEmail;
 
   // TODO: 추후 재셋팅 예정
 //  @OneToMany(mappedBy = "member")
