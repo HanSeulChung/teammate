@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 
 interface SignUpProps {}
 
+const TEST = "EMAIL_ALREADY_EXIST_EXCEPTION";
+//이메일 사용자가 있다고 암시하는 변수명
+
 const SignUp: React.FC<SignUpProps> = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -46,28 +49,35 @@ const SignUp: React.FC<SignUpProps> = () => {
     }
     if (isIdAvailable === null) {
       setSignupMessage("아이디 중복 확인이 필요합니다.");
-    } else if (isIdAvailable && isRepasswordValid && isEmailFormatValid) {
-      axios
-        .post(
-          "http://118.67.128.124:8080/sign-up",
-          {
-            email: email,
-            password: password,
-            name: name,
-            repassword: repassword,
-            sexType: sexType,
-          },
-          {
-            withCredentials: true,
-          },
-        )
-        .then((res) => {
-          console.log(res.data);
-          setSignupMessage("회원가입 성공");
-          openModal();
-        })
-        .catch((error) => {
-          console.error("회원가입 실패:", error.data);
+      return;
+    } else if (!isIdAvailable) {
+      setSignupMessage("이미 가입된 이메일입니다.");
+      return;
+    }
+    axios
+      .post(
+        "http://118.67.128.124:8080/sign-up",
+        {
+          email: email,
+          password: password,
+          name: name,
+          repassword: repassword,
+          sexType: sexType,
+        },
+        {
+          withCredentials: true,
+        },
+      )
+      .then((res) => {
+        console.log(res.data);
+        setSignupMessage("회원가입 성공");
+        openModal();
+      })
+      .catch((error) => {
+        if (error.response && error.response.data.errorCode === TEST) {
+          setSignupMessage("이미 가입된 이메일입니다.");
+        } else {
+          console.error("회원가입 실패:", error);
           if (error.response) {
             // 서버 응답이 있을 경우
             console.error("서버 응답 데이터:", error.response.data);
@@ -83,10 +93,8 @@ const SignUp: React.FC<SignUpProps> = () => {
           }
 
           setSignupMessage("회원가입 실패");
-        });
-    } else if (!isIdAvailable) {
-      setSignupMessage("아이디가 이미 사용 중입니다.");
-    }
+        }
+      });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -114,17 +122,21 @@ const SignUp: React.FC<SignUpProps> = () => {
   };
 
   const handleCheckIdAvailability = () => {
-    if (isEmailFormatValid === null || !isEmailFormatValid) {
-      return;
-    }
+    // if (isEmailFormatValid === null || !isEmailFormatValid) {
+    //   return;
+    // }
     axios
-      .post(`http://118.67.128.124:8080/sign-up/email-check`, { id: email })
+      .post(`http://118.67.128.124:8080/sign-up/email-check`, { email })
       .then((response) => {
-        // 비어 있는 응답 데이터 처리
-        const isEmailAvailable =
-          response.data === "" || response.data === "사용가능한 이메일입니다.";
-        setIsIdAvailable(isEmailAvailable);
-        console.log("이메일 중복 확인 성공!");
+        const isEmailAvailable = response.data.errorCode;
+        console.log(isEmailAvailable);
+        if (isEmailAvailable === TEST) {
+          console.log("중복된 이메일입니다.");
+          setIsIdAvailable(false);
+        } else {
+          setIsIdAvailable(true);
+          console.log("사용가능한 이메일입니다.");
+        }
       })
       .catch((error) => {
         console.error("이메일 중복 확인 실패:", error);
