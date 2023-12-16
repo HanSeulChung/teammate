@@ -5,8 +5,9 @@ import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { accessTokenState } from "../../state/authState";
 
+// 스타일 컴포넌트 정의
 const CommentSection = styled.div`
-  align-item: center;
+  align-items: center;
   padding: 20px;
   max-width: 600px;
   margin: auto;
@@ -54,21 +55,30 @@ const CommentButton = styled.button`
   width: 80px;
   margin-right: 5px;
 `;
+
+// 댓글 타입 정의
 interface CommentType {
   id: number;
   comment: string;
   writerId: number;
+  teamId: number;
   createdDT: string;
   updatedDT: string;
 }
 
+// 페이지 형식의 댓글 데이터
+interface CommentsPage {
+  content: CommentType[];
+}
+
 const Comment: React.FC = () => {
-  const [comments, setComments] = useState<CommentType[]>([]);
+  const [commentsPage, setCommentsPage] = useState<CommentsPage>({
+    content: [],
+  });
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingComment, setEditingComment] = useState("");
   const [newComment, setNewComment] = useState("");
   const accessToken = useRecoilValue(accessTokenState);
-
   const { teamId, documentsId } = useParams<{
     teamId: string;
     documentsId: string;
@@ -77,12 +87,11 @@ const Comment: React.FC = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.get<{ content: CommentType[] }>(
           `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
           { headers: { Authorization: `Bearer ${accessToken}` } },
         );
-        console.log("data?", response.data);
-        setComments(response.data);
+        setCommentsPage(response.data);
       } catch (error) {
         console.error("댓글 가져오기 실패:", error);
       }
@@ -97,22 +106,22 @@ const Comment: React.FC = () => {
 
   const handleEdit = (index: number) => {
     setEditingIndex(index);
-    setEditingComment(comments[index].comment);
+    setEditingComment(commentsPage.content[index].comment);
   };
 
   const handleUpdateComment = async () => {
     if (editingComment.trim() && editingIndex !== null) {
-      const commentToUpdate = comments[editingIndex];
+      const commentToUpdate = commentsPage.content[editingIndex];
       try {
         const response = await axios.put(
           `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
           { comment: editingComment, editorId: commentToUpdate.writerId },
           { headers: { Authorization: `Bearer ${accessToken}` } },
         );
-        const updatedComments = comments.map((comment, index) =>
+        const updatedComments = commentsPage.content.map((comment, index) =>
           index === editingIndex ? response.data : comment,
         );
-        setComments(updatedComments);
+        setCommentsPage({ ...commentsPage, content: updatedComments });
         setEditingIndex(null);
         setEditingComment("");
       } catch (error) {
@@ -132,10 +141,10 @@ const Comment: React.FC = () => {
         `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
         { headers: { Authorization: `Bearer ${accessToken}` } },
       );
-      const updatedComments = comments.filter(
+      const updatedComments = commentsPage.content.filter(
         (comment) => comment.id !== commentId,
       );
-      setComments(updatedComments);
+      setCommentsPage({ ...commentsPage, content: updatedComments });
     } catch (error) {
       console.error("댓글 삭제 실패:", error);
     }
@@ -149,7 +158,10 @@ const Comment: React.FC = () => {
         { comment: newComment, writerId: 1 }, // writerId 교체하기!!!!!!!
         { headers: { Authorization: `Bearer ${accessToken}` } },
       );
-      setComments([...comments, response.data]);
+      setCommentsPage({
+        ...commentsPage,
+        content: [...commentsPage.content, response.data],
+      });
       setNewComment("");
     } catch (error) {
       console.error("댓글 추가 실패:", error);
@@ -178,8 +190,8 @@ const Comment: React.FC = () => {
       </CommentInputContainer>
 
       <CommentList>
-        {comments.length > 0 ? (
-          comments.map((comment, index) => (
+        {commentsPage.content.length > 0 ? (
+          commentsPage.content.map((comment, index) => (
             <CommentListItem key={comment.id}>
               {editingIndex === index ? (
                 <>
