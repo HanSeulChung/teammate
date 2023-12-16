@@ -1,13 +1,13 @@
 spring:
   config:
-    import: classpath:application-db.yml
-  jpa:
-    open-in-view: true
-    hibernate:
-      ddl-auto: create
-    show-sql: true
-    properties:
-      hibernate.format_sql: true
-      dialect: org.hibernate.dialect.MySQL8Dialect
-    defer-datasource-initialization: true
-    database: mysql
+    import:
+    - classpath:application-db.yml
+    - classpath:application-jwt.yml
+    - classpath:application-email.yml
+    - classpath:application-local.yml
+    activate:
+      on-profile: dev
+
+logging:
+  level:
+    root: info

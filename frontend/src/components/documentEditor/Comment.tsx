@@ -1,111 +1,236 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { accessTokenState } from "../../state/authState";
 
-const StyledCommentArea = styled.div`
-  position: relative;
-  width: 100%;
+// 스타일 컴포넌트 정의
+const CommentSection = styled.div`
+  align-items: center;
+  padding: 20px;
   max-width: 600px;
-  margin: 1rem auto;
-  padding: 1rem;
-  border: 1px solid black;
-  border-radius: 10px;
+  margin: auto;
+  min-height: 800px;
 `;
+
+const CommentInputContainer = styled.form`
+  display: flex;
+`;
+
+const CommentList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+`;
+
+const CommentListItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+`;
+
+const CommentContent = styled.span`
+  flex-grow: 1;
+`;
+
+const CommentActions = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
 const CommentInput = styled.input`
-  width: 10rem;
-  margin: 0.5rem 0.25rem 0 0.25rem;
-  padding: 0.5rem;
+  width: 520px;
+  padding: 8px;
+  border-radius: 8px;
   background-color: white;
   color: black;
+  font-size: 16px;
 `;
 
 const CommentButton = styled.button`
-  width: 3rem;
-  height: 2rem;
-  border: 1px solid black;
-  color: black;
-  background-color: white;
-  font-weight: 600;
-  font-size: 10px;
+  float: right;
+  width: 80px;
+  margin-right: 5px;
 `;
 
-const ReturnButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  border: 1px solid black;
-  color: black;
-  background-color: white;
-  font-weight: 600;
-  font-size: 10px;
-`;
+// 댓글 타입 정의
+interface CommentType {
+  id: number;
+  comment: string;
+  writerId: number;
+  teamId: number;
+  createdDT: string;
+  updatedDT: string;
+}
 
-const CommentText = styled.div`
-  display: flex;
-  margin-left: 8px;
-`;
+// 페이지 형식의 댓글 데이터
+interface CommentsPage {
+  content: CommentType[];
+}
 
-const CommentTitle = styled.h3`
-  margin: 8px 0 0 0;
-`;
+const Comment: React.FC = () => {
+  const [commentsPage, setCommentsPage] = useState<CommentsPage>({
+    content: [],
+  });
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingComment, setEditingComment] = useState("");
+  const [newComment, setNewComment] = useState("");
+  const accessToken = useRecoilValue(accessTokenState);
+  const { teamId, documentsId } = useParams<{
+    teamId: string;
+    documentsId: string;
+  }>();
 
-interface CommentProps {}
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get<{ content: CommentType[] }>(
+          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        );
+        setCommentsPage(response.data);
+      } catch (error) {
+        console.error("댓글 가져오기 실패:", error);
+      }
+    };
 
-const Comment: React.FC<CommentProps> = () => {
-  const [comments, setComments] = useState<{ user: string; comment: string }[]>(
-    [],
-  );
-  const [newComment, setNewComment] = useState<string>("");
-  const [currentUser, setCurrentUser] = useState<string>("user");
+    fetchComments();
+  }, [teamId, documentsId, accessToken]);
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEditingComment(e.target.value);
+  };
+
+  const handleEdit = (index: number) => {
+    setEditingIndex(index);
+    setEditingComment(commentsPage.content[index].comment);
+  };
+
+  const handleUpdateComment = async () => {
+    if (editingComment.trim() && editingIndex !== null) {
+      const commentToUpdate = commentsPage.content[editingIndex];
+      try {
+        const response = await axios.put(
+          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
+          { comment: editingComment, editorId: commentToUpdate.writerId },
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        );
+        const updatedComments = commentsPage.content.map((comment, index) =>
+          index === editingIndex ? response.data : comment,
+        );
+        setCommentsPage({ ...commentsPage, content: updatedComments });
+        setEditingIndex(null);
+        setEditingComment("");
+      } catch (error) {
+        console.error("댓글 수정 실패:", error);
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingIndex(null);
+    setEditingComment("");
+  };
+
+  const handleDelete = async (commentId: number) => {
+    try {
+      await axios.delete(
+        `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      const updatedComments = commentsPage.content.filter(
+        (comment) => comment.id !== commentId,
+      );
+      setCommentsPage({ ...commentsPage, content: updatedComments });
+    } catch (error) {
+      console.error("댓글 삭제 실패:", error);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+    try {
+      const response = await axios.post(
+        `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+        { comment: newComment, writerId: 1 }, // writerId 교체하기!!!!!!!
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      setCommentsPage({
+        ...commentsPage,
+        content: [...commentsPage.content, response.data],
+      });
+      setNewComment("");
+    } catch (error) {
+      console.error("댓글 추가 실패:", error);
+    }
+  };
+
+  const handleNewCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };
 
-  const navigate = useNavigate();
-
-  const handleBackToDocument = () => {
-    const currentPath = window.location.pathname;
-    const newPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
-    navigate(newPath);
-  };
-
-  const handleAddComment = (e: FormEvent) => {
-    e.preventDefault();
-    if (newComment.trim() === "") {
-      alert("댓글을 입력해주세요.");
-      return;
-    }
-    setComments((prevComments) => [
-      ...prevComments,
-      { user: currentUser, comment: newComment },
-    ]);
-    setNewComment("");
-  };
-
   return (
-    <>
-      <StyledCommentArea>
-        <ReturnButton onClick={handleBackToDocument}>
-          문서로 돌아가기
-        </ReturnButton>
-        <CommentTitle>Comments</CommentTitle>
-        <form onSubmit={handleAddComment}>
-          <CommentInput
-            type="text"
-            placeholder="댓글을 입력해주세요"
-            value={newComment}
-            onChange={handleCommentChange}
-          />
-          <CommentButton type="submit">확인</CommentButton>
-        </form>
-        {comments.map((comment, index) => (
-          <CommentText key={index}>
-            {comment.user} : {comment.comment}
-          </CommentText>
-        ))}
-      </StyledCommentArea>
-    </>
+    <CommentSection>
+      <CommentInputContainer
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleAddComment();
+        }}
+      >
+        <CommentInput
+          type="text"
+          value={newComment}
+          onChange={handleNewCommentChange}
+          placeholder="Write a comment..."
+        />
+        <CommentButton type="submit">확인</CommentButton>
+      </CommentInputContainer>
+
+      <CommentList>
+        {commentsPage.content.length > 0 ? (
+          commentsPage.content.map((comment, index) => (
+            <CommentListItem key={comment.id}>
+              {editingIndex === index ? (
+                <>
+                  <CommentInput
+                    type="text"
+                    value={editingComment}
+                    onChange={handleCommentChange}
+                  />
+                  <CommentActions>
+                    <CommentButton onClick={handleUpdateComment}>
+                      확인
+                    </CommentButton>
+                    <CommentButton onClick={handleCancelEdit}>
+                      취소
+                    </CommentButton>
+                  </CommentActions>
+                </>
+              ) : (
+                <>
+                  <CommentContent>
+                    <strong>{comment.writerId}</strong>: {comment.comment}
+                  </CommentContent>
+                  <CommentActions>
+                    <CommentButton onClick={() => handleEdit(index)}>
+                      수정
+                    </CommentButton>
+                    <CommentButton onClick={() => handleDelete(comment.id)}>
+                      삭제
+                    </CommentButton>
+                  </CommentActions>
+                </>
+              )}
+            </CommentListItem>
+          ))
+        ) : (
+          <div>댓글이 없습니다.</div>
+        )}
+      </CommentList>
+    </CommentSection>
   );
 };
 

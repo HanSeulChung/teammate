@@ -23,7 +23,7 @@ const Router = () => {
   return (
     <Routes>
       <Route path="/캘린더" element={<Calender />} />
-      <Route path="/create-text/" element={<CreateTextView />} />
+      <Route path="/team/:teamId/documents" element={<CreateTextView />} />
       <Route
         path="/team/:teamId/documents/:documentsId"
         element={<TextEditorView />}
@@ -32,7 +32,10 @@ const Router = () => {
         path="/team/:teamId/documents/:documentsId/comment"
         element={<CommentView />}
       />
-      <Route path="/text-list/" element={<DocumentListView />} />
+      <Route
+        path="/team/:teamId/documentsList/"
+        element={<DocumentListView />}
+      />
       <Route path="/" element={<Index />} />
       <Route path="/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />

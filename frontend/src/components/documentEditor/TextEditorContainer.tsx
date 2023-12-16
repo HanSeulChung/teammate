@@ -8,6 +8,7 @@ interface TextEditorViewProps {}
 const StyledTextEditorView = styled.section`
   display: flex;
   justify-content: center;
+  height: auto;
 `;
 
 const TextEditorContainer: React.FC<TextEditorViewProps> = () => {

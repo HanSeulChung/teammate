@@ -6,9 +6,24 @@ import TextTitle from "./TextTitle";
 import * as StompJs from "@stomp/stompjs";
 import Quill from "quill";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
+`;
+
+const TitleInput = styled.input`
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  width: 646px;
+  font-size: 16px;
+  margin-bottom: 4px;
+  border: 1px solid gray;
+  padding: 4px;
+  ::placeholder {
+    color: gray;
+  }
 `;
 
 const StyledButton = styled.button`
@@ -25,6 +40,10 @@ const ButtonContainer = styled.div`
   margin-top: 10px;
 `;
 
+const QuillStyled = styled.div`
+  height: auto;
+`;
+
 interface TextEditorProps {
   teamId: string;
   documentsId: string;
@@ -32,11 +51,13 @@ interface TextEditorProps {
 
 const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [title, setTitle] = useState<string>("");
-  const [quilll, setQuill] = useState<Quill | null>(null);
   const [content, setContent] = useState<string>("");
 
   const client = useRef<StompJs.Client | null>(null);
   const id = teamId;
+  const document = documentsId;
+  const url = `/team/${id}/documents/${document}`;
+
   const docsIdx = documentsId;
   const connect = (docsIdx: string) => {
     const trimmedDocsIdx = docsIdx;
@@ -49,6 +70,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   useEffect(() => {
     client.current = new StompJs.Client({
       brokerURL: "ws://localhost:8080/ws",
+      // connectHeaders: {
+      //   Authorization: `Bearer ${accessToken}`,
+      // },
     });
 
     const onConnect = (trimmedDocsIdx: string) => {
@@ -100,13 +124,11 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       const editor = new Quill("#quill-editor", {
         theme: "snow",
       });
-
       editor.on("text-change", () => {
+        console.log("textChange");
         handleSave(editor.root.innerHTML);
+        sendWebSocketMessage(editor.root.innerHTML); // 웹 소켓 메시지 보내기
       });
-
-      setQuill(editor);
-
       editor.setText(content);
     };
 
@@ -114,10 +136,32 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     initializeQuill();
   }, [content]); // 디펜던시도 객체로 관리
 
+  const sendWebSocketMessage = (content: string) => {
+    if (client.current) {
+      const formattedContent = content
+        .replace(/<p>/g, "")
+        .replace(/<\/p>/g, "\n");
+
+      client.current.publish({
+        destination: url,
+        body: JSON.stringify({
+          title: title,
+          content: formattedContent,
+        }),
+      });
+      console.log(
+        "WebSocket message sent: ",
+        JSON.stringify({
+          title: title,
+          content: formattedContent,
+        }),
+      );
+    }
+  };
+
   const handleSave = (content: string) => {
     console.log("Saving content:", content);
-
-    if (client.current && quilll) {
+    if (client.current) {
       client.current.publish({
         destination: "/app/chat.showDocs",
         body: JSON.stringify({ documentIdx: docsIdx }),
@@ -126,10 +170,24 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     }
   };
 
-  const handleDelete = () => {
-    const isConfirmed = window.confirm("삭제하시겠습니까?");
+  const handleDelete = async () => {
+    const isConfirmed = window.confirm("문서를 삭제하시겠습니까?");
     if (isConfirmed) {
-      console.log("삭제되었습니다");
+      try {
+        const response = await axios.delete(
+          `/team/${teamId}/documents/${documentsId}`,
+          {
+            headers: {
+              // Authorization: `Bearer ${accessToken}`, // accessToken 변수는 유효한 토큰으로 설정되어야 합니다.
+            },
+          },
+        );
+        console.log(response.data.message); // 성공 메시지 로깅
+        navigate(`/team/${teamId}/documentsList`);
+      } catch (error) {
+        console.error("문서 삭제에 실패했습니다:", error);
+        // 오류 처리 로직, 예: 오류 메시지 표시
+      }
     }
   };
 
@@ -140,27 +198,21 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     navigate(`${currentPath}/comment`);
   };
 
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
+
   return (
-    <StyledTexteditor className="texteditor">
-      <TextTitle
-        titleProps={title}
-        onTitleChange={(newTitle) => setTitle(newTitle)} // onInputChange() => setTitle()
-      />
-      <div id="quill-editor" />
+    <StyledTexteditor
+      className="texteditor"
+      onChange={handleTitleChange}
+      placeholder="제목을 입력하세요"
+    >
+      <TitleInput value={title} />
+      <QuillStyled id="quill-editor" />
       <ButtonContainer>
         <div>
-          <StyledButton
-            className="save"
-            type="button"
-            onClick={(e) => {
-              if (quilll) {
-                handleSave(quilll.root.innerHTML);
-              }
-            }}
-          >
-            Save
-          </StyledButton>
-          <StyledButton onClick={handleCommentClick}>comment</StyledButton>
+          <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
         </div>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
       </ButtonContainer>

@@ -28,6 +28,12 @@ const Header = () => {
   };
 
   const isTeamPage = location.pathname.startsWith("/team/");
+  const handleTeamMembersClick = () => {
+    if (isTeamPage) {
+      const currentPath = window.location.pathname;
+      navigate(`${currentPath}/teammembers`);
+    } 
+  }
 
   useEffect(() => {
     // 현재 페이지가 팀 페이지이고 팀 목록이 존재할 경우에만 팀 이름 설정
@@ -37,6 +43,8 @@ const Header = () => {
       setTeamName(team ? team.name : "팀을 찾을 수 없음");
     }
   }, [location.pathname, isTeamPage, teamList]);
+
+  
 
   return (
     <HeaderTag>
@@ -74,7 +82,7 @@ const Header = () => {
               </li>
               <li>
                 {isTeamPage ? (
-                  <Link to="/teammembers">팀프로필</Link>
+                  <span onClick={handleTeamMembersClick}>팀프로필</span>
                 ) : (
                   <Link to="/mypage">마이페이지</Link>
                 )}
