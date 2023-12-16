@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Calender from "../views/Calender";
-
 import TextEditorView from "../views/TextEditorView";
 import SignInView from "../views/SignInView";
 import SignUp from "../components/Join/SignUp";
