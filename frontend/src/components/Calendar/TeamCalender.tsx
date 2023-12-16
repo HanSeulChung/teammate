@@ -8,17 +8,12 @@ import { Modal, Overlay, ModalContent, CloseModal, CalendarDiv } from '../../sty
 import EditEvent from "./EditEvent.tsx";
 import axios from "axios";
 
-// import { schedules } from "../../recoil/atoms/schedules.tsx"
-// import { useRecoilValue, useSetRecoilState } from 'recoil';
-
 const TeamCalender = () => {
     // 모달팝업 유무 값
     const [eventDetailModal, setEventDetailModal] = useState(false);
-    const [eventFormModal, seteventFormModal] = useState(false);
+    const [eventFormModal, setEventFormModal] = useState(false);
     
-    // recoil 사용 선언부, 이벤트 목록
-    // const eventList = useRecoilValue(schedules);
-    // const setEventList = useSetRecoilState(schedules);
+    // 일정 전체 목록
     const [eventList, setEventList] = useState([]);
 
     // 달력 일정 각각 state 핸들링용
@@ -29,15 +24,17 @@ const TeamCalender = () => {
         setEventDetailModal(!eventDetailModal);
     };
     const toggleFormModal = () => {
-        seteventFormModal(!eventFormModal);
+        setEventFormModal(!eventFormModal);
     };
 
     // 일정클릭 핸들링
     const HandleEventClick = (e) => {
-        console.log(e.event.extendedProps);
+        // console.log(e.event.extendedProps);
+        // console.log(e.event.start);
         setEvent({
+            id: e.event.id,
             title: e.event.title,
-            start: e.event.start.toString(),
+            start: e.event.start,
             contents: e.event.extendedProps.contents,
             place: e.event.extendedProps.place,
             groupId: e.event.extendedProps.groupId,
@@ -56,24 +53,47 @@ const TeamCalender = () => {
     const toggleIsEdit = () => setIsEdit(!isEdit);
 
     // 일정목록 불러오기
-    useEffect(() => {
-        const getAllEvents = async () => {
-            try {
-                const res = await axios({
-                    method: "get",
-                    url: "/schedules",
-                });
-                if (res.status === 200) {
-                    console.log(res.data);
-                    setEventList(res.data);
-                }
-            } catch (error) {
-                console.log(error);
+    const getAllEvents = async () => {
+        try {
+            const res = await axios({
+                method: "get",
+                url: "/schedules",
+            });
+            if (res.status === 200) {
+                console.log(res.data);
+                setEventList(res.data);
+                return;
             }
-        };
-
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
         getAllEvents();
     }, []);
+
+    // 일정 삭제
+    const handleEventDelete = async (e) => {
+        e.preventDefault();
+        if (!window.confirm(`번째 일정을 삭제하시겠습니까?`)) return;
+        const eventId = event.id;
+        try {
+            const res = await axios.delete(`/schedules`, {
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                data:{
+                    eventId
+                }
+            });
+            if (res.status === 201) {
+                // setNewEvent()
+                console.log(res.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <CalendarDiv>
@@ -81,6 +101,7 @@ const TeamCalender = () => {
             <FullCalendar
                 locale="kr"
                 plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+                timeZone= "UTC"
                 initialView="dayGridMonth"
                 headerToolbar={{
                     start: "today prev,next",
@@ -88,6 +109,9 @@ const TeamCalender = () => {
                     end: "dayGridMonth timeGridWeek"
                 }}
                 events={eventList}
+                dayMaxEvents={true}
+                height="90vh"
+                expandRows= {true}
                 eventClick={(e) => HandleEventClick(e)}
                 dateClick={(e) => HandleDateClick(e)}
             />
@@ -101,21 +125,21 @@ const TeamCalender = () => {
                         {isEdit ? (
                             <>
                                 {/* 에디터컴포넌트 */}
-                                <EditEvent isEdit={isEdit} originEvent={event}/>
-                                <button onClick={toggleIsEdit}>수정</button>
+                                <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit}/>
                             </>
                         ) : (
                             <>
                                 <h2>일정상세</h2>
                                 <p>
+                                    {/* 일정 번호: {event.id} */}
                                     이름: {event.title}<br />
-                                    일시: {event.start}<br />
+                                    일시: {event.start.toJSON()}<br />
                                     내용: {event.contents}<br />
                                     장소: {event.place}<br />
                                     카테고리: {event.groupId}
                                 </p>
                                 <button onClick={toggleIsEdit}>수정</button>
-                                <button>삭제</button>
+                                <button onClick={handleEventDelete}>삭제</button>
                             </>
                         )}
                         {/* 수정중이 아닐때 close버튼 렌더링 */}
@@ -136,7 +160,7 @@ const TeamCalender = () => {
                         onClick={toggleFormModal}
                     ></Overlay>
                     <ModalContent>
-                        <EditEvent isEdit={isEdit} originEvent={event} />
+                        <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit}/>
                         <CloseModal
                             onClick={toggleFormModal}
                         >

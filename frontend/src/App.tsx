@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import './App.css'
 import { BrowserRouter } from "react-router-dom"
@@ -8,7 +7,6 @@ import Footer from './components/common/Footer'
 
 function App() {
   const [count, setCount] = useState(0);
-
 
     return (
         <BrowserRouter>
