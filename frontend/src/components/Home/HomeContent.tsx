@@ -19,40 +19,42 @@ const HomeContent = () => {
   const [error, setError] = useState<string | null>(null);
   const accessToken = useRecoilValue(accessTokenState);
 
-  const getLoggedInUserId = () => {
-    return "user1@example.com"; // 로그인한 사용자 A의 ID로 가정
-  };
-
   useEffect(() => {
-    // const loggedInUserId = getLoggedInUserId();
-
-    // API로부터 팀 목록을 가져와서 userTeams 상태에 설정
-    const fetchTeamList = async () => {
+    const fetchLoggedInUserId = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/team/list", {
-          params: { page: 0, size: 10, sort: "createDt,asc" },
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
+        const teamListResponse = await axios.get(
+          "http://118.67.128.124:8080/team/list",
+          {
+            params: { page: 0, size: 10, sort: "createDt,asc" },
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
           },
-        });
+        );
 
-        setUserTeams(response.data.content);
+        setUserTeams(teamListResponse.data.content);
+
+        // teamList를 localStorage에 저장
+        localStorage.setItem(
+          `teamList_${accessToken}`,
+          JSON.stringify(teamListResponse.data.content),
+        );
       } catch (error: any) {
         setError(error.message);
       }
     };
 
-    fetchTeamList();
-  }, [setUserTeams]);
+    fetchLoggedInUserId();
+  }, [accessToken, setUserTeams]);
 
-  useEffect(() => {
-    const loggedInUserId = getLoggedInUserId();
-    localStorage.setItem(
-      `teamList_${loggedInUserId}`,
-      JSON.stringify(teamList),
-    );
-  }, [teamList]);
+  // useEffect(() => {
+  //   const loggedInUserId = getLoggedInUserId();
+  //   localStorage.setItem(
+  //     `teamList_${loggedInUserId}`,
+  //     JSON.stringify(teamList),
+  //   );
+  // }, [teamList]);
 
   if (error) {
     return <div>{error}</div>;

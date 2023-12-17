@@ -2,11 +2,13 @@ package com.api.backend.notification.service;
 
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION;
 import static com.api.backend.notification.data.NotificationMessage.CREATE_DOCUMENT;
+import static com.api.backend.notification.data.NotificationMessage.DELETE_DOCUMENT;
 import static com.api.backend.notification.data.NotificationMessage.EXIT_TEAM_PARTICIPANT;
 import static com.api.backend.notification.data.NotificationMessage.KICK_OUT_TEAM;
 import static com.api.backend.notification.data.NotificationMessage.UPDATE_TEAM_PARTICIPANT_TEAM;
 import static com.api.backend.notification.data.type.Type.DOCUMENTS;
 
+import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
@@ -23,12 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Delete;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Component
 @Async
+@Slf4j
 @RequiredArgsConstructor
 public class SendNotificationService {
 
@@ -50,12 +55,37 @@ public class SendNotificationService {
       notifications = handleTeamDisbandAndNotifySend((TeamDisbandResponse) source);
     } else if (source instanceof DocumentResponse) { // 문서 알람
       notifications = handleDocumentAndNotifySend((DocumentResponse) source);
+    } else if (source instanceof Delete) {
+      notifications = handleDeleteDocumentAndNotifySend((DeleteDocsResponse) source);
     }
 
     if (notifications.isEmpty()) {
       return;
     }
     notificationService.saveAllNotification(notifications);
+  }
+
+  private List<Notification> handleDeleteDocumentAndNotifySend(DeleteDocsResponse response) {
+    List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
+        response.getDeleteParticipantId(), response.getTeamId()
+    );
+
+    if (teamParticipants.isEmpty()) {
+      return null;
+    }
+
+    List<Notification> notifications = teamParticipants
+        .stream().map(i ->
+            Notification.convertNickNameToTeamParticipantsNotify(i, response.getDeleteParticipantNickName() ,DELETE_DOCUMENT , DOCUMENTS)
+        )
+        .collect(Collectors.toList());
+
+    sendNotifications(
+        getTeamEmitters(response.getTeamId(), teamParticipants),
+        NotificationDto.from(notifications.get(0))
+    );
+
+    return notifications;
   }
 
   public void handleTeamKickOutAndNotifySend(TeamKickOutResponse response) {
@@ -97,9 +127,6 @@ public class SendNotificationService {
             )
         )
         .collect(Collectors.toList());
-
-    notificationService.saveAllNotification(notifications);
-
 
     sendNotifications(
         getTeamEmitters(response.getTeamId(), teamParticipants),

@@ -11,6 +11,8 @@ import {
 import { useRecoilState, useRecoilValue } from "recoil";
 import { isAuthenticatedState, teamListState } from "../../state/authState";
 import { useNavigate } from "react-router-dom";
+import AlarmModal from "../alarm/AlarmModal";
+// import Logout from "../Login/LogOut";
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] =
@@ -19,6 +21,7 @@ const Header = () => {
   const location = useLocation();
   const teamList = useRecoilValue(teamListState);
   const [teamName, setTeamName] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -27,13 +30,19 @@ const Header = () => {
     setIsAuthenticated(false);
   };
 
+  //api버전
+  // const handleLogoutSuccess = () => {
+  //   // 로그아웃 성공 시 호출되는 콜백 함수
+  //   setIsAuthenticated(false); // isAuthenticated 상태를 업데이트
+  // };
+
   const isTeamPage = location.pathname.startsWith("/team/");
   const handleTeamMembersClick = () => {
     if (isTeamPage) {
       const currentPath = window.location.pathname;
       navigate(`${currentPath}/teammembers`);
-    } 
-  }
+    }
+  };
 
   useEffect(() => {
     // 현재 페이지가 팀 페이지이고 팀 목록이 존재할 경우에만 팀 이름 설정
@@ -44,7 +53,13 @@ const Header = () => {
     }
   }, [location.pathname, isTeamPage, teamList]);
 
-  
+  const handleNotificationClick = () => {
+    setModalOpen(true); // 알람 모달 열기
+  };
+
+  const closeModal = () => {
+    setModalOpen(false); // 알람 모달 닫기
+  };
 
   return (
     <HeaderTag>
@@ -79,6 +94,10 @@ const Header = () => {
                 >
                   로그아웃
                 </span>
+                {/* Logout 컴포넌트 사용 
+                <Link to="/signin">
+                  <Logout onLogoutSuccess={() => handleLogoutSuccess()} />
+                </Link>*/}
               </li>
               <li>
                 {isTeamPage ? (
@@ -95,6 +114,11 @@ const Header = () => {
               </li>
               <li>
                 <Link to="/signup">회원가입</Link>
+              </li>
+              <li>
+                <span onClick={handleNotificationClick}>알람</span>
+                {isModalOpen && <AlarmModal closeModal={closeModal} />}{" "}
+                {/* 모달 렌더링 */}
               </li>
             </>
           )}

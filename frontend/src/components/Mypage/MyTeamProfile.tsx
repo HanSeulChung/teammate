@@ -1,24 +1,16 @@
 import React, { useState } from "react";
+import { TeamProfileProps, Team } from "../../interface/interface";
 import {
   TeamProfileContainer,
   TeamProfileTitle,
   ImageUploadContainer,
   NicknameContainer,
-  UpdateButton,
   ContainerWrapper,
   ButtonContainer,
-  DeleteButton,
 } from "./MyTeamProfileStyled";
 import profileImg from "../../assets/profileImg.png";
-
-interface TeamProfileProps {
-  selectedTeam: string | null;
-  selectedImage: string | null;
-  nickname: string;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleNicknameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleUpdateProfile: (image: string | null, nickname: string) => void;
-}
+import MyTeamDelete from "./MyTeamDelete";
+import MyTeamUpdate from "./MyTeamUpdate";
 
 const TeamProfile: React.FC<TeamProfileProps> = ({
   selectedTeam,
@@ -27,7 +19,15 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
   handleImageUpload,
   handleNicknameChange,
   handleUpdateProfile,
+  teamList,
+  teamId,
+  accessToken,
 }) => {
+  const teamInfo = teamList.find((team) => team.id === selectedTeam);
+  const teamIdFromSelectedTeam = teamInfo?.id || "";
+  const teamName = teamInfo?.name || "";
+  // const teamImage = teamInfo?.profileUrl || null;
+  // const teamNickname = teamInfo?.nickname || "";
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,11 +39,17 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
       handleImageUpload(e);
     }
   };
+
+  const handleDeleteTeam = () => {
+    // Handle team deletion logic
+    // ...
+    console.log("Team deleted!");
+  };
   return (
     <TeamProfileContainer>
       {selectedTeam && (
         <div>
-          <TeamProfileTitle>{selectedTeam} 프로필</TeamProfileTitle>
+          <TeamProfileTitle>{teamName} 프로필</TeamProfileTitle>
           <ContainerWrapper>
             <ImageUploadContainer>
               <img
@@ -70,12 +76,24 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
             </NicknameContainer>
           </ContainerWrapper>
           <ButtonContainer>
-            <UpdateButton
-              onClick={() => handleUpdateProfile(selectedImage, nickname)}
-            >
-              변경하기
-            </UpdateButton>
-            <DeleteButton>탈퇴하기</DeleteButton>
+            <MyTeamUpdate
+              accessToken={accessToken}
+              selectedTeam={{
+                teamParticipantsId: 1,
+                teamNickName: "example",
+                participantsProfileUrl: "example.jpg",
+              }}
+              selectedImage={selectedImage}
+              nickname={nickname}
+              onUpdateProfile={() => {
+                console.log("프로필이 업데이트되었습니다!");
+              }}
+            />
+            <MyTeamDelete
+              onDeleteTeam={handleDeleteTeam}
+              teamId={teamIdFromSelectedTeam}
+              accessToken={accessToken}
+            />
           </ButtonContainer>
         </div>
       )}
