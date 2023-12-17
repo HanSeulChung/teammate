@@ -25,7 +25,7 @@ const HomeContent = () => {
         const teamListResponse = await axios.get(
           "http://118.67.128.124:8080/team/list",
           {
-            params: { page: 0, size: 10, sort: "createDt,asc" },
+            params: { page: 0, size: 10, sort: "createDt-asc" },
             withCredentials: true,
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -33,13 +33,12 @@ const HomeContent = () => {
           },
         );
 
-        setUserTeams(teamListResponse.data.content);
-
         // teamList를 localStorage에 저장
         localStorage.setItem(
           `teamList_${accessToken}`,
           JSON.stringify(teamListResponse.data.content),
         );
+        setUserTeams(teamListResponse.data.content);
       } catch (error: any) {
         setError(error.message);
       }
