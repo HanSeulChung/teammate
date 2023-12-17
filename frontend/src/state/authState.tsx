@@ -31,24 +31,28 @@ export const teamsByLeaderState = selector({
 export const isAuthenticatedState = atom({
   key: "isAuthenticatedState",
   default: false,
+  effects_UNSTABLE: [persistAtom],
 });
 
 // 액세스 토큰 상태
 export const accessTokenState = atom({
   key: "accessToken",
   default: "",
+  effects_UNSTABLE: [persistAtom],
 });
 
 // 리프레시 토큰 상태
 export const refreshTokenState = atom({
   key: "refreshToken",
   default: "",
+  effects_UNSTABLE: [persistAtom],
 });
 
 // 사용자 정보 상태
 export const userState = atom({
   key: "userState",
   default: null as { id: string; name: string } | null,
+  effects_UNSTABLE: [persistAtom],
 });
 
 // 리프레시 토큰 저장 함수
