@@ -17,9 +17,8 @@ import CommentView from "../views/CommentView";
 import TeamDetail from "../components/TeamPage/TeamDetail";
 import TeamLeader from "../components/ProfilePage/TeamLeader";
 import TeamMembers from "../components/ProfilePage/TeamMembers";
-import TeamCreateView from "../views/TeamCreateView";
+import TeamInfo from "../components/TeamCreate/TeamInfo";
 import Mypage from "../components/Mypage/Mypage";
-
 
 const Router = () => {
   return (
@@ -44,8 +43,8 @@ const Router = () => {
       <Route path="/homeview" element={<HomeView />} />
       <Route path="/team/:teamId" element={<TeamDetail />} />
       <Route path="/teamleader" element={<TeamLeader />} />
-      <Route path="/teammembers" element={<TeamMembers />} />
-      <Route path="/teamcreateview" element={<TeamCreateView />} />
+      <Route path="/team/:teamid/teammembers" element={<TeamMembers />} />
+      <Route path="/TeamInfo" element={<TeamInfo />} />
       <Route path="/mypage" element={<Mypage />} />
       <Route />
     </Routes>
