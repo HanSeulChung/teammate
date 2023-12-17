@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useRecoilValue } from "recoil";
 import { accessTokenState } from "../../state/authState";
+
+const API_BASE_URL = "http://118.67.128.124:8080";
 
 const DocumentContainer = styled.div`
   box-sizing: border-box;
@@ -27,6 +30,7 @@ const DocumentItem = styled.div`
 const TitleContentContainer = styled.div`
   flex-grow: 1;
 `;
+
 const StyledButton = styled.button`
   background-color: rgb(163, 204, 163);
   color: #333333;
@@ -59,7 +63,6 @@ const SearchInput = styled.input`
   border-radius: 8px;
 `;
 
-// 타입 정의
 type Document = {
   documentId: string;
   title: string;
@@ -71,40 +74,38 @@ type Document = {
 };
 
 type DocumentListProps = {
-  teamId: string;
+  teamId: number;
 };
 
-const testdocument = [
-  {
-    documentId: "생성된 document id",
-    title: "제목",
-    content: "내용aaaaaaaaaaaaaaaaaaaaaaa",
-    teamId: "team id",
-    commentsId: ["commentid 1", "commentid 2"],
-    createdDt: "생성 날짜",
-    updatedDt: "수정 날짜",
-  },
-];
-
-// 컴포넌트
 const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
-  const [documents, setDocuments] = useState<Document[]>(testdocument);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 10;
   const accessToken = useRecoilValue(accessTokenState);
+  const [Id, setId] = useState<number>(1);
 
   useEffect(() => {
-    const url = `/team/${teamId}/documents?page=${currentPage}&size=10`;
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        setDocuments(data);
-        setFilteredDocuments(data);
-      })
-      .catch((error) => console.error("Error fetching data: ", error));
-  }, [currentPage, teamId]);
+    const fetchDocuments = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/team/${Id}/documents?page=${currentPage}&size=10`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        setDocuments(response.data);
+        setFilteredDocuments(response.data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchDocuments();
+  }, [currentPage, teamId, accessToken]);
 
   useEffect(() => {
     const filtered = documents.filter(
@@ -115,7 +116,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     setFilteredDocuments(filtered);
   }, [searchTerm, documents]);
 
-  const handlePageChange = (page: React.SetStateAction<number>) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
@@ -143,36 +144,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = await fetch(
-          `/team/${teamId}/documents?page=${currentPage}&size=10`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setDocuments(data);
-        setFilteredDocuments(data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    fetchDocuments();
-  }, [currentPage, teamId, accessToken]);
-
-  // 문서 클릭 핸들러
   const handleDocumentClick = (documentId: string) => {
     navigate(`/team/${teamId}/documents/${documentId}`);
   };
-
   return (
     <Container>
       <SearchInput

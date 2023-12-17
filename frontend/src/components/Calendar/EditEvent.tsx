@@ -3,26 +3,22 @@ import { CommonSubmitBtn } from '../../styles/CommonStyled';
 import { useState, useEffect } from 'react';
 import axios from "axios";
 
-// import { schedules } from "../../recoil/atoms/schedules.tsx"
-// import { useRecoilState } from 'recoil';
-
-const EditEvent = ({isEdit, originEvent}) => {
-    // 실제 등록할 state 값
-    // const [newSchedule, setNewSchedule] = useRecoilState(schedules)
-
+const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
     // input값 담아둘 state
     const [eventChange, setEventChange] = useState({
+        id: originEvent.id,
         title: "",
-        start: new Date(),
+        start: originEvent.start,
         contents: "", 
         place: "", 
-        groupId: ""
+        groupId: "주간회의"
     })
 
     // input값 전송 직전 state
     const [newEvent, setNewEvent] = useState({
+        id: originEvent.id,
         title: "",
-        start: new Date(),
+        start: originEvent.start,
         extendedProps: {
             contents: "", 
             place: "", 
@@ -31,22 +27,20 @@ const EditEvent = ({isEdit, originEvent}) => {
     })
 
     const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.name);
-        console.log(e.target.value);
         setEventChange((prev) => ({...prev, [e.target.name] : e.target.value}));
     }
 
     // 입력값 추적
     useEffect(() => {
-        // console.log("useEffect 입력값 추적 : ", eventChange);
         setNewEvent({
+            id: originEvent.id,
             title: eventChange.title,
             start: eventChange.start,
             extendedProps: {
                 contents: eventChange.contents, 
                 place: eventChange.place, 
                 groupId: eventChange.groupId
-        }
+            }
         })
     }, [eventChange]);
 
@@ -57,17 +51,13 @@ const EditEvent = ({isEdit, originEvent}) => {
         }
     },[isEdit])
     
-    // // 전송 전 setData 추적
-    // useEffect(() => {
-    //     console.log("useEffect 전송값 추적 : ", newEvent);
-    // }, [newEvent]);
-    
-
-    const handleScheduleSubmit = async (event) => {
-        event.preventDefault();
-        console.log("입력제목값000000000000 => "+eventChange.title);
-        console.log("0000000000000000"+JSON.stringify(newEvent));
+    // 새 일정 등록 요청
+    const handleScheduleSubmit = async (e) => {
+        e.preventDefault();
+        // console.log("입력제목값000000000000 => "+eventChange.title);
+        // console.log("0000000000000000"+JSON.stringify(newEvent));
         setNewEvent({
+            id: "",
             title: eventChange.title,
             start: eventChange.start,
             extendedProps: { 
@@ -76,7 +66,7 @@ const EditEvent = ({isEdit, originEvent}) => {
                 groupId: eventChange.groupId,
             }
         });
-        console.log("111111111111111111111111111"+JSON.stringify(newEvent));
+        // console.log("111111111111111111111111111"+JSON.stringify(newEvent));
         try {
             const res = await axios.post("/schedules", newEvent, {
                 headers:{
@@ -85,11 +75,48 @@ const EditEvent = ({isEdit, originEvent}) => {
             });
             if (res.status === 201) {
                 setEventChange({
+                    id: "",
                     title: "",
                     start: new Date(),
                     contents: "", 
                     place: "", 
                     groupId: ""
+                });
+                console.log(res.data);
+                setEventList(res.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    // 일정 수정 요청
+    const handleScheduleModify = async (e) => {
+        e.preventDefault();
+        setNewEvent({
+            id: originEvent.id,
+            title: eventChange.title,
+            start: eventChange.start,
+            extendedProps: { 
+                contents: eventChange.contents, 
+                place: eventChange.place,
+                groupId: eventChange.groupId,
+            }
+        });
+        try {
+            const res = await axios.put("/schedules", newEvent, {
+                headers:{
+                    "Content-Type": "application/json"
+                },
+            });
+            if (res.status === 201) {
+                setEventChange({
+                    id: res.data.id,
+                    title: res.data.title,
+                    start: res.data.start,
+                    contents: res.data.contents, 
+                    place: res.data.place, 
+                    groupId: res.data.groupId,
                 });
                 // setNewEvent()
                 console.log(res.data);
@@ -143,21 +170,21 @@ const EditEvent = ({isEdit, originEvent}) => {
             
             <label htmlFor="repetition">반복</label>
             <select id="repetition">
-                <option value="first">반복 안함</option>
-                <option value="second">매일</option>
-                <option value="third">매주</option>
+                <option value="Does not repeat">반복 안함</option>
+                <option value="Daily">매일</option>
+                <option value="Weekly">매주</option>
             </select>
             
-            <label htmlFor="category">카테고리</label>
+            <label htmlFor="category" value={eventChange.groupId} onChange={handleEventChange}>카테고리</label>
             <select id="category">
-                <option value="first">주간회의</option>
-                <option value="second">회의</option>
-                <option value="third">미팅</option>
+                <option value="1">주간회의</option>
+                <option value="2">회의</option>
+                <option value="3">미팅</option>
             </select>
             {isEdit ? (
                 <>
-                    <button>그냥버튼1</button>
-                    <button>그냥버튼2</button>
+                    <button onClick={handleScheduleModify}>수정완료</button>
+                    <button onClick={toggleIsEdit}>취소</button>
                 </>
             ) : (
                 <CommonSubmitBtn 

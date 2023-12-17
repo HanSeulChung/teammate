@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { useUser, teamListState } from "../../state/authState";
+import React, { useState } from "react";
+import {
+  useUser,
+  teamListState,
+  accessTokenState,
+} from "../../state/authState";
 import { useRecoilValue } from "recoil";
 import UserProfile from "./MyUserProfile";
 import TeamProfile from "./MyTeamProfile";
+import { TeamProfileProps } from "../../interface/interface";
 
 const Mypage = () => {
   const { user } = useUser();
@@ -10,20 +15,21 @@ const Mypage = () => {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [nickname, setNickname] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const accessToken = useRecoilValue(accessTokenState);
 
   // 팀이 변경될 때마다 해당 팀의 이미지와 닉네임 초기화
-  useEffect(() => {
-    setSelectedImage(null);
-    setNickname("");
-  }, [selectedTeam]);
+  // useEffect(() => {
+  //   setSelectedImage(null);
+  //   setNickname("");
+  // }, [selectedTeam]);
 
   const handleTeamSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedTeamName = event.target.value;
     setSelectedTeam(selectedTeamName);
 
     // 팀이 변경될 때 해당 팀의 이미지와 닉네임 초기화
-    setSelectedImage(null);
-    setNickname("");
+    // setSelectedImage(null);
+    // setNickname("");
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,14 +66,19 @@ const Mypage = () => {
         selectedTeam={selectedTeam}
         handleTeamSelect={handleTeamSelect}
       />
-      <TeamProfile
-        selectedTeam={selectedTeam}
-        selectedImage={selectedImage}
-        nickname={nickname}
-        handleImageUpload={handleImageUpload}
-        handleNicknameChange={handleNicknameChange}
-        handleUpdateProfile={handleUpdateProfile}
-      />
+      {selectedTeam && (
+        <TeamProfile
+          selectedTeam={selectedTeam}
+          selectedImage={selectedImage}
+          nickname={nickname}
+          handleImageUpload={handleImageUpload}
+          handleNicknameChange={handleNicknameChange}
+          handleUpdateProfile={handleUpdateProfile}
+          teamList={teamList}
+          teamId={selectedTeam}
+          accessToken={accessToken}
+        />
+      )}
     </div>
   );
 };
