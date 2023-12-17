@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import axios from "axios";
+import axiosInstance from "../../axios";
 import {
   teamNameState,
   selectedTeamSizeState,
@@ -103,17 +104,13 @@ export default function TeamInfo() {
         formData.append("teamImg", selectedImage);
       }
       formData.append("memberLimit", memberLimit.toString());
-      const response = await axios.post(
-        "http://118.67.128.124:8080/team",
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await axiosInstance.post("/team", formData, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       navigate("/homeview");
       // 성공적으로 팀 생성이 완료되었을 때의 로직
       console.log("팀 생성 성공:", response.data);
