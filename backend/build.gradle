@@ -30,21 +30,35 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+    // email
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
     //redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // mongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
+    // websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.webjars:sockjs-client:1.1.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
+
     // swagger
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
+    // AWS S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // AWS S3 Mock
+    implementation 'io.findify:s3mock_2.13:0.2.6'
+
     implementation 'org.springframework.boot:spring-boot-starter-aop'
-    implementation "com.vladmihalcea:hibernate-types-52:2.16.2"
+    implementation 'com.vladmihalcea:hibernate-types-52:2.16.2'
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
-
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

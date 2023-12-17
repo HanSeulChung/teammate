@@ -13,7 +13,9 @@ import lombok.ToString;
 @Builder
 public class TeamKickOutResponse {
   private Long teamId;
+  private Long userId;
   private Long kickOutMemberId;
+  private String teamName;
   private String nickName;
   private String message;
 }

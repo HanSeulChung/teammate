@@ -34,9 +34,10 @@ public class WebSecurityConfig {
         "/webjars/**",
         "/menus/**",
         "/h2-console/**",
-        "/sign-in","/sign-up","/logout","/my-page","/member/password"
+        "/sign-in","/sign-up","/logout","/my-page","/member/password","/email-verify/**","/sign-up/email-check/**",
+        "/ws"
     };
-  
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http

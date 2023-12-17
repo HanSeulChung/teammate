@@ -35,7 +35,6 @@ public class Member extends BaseEntity {
   @Setter
   private String password;
   private String name;
-  private String nickName;
 
   @Enumerated(EnumType.STRING)
   private SexType sexType;
@@ -45,9 +44,8 @@ public class Member extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private Authority authority;
-  private String isAuthenticatedEmail;
-  private String memberProfileUrl;
-
+  @Setter
+  private Boolean isAuthenticatedEmail;
 
   // TODO: 추후 재셋팅 예정
 //  @OneToMany(mappedBy = "member")
