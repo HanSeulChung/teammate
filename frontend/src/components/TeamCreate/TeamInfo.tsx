@@ -36,24 +36,32 @@ export default function TeamInfo() {
   const navigate = useNavigate();
   const accessToken = useRecoilValue(accessTokenState);
 
-  // const handleTeamCreation = useTeamCreation();
-  // const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = e.target;
+    const file = fileInput.files && fileInput.files[0];
 
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
 
-  //     reader.onload = () => {
-  //       const result = reader.result as string;
-  //       setSelectedImage(result);
-  //     };
-  //   }
-  // };
+      reader.onload = () => {
+        const result = reader.result as string;
+        setSelectedImage(file); // 파일 경로(string)를 저장
+        setPreviewImage(result);
+        console.log("Selected Image:", result);
+      };
 
-  const generateTeamId = () => {
-    return `team_${Date.now()}`;
+      reader.onerror = (error) => {
+        console.error("Error reading the file:", error);
+      };
+    }
   };
+  useEffect(() => {
+    setTeamName("");
+    setSelectedTeamSize("");
+    setSelectedImage(null);
+    setError(null);
+  }, []);
 
   const handleCreateTeam = async () => {
     let errorMessage = "";
@@ -106,42 +114,16 @@ export default function TeamInfo() {
           },
         },
       );
-
-      const { teamId, code } = response.data;
-      const teamInfoResponse = await axios.get(
-        `http://localhost:8080/team/${teamId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-
-      const teamInfoData = teamInfoResponse.data as TeamInfoData;
-      // 서버에서 팀 정보를 가져오는 API 호출
-      if (teamInfoData) {
-        const { teamName, memberLimit, code, inviteLink, teamImg } =
-          teamInfoData;
-        console.log(teamName, memberLimit, code, inviteLink, teamImg);
-        if (response.data.success) {
-          console.log("Team Info:", response.data);
-        } else {
-          console.error(
-            "Failed to fetch team information:",
-            response.data.error,
-          );
-        }
-        navigate("/homeview");
-      } else {
-        setError("서버에서 올바른 팀 정보를 받아오지 못했습니다.");
-      }
+      navigate("/homeview");
+      // 성공적으로 팀 생성이 완료되었을 때의 로직
+      console.log("팀 생성 성공:", response.data);
     } catch (error) {
-      console.error("Team Creation Error:", error);
+      // 에러가 발생했을 때의 로직
+      console.error("팀 생성 중 오류:", error);
 
       if (axios.isAxiosError(error)) {
         console.error("Axios Error Response:", error.response);
       }
-
       const axiosError = error as any;
       if (axiosError.response?.status === 401) {
         setError("토큰이 유효하지 않습니다.");
@@ -150,33 +132,6 @@ export default function TeamInfo() {
       }
     }
   };
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileInput = e.target;
-    const file = fileInput.files && fileInput.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-
-      reader.onload = () => {
-        const result = reader.result as string;
-        setSelectedImage(file); // 파일 경로(string)를 저장
-        setPreviewImage(result);
-        console.log("Selected Image:", result);
-      };
-
-      reader.onerror = (error) => {
-        console.error("Error reading the file:", error);
-      };
-    }
-  };
-  useEffect(() => {
-    setTeamName("");
-    setSelectedTeamSize("");
-    setSelectedImage(null);
-    setError(null);
-  }, []);
 
   return (
     <StyledContainer>
