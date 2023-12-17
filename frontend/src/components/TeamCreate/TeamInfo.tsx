@@ -28,7 +28,8 @@ export default function TeamInfo() {
   const [selectedTeamSize, setSelectedTeamSize] = useRecoilState(
     selectedTeamSizeState,
   );
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [teamList, setTeamList] = useRecoilState(teamListState);
   const [error, setError] = useState<string | null>(null);
   const user = useRecoilValue(userState);
@@ -36,23 +37,23 @@ export default function TeamInfo() {
   const accessToken = useRecoilValue(accessTokenState);
 
   // const handleTeamCreation = useTeamCreation();
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
 
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
 
-      reader.onload = () => {
-        const result = reader.result as string;
-        setSelectedImage(result);
-      };
-    }
-  };
-
-  // const generateTeamId = () => {
-  //   return `team_${Date.now()}`;
+  //     reader.onload = () => {
+  //       const result = reader.result as string;
+  //       setSelectedImage(result);
+  //     };
+  //   }
   // };
+
+  const generateTeamId = () => {
+    return `team_${Date.now()}`;
+  };
 
   const handleCreateTeam = async () => {
     let errorMessage = "";
@@ -87,18 +88,21 @@ export default function TeamInfo() {
         setError("올바르지 않은 teamSize 값입니다.");
         return;
       }
+
+      const formData = new FormData();
+      formData.append("teamName", teamName);
+      if (selectedImage instanceof File) {
+        formData.append("teamImg", selectedImage);
+      }
+      formData.append("memberLimit", memberLimit.toString());
       const response = await axios.post(
         "http://118.67.128.124:8080/team",
-        {
-          teamName,
-          teamImg: selectedImage,
-          memberLimit,
-        },
+        formData,
         {
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         },
       );
@@ -112,6 +116,7 @@ export default function TeamInfo() {
           },
         },
       );
+
       const teamInfoData = teamInfoResponse.data as TeamInfoData;
       // 서버에서 팀 정보를 가져오는 API 호출
       if (teamInfoData) {
@@ -146,31 +151,26 @@ export default function TeamInfo() {
     }
   };
 
-  //   const newTeamId = generateTeamId();
-  //   const newTeam = {
-  //     id: newTeamId,
-  //     name: teamName,
-  //     size: selectedTeamSize,
-  //     image: selectedImage,
-  //     leaderId: user?.id || null,
-  //     members: [],
-  //   };
-
-  //   setTeamList((prevTeamList) => [...prevTeamList, newTeam]);
-  //   // handleTeamCreation(newTeam);
-
-  //   navigate("/homeview");
-  // };
-
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
     const file = fileInput.files && fileInput.files[0];
 
     if (file) {
-      handleImageUpload(e);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        const result = reader.result as string;
+        setSelectedImage(file); // 파일 경로(string)를 저장
+        setPreviewImage(result);
+        console.log("Selected Image:", result);
+      };
+
+      reader.onerror = (error) => {
+        console.error("Error reading the file:", error);
+      };
     }
   };
-
   useEffect(() => {
     setTeamName("");
     setSelectedTeamSize("");
@@ -217,7 +217,10 @@ export default function TeamInfo() {
         </select>
         <ImageUploadContainer>
           <img
-            src={selectedImage || profileImg}
+            src={
+              previewImage ||
+              (typeof selectedImage === "string" ? selectedImage : profileImg)
+            }
             alt="Selected"
             onClick={() => document.getElementById("imageUpload")?.click()}
           />
