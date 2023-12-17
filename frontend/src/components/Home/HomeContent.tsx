@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import axios from "axios";
+import axiosInstance from "../../axios";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -22,16 +23,9 @@ const HomeContent = () => {
   useEffect(() => {
     const fetchLoggedInUserId = async () => {
       try {
-        const teamListResponse = await axios.get(
-          "http://118.67.128.124:8080/team/list",
-          {
-            params: { page: 0, size: 10, sort: "createDt-asc" },
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
+        const teamListResponse = await axiosInstance.get("/team/list", {
+          params: { page: 0, size: 10, sort: "createDt-asc" },
+        });
 
         // teamList를 localStorage에 저장
         localStorage.setItem(

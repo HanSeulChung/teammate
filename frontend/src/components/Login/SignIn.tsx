@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
+import axiosInstance from "../../axios";
 import { useNavigate } from "react-router-dom";
 import { StyledContainer, StyledFormItem } from "./SignInStyled";
 import { useRecoilState } from "recoil";
@@ -40,19 +41,10 @@ const SignIn = () => {
         setError("비밀번호는 최소 8자 이상이어야 합니다.");
         return;
       }
-      const response = await axios.post(
-        "http://118.67.128.124:8080/sign-in",
-        {
-          email: email,
-          password: password,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const response = await axiosInstance.post("/sign-in", {
+        email: email,
+        password: password,
+      });
 
       const { token } = response.data;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -90,9 +82,6 @@ const SignIn = () => {
   };
 
   const handleLogout = () => {
-    //실제론 여기 지워야함
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("refreshToken");
     saveAccessToken("");
     saveRefreshToken("");
     navigate("/signin");
