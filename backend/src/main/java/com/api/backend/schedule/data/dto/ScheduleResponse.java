@@ -37,9 +37,11 @@ public class ScheduleResponse {
   private List<Long> teamParticipantsIds;
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
+  private boolean isConverted;
 
   public static ScheduleResponse from(SimpleSchedule simpleSchedule) {
     return ScheduleResponse.builder()
+        .scheduleType("단순 일정")
         .scheduleId(simpleSchedule.getSimpleScheduleId())
         .categoryId(simpleSchedule.getScheduleCategory().getScheduleCategoryId())
         .startDt(simpleSchedule.getStartDt())
@@ -56,6 +58,7 @@ public class ScheduleResponse {
   }
   public static ScheduleResponse from(RepeatSchedule repeatSchedule) {
     return ScheduleResponse.builder()
+        .scheduleType("반복 일정")
         .scheduleId(repeatSchedule.getRepeatScheduleId())
         .categoryId(repeatSchedule.getScheduleCategory().getScheduleCategoryId())
         .startDt(repeatSchedule.getStartDt())
