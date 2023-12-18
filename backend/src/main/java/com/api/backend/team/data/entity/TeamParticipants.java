@@ -48,7 +48,7 @@ public class TeamParticipants extends BaseEntity {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  @OneToMany(mappedBy = "teamParticipants")
+  @OneToMany(mappedBy = "teamParticipants", orphanRemoval = true, cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<Notification> notifications = new ArrayList<>();
 
