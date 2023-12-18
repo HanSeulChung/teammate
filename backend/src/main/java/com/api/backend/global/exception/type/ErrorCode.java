@@ -15,6 +15,7 @@ public enum ErrorCode {
   SCHEDULE_CATEGORY_ALREADY_EXIST_EXCEPTION(500, "이미 존재하는 일정 카테고리 입니다."),
   SCHEDULE_NOT_FOUND_EXCEPTION(500, "존재하지 않는 일정입니다."),
   INVALID_REPEAT_CYCLE_EXCEPTION(400, "잘못된 반복 주기입니다."),
+  NON_REPEATING_SCHEDULE_EXCEPTION(500, "반복일정이 아닙니다."),
   TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION(400, "일정 팀참가자번호는 중복될 수 없습니다."),
 
   // team
