@@ -9,6 +9,7 @@ export interface TeamInfoData {
 
 // 팀 생성 후 정보 인터페이스
 export interface Team {
+  teamId: number;
   id: string;
   name: string;
   size: string;
@@ -20,6 +21,7 @@ export interface Team {
 
 // 사용자 정보 인터페이스
 export interface User {
+  userId: string;
   id: string;
   name: string;
 }
