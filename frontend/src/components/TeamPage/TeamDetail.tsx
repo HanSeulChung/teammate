@@ -1,21 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../axios";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { teamListState, userState } from "../../state/authState";
+import { Team } from "../../interface/interface";
 
 const TeamDetail = () => {
-  const { teamId } = useParams();
+  const { teamId } = useParams<{ teamId: string }>();
+  console.log("Team ID:", teamId);
+  const [team, setTeam] = useState<Team | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const teamList = useRecoilValue(teamListState);
-  const team = teamList.find((team) => team.id === teamId);
 
-  if (!team) {
-    return <div>팀을 찾을 수 없습니다.</div>;
+  useEffect(() => {
+    const fetchTeamDetail = async () => {
+      try {
+        if (teamId) {
+          const response = await axiosInstance.get<Team>(`/team/${teamId}`);
+          setTeam(response.data);
+        } else {
+          // teamId가 없는 경우에 대한 처리
+          console.error("팀 ID가 없습니다.");
+          setError("팀 ID가 없습니다.");
+        }
+      } catch (error) {
+        console.error("Error fetching team detail:", error);
+        setError("팀 정보를 가져오는 중에 오류가 발생했습니다.");
+      }
+    };
+
+    fetchTeamDetail();
+  }, [teamId]);
+
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   return (
     <TeamDetailContainer>
       {/* <TeamName>{team.name}</TeamName> */}
+      <h1>{team?.teamName}</h1>
       <BoxContainer>
         <EmptyBox>공유문서리스트</EmptyBox>
         <EmptyBox>캘린더</EmptyBox>
@@ -44,4 +69,3 @@ const BoxContainer = styled.div`
   display: flex;
   margin-top: 20px;
 `;
-

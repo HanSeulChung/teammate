@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ErrorCode {
   // valid
   PARAMETER_NOT_VALID_EXCEPTION(400, "잘못된 파라미터 값 입니다."),
+  INVALID_MESSAGE_EXCEPTION(500, "잘못된 메세지 값입니다."),
 
   ENUM_NOT_VALID_EXCEPTION(500, "잘못된 ENUM요청이 들어왔습니다."),
   ENUM_NOT_FOUND_EXCEPTION(500, "비어있는 ENUM입니다."),
@@ -46,6 +47,10 @@ public enum ErrorCode {
   PASSWORD_NOT_MATCH_EXCEPTION(400, "비밀번호가 일치하지 않습니다."),
   TOKEN_NOT_FOUND_PERMISSION_INFORMATION(400,"권한 정보가 없는 토큰입니다."),
   TOKEN_INVALID_EXCEPTION(400,"유효하지 않는 토큰입니다."),
+  MEMBER_NOT_MATCH_PASSWORD_EXCEPTION(400, "기존 비밀번호가 틀렸습니다."),
+  INCORRECT_FORM_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호 형식이 잘못되었습니다."),
+  NOT_MATCH_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호가 재확인 비밀번호와 일치하지 않습니다."),
+
 
   //email
   EMAIL_NOT_TRANSFER_EXCEPTION(400,"이메일 전송에 실패했습니다."),
