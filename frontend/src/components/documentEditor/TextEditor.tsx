@@ -116,10 +116,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   useEffect(() => {
     const initializeQuill = () => {
-      if (!title || !content) {
-        // 여기도 객체로 관리 / 객체에서 꺼내서 디스트럭쳐링
-        return;
-      }
+      // if (!title || !content) {
+      //   // 여기도 객체로 관리 / 객체에서 꺼내서 디스트럭쳐링
+      //   return;
+      // }
 
       const editor = new Quill("#quill-editor", {
         theme: "snow",
