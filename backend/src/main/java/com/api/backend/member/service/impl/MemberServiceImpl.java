@@ -168,16 +168,17 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(Long.valueOf(principal))
                 .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
-        if(!passwordEncoder.matches(updateMemberPasswordRequest.getOldPassword(),member.getPassword())){
+        if (!passwordEncoder.matches(updateMemberPasswordRequest.getOldPassword(), member.getPassword())) {
             throw new CustomException(MEMBER_NOT_MATCH_PASSWORD_EXCEPTION);
         }
 
-        if(updateMemberPasswordRequest.getNewPassword() == null || updateMemberPasswordRequest.getNewPassword().length() < 4){
+        if (updateMemberPasswordRequest.getNewPassword() == null || updateMemberPasswordRequest.getNewPassword().length() < 4) {
             throw new CustomException(INCORRECT_FORM_NEW_PASSWORD_EXCEPTION);
         }
-        if(!updateMemberPasswordRequest.getNewPassword().equals(updateMemberPasswordRequest.getReNewPassword())){
+        if (!updateMemberPasswordRequest.getNewPassword().equals(updateMemberPasswordRequest.getReNewPassword())) {
             throw new CustomException(NOT_MATCH_NEW_PASSWORD_EXCEPTION);
         }
+    }
 
     @Transactional(readOnly = true)
     public Map<String, String> validateHandling(BindingResult bindingResult) {
@@ -198,12 +199,6 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-
-        String encodePassword = passwordEncoder.encode(updateMemberPasswordRequest.getNewPassword());
-        updateMemberPasswordRequest.setNewPassword(encodePassword);
-        member.setPassword(updateMemberPasswordRequest.getNewPassword());
-        memberRepository.save(member);
-    }
     @Override
     public MemberInfoResponse getMemberInfo(String requestAccessTokenInHeader) {
         String accessToken = authService.resolveToken(requestAccessTokenInHeader);
