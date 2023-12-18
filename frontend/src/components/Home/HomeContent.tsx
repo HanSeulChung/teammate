@@ -68,8 +68,8 @@ const HomeContent = () => {
           <TeamLink to={`/team/${team.teamId}`}>
             <TeamCard>
               <TeamName>{team.name}</TeamName>
-              {team.image && (
-                <TeamImage src={team.image} alt={`${team.name} 이미지`} />
+              {team.profileUrl && (
+                <TeamImage src={team.profileUrl} alt={`${team.name} 이미지`} />
               )}
             </TeamCard>
           </TeamLink>
