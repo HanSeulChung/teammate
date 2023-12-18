@@ -9,19 +9,24 @@ export interface TeamInfoData {
 
 // 팀 생성 후 정보 인터페이스
 export interface Team {
-  teamId: number;
   id: string;
+  teamId: number;
   name: string;
   size: string;
-  image: string | null;
+  profileUrl: string | null;
   leaderId: string | null;
   nickname?: string | null;
   members?: User[];
+  teamName: string;
+  code: string;
+  memberLimit: number;
+  inviteLink: string;
+  teamImg: string;
 }
 
 // 사용자 정보 인터페이스
 export interface User {
-  userId: string;
+  // userId: string;
   id: string;
   name: string;
 }

@@ -4,20 +4,12 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { teamListState, userState } from "../../state/authState";
-
-interface TeamDetailResponse {
-  teamId: number;
-  teamName: string;
-  code: string;
-  memberLimit: number;
-  inviteLink: string;
-  teamImg: string;
-}
+import { Team } from "../../interface/interface";
 
 const TeamDetail = () => {
   const { teamId } = useParams<{ teamId: string }>();
   console.log("Team ID:", teamId);
-  const [team, setTeam] = useState<TeamDetailResponse | null>(null);
+  const [team, setTeam] = useState<Team | null>(null);
   const [error, setError] = useState<string | null>(null);
   const teamList = useRecoilValue(teamListState);
 
@@ -25,9 +17,7 @@ const TeamDetail = () => {
     const fetchTeamDetail = async () => {
       try {
         if (teamId) {
-          const response = await axiosInstance.get<TeamDetailResponse>(
-            `/team/${teamId}`,
-          );
+          const response = await axiosInstance.get<Team>(`/team/${teamId}`);
           setTeam(response.data);
         } else {
           // teamId가 없는 경우에 대한 처리
