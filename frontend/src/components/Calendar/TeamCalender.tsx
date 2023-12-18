@@ -43,7 +43,7 @@ const TeamCalender = () => {
     }
 
     // 날짜클릭 핸들링
-    const HandleDateClick = (e) => {
+    const HandleDateClick = () => {
         // console.log(e.dayEl);
         toggleFormModal();
     }
@@ -113,7 +113,7 @@ const TeamCalender = () => {
                 height="90vh"
                 expandRows= {true}
                 eventClick={(e) => HandleEventClick(e)}
-                dateClick={(e) => HandleDateClick(e)}
+                dateClick={() => HandleDateClick()}
             />
             {/* 일정클릭 모달 */}
             {eventDetailModal && (
