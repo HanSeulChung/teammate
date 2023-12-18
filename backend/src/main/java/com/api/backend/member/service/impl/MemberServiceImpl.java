@@ -3,7 +3,7 @@ package com.api.backend.member.service.impl;
 import com.api.backend.global.email.MailService;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.redis.RedisService;
-import com.api.backend.global.security.AuthService;
+import com.api.backend.global.security.jwt.service.AuthService;
 import com.api.backend.global.security.data.dto.TokenDto;
 import com.api.backend.global.security.jwt.JwtTokenProvider;
 import com.api.backend.member.data.dto.*;

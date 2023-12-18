@@ -1,7 +1,6 @@
 package com.api.backend.member.controller;
 
-import com.api.backend.global.security.AuthService;
-import com.api.backend.global.security.data.dto.TokenDto;
+import com.api.backend.global.security.jwt.service.AuthService;
 import com.api.backend.member.data.dto.*;
 import com.api.backend.member.service.MemberService;
 import com.api.backend.team.data.dto.TeamParticipantsDto;
@@ -115,46 +114,6 @@ public class MemberController {
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                 .body(logoutResponse);
     }
-
-    @PostMapping("/validate")
-    public ResponseEntity<?> validate(@RequestHeader("Authorization") String requestAccessToken) {
-        if (!authService.validate(requestAccessToken)) {
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-    }
-
-    @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
-                                     @RequestHeader("Authorization") String requestAccessToken) {
-        TokenDto reissuedTokenDto = authService.reissue(requestAccessToken, requestRefreshToken);
-
-        if (reissuedTokenDto != null) {
-            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", reissuedTokenDto.getRefreshToken())
-                    .maxAge(COOKIE_EXPIRATION)
-                    .httpOnly(true)
-                    .secure(true)
-                    .build();
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                    // AT 저장
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + reissuedTokenDto.getAccessToken())
-                    .build();
-
-        } else {
-            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
-                    .maxAge(0)
-                    .path("/")
-                    .build();
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                    .build();
-        }
-    }
-
 
     @ApiOperation(value = "내가 속한 팀 참가자 조회 API", notes = "내가 속한 팀 참가자의 정보들을 반환")
     @ApiResponses(value = {
