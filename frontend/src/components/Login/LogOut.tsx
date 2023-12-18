@@ -1,3 +1,4 @@
+// Logout 컴포넌트 내부
 import React from "react";
 import axios, { AxiosError } from "axios";
 import { useRecoilState } from "recoil";
@@ -18,7 +19,7 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
       // 로그아웃 API 호출
       await axiosInstance.post("/logout", null, {});
 
-      //  setAccessToken(null); accessToken 초기화
+      // setAccessToken(null); accessToken 초기화
 
       console.log("로그아웃 되었습니다.");
       onLogoutSuccess();
@@ -42,6 +43,7 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
 
   return (
     <div>
+      {/* 로그아웃 버튼 클릭 시 handleLogout 함수 호출 */}
       <button onClick={handleLogout}>로그아웃</button>
     </div>
   );
