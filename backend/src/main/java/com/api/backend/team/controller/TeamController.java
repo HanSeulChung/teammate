@@ -213,10 +213,10 @@ public class TeamController {
     );
   }
 
-  @ApiOperation(value = "팀 수정 API",notes = "자기 자신을 기준으로 팀을 조회한다.")
+  @ApiOperation(value = "팀 디테일",notes = "팀 조회")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "업데이트된 팀 정보를 반환"),
-      @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
+      @ApiResponse(code = 200, message = "팀에 대한 세부사항을 알 수 있다."),
+      @ApiResponse(code = 500, message = "팀원이 아닌 경우, 팀이 이미 해체된 경우")
   })
   @GetMapping(value = "/{teamId}")
   public ResponseEntity<TeamsDtoResponse> getTeam(
