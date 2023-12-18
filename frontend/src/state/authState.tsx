@@ -31,7 +31,7 @@ export const loggedInUserState = atom<string | null>({
 export const isAuthenticatedState = atom({
   key: "isAuthenticatedState",
   default: false,
-  // effects_UNSTABLE: [persistAtom],
+  effects_UNSTABLE: [persistAtom],
 });
 
 // 액세스 토큰 상태
@@ -58,25 +58,25 @@ export const userState = atom({
 // 리프레시 토큰 저장 함수
 export const saveRefreshToken = (token: string | null) => {
   if (token) {
-    sessionStorage.setItem("refreshToken", token);
+    localStorage.setItem("refreshToken", token);
   } else {
-    sessionStorage.removeItem("refreshToken");
+    localStorage.removeItem("refreshToken");
   }
 };
 
 // 액세스 토큰 저장 함수
 export const saveAccessToken = (token: string | null) => {
   if (token) {
-    sessionStorage.setItem("accessToken", token);
+    localStorage.setItem("accessToken", token);
   } else {
-    sessionStorage.removeItem("accessToken");
+    localStorage.removeItem("accessToken");
   }
 };
 
 // 토큰 저장 함수
 export const saveToken = ({ accessToken, refreshToken }: TokenState) => {
-  sessionStorage.setItem("accessToken", accessToken);
-  sessionStorage.setItem("refreshToken", refreshToken);
+  localStorage.setItem("accessToken", accessToken);
+  localStorage.setItem("refreshToken", refreshToken);
 };
 
 // 로그아웃 함수
