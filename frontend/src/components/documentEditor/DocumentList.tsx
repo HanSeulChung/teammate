@@ -54,9 +54,20 @@ const Container = styled.section`
   min-height: 800px;
 `;
 
+const InputAndButton = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
 const SearchInput = styled.input`
   background-color: white;
-  width: 50%;
+  width: 100%;
   height: 28px;
   color: black;
   font-size: 16px;
@@ -149,13 +160,18 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   };
   return (
     <Container>
-      <SearchInput
-        type="text"
-        placeholder="제목, 내용 검색"
-        value={searchTerm}
-        onChange={handleSearchChange}
-      />
-      <StyledButton>문서 작성</StyledButton>
+      <InputAndButton>
+        <SearchInput
+          type="text"
+          placeholder="제목, 내용 검색"
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        <ButtonContainer>
+          <StyledButton>문서 작성</StyledButton>
+          <StyledButton>캘린더</StyledButton>
+        </ButtonContainer>
+      </InputAndButton>
       <DocumentContainer>
         {currentDocuments.map((doc) => (
           <DocumentItem
