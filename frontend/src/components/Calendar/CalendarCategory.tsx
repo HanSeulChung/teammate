@@ -37,7 +37,7 @@ const CalendarCategory = () => {
     });
 
     // 바뀌는값
-    const handleChangeOption = (e) => {
+    const handleChangeOption = (e: any) => {
         console.log(e.target.value);
         setCatOption({
             ...catOption,
