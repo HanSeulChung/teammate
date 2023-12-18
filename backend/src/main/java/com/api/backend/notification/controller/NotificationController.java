@@ -51,10 +51,10 @@ public class NotificationController {
     );
   }
 
-  @ApiOperation(value = "팀 알림 list API",notes = "emitter를 반환한다.")
+  @ApiOperation(value = "팀 알림 list API",notes = "팀에 관한 알람을 받을 수 있다.")
   @ApiResponses(value = {
-      @ApiResponse(code = 200, message = "업데이트된 팀 정보를 반환"),
-      @ApiResponse(code = 500, message = "팀원이 아닌 경우")
+      @ApiResponse(code = 200, message = "page처리된 dto를 받을 수 있다."),
+      @ApiResponse(code = 500, message = "팀원이 아닌 경우, 팀이 해체된 경우")
   })
   @ApiImplicitParams(
       {
@@ -81,6 +81,10 @@ public class NotificationController {
     );
   }
 
+  @ApiOperation(value = "맴버 알림 list API",notes = "맴버에 관한 알람을 받을 수 있다.")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "page처리된 dto를 받을 수 있다.")
+  })
   @GetMapping(value = "/member")
   public ResponseEntity<Page<NotificationsResponse>> getMemberNotificationListRequest(
       @ApiIgnore Principal principal,
