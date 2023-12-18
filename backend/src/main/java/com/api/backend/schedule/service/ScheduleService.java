@@ -1,5 +1,6 @@
 package com.api.backend.schedule.service;
 
+import static com.api.backend.global.exception.type.ErrorCode.NON_REPEATING_SCHEDULE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
@@ -374,7 +375,7 @@ public class ScheduleService {
         repeatSchedule.setDay(day);
         break;
       default:
-        throw new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION);
+        throw new CustomException(NON_REPEATING_SCHEDULE_EXCEPTION);
     }
   }
 
