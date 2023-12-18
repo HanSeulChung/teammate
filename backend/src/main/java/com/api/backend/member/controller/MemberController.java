@@ -164,7 +164,7 @@ public class MemberController {
     @PutMapping("/member/password")
     public ResponseEntity<?> updateMemberPassword(
             @RequestHeader("Authorization") String accessToken,
-            @RequestBody UpdateMemberPasswordRequest updateMemberPasswordRequest
+            @RequestBody @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest
     ){
 
         memberService.updateMemberPassword(accessToken, updateMemberPasswordRequest);
