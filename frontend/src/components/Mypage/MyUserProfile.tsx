@@ -3,21 +3,22 @@ import { userState } from "../../state/authState";
 import { User, Team, UserProfileProps } from "../../interface/interface";
 import axios from "axios";
 import {
-  UserProfileContainer,
-  UserProfileTitle,
-  UserProfileInfo,
-  Email,
-  UpdateButton,
+    UserProfileContainer,
+    UserProfileTitle,
+    UserProfileInfo,
+    Email,
+    UpdateButton,
 } from "./MyUserProfileStyled";
 import PasswordChangeModal from "./PasswordChangeModal";
 import { useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
 
 const UserProfile: React.FC<UserProfileProps> = ({
-  teamList,
-  selectedTeam,
-  handleTeamSelect,
+    teamList,
+    selectedTeam,
+    handleTeamSelect,
 }) => {
+
   const [user, setUser] = useRecoilState(userState);
   const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] =
     useState(false);
@@ -53,48 +54,102 @@ const UserProfile: React.FC<UserProfileProps> = ({
     fetchProfileData();
   }, []);
 
-  const handleOpenPasswordChangeModal = () => {
-    setIsPasswordChangeModalOpen(true);
-  };
+    const handleOpenPasswordChangeModal = () => {
+        setIsPasswordChangeModalOpen(true);
+    };
 
-  const handleClosePasswordChangeModal = () => {
-    setIsPasswordChangeModalOpen(false);
-  };
-  return (
-    <UserProfileContainer>
-      <UserProfileTitle>내 프로필</UserProfileTitle>
-      <br />
-      {user && (
-        <UserProfileInfo>
-          <p>이름: {user.name}</p>
-          <span>
-            <Email>Email: {user.id}</Email>
-            <UpdateButton onClick={handleOpenPasswordChangeModal}>
-              비밀번호 변경
-            </UpdateButton>
-          </span>
-          <select
-            title="myteam"
-            id="teamSelect"
-            value={selectedTeam || ""}
-            onChange={handleTeamSelect}
-          >
-            <option value="" disabled>
-              팀을 선택하세요
-            </option>
-            {teamList.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-        </UserProfileInfo>
-      )}
-      {isPasswordChangeModalOpen && (
-        <PasswordChangeModal onClose={handleClosePasswordChangeModal} />
-      )}
-    </UserProfileContainer>
-  );
+    const handleClosePasswordChangeModal = () => {
+        setIsPasswordChangeModalOpen(false);
+    };
+    return (
+        <UserProfileContainer>
+            <UserProfileTitle>내 프로필</UserProfileTitle>
+            <br />
+            {user && (
+                <UserProfileInfo>
+                    <p>이름: {user.name}</p>
+                    <span>
+                        <Email>Email: {user.id}</Email>
+                        <UpdateButton onClick={handleOpenPasswordChangeModal}>
+                            비밀번호 변경
+                        </UpdateButton>
+                    </span>
+                    <select
+                        title="myteam"
+                        id="teamSelect"
+                        value={selectedTeam || ""}
+                        onChange={handleTeamSelect}
+                    >
+                        <option value="" disabled>
+                            팀을 선택하세요
+                        </option>
+                        {teamList.map((team) => (
+                            <option key={team.id} value={team.id}>
+                                {team.name}
+                            </option>
+                        ))}
+                    </select>
+                </UserProfileInfo>
+            )}
+            {isPasswordChangeModalOpen && (
+                <PasswordChangeModal onClose={handleClosePasswordChangeModal} />
+            )}
+            {/* 231218 유나경 시작------------- */}
+            <div className="overflow-x-auto">
+                <table className="table">
+                    <tbody>
+                        {/* row 1 */}
+                        <tr>
+                            <th>이름</th>
+                            <td>{user.name}</td>
+                        </tr>
+                        {/* row 2 */}
+                        <tr>
+                            <th>이메일 아이디</th>
+                            <td>{user.id}</td>
+                        </tr>
+                        {/* row 3 */}
+                        <tr>
+                            <th>현재 비밀번호</th>
+                            <td>
+                                <label className="form-control w-full max-w-xs">
+                                    <input type="text" placeholder="현재 비밀번호" className="input input-bordered w-full max-w-xs" />
+                                    <div className="label">
+                                        <span className="label-text-alt">8자 이상</span>
+                                    </div>
+                                </label>
+                            </td>
+                        </tr>
+                        {/* row 4 */}
+                        <tr>
+                            <th>새 비밀번호</th>
+                            <td>
+                                <label className="form-control w-full max-w-xs">
+                                    <input type="text" placeholder="새 비밀번호" className="input input-bordered w-full max-w-xs" />
+                                    <div className="label">
+                                        <span className="label-text-alt">8자 이상</span>
+                                    </div>
+                                </label>
+                            </td>
+                        </tr>
+                        {/* row 5 */}
+                        <tr>
+                            <th>새 비밀번호 확인</th>
+                            <td>
+                                <label className="form-control w-full max-w-xs">
+                                    <input type="text" placeholder="새 비밀번호" className="input input-bordered w-full max-w-xs" />
+                                    <div className="label">
+                                        <span className="label-text-alt">8자 이상</span>
+                                    </div>
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {/* 231218 유나경 끝------------- */}
+        </UserProfileContainer>
+    );
 };
 
 export default UserProfile;
