@@ -3,6 +3,7 @@ import axios, { AxiosError } from "axios";
 import { useRecoilState } from "recoil";
 import { accessTokenState } from "../../state/authState";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../axios";
 
 interface LogoutProps {
   onLogoutSuccess: () => void;
@@ -15,11 +16,7 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
   const handleLogout = async () => {
     try {
       // 로그아웃 API 호출
-      await axios.post("http://localhost:8080/logout", null, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      await axiosInstance.post("/logout", null, {});
 
       //  setAccessToken(null); accessToken 초기화
 
