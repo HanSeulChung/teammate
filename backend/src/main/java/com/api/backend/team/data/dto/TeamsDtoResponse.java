@@ -1,34 +1,33 @@
 package com.api.backend.team.data.dto;
 
+
 import com.api.backend.team.data.entity.Team;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.domain.Page;
 
 @NoArgsConstructor
 @Getter
 @AllArgsConstructor
 @Builder
 @ToString
-public class TeamDtoResponse {
-
+public class TeamsDtoResponse {
   private Long teamId;
-  private String teamName;
-  private int memberLimit;
-  private LocalDateTime createDt;
+  private String name;
   private String profileUrl;
 
-  public static TeamDtoResponse from(Team team) {
-    return TeamDtoResponse.builder()
+  public static TeamsDtoResponse from(Team team) {
+    return TeamsDtoResponse.builder()
         .teamId(team.getTeamId())
-        .teamName(team.getName())
-        .createDt(team.getCreateDt())
-        .memberLimit(team.getMemberLimit())
+        .name(team.getName())
         .profileUrl(team.getProfileUrl())
         .build();
   }
 
+  public static Page<TeamsDtoResponse> fromDtos(Page<Team> teams){
+    return teams.map(TeamsDtoResponse::from);
+  }
 }

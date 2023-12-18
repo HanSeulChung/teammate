@@ -1,5 +1,6 @@
 package com.api.backend.schedule.data.dto;
 
+import com.api.backend.schedule.data.entity.RepeatSchedule;
 import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
@@ -44,4 +45,20 @@ public class ScheduleEditResponse {
         .teamRoles(ScheduleResponse.getTeamParticipantsRoleFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .build();
   }
+
+  public static ScheduleEditResponse from(RepeatSchedule repeatSchedule) {
+    return ScheduleEditResponse.builder()
+        .scheduleId(repeatSchedule.getRepeatScheduleId())
+        .categoryId(repeatSchedule.getScheduleCategory().getScheduleCategoryId())
+        .startDt(repeatSchedule.getStartDt())
+        .endDt(repeatSchedule.getEndDt())
+        .title(repeatSchedule.getTitle())
+        .content(repeatSchedule.getContent())
+        .place(repeatSchedule.getPlace())
+        .teamParticipantsIds(ScheduleResponse.getTeamParticipantsIdsFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .teamParticipantsNames(ScheduleResponse.getTeamParticipantsNameFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .teamRoles(ScheduleResponse.getTeamParticipantsRoleFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .build();
+  }
+
 }
