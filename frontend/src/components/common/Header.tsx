@@ -9,10 +9,14 @@ import {
   LogoContainer,
 } from "../../styles/HeaderStyled";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { isAuthenticatedState, teamListState } from "../../state/authState";
+import {
+  isAuthenticatedState,
+  teamListState,
+  userState,
+} from "../../state/authState";
 import { useNavigate } from "react-router-dom";
 import AlarmModal from "../alarm/AlarmModal";
-// import Logout from "../Login/LogOut";
+import Logout from "../Login/LogOut";
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] =
@@ -22,6 +26,7 @@ const Header = () => {
   const teamList = useRecoilValue(teamListState);
   const [teamName, setTeamName] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
+  const [user, setUser] = useRecoilState(userState);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -43,7 +48,13 @@ const Header = () => {
       navigate(`${currentPath}/teammembers`);
     }
   };
-
+  const handleLogoutSuccess = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setIsAuthenticated(false);
+    setUser(null);
+    navigate("/signin");
+  };
   useEffect(() => {
     // 현재 페이지가 팀 페이지이고 팀 목록이 존재할 경우에만 팀 이름 설정
     if (isTeamPage && teamList.length > 0) {
@@ -97,7 +108,7 @@ const Header = () => {
                 {/* Logout 컴포넌트 사용 
                 <Link to="/signin">
                   <Logout onLogoutSuccess={() => handleLogoutSuccess()} />
-                </Link>*/}
+                </Link> */}
               </li>
               <li>
                 {isTeamPage ? (
