@@ -35,10 +35,10 @@ public class NotificationService {
 
     teamService.isDeletedCheck(teamParticipants.getTeam());
 
-    return notificationRepository.findAllByTeamParticipants(teamParticipants, pageable);
+    return notificationRepository.findAllByTeamParticipantsAndIsReadFalse(teamParticipants, pageable);
   }
 
   public Page<Notification> getMemberNotificationList(Long memberId, Pageable pageable) {
-    return notificationRepository.findAllByMember_MemberId(memberId, pageable);
+    return notificationRepository.findAllByMember_MemberIdAndIsReadFalse(memberId, pageable);
   }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification,Long> {
 
-  Page<Notification> findAllByTeamParticipants(TeamParticipants teamParticipants, Pageable pageable);
+  Page<Notification> findAllByTeamParticipantsAndIsReadFalse(TeamParticipants teamParticipants, Pageable pageable);
 
-  Page<Notification> findAllByMember_MemberId(Long memberId, Pageable pageable);
+  Page<Notification> findAllByMember_MemberIdAndIsReadFalse(Long memberId, Pageable pageable);
 }
