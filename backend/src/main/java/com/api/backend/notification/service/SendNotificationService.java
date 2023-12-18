@@ -35,7 +35,10 @@ public class SendNotificationService {
     List<Notification> notifications = new ArrayList<>();
 
     if (MEMBER.equals(sendInfo.getSenderType())) {
-      memberNotifySend(sendInfo);
+      notificationService.saveNotification(
+          memberNotifySend(sendInfo)
+      );
+
       return;
     } else if (MEMBERS.equals(sendInfo.getSenderType())) {
       notifications.addAll(
@@ -69,7 +72,6 @@ public class SendNotificationService {
             , info.getSendMessage()
             , info.getAlarmType()
         );
-    notificationService.saveNotification(result);
     SseEmitter emitter = emitterService.getMemberEmitter(info.getMemberId());
 
     if (emitter == null) {
