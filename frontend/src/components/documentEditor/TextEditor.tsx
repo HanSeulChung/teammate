@@ -70,19 +70,19 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   useEffect(() => {
 
-    client.current = new StompJs.Client({
-      brokerURL: "ws://118.67.128.124:8080/ws",
-      // connectHeaders: {
-      //   Authorization: `Bearer ${accessToken}`,
-      // },
-    });
-
     // client.current = new StompJs.Client({
-    //   brokerURL: "ws://localhost:8080/ws",
+    //   brokerURL: "ws://118.67.128.124:8080/ws",
     //   // connectHeaders: {
     //   //   Authorization: `Bearer ${accessToken}`,
     //   // },
     // });
+
+    client.current = new StompJs.Client({
+      brokerURL: "ws://localhost:8080/ws",
+      // connectHeaders: {
+      //   Authorization: `Bearer ${accessToken}`,
+      // },
+    });
 
     const onConnect = (trimmedDocsId: string) => {
       console.log("Connected to WebSocket with", trimmedDocsId);
@@ -91,7 +91,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       };
 
       client.current!.publish({
-        destination: "/app/chat.showDocs",
+        destination: "/app/doc.showDocs",
         body: JSON.stringify(docsMessage),
         
       });
@@ -131,9 +131,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   useEffect(() => {
     const initializeQuill = () => {
-      if (!title || !content) {
-        return;
-      }
+      // if (!title || !content) {
+      //   return;
+      // }
 
       const editor = new Quill("#quill-editor", {
         theme: "snow",
@@ -191,7 +191,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
             .retain(textChangeData.ops[0].retain)
             .delete(textChangeData.ops[1].delete);
             console.log(deleteDelta);
-          // editor.updateContents(deleteDelta);
+          editor.updateContents(deleteDelta);
         }
       });
 
