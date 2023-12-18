@@ -1,7 +1,9 @@
 package com.api.backend.notification.controller;
 
 
+import com.api.backend.notification.data.dto.NotificationsResponse;
 import com.api.backend.notification.service.EmitterService;
+import com.api.backend.notification.service.NotificationService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -9,17 +11,23 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/notification")
 public class NotificationController {
 
   private final EmitterService emitterService;
+  private final NotificationService notificationService;
 
   @ApiOperation(value = "팀 알림 구독 API",notes = "emitter를 반환한다.")
   @ApiResponses(value = {
@@ -40,6 +48,51 @@ public class NotificationController {
   ) {
     return emitterService.setTeamParticipantEmitter(
         teamId, Long.valueOf(principal.getName())
+    );
+  }
+
+  @ApiOperation(value = "팀 알림 list API",notes = "emitter를 반환한다.")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "업데이트된 팀 정보를 반환"),
+      @ApiResponse(code = 500, message = "팀원이 아닌 경우")
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "teamId", value = "팀 id", required = true, dataType = "Long",
+              paramType = "path", defaultValue = "None", example = "1"
+          )
+      })
+
+  @GetMapping(value = "/team/{teamId}")
+  public ResponseEntity<Page<NotificationsResponse>> getTeamNotificationListRequest(
+      @ApiIgnore Principal principal,
+      @PathVariable(value = "teamId") Long teamId,
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(
+        NotificationsResponse.fromDtos(
+            notificationService.getTeamNotificationList(
+                teamId,
+                Long.valueOf(principal.getName()),
+                pageable
+            )
+        )
+    );
+  }
+
+  @GetMapping(value = "/member")
+  public ResponseEntity<Page<NotificationsResponse>> getMemberNotificationListRequest(
+      @ApiIgnore Principal principal,
+      Pageable pageable
+  ) {
+    return ResponseEntity.ok(
+        NotificationsResponse.fromDtos(
+            notificationService.getMemberNotificationList(
+                Long.valueOf(principal.getName()),
+                pageable
+            )
+        )
     );
   }
 }
