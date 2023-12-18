@@ -88,7 +88,7 @@ export default function TeamInfo() {
         return;
       }
       const response = await axios.post(
-        "http://localhost:8080/team",
+        "http://118.67.128.124:8080/team",
         {
           teamName,
           teamImg: selectedImage,

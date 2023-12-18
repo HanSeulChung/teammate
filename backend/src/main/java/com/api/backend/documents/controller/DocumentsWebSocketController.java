@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DocumentsWebSocketController {
   private final DocumentsRepository documentsRepository;
 
-  @MessageMapping("/chat.showDocs")
+  @MessageMapping("/doc.showDocs")
   @SendTo("/topic/public")
   public DocumentResponse sendMessage(
       @Payload DocumentMessage documentMessage

@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ErrorCode {
   // valid
   PARAMETER_NOT_VALID_EXCEPTION(400, "잘못된 파라미터 값 입니다."),
+  INVALID_MESSAGE_EXCEPTION(500, "잘못된 메세지 값입니다."),
 
   ENUM_NOT_VALID_EXCEPTION(500, "잘못된 ENUM요청이 들어왔습니다."),
   ENUM_NOT_FOUND_EXCEPTION(500, "비어있는 ENUM입니다."),
