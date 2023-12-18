@@ -1,6 +1,5 @@
 package com.api.backend.team.service;
 
-import static com.api.backend.team.data.ResponseMessage.DELETE_TEAM_PARTICIPANT;
 import static com.api.backend.team.data.ResponseMessage.UPDATE_ROLE_TEAM_PARTICIPANT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,10 +47,10 @@ class TeamParticipantsServiceTest {
     )).thenReturn(Optional.of(teamParticipants));
     doNothing().when(teamParticipantsRepository).delete(any());
     //when
-    String result = teamParticipantsService.deleteTeamParticipant(userId, teamId);
+    TeamParticipants result = teamParticipantsService.deleteTeamParticipant(userId, teamId);
 
     //then
-    assertEquals(result,DELETE_TEAM_PARTICIPANT);
+    assertEquals(result.getTeamRole() , TeamRole.MATE);
   }
 
   @Test

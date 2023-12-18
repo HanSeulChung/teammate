@@ -1,14 +1,12 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.category.type.CategoryType;
+import com.api.backend.schedule.data.dto.ScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.service.ScheduleService;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,11 +31,18 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
 
   @PostMapping
-  public ResponseEntity<Page<ScheduleResponse>> addSchedule(@RequestBody @Valid ScheduleRequest request,
+  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId) {
-    Page<ScheduleResponse> scheduleResponse = ScheduleResponse.from(
-        scheduleService.addSchedules(request)
-    );
+    ScheduleResponse scheduleResponse;
+    if (!request.isRepeat()) {
+      scheduleResponse = ScheduleResponse.from(
+          scheduleService.addSimpleSchedule(request)
+      );
+    } else {
+      scheduleResponse = ScheduleResponse.from(
+          scheduleService.addRepeatSchedule(request)
+      );
+    }
     return ResponseEntity.ok(scheduleResponse);
   }
 
@@ -50,19 +55,8 @@ public class ScheduleController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/calendar/week")
-  public ResponseEntity<Page<ScheduleResponse>> getWeeklySchedules(
-      @PathVariable Long teamId,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDt,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDt,
-      @RequestParam(required = false) CategoryType type,
-      Pageable pageable) {
 
-    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForWeek(teamId, startDt, endDt, type, pageable);
-    return ResponseEntity.ok(schedules);
-  }
-
-  @GetMapping("/calendar/month")
+  @GetMapping("/calendar")
   public ResponseEntity<Page<ScheduleResponse>> getMonthlySchedules(
       @PathVariable Long teamId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDt,
@@ -70,16 +64,17 @@ public class ScheduleController {
       @RequestParam(required = false) CategoryType type,
       Pageable pageable) {
 
-    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForMonth(teamId, startDt, endDt, type, pageable);
+    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForMonth(teamId, startDt, endDt,
+        type, pageable);
 
     return ResponseEntity.ok(schedules);
   }
 
   @PutMapping
   public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
-  @Valid ScheduleRequest editRequest) {
+  @Valid ScheduleEditRequest editRequest) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
-        scheduleService.editScheduleAndSave(editRequest)
+        scheduleService.editSimpleScheduleAndSave(editRequest)
     );
     return ResponseEntity.ok(response);
   }
@@ -87,7 +82,7 @@ public class ScheduleController {
   @DeleteMapping("/{scheduleId}")
   public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
       @PathVariable Long scheduleId) {
-    scheduleService.deleteSchedule(scheduleId);
+    scheduleService.deleteSimpleSchedule(scheduleId);
     return ResponseEntity.ok("해당 일정이 정상적으로 삭제되었습니다.");
   }
 }

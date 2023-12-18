@@ -30,7 +30,8 @@ public class CommentService {
   public Comment createComment(Long teamId, String documentId, CommentInitRequest commentInitRequest, Principal principal) {
 
     Long memberId = validCheck.getMemberId(principal);
-    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberId(memberId);
+    validCheck.validTeamParticipant(memberId);
+    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
 
     Documents validDocument = validCheck.findValidDocument(documentId);
 
@@ -50,7 +51,9 @@ public class CommentService {
   public Page<Comment> getCommentList(Long teamId, String documentId,  Principal principal, Pageable pageable) {
 
     Long memberId = validCheck.getMemberId(principal);
-    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberId(memberId);
+    validCheck.validTeamParticipant(memberId);
+    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
+
     Documents documents = validCheck.findValidDocument(documentId);
     validCheck.validDocumentByTeamId(teamId, documents);
     List<Comment> commentIds = documents.getCommentIds();
@@ -69,7 +72,9 @@ public class CommentService {
   public Comment editComment(Long teamId, String documentId, String commentId, CommentEditRequest commentEditRequest, Principal principal) {
 
     Long memberId = validCheck.getMemberId(principal);
-    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberId(memberId);
+    validCheck.validTeamParticipant(memberId);
+    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
+
     Documents documents = validCheck.findValidDocument(documentId);
     validCheck.validDocumentByTeamId(teamId, documents);
 
@@ -90,7 +95,8 @@ public class CommentService {
   public DeleteCommentsResponse deleteComment(Long teamId, String documentId, String commentId, Principal principal) {
 
     Long memberId = validCheck.getMemberId(principal);
-    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberId(memberId);
+    validCheck.validTeamParticipant(memberId);
+    TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
 
     Documents documents = validCheck.findValidDocument(documentId);
 

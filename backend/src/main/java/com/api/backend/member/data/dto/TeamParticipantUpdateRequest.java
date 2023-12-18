@@ -1,5 +1,7 @@
 package com.api.backend.member.data.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,8 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class TeamParticipantUpdateRequest {
 
   @NotNull(message = "팀 참가자 ID가 비어있습니다.")
+  @Schema(description = "팀 참가자 ID", example = "1", required = true)
   private Long teamParticipantsId;
-  @NotNull(message = "팀 닉네임이 null 입니다.")
+  @NotBlank(message = "팀 닉네임이 null 입니다.")
+  @Schema(description = "팀 참가자 닉네임", example = "팀메이트")
   private String teamNickName;
+  @Schema(description = "팀 참가자 이미지", example = "이미지.png")
+  @NotBlank(message = "팀 닉네임이 null 입니다.")
   private MultipartFile participantImg;
 }

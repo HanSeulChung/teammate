@@ -14,12 +14,15 @@ public interface TeamParticipantsRepository extends JpaRepository<TeamParticipan
   Optional<TeamParticipants> findByTeam_TeamIdAndMember_MemberId(Long teamId, Long userId);
 
   boolean existsByTeam_TeamIdAndMember_MemberId(Long teamId,Long userId);
+  boolean existsByMember_MemberId(Long userId);
 
   Page<TeamParticipants> findAllByMember_MemberIdAndTeam_IsDelete(Long memberId, boolean flag, Pageable pageable);
 
   Optional<TeamParticipants> findByMember_Email(String email);
   Optional<TeamParticipants> findByMember_MemberId(Long memberId);
+  Optional<TeamParticipants> findByMember_MemberIdAndTeam_TeamId(Long memberId, Long teamId);
 
   List<TeamParticipants> findByTeam_TeamIdAndTeamParticipantsIdNot(Long teamId, Long teamParticipantsId);
 
+  List<TeamParticipants> findAllByTeam_TeamIdAndMember_MemberIdNot(Long teamId, Long memberId);
 }
