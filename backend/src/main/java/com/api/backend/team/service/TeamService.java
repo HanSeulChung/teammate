@@ -169,7 +169,7 @@ public class TeamService {
     return TeamKickOutResponse.builder()
         .teamId(request.getTeamId())
         .kickOutMemberId(teamParticipants.getMember().getMemberId())
-        .nickName(teamParticipants.getTeamNickName())
+        .teamName(teamParticipants.getTeamNickName())
         .message(KICK_OUT_TEAM_PARTICIPANTS)
         .build();
   }
