@@ -1,7 +1,7 @@
 package com.api.backend.notification.data.dto;
 
 import com.api.backend.notification.data.entity.Notification;
-import com.api.backend.notification.data.type.Type;
+import com.api.backend.notification.data.type.AlarmType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationDto{
-  private Type type;
+  private AlarmType alarmType;
   private String teamName;
   private String nickName;
   private String message;
@@ -23,7 +23,7 @@ public class NotificationDto{
         .message(notification.getMessage())
         .teamName(notification.getTeamName() == null ? null : notification.getTeamName())
         .targetUrl(notification.getTargetUrl() == null ? null : notification.getTargetUrl())
-        .type(notification.getType())
+        .alarmType(notification.getAlarmType())
         .build();
   }
 }

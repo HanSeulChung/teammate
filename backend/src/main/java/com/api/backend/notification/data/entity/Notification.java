@@ -2,7 +2,7 @@ package com.api.backend.notification.data.entity;
 
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.member.data.entity.Member;
-import com.api.backend.notification.data.type.Type;
+import com.api.backend.notification.data.type.AlarmType;
 import com.api.backend.team.data.entity.TeamParticipants;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +35,7 @@ public class Notification extends BaseEntity {
   private Long notificationId;
 
   @Enumerated(EnumType.STRING)
-  private Type type;
+  private AlarmType alarmType;
 
   private String teamName;
   private String nickName;
@@ -52,39 +52,39 @@ public class Notification extends BaseEntity {
   @JoinColumn(name = "team_participants_id")
   private TeamParticipants teamParticipants;
 
-  public static Notification convertToMemberNotify(Long memberId, String teamName, String message, Type type) {
+  public static Notification convertToMemberNotify(Long memberId, String teamName, String message, AlarmType alarmType) {
     return Notification.builder()
         .member(Member.builder().memberId(memberId).build())
         .teamName(teamName)
         .message(message)
-        .type(type)
+        .alarmType(alarmType)
         .build();
   }
 
-  public static Notification convertToMemberNotify(Member member, String teamName, String message, Type type) {
+  public static Notification convertToMemberNotify(Member member, String teamName, String message, AlarmType alarmType) {
     return Notification.builder()
         .member(member)
         .teamName(teamName)
         .message(message)
-        .type(type)
+        .alarmType(alarmType)
         .build();
   }
 
-  public static Notification convertNickNameToTeamParticipantsNotify(TeamParticipants teamParticipants,String updateParticipantNickName, String message, Type type) {
+  public static Notification convertNickNameToTeamParticipantsNotify(TeamParticipants teamParticipants,String updateParticipantNickName, String message, AlarmType alarmType) {
     return Notification.builder()
         .teamParticipants(teamParticipants)
         .nickName(updateParticipantNickName)
         .message(message)
-        .type(type)
+        .alarmType(alarmType)
         .build();
   }
 
-  public static Notification convertUrlToTeamParticipantsNotify(TeamParticipants teamParticipants,String targetUrl, String message, Type type) {
+  public static Notification convertUrlToTeamParticipantsNotify(TeamParticipants teamParticipants,String targetUrl, String message, AlarmType alarmType) {
     return Notification.builder()
         .teamParticipants(teamParticipants)
         .targetUrl(targetUrl)
         .message(message)
-        .type(type)
+        .alarmType(alarmType)
         .build();
   }
 }
