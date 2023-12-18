@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
 import Calender from "../views/Calender";
 
@@ -10,7 +10,7 @@ import KakaoLogin from "../components/Login/KakaoLogin";
 import Home from "../components/Home/HomeContent";
 import HomeView from "../views/HomeView";
 import { v4 as uuidV4 } from "uuid";
-import React from "react";
+import React, { useEffect } from "react";
 import CreateTextView from "../views/CreateTextView";
 import DocumentListView from "../views/DocumentListView";
 import CommentView from "../views/CommentView";
@@ -21,9 +21,15 @@ import TeamInfo from "../components/TeamCreate/TeamInfo";
 import Mypage from "../components/Mypage/Mypage";
 
 const Router = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) return;
+    else navigate("/");
+  }, []);
+
   return (
     <Routes>
-      <Route path="/캘린더" element={<Calender />} />
       <Route path="/create-text/" element={<CreateTextView />} />
       <Route
         path="/team/:teamId/documents/:documentsId"

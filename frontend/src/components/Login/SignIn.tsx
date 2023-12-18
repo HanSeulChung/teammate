@@ -21,7 +21,7 @@ const SignIn = () => {
     useRecoilState(isAuthenticatedState);
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-  const { setUser } = useUser();
+  const { saveUser } = useUser();
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
@@ -62,7 +62,7 @@ const SignIn = () => {
         setRefreshToken(newRefreshToken);
       }
       setIsAuthenticated(true);
-      setUser({ id: email, name: response.data.name });
+      saveUser({ id: email, name: response.data.name });
       navigate("/homeview");
       console.log("login successful");
     } catch (error) {
