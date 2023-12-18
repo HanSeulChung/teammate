@@ -173,25 +173,29 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         </ButtonContainer>
       </InputAndButton>
       <DocumentContainer>
-        {currentDocuments.map((doc) => (
-          <DocumentItem
-            key={doc.documentId}
-            onClick={() => handleDocumentClick(doc.documentId)}
-          >
-            <TitleContentContainer>
-              <h2>{doc.title}</h2>
-              <p>
-                {doc.content.length > 20
-                  ? doc.content
-                  : doc.content.substring(20) + "..."}
-              </p>
-            </TitleContentContainer>
-            <DatesContainer>
-              <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
-              <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
-            </DatesContainer>
-          </DocumentItem>
-        ))}
+        {currentDocuments.length !== 0 ? (
+          currentDocuments.map((doc) => (
+            <DocumentItem
+              key={doc.documentId}
+              onClick={() => handleDocumentClick(doc.documentId)}
+            >
+              <TitleContentContainer>
+                <h2>{doc.title}</h2>
+                <p>
+                  {doc.content.length > 20
+                    ? doc.content
+                    : doc.content.substring(20) + "..."}
+                </p>
+              </TitleContentContainer>
+              <DatesContainer>
+                <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
+                <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
+              </DatesContainer>
+            </DocumentItem>
+          ))
+        ) : (
+          <span>문서가 없습니다.</span>
+        )}
       </DocumentContainer>
       {renderPagination()}
     </Container>
