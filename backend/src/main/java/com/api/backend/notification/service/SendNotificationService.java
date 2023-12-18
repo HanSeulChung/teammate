@@ -243,8 +243,14 @@ public class SendNotificationService {
           teamParticipant.getTeamParticipantsId()
       );
 
+
+      SseEmitter sseEmitter = emitterService.getTeamParticipantEmitters(teamId, emitterId);
+
+      if (sseEmitter == null) {
+        continue;
+      }
       sseEmitters.add(
-          emitterService.getTeamParticipantEmitters(teamId, emitterId)
+          sseEmitter
       );
     }
     return sseEmitters;
