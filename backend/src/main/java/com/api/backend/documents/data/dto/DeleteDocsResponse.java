@@ -22,5 +22,17 @@ public class DeleteDocsResponse {
   @NotBlank
   @Schema(description = "deleted document message", example = "삭제 되었습니다.")
   private String message;
+
+  @NotBlank
+  @Schema(description = "deleted document deletedParticipantNickName", example = "김땡땡")
+  private String deleteParticipantNickName;
+
+  @NotBlank
+  @Schema(description = "deleted document deletedParticipantId", example = "1L")
+  private Long deleteParticipantId;
+
+  @NotBlank
+  @Schema(description = "deleted document teamId", example = "1L")
+  private Long teamId;
 }
 

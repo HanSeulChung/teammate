@@ -26,5 +26,6 @@ public class TeamParticipantUpdateRequest {
   @Schema(description = "팀 참가자 닉네임", example = "팀메이트")
   private String teamNickName;
   @Schema(description = "팀 참가자 이미지", example = "이미지.png")
+  @NotBlank(message = "팀 닉네임이 null 입니다.")
   private MultipartFile participantImg;
 }

@@ -151,6 +151,7 @@ public class DocumentsController {
               , example = "657595c6c97b622e0440f394"
           )
       })
+  @SendNotify
   @DeleteMapping("/{documentsId}")
   public ResponseEntity<DeleteDocsResponse> deleteDocs(
       @PathVariable
