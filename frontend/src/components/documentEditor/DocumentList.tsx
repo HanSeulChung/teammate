@@ -164,7 +164,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
           >
             <TitleContentContainer>
               <h2>{doc.title}</h2>
-              <p>{doc.content}</p>
+              <p>
+                {doc.content.length > 20
+                  ? doc.content
+                  : doc.content.substring(20) + "..."}
+              </p>
             </TitleContentContainer>
             <DatesContainer>
               <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
