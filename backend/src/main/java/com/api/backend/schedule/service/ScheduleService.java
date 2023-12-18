@@ -96,13 +96,12 @@ public class ScheduleService {
         editRequest.getSimpleScheduleId()
     );
 
-    updatedSimpleSchedule.setScheduleCategory(category);
-    updatedSimpleSchedule.setTitle(editRequest.getTitle());
-    updatedSimpleSchedule.setContent(editRequest.getContent());
-    updatedSimpleSchedule.setStartDt(editRequest.getStartDt());
-    updatedSimpleSchedule.setEndDt(editRequest.getEndDt());
-    updatedSimpleSchedule.setPlace(editRequest.getPlace());
-    updatedSimpleSchedule.setColor(editRequest.getColor());
+    updatedSimpleSchedule.setSimpleScheduleInfo(
+        category,
+        editRequest.getTitle(), editRequest.getContent(),
+        editRequest.getStartDt(), editRequest.getEndDt(),
+        editRequest.getPlace(), editRequest.getColor()
+    );
 
     List<TeamParticipantsSchedule> originTeamParticipantsSchedules =
         teamParticipantsScheduleRepository.findAllBySimpleSchedule_SimpleScheduleId(
@@ -165,7 +164,7 @@ public class ScheduleService {
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
       return repeatScheduleRepository.save(updateRepeatSchedule);
 
-    //이 일정/이 일정 및 향후 일정 선택시 originRepeatId를 갖고 newRepeatSchedule Insert
+      //이 일정/이 일정 및 향후 일정 선택시 originRepeatId를 갖고 newRepeatSchedule Insert
     } else {
       RepeatSchedule updateRepeatSchedule = buildRepeatScheduleForEdit(editRequest, team, category);
 
@@ -180,7 +179,8 @@ public class ScheduleService {
           updateRepeatSchedule, teamParticipantsIds);
 
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
-      updateRepeatSchedule.setOriginRepeatScheduleId(scheduleByOriginRepeatScheduleId.getOriginRepeatScheduleId());
+      updateRepeatSchedule.setOriginRepeatScheduleId(
+          scheduleByOriginRepeatScheduleId.getOriginRepeatScheduleId());
       return repeatScheduleRepository.save(updateRepeatSchedule);
     }
   }
@@ -293,7 +293,8 @@ public class ScheduleService {
     return newRepeatSchedule;
   }
 
-  private RepeatSchedule buildRepeatScheduleForEdit(RepeatScheduleInfoEditRequest editRequest, Team team,
+  private RepeatSchedule buildRepeatScheduleForEdit(RepeatScheduleInfoEditRequest editRequest,
+      Team team,
       ScheduleCategory category) {
     String month = editRequest.getStartDt().getMonth().name();
     int day = editRequest.getStartDt().getDayOfMonth();
