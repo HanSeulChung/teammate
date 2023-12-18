@@ -9,6 +9,7 @@ import lombok.Getter;
 public enum SenderType {
   MEMBER("단일 회원"),
   MEMBERS("다수 회원"),
+  TEAM_PARTICIPANTS_URL("다수 팀원(URL포함)"),
   TEAM_PARTICIPANTS("다수 팀원");
 
   private final String description;

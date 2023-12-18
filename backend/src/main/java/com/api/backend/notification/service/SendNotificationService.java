@@ -1,24 +1,15 @@
 package com.api.backend.notification.service;
 
-import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION;
-import static com.api.backend.notification.data.NotificationMessage.CREATE_DOCUMENT;
-import static com.api.backend.notification.data.NotificationMessage.DELETE_DOCUMENT;
-import static com.api.backend.notification.data.NotificationMessage.EXIT_TEAM_PARTICIPANT;
-import static com.api.backend.notification.data.NotificationMessage.KICK_OUT_TEAM;
-import static com.api.backend.notification.data.NotificationMessage.UPDATE_TEAM_PARTICIPANT_TEAM;
-import static com.api.backend.notification.data.type.Type.DOCUMENTS;
+import static com.api.backend.notification.data.type.SenderType.MEMBER;
+import static com.api.backend.notification.data.type.SenderType.MEMBERS;
+import static com.api.backend.notification.data.type.SenderType.TEAM_PARTICIPANTS;
+import static com.api.backend.notification.data.type.SenderType.TEAM_PARTICIPANTS_URL;
 
-import com.api.backend.documents.data.dto.DeleteDocsResponse;
-import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
+import com.api.backend.notification.data.dto.DtoValueExtractor;
 import com.api.backend.notification.data.dto.NotificationDto;
 import com.api.backend.notification.data.entity.Notification;
-import com.api.backend.notification.data.type.Type;
-import com.api.backend.team.data.dto.TeamDisbandResponse;
-import com.api.backend.team.data.dto.TeamKickOutResponse;
-import com.api.backend.team.data.dto.TeamParticipantsDeleteResponse;
-import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.service.TeamParticipantsService;
 import java.util.ArrayList;
@@ -26,13 +17,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.sql.Delete;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-@Component
-@Async
+@Service
 @Slf4j
 @RequiredArgsConstructor
 public class SendNotificationService {
@@ -40,79 +29,65 @@ public class SendNotificationService {
   private final EmitterService emitterService;
   private final NotificationService notificationService;
   private final TeamParticipantsService teamParticipantsService;
-  @Async("EMITTER_SEND_EXECUTOR")
-  public void convertToDtoAndSendOrThrowsNotFoundClass(Object source) {
 
+  @Async("EMITTER_SEND_EXECUTOR")
+  public void convertToDtoAndSendOrThrowsNotFoundClass(DtoValueExtractor sendInfo) {
     List<Notification> notifications = new ArrayList<>();
 
-    if (source instanceof TeamKickOutResponse) { // 팀원 강퇴
-      handleTeamKickOutAndNotifySend((TeamKickOutResponse) source);
-    }else if (source instanceof TeamParticipantsUpdateResponse) { // 팀 참가
-      notifications = handleTeamParticipantsUpdateAndNotifySend((TeamParticipantsUpdateResponse) source);
-    }else if (source instanceof TeamParticipantsDeleteResponse) { // 팀(나 자신) 탈퇴
-      notifications = handleTeamParticipantsDeleteAndNotifySend((TeamParticipantsDeleteResponse) source);
-    } else if (source instanceof TeamDisbandResponse) { // 팀 해체
-      notifications = handleTeamDisbandAndNotifySend((TeamDisbandResponse) source);
-    } else if (source instanceof DocumentResponse) { // 문서 알람
-      notifications = handleDocumentAndNotifySend((DocumentResponse) source);
-    } else if (source instanceof Delete) {
-      notifications = handleDeleteDocumentAndNotifySend((DeleteDocsResponse) source);
+    if (MEMBER.equals(sendInfo.getSenderType())) {
+      memberNotifySend(sendInfo);
+      return;
+    } else if (MEMBERS.equals(sendInfo.getSenderType())) {
+      notifications.addAll(
+          membersNotifySend(sendInfo)
+      );
+    } else if (TEAM_PARTICIPANTS.equals(sendInfo.getSenderType())) {
+      notifications.addAll(
+          teamParticipantsSendNotify(sendInfo)
+      );
+    } else if (TEAM_PARTICIPANTS_URL.equals(sendInfo.getSenderType())) {
+      notifications.addAll(
+        teamParticipantsIncludeURLNotifySend(sendInfo)
+      );
+    } else {
+      throw new CustomException();
     }
 
     if (notifications.isEmpty()) {
       return;
     }
+
     notificationService.saveAllNotification(notifications);
   }
 
-  private List<Notification> handleDeleteDocumentAndNotifySend(DeleteDocsResponse response) {
-    List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
-        response.getDeleteParticipantId(), response.getTeamId()
-    );
+  public Notification memberNotifySend(DtoValueExtractor info) {
 
-    if (teamParticipants.isEmpty()) {
-      return null;
-    }
-
-    List<Notification> notifications = teamParticipants
-        .stream().map(i ->
-            Notification.convertNickNameToTeamParticipantsNotify(i, response.getDeleteParticipantNickName() ,DELETE_DOCUMENT , DOCUMENTS)
-        )
-        .collect(Collectors.toList());
-
-    sendNotifications(
-        getTeamEmitters(response.getTeamId(), teamParticipants),
-        NotificationDto.from(notifications.get(0))
-    );
-
-    return notifications;
-  }
-
-  public void handleTeamKickOutAndNotifySend(TeamKickOutResponse response) {
     Notification result = Notification
         .convertToMemberNotify(
-            response.getKickOutMemberId()
-            , response.getTeamName()
-            , KICK_OUT_TEAM
-            , Type.KICKOUT
+            info.getMemberId()
+            , info.getTeamNameOrTeamParticipantNickName()
+            , info.getSendMessage()
+            , info.getAlarmType()
         );
     notificationService.saveNotification(result);
-
-    SseEmitter emitter = emitterService.getMemberEmitter(response.getKickOutMemberId());
+    SseEmitter emitter = emitterService.getMemberEmitter(info.getMemberId());
 
     if (emitter == null) {
-      return;
+      return result;
     }
 
-    emitterService.sendNotification(emitter,result);
+    emitterService.sendNotification(emitter, result);
+
+    return result;
   }
 
-  public List<Notification> handleTeamParticipantsUpdateAndNotifySend(TeamParticipantsUpdateResponse response) {
-    String nickName = response.getUpdateTeamParticipantNickName();
+  public List<Notification> teamParticipantsSendNotify(DtoValueExtractor info) {
+    String nickName = info.getTeamNameOrTeamParticipantNickName();
 
-    List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
-        response.getUpdateTeamParticipantId(), response.getTeamId()
-    );
+    List<TeamParticipants> teamParticipants = teamParticipantsService
+        .getTeamParticipantsExcludeId(
+            info.getExcludeTeamParticipantId(), info.getTeamId()
+        );
 
     if (teamParticipants.isEmpty()) {
       return null;
@@ -121,57 +96,26 @@ public class SendNotificationService {
         .stream().map(i ->
             Notification.convertNickNameToTeamParticipantsNotify(
                 i,
-                nickName ,
-                UPDATE_TEAM_PARTICIPANT_TEAM ,
-                Type.INVITE
+                nickName,
+                info.getSendMessage(),
+                info.getAlarmType()
             )
         )
         .collect(Collectors.toList());
 
     sendNotifications(
-        getTeamEmitters(response.getTeamId(), teamParticipants),
-        NotificationDto.from(notifications.get(0))
-        );
-
-    return notifications;
-  }
-
-  public List<Notification> handleTeamParticipantsDeleteAndNotifySend(TeamParticipantsDeleteResponse response) {
-    String nickName = response.getNickName();
-
-    List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsByExcludeMemberId(
-        response.getTeamParticipantsId(),response.getTeamId());
-
-    if (teamParticipants.isEmpty()) {
-      return null;
-    }
-
-    List<Notification> notifications = teamParticipants
-        .stream().map(i ->
-            Notification.convertNickNameToTeamParticipantsNotify(i, nickName ,EXIT_TEAM_PARTICIPANT , Type.EXIT_TEAM_PARTICIPANT)
-        )
-        .collect(Collectors.toList());
-
-    List<SseEmitter> sseEmitters = getTeamEmitters(response.getTeamId(),teamParticipants);
-
-    if (notifications.isEmpty()) {
-      return null;
-    }
-
-    sendNotifications(
-        sseEmitters,
+        getTeamEmitters(info.getTeamId(), teamParticipants),
         NotificationDto.from(notifications.get(0))
     );
 
     return notifications;
   }
 
-  public List<Notification> handleTeamDisbandAndNotifySend(TeamDisbandResponse response) {
+  public List<Notification> membersNotifySend(DtoValueExtractor info) {
     List<Member> members = teamParticipantsService.getTeamParticipantsByExcludeMemberId(
-            response.getTeamId(), response.getMemberId()).stream()
+            info.getTeamId(), info.getExcludeMemberId()).stream()
         .map(TeamParticipants::getMember)
         .collect(Collectors.toList());
-
 
     if (members.isEmpty()) {
       return null;
@@ -181,9 +125,9 @@ public class SendNotificationService {
         .stream().map(i ->
             Notification.convertToMemberNotify(
                 i,
-                response.getTeamName(),
-                EXIT_TEAM_PARTICIPANT ,
-                Type.EXIT_TEAM_PARTICIPANT
+                info.getTeamNameOrTeamParticipantNickName(),
+                info.getSendMessage(),
+                info.getAlarmType()
             )
         )
         .collect(Collectors.toList());
@@ -195,14 +139,11 @@ public class SendNotificationService {
 
     return notifications;
   }
-  public List<Notification> handleDocumentAndNotifySend(DocumentResponse response) {
-    if (response.getTeamId() == null && response.getId() == null) {
-      throw new CustomException(DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION);
-    }
-    String targetUrl = "/team/" + response.getTeamId() +"/documents/" + response.getId();
+
+  public List<Notification> teamParticipantsIncludeURLNotifySend(DtoValueExtractor info) {
 
     List<TeamParticipants> teamParticipants = teamParticipantsService.getTeamParticipantsExcludeId(
-        response.getWriterId(), response.getTeamId()
+        info.getExcludeTeamParticipantId(), info.getTeamId()
     );
 
     if (teamParticipants.isEmpty()) {
@@ -211,14 +152,17 @@ public class SendNotificationService {
 
     List<Notification> notifications = teamParticipants
         .stream().map(i ->
-            Notification.convertUrlToTeamParticipantsNotify(i, targetUrl ,CREATE_DOCUMENT , DOCUMENTS)
+            Notification.convertUrlToTeamParticipantsNotify(
+                i, info.getUrl(), info.getSendMessage(), info.getAlarmType()
+            )
         )
         .collect(Collectors.toList());
 
     sendNotifications(
-        getTeamEmitters(response.getTeamId(), teamParticipants),
+        getTeamEmitters(info.getTeamId(), teamParticipants),
         NotificationDto.from(notifications.get(0))
     );
+
     return notifications;
   }
 
@@ -229,12 +173,14 @@ public class SendNotificationService {
     }
 
     for (SseEmitter emitter : sseEmitters) {
-      emitterService.sendNotification(emitter,notificationDto);
+      emitterService.sendNotification(emitter, notificationDto);
     }
   }
 
-  public List<SseEmitter> getTeamEmitters(Long teamId,
-      List<TeamParticipants> teamParticipants) {
+  public List<SseEmitter> getTeamEmitters(
+      Long teamId,
+      List<TeamParticipants> teamParticipants
+  ) {
 
     List<SseEmitter> sseEmitters = new ArrayList<>();
     for (TeamParticipants teamParticipant : teamParticipants) {
@@ -243,12 +189,18 @@ public class SendNotificationService {
           teamParticipant.getTeamParticipantsId()
       );
 
+      SseEmitter sseEmitter = emitterService.getTeamParticipantEmitters(teamId, emitterId);
+      if (sseEmitter == null) {
+        continue;
+      }
+
       sseEmitters.add(
-          emitterService.getTeamParticipantEmitters(teamId, emitterId)
+          sseEmitter
       );
     }
     return sseEmitters;
   }
+
   public List<SseEmitter> getMemberEmitters(List<Member> members) {
     List<SseEmitter> sseEmitters = new ArrayList<>();
 
