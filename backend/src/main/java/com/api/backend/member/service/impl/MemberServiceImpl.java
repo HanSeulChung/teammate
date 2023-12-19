@@ -182,6 +182,11 @@ public class MemberServiceImpl implements MemberService {
         if (!updateMemberPasswordRequest.getNewPassword().equals(updateMemberPasswordRequest.getReNewPassword())) {
             throw new CustomException(NOT_MATCH_NEW_PASSWORD_EXCEPTION);
         }
+
+        String encodePassword = passwordEncoder.encode(updateMemberPasswordRequest.getNewPassword());
+        updateMemberPasswordRequest.setNewPassword(encodePassword);
+        member.setPassword(updateMemberPasswordRequest.getNewPassword());
+        memberRepository.save(member);
     }
 
     @Transactional(readOnly = true)
