@@ -101,7 +101,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     const fetchDocuments = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/team/${Id}/documents?page=${currentPage}&size=10`,
+          `${API_BASE_URL}/team/${Id}/documents`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
