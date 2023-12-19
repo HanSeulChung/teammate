@@ -19,6 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Entity
 @NoArgsConstructor
@@ -40,6 +42,7 @@ public class Notification extends BaseEntity {
   private String message;
   private String targetUrl;
   @Column(columnDefinition = "boolean default false")
+  @Setter
   private boolean isRead;
 
   @ManyToOne(fetch = FetchType.LAZY)
