@@ -2,7 +2,6 @@ package com.api.backend.notification.data.dto;
 
 import com.api.backend.notification.data.entity.Notification;
 import com.api.backend.notification.data.type.AlarmType;
-import com.api.backend.notification.data.type.Type;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
