@@ -141,18 +141,21 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
       editor.setText(content);
 
-      editor.on("text-change", (range, delta, oldDelta ) => {
+      editor.on("text-change", (delta, oldDelta, source ) => {
+        if (source != 'user') {
+
+        }
         console.log("text-change가 감지되었습니다.");
-        console.log("변화한 내용:", range);
-        handleTextChange(editor, range); // 변경된 delta 값을 전달합니다.
+        console.log("변화한 내용:", delta);
+        handleTextChange(editor, delta); // 변경된 delta 값을 전달합니다.
       });
 
 
-      editor.on('selection-change', (range, oldRange, source) => {
+      editor.on('selection-change', (delta, oldDelta, source) => {
         if (source === 'user') {
           // 선택 변경이 발생했을 때의 처리
-          console.log('selection-change:', range);
-          handleSelectionChange(editor, range);
+          console.log('selection-change:', delta);
+          handleSelectionChange(editor, delta);
         }
       });
 
@@ -163,16 +166,16 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     initializeQuill();
   }, [content]);
 
-  const handleTextChange = (editor: Quill, range: any) => {
+  const handleTextChange = (editor: Quill, delta: any) => {
     if (client.current) {
-      console.log("range", range);
+      console.log("range", delta);
       const content = editor.getContents(); // 새로운 내용을 가져옵니다.
 
       client.current!.publish({
         destination: '/app/doc.updateDocsByTextChange',
-        body: JSON.stringify({ eventName: 'text-change', deltaValue: range }),
+        body: JSON.stringify({ eventName: 'text-change', deltaValue: delta }),
       });
-      console.log('Delta_range sent to server:', range);
+      console.log('delta sent to server:', delta);
       var Delta = Quill.import('delta');  
       client.current!.subscribe("/topic/broadcastByTextChange", function(data) {
         console.log("deltaMsg 브로드 캐스팅 받았음 - handleTextChange");
@@ -184,7 +187,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
           .retain(textChangeData.ops[0].retain)
           .insert(textChangeData.ops[1].insert);
           console.log(insertDelta);
-          // editor.updateContents(insertDelta);
+          editor.updateContents(insertDelta);
 
         } else {
           const deleteDelta = new Delta()
@@ -195,25 +198,25 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         }
       });
 
-      handleSave(range);
+      // handleSave(delta);
     }
   };
 
-  const handleSelectionChange = (editor: Quill, range: any) => {
+  const handleSelectionChange = (editor: Quill, delta: any) => {
     if (client.current) {
-      console.log("range", range);
+      console.log("delta", delta);
 
       client.current!.publish({
         destination: '/app/doc.updateDocsBySelectionChange',
         body: JSON.stringify({ 
           eventName: 'selection-change',  
           deltaValue: {
-            index: range.index, 
-            length: range.length
+            index: delta.index, 
+            length: delta.length
           }
       }),
       });
-      console.log('Delta_range sent to server:', range);
+      console.log('delta sent to server:', delta);
 
       client.current!.subscribe("/topic/broadcastBySelectionChange", (data) => {
         console.log("deltaMsg 브로드 캐스팅 받았음 - handleSelectionChange");
@@ -228,8 +231,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         console.log("Length:", length);
         editor.setSelection(index, length);
       });
-
-      handleSave(range);
     }
   };
 
