@@ -74,6 +74,12 @@ public class EmitterService {
   }
 
   public SseEmitter getTeamParticipantEmitters(Long teamId, String customId) {
-    return emitterRepository.getTeamParticipantEmitter(teamId, customId);
+    SseEmitter sseEmitter = emitterRepository.getTeamParticipantEmitter(teamId, customId);
+
+    if (sseEmitter == null) {
+      return null;
+    }
+
+    return sseEmitter;
   }
 }

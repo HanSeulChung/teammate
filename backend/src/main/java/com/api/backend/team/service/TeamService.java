@@ -169,7 +169,7 @@ public class TeamService {
     return TeamKickOutResponse.builder()
         .teamId(request.getTeamId())
         .kickOutMemberId(teamParticipants.getMember().getMemberId())
-        .nickName(teamParticipants.getTeamNickName())
+        .teamName(teamParticipants.getTeamNickName())
         .message(KICK_OUT_TEAM_PARTICIPANTS)
         .build();
   }
@@ -266,5 +266,17 @@ public class TeamService {
         .equals(teamName)) {
       throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
     }
+  }
+
+  public Team getTeamByTeamIdAndMemberId(Long teamId, Long memberId) {
+    Team team = getTeam(teamId);
+
+    isDeletedCheck(team);
+
+    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, memberId)) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+    }
+
+    return team;
   }
 }

@@ -5,7 +5,6 @@ import org.springframework.validation.BindingResult;
 
 import java.util.Map;
 
-
 public interface MemberService {
 
     SignUpResponse register(SignUpRequest request);
@@ -16,7 +15,13 @@ public interface MemberService {
 
     LogoutResponse logout(String requestAccessToken);
 
+
+    MemberInfoResponse getMemberInfo(String requestAccessTokenInHeader);
+
+    void updateMemberPassword(String accessToken, UpdateMemberPasswordRequest updateMemberPasswordRequest);
+
     Map<String, String> validateHandling(BindingResult bindingResult);
 
     void checkEamilDuplicate(String email);
+
 }

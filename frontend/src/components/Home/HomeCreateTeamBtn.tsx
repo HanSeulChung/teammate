@@ -26,7 +26,7 @@ const CreateTeamButton = styled.button`
 export default function HomeCreateTeamBtn() {
   return (
     <CenteredContainer>
-      <Link to="/teamcreateview">
+      <Link to="/teaminfo">
         <CreateTeamButton>+ 팀 생성하기</CreateTeamButton>
       </Link>
     </CenteredContainer>

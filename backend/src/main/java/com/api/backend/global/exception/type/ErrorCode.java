@@ -16,6 +16,8 @@ public enum ErrorCode {
   SCHEDULE_CATEGORY_ALREADY_EXIST_EXCEPTION(500, "이미 존재하는 일정 카테고리 입니다."),
   SCHEDULE_NOT_FOUND_EXCEPTION(500, "존재하지 않는 일정입니다."),
   INVALID_REPEAT_CYCLE_EXCEPTION(400, "잘못된 반복 주기입니다."),
+  NON_REPEATING_SCHEDULE_EXCEPTION(500, "반복일정이 아닙니다."),
+  TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION(400, "일정 팀참가자번호는 중복될 수 없습니다."),
 
   // team
   TEAM_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀입니다."),
@@ -50,6 +52,10 @@ public enum ErrorCode {
   PASSWORD_NOT_MATCH_EXCEPTION(400, "비밀번호가 일치하지 않습니다."),
   TOKEN_NOT_FOUND_PERMISSION_INFORMATION(400,"권한 정보가 없는 토큰입니다."),
   TOKEN_INVALID_EXCEPTION(400,"유효하지 않는 토큰입니다."),
+  MEMBER_NOT_MATCH_PASSWORD_EXCEPTION(400, "기존 비밀번호가 틀렸습니다."),
+  INCORRECT_FORM_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호 형식이 잘못되었습니다."),
+  NOT_MATCH_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호가 재확인 비밀번호와 일치하지 않습니다."),
+
 
   //email
   EMAIL_NOT_TRANSFER_EXCEPTION(400,"이메일 전송에 실패했습니다."),

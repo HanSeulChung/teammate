@@ -10,10 +10,13 @@ import com.api.backend.member.data.entity.Member;
 import com.api.backend.notification.data.entity.Notification;
 import com.api.backend.notification.data.repository.NotificationRepository;
 import com.api.backend.team.data.entity.TeamParticipants;
+import com.api.backend.team.service.TeamParticipantsService;
+import com.api.backend.team.service.TeamService;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class NotificationService {
 
   private final NotificationRepository notificationRepository;
+  private final TeamParticipantsService teamParticipantsService;
+  private final TeamService teamService;
 
   public void saveAllNotification(List<Notification> notifications) {
     notificationRepository.saveAll(notifications);
@@ -32,6 +37,7 @@ public class NotificationService {
   public void saveNotification(Notification notification) {
     notificationRepository.save(notification);
   }
+
 
   public void memberReadNotification(Long notificationId, Long memberId) {
     Notification notification = getNotification(
@@ -82,5 +88,16 @@ public class NotificationService {
     }
 
     notification.setRead(true);
+  }
+  public Page<Notification> getTeamNotificationList(Long teamId, Long memberId, Pageable pageable) {
+    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(teamId, memberId);
+
+    teamService.isDeletedCheck(teamParticipants.getTeam());
+
+    return notificationRepository.findAllByTeamParticipantsAndIsReadFalse(teamParticipants, pageable);
+  }
+
+  public Page<Notification> getMemberNotificationList(Long memberId, Pageable pageable) {
+    return notificationRepository.findAllByMember_MemberIdAndIsReadFalse(memberId, pageable);
   }
 }

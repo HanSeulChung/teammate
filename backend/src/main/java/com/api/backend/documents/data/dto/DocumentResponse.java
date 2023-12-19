@@ -1,7 +1,12 @@
 package com.api.backend.documents.data.dto;
 
+import static com.api.backend.notification.data.NotificationMessage.CREATE_DOCUMENT;
+
 import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.documents.data.entity.Documents;
+import com.api.backend.notification.data.dto.DtoValueExtractor;
+import com.api.backend.notification.data.type.AlarmType;
+import com.api.backend.notification.data.type.SenderType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +25,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class DocumentResponse {
+public class DocumentResponse implements DtoValueExtractor {
 
   @NotBlank
   @Schema(description = "document id", example = "1")
@@ -85,5 +90,45 @@ public class DocumentResponse {
     for (String commentId : commentList) {
       commentsId.add(commentId);
     }
+  }
+
+  @Override
+  public Long getExcludeMemberId() {
+    return null;
+  }
+
+  @Override
+  public Long getMemberId() {
+    return null;
+  }
+
+  @Override
+  public Long getExcludeTeamParticipantId() {
+    return writerId;
+  }
+
+  @Override
+  public SenderType getSenderType() {
+    return SenderType.TEAM_PARTICIPANTS_URL;
+  }
+
+  @Override
+  public AlarmType getAlarmType() {
+    return AlarmType.DOCUMENTS;
+  }
+
+  @Override
+  public String getTeamNameOrTeamParticipantNickName() {
+    return null;
+  }
+
+  @Override
+  public String getUrl() {
+    return "/team/" + teamId +"/documents/" + id;
+  }
+
+  @Override
+  public String getSendMessage() {
+    return CREATE_DOCUMENT;
   }
 }
