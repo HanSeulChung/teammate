@@ -126,11 +126,14 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(EMAIL_NOT_VERIFICATION_EXCEPTION);
         }
 
+        if(!passwordEncoder.matches(signInRequest.getPassword(), member.getPassword())){
+            throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getMemberId().toString(), signInRequest.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        // 비밀번호 틀렸을때 BadCredentialsException 던짐 이부분 처리하는 로직 구현해야함
 
         TokenDto tokenDto = authService.generateToken(authentication.getName(), authService.getAuthorities(authentication));
 
