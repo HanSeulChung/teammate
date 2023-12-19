@@ -28,6 +28,7 @@ import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,7 +55,7 @@ public class ScheduleService {
 
 
   @Transactional
-  public SimpleSchedule addSimpleScheduleAndSave(ScheduleRequest scheduleRequest) {
+  public SimpleSchedule addSimpleScheduleAndSave(ScheduleRequest scheduleRequest, Principal principal) {
     Team team = findTeamOrElseThrow(scheduleRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleRequest.getCategoryId());
 
@@ -68,7 +69,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public RepeatSchedule addRepeatScheduleAndSave(ScheduleRequest scheduleRequest) {
+  public RepeatSchedule addRepeatScheduleAndSave(ScheduleRequest scheduleRequest, Principal principal) {
     Team team = findTeamOrElseThrow(scheduleRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleRequest.getCategoryId());
 
@@ -86,7 +87,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public SimpleSchedule editSimpleScheduleInfoAndSave(SimpleScheduleInfoEditRequest editRequest) {
+  public SimpleSchedule editSimpleScheduleInfoAndSave(SimpleScheduleInfoEditRequest editRequest, Principal principal) {
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
     List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
@@ -117,7 +118,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public RepeatSchedule editRepeatScheduleInfoAndSave(RepeatScheduleInfoEditRequest editRequest) {
+  public RepeatSchedule editRepeatScheduleInfoAndSave(RepeatScheduleInfoEditRequest editRequest, Principal principal) {
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
     List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
@@ -187,33 +188,33 @@ public class ScheduleService {
 
 
   @Transactional
-  public void deleteSimpleSchedule(Long scheduleId) {
+  public void deleteSimpleSchedule(Long scheduleId, Principal principal) {
     SimpleSchedule simpleSchedule = simpleScheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
     simpleScheduleRepository.delete(simpleSchedule);
   }
 
   @Transactional
-  public void deleteRepeatSchedule(Long scheduleId) {
+  public void deleteRepeatSchedule(Long scheduleId, Principal principal) {
     RepeatSchedule repeatSchedule = repeatScheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
     repeatScheduleRepository.delete(repeatSchedule);
   }
 
-  public SimpleSchedule getSimpleScheduleDetailInfo(Long scheduleId, Long teamId) {
+  public SimpleSchedule getSimpleScheduleDetailInfo(Long scheduleId, Long teamId, Principal principal) {
     findTeamOrElseThrow(teamId);
     return simpleScheduleRepository.findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(scheduleId,
         teamId);
   }
 
-  public RepeatSchedule getRepeatScheduleDetailInfo(Long scheduleId, Long teamId) {
+  public RepeatSchedule getRepeatScheduleDetailInfo(Long scheduleId, Long teamId, Principal principal) {
     findTeamOrElseThrow(teamId);
     return repeatScheduleRepository.findRepeatScheduleByRepeatScheduleIdAndTeam_TeamId(scheduleId,
         teamId);
   }
 
 
-  public Page<AllSchedulesMonthlyView> getCategoryTypeMonthlySchedules(Long teamId, CategoryType categoryType, Pageable pageable) {
+  public Page<AllSchedulesMonthlyView> getCategoryTypeMonthlySchedules(Long teamId, CategoryType categoryType, Pageable pageable, Principal principal) {
     Page<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(
         categoryType, teamId, pageable);
     Page<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(
@@ -229,7 +230,7 @@ public class ScheduleService {
     );
   }
 
-  public Page<AllSchedulesMonthlyView> getAllMonthlySchedules(Long teamId, Pageable pageable) {
+  public Page<AllSchedulesMonthlyView> getAllMonthlySchedules(Long teamId, Pageable pageable, Principal principal) {
     Page<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByTeam_TeamId(
          teamId, pageable);
     Page<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByTeam_TeamId(
