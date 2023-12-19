@@ -1,5 +1,10 @@
 package com.api.backend.documents.data.dto;
 
+import static com.api.backend.notification.data.NotificationMessage.DELETE_DOCUMENT;
+
+import com.api.backend.notification.data.dto.DtoValueExtractor;
+import com.api.backend.notification.data.type.AlarmType;
+import com.api.backend.notification.data.type.SenderType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -9,7 +14,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class DeleteDocsResponse {
+public class DeleteDocsResponse implements DtoValueExtractor {
 
   @NotBlank
   @Schema(description = "deleted document id", example = "1L")
@@ -34,5 +39,45 @@ public class DeleteDocsResponse {
   @NotBlank
   @Schema(description = "deleted document teamId", example = "1L")
   private Long teamId;
+
+  @Override
+  public Long getExcludeMemberId() {
+    return null;
+  }
+
+  @Override
+  public Long getMemberId() {
+    return null;
+  }
+
+  @Override
+  public Long getExcludeTeamParticipantId() {
+    return deleteParticipantId;
+  }
+
+  @Override
+  public SenderType getSenderType() {
+    return SenderType.TEAM_PARTICIPANTS;
+  }
+
+  @Override
+  public AlarmType getAlarmType() {
+    return AlarmType.DOCUMENTS;
+  }
+
+  @Override
+  public String getTeamNameOrTeamParticipantNickName() {
+    return deleteParticipantNickName;
+  }
+
+  @Override
+  public String getUrl() {
+    return null;
+  }
+
+  @Override
+  public String getSendMessage() {
+    return DELETE_DOCUMENT;
+  }
 }
 

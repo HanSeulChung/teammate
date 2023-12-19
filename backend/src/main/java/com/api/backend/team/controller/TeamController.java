@@ -2,16 +2,15 @@ package com.api.backend.team.controller;
 
 
 import com.api.backend.global.aop.notify.SendNotify;
+import com.api.backend.notification.data.dto.DtoValueExtractor;
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamDisbandResponse;
 import com.api.backend.team.data.dto.TeamsDtoResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
-import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.TeamRestoreResponse;
 import com.api.backend.team.data.dto.TeamUpdateRequest;
-import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
 import com.api.backend.team.data.dto.TeamUpdateResponse;
 import com.api.backend.team.service.TeamService;
 import io.swagger.annotations.Api;
@@ -106,7 +105,7 @@ public class TeamController {
       })
   @SendNotify
   @PostMapping("/{teamId}/{code}")
-  public ResponseEntity<TeamParticipantsUpdateResponse> updateTeamParticipantRequest(
+  public ResponseEntity<DtoValueExtractor> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,
       @PathVariable("code") String code,
       @ApiIgnore Principal principal
@@ -123,7 +122,7 @@ public class TeamController {
   })
   @PostMapping("/kick-out")
   @SendNotify
-  public ResponseEntity<TeamKickOutResponse> kickOutTeamParticipantsRequest(
+  public ResponseEntity<DtoValueExtractor> kickOutTeamParticipantsRequest(
       @RequestBody @Valid
       TeamKickOutRequest teamKickOutRequest,
       @ApiIgnore Principal principal
@@ -140,7 +139,7 @@ public class TeamController {
   })
   @PutMapping("/disband")
   @SendNotify
-  public ResponseEntity<TeamDisbandResponse> disbandTeamRequest(
+  public ResponseEntity<DtoValueExtractor> disbandTeamRequest(
       @RequestBody @Valid TeamDisbandRequest request,
       @ApiIgnore Principal principal
   ) {
