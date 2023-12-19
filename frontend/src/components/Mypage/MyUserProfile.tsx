@@ -83,7 +83,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
               팀을 선택하세요
             </option>
             {teamList.map((team) => (
-              <option key={team.id} value={team.id}>
+              <option key={team.teamId} value={team.teamId}>
                 {team.name}
               </option>
             ))}
