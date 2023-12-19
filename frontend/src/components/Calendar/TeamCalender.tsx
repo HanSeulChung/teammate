@@ -10,14 +10,14 @@ import axios from "axios";
 
 const TeamCalender = () => {
     // 모달팝업 유무 값
-    const [eventDetailModal, setEventDetailModal] = useState(false);
-    const [eventFormModal, setEventFormModal] = useState(false);
+    const [eventDetailModal, setEventDetailModal] = useState<any>(false);
+    const [eventFormModal, setEventFormModal] = useState<any>(false);
     
     // 일정 전체 목록
-    const [eventList, setEventList] = useState([]);
+    const [eventList, setEventList] = useState<any>([]);
 
     // 달력 일정 각각 state 핸들링용
-    const [event, setEvent] = useState([]);
+    const [event, setEvent] = useState<any>([]);
 
     // 모달팝업 관리
     const toggleModal = () => {
@@ -28,7 +28,7 @@ const TeamCalender = () => {
     };
 
     // 일정클릭 핸들링
-    const HandleEventClick = (e) => {
+    const HandleEventClick = (e: any) => {
         // console.log(e.event.extendedProps);
         // console.log(e.event.start);
         setEvent({
@@ -73,7 +73,7 @@ const TeamCalender = () => {
     }, []);
 
     // 일정 삭제
-    const handleEventDelete = async (e) => {
+    const handleEventDelete = async (e: any) => {
         e.preventDefault();
         if (!window.confirm(`번째 일정을 삭제하시겠습니까?`)) return;
         const eventId = event.id;

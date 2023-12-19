@@ -35,7 +35,7 @@ public class TeamParticipantController {
   private final TeamParticipantsService teamParticipantsService;
 
   @ApiOperation(value = "팀 탈퇴 API")
-  @ApiResponses(value ={
+  @ApiResponses(value = {
       @ApiResponse(code = 200, message = "팀에서 탈퇴 되었다는 메시지를 반환"),
       @ApiResponse(code = 500, message = "팀원이 아닌 경우, 팀장인 경우")
   })
@@ -65,8 +65,9 @@ public class TeamParticipantController {
             .build()
     );
   }
+
   @ApiOperation(value = "팀장 위임 API")
-  @ApiResponses(value ={
+  @ApiResponses(value = {
       @ApiResponse(code = 200, message = "성공적으로 팀장 위임이 됐다는 메시지"),
       @ApiResponse(code = 500,
           message = "팀원이 아닌 경우, 팀장인 경우, 위임 대상이 팀원이 아닌 경우,같은 팀이 아닌 경우"
@@ -90,11 +91,13 @@ public class TeamParticipantController {
       @PathVariable(value = "teamId") Long teamId
   ) {
     return ResponseEntity.ok(
-        teamParticipantsService.updateRoleTeamParticipant(Long.valueOf(principal.getName()), participantId, teamId)
+        teamParticipantsService.updateRoleTeamParticipant(Long.valueOf(principal.getName()),
+            participantId, teamId)
     );
   }
+
   @ApiOperation(value = "여러 팀원 조회 API")
-  @ApiResponses(value ={
+  @ApiResponses(value = {
       @ApiResponse(code = 200, message = "팀원을 반환")
   })
   @ApiImplicitParams(
@@ -115,8 +118,9 @@ public class TeamParticipantController {
             .collect(Collectors.toList())
     );
   }
+
   @ApiOperation(value = "단일 팀 참가자 조회 API")
-  @ApiResponses(value ={
+  @ApiResponses(value = {
       @ApiResponse(code = 200, message = "팀원을 반환"),
       @ApiResponse(code = 500, message = "팀원이 아닌 경우, 팀이 해체된 경우")
   })

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import axiosInstance from "../../axios";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   teamListState,
@@ -9,52 +9,37 @@ import {
   userTeamsState,
   accessTokenState,
 } from "../../state/authState";
-import { useNavigate } from "react-router-dom";
+import { Team } from "../../interface/interface";
 
 const HomeContent = () => {
-  const teamList = useRecoilValue(teamListState);
+  const [userTeams, setUserTeams] = useRecoilState<Team[]>(userTeamsState);
   const { search } = useSearchState();
-  const [userTeams, setUserTeams] = useRecoilState(userTeamsState);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const accessToken = useRecoilValue(accessTokenState);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLoggedInUserId = async () => {
       try {
-        const teamListResponse = await axios.get(
-          "http://118.67.128.124:8080/team/list",
-          {
-            params: { page: 0, size: 10, sort: "createDt,asc" },
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-
+        const teamListResponse = await axiosInstance.get("/team/list", {
+          params: { page: 0, size: 10, sort: "createDt-asc" },
+        });
+        // Recoil 상태 업데이트
         setUserTeams(teamListResponse.data.content);
 
-        // teamList를 localStorage에 저장
+        // localStorage에 저장
         localStorage.setItem(
           `teamList_${accessToken}`,
           JSON.stringify(teamListResponse.data.content),
         );
       } catch (error: any) {
-        setError(error.message);
+        console.error("Error fetching team list:", error);
       }
     };
 
     fetchLoggedInUserId();
   }, [accessToken, setUserTeams]);
-
-  // useEffect(() => {
-  //   const loggedInUserId = getLoggedInUserId();
-  //   localStorage.setItem(
-  //     `teamList_${loggedInUserId}`,
-  //     JSON.stringify(teamList),
-  //   );
-  // }, [teamList]);
 
   if (error) {
     return <div>{error}</div>;
@@ -68,7 +53,6 @@ const HomeContent = () => {
   const filteredTeamList = userTeams.filter((team) =>
     team.name.toLowerCase().includes(search.toLowerCase()),
   );
-
   // useEffect(() => {
   //   const loggedInUserId = getLoggedInUserId();
   //   // 이 부분에서 localStorage에서 teamList를 불러와서 userTeams에 설정합니다.
@@ -77,18 +61,24 @@ const HomeContent = () => {
   //     setUserTeams(JSON.parse(storedTeamList));
   //   }
   // }, [setUserTeams]);
+
   return (
     <TeamListContainer>
       {filteredTeamList.map((team, index) => (
         <TeamItem key={index}>
-          <TeamLink to={`/team/${team.id}`}>
-            <TeamCard>
-              <TeamName>{team.name}</TeamName>
-              {team.image && (
-                <TeamImage src={team.image} alt={`${team.name} 이미지`} />
-              )}
-            </TeamCard>
-          </TeamLink>
+          <TeamCard
+            onClick={() =>
+              navigate(`/team/${team.teamId}/documentsList`, {
+                state: { team },
+              })
+            }
+          >
+            <TeamName>{team.name}</TeamName>
+            {team.profileUrl && (
+              <TeamImage src={team.profileUrl} alt={`${team.name} 이미지`} />
+            )}
+          </TeamCard>
+          {/* </TeamLink> */}
         </TeamItem>
       ))}
     </TeamListContainer>

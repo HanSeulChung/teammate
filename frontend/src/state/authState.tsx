@@ -6,73 +6,77 @@ import { Team, User, TokenState } from "../interface/interface";
 const { persistAtom } = recoilPersist();
 
 //로그인된 사용자 상태
-export const loggedInUserState = atom<User | null>({
+export const loggedInUserState = atom<string | null>({
   key: "loggedInUserState",
   default: null,
 });
 
-//리더인 팀 상태 선택기
-export const teamsByLeaderState = selector({
-  key: "teamsByLeaderState",
-  get: ({ get }) => {
-    const userTeams = get(userTeamsState);
-    const loggedInUser = get(loggedInUserState);
+// //리더인 팀 상태 선택기 (위에 string 을 User로 바꾸면됨)
+// export const teamsByLeaderState = selector({
+//   key: "teamsByLeaderState",
+//   get: ({ get }) => {
+//     const userTeams = get(userTeamsState);
+//     const loggedInUser = get(loggedInUserState);
 
-    if (!loggedInUser) {
-      return [];
-    }
+//     if (!loggedInUser) {
+//       return [];
+//     }
 
-    // 로그인한 사용자가 리더인 팀만 반환
-    return userTeams.filter((team) => team.leaderId === loggedInUser.id);
-  },
-});
+//     // 로그인한 사용자가 리더인 팀만 반환
+//     return userTeams.filter((team) => team.leaderId === loggedInUser.id);
+//   },
+// });
 
 // 인증 상태
 export const isAuthenticatedState = atom({
   key: "isAuthenticatedState",
   default: false,
+  effects_UNSTABLE: [persistAtom],
 });
 
 // 액세스 토큰 상태
 export const accessTokenState = atom({
   key: "accessToken",
   default: "",
+  // effects_UNSTABLE: [persistAtom],
 });
 
 // 리프레시 토큰 상태
 export const refreshTokenState = atom({
   key: "refreshToken",
   default: "",
+  // effects_UNSTABLE: [persistAtom],
 });
 
 // 사용자 정보 상태
 export const userState = atom({
   key: "userState",
   default: null as { id: string; name: string } | null,
+  // effects_UNSTABLE: [persistAtom],
 });
 
 // 리프레시 토큰 저장 함수
 export const saveRefreshToken = (token: string | null) => {
   if (token) {
-    sessionStorage.setItem("refreshToken", token);
+    localStorage.setItem("refreshToken", token);
   } else {
-    sessionStorage.removeItem("refreshToken");
+    localStorage.removeItem("refreshToken");
   }
 };
 
 // 액세스 토큰 저장 함수
 export const saveAccessToken = (token: string | null) => {
   if (token) {
-    sessionStorage.setItem("accessToken", token);
+    localStorage.setItem("accessToken", token);
   } else {
-    sessionStorage.removeItem("accessToken");
+    localStorage.removeItem("accessToken");
   }
 };
 
 // 토큰 저장 함수
 export const saveToken = ({ accessToken, refreshToken }: TokenState) => {
-  sessionStorage.setItem("accessToken", accessToken);
-  sessionStorage.setItem("refreshToken", refreshToken);
+  localStorage.setItem("accessToken", accessToken);
+  localStorage.setItem("refreshToken", refreshToken);
 };
 
 // 로그아웃 함수

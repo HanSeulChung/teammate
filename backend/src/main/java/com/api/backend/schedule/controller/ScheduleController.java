@@ -1,10 +1,11 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.category.type.CategoryType;
-import com.api.backend.schedule.data.dto.ScheduleEditRequest;
+import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
+import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.service.ScheduleService;
 import java.time.LocalDate;
 import javax.validation.Valid;
@@ -36,11 +37,11 @@ public class ScheduleController {
     ScheduleResponse scheduleResponse;
     if (!request.isRepeat()) {
       scheduleResponse = ScheduleResponse.from(
-          scheduleService.addSimpleSchedule(request)
+          scheduleService.addSimpleScheduleAndSave(request)
       );
     } else {
       scheduleResponse = ScheduleResponse.from(
-          scheduleService.addRepeatSchedule(request)
+          scheduleService.addRepeatScheduleAndSave(request)
       );
     }
     return ResponseEntity.ok(scheduleResponse);
@@ -70,19 +71,35 @@ public class ScheduleController {
     return ResponseEntity.ok(schedules);
   }
 
-  @PutMapping
-  public ResponseEntity<ScheduleEditResponse> editSchedule(@PathVariable Long teamId, @RequestBody
-  @Valid ScheduleEditRequest editRequest) {
+  @PutMapping("/simple")
+  public ResponseEntity<ScheduleEditResponse> editSimpleSchedule(@PathVariable Long teamId,
+      @RequestBody
+      @Valid SimpleScheduleInfoEditRequest editRequest) {
     ScheduleEditResponse response = ScheduleEditResponse.from(
-        scheduleService.editSimpleScheduleAndSave(editRequest)
-    );
+        scheduleService.editSimpleScheduleInfoAndSave(editRequest));
     return ResponseEntity.ok(response);
   }
 
-  @DeleteMapping("/{scheduleId}")
-  public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
+  @PutMapping("/repeat")
+  public ResponseEntity<ScheduleEditResponse> editRepeatSchedule(@PathVariable Long teamId,
+      @RequestBody
+      @Valid RepeatScheduleInfoEditRequest editRequest) {
+    ScheduleEditResponse response = ScheduleEditResponse.from(
+        scheduleService.editRepeatScheduleInfoAndSave(editRequest));
+    return ResponseEntity.ok(response);
+  }
+
+  @DeleteMapping("/simple/{scheduleId}")
+  public ResponseEntity<String> deleteSimpleSchedule(@PathVariable Long teamId,
       @PathVariable Long scheduleId) {
     scheduleService.deleteSimpleSchedule(scheduleId);
-    return ResponseEntity.ok("해당 일정이 정상적으로 삭제되었습니다.");
+    return ResponseEntity.ok("해당 단순 일정이 정상적으로 삭제되었습니다.");
+  }
+
+  @DeleteMapping("/repeat/{scheduleId}")
+  public ResponseEntity<String> deleteSchedule(@PathVariable Long teamId,
+      @PathVariable Long scheduleId) {
+    scheduleService.deleteRepeatSchedule(scheduleId);
+    return ResponseEntity.ok("해당 반복 일정이 정상적으로 삭제되었습니다.");
   }
 }

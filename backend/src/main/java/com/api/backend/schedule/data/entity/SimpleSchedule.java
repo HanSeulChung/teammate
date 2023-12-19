@@ -28,14 +28,21 @@ import lombok.Setter;
 @Builder
 @Table(name = "simple_schedule")
 public class SimpleSchedule extends BaseEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long simpleScheduleId;
+  @Setter
   private String title;
+  @Setter
   private String content;
+  @Setter
   private String place;
+  @Setter
   private LocalDateTime startDt;
+  @Setter
   private LocalDateTime endDt;
+  @Setter
   private String color;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -44,10 +51,35 @@ public class SimpleSchedule extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "schedule_category_id")
+  @Setter
   private ScheduleCategory scheduleCategory;
 
   @Setter
   @OneToMany(mappedBy = "simpleSchedule", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
+  public void setSimpleScheduleInfo(ScheduleCategory scheduleCategory, String title, String content,
+      LocalDateTime startDt, LocalDateTime endDt, String place, String color) {
+    if (scheduleCategory != null) {
+      this.scheduleCategory = scheduleCategory;
+    }
+    if (title != null){
+      this.title = title;
+    }
+    if (content != null) {
+      this.content = content;
+    }
+    if (startDt != null) {
+      this.startDt = startDt;
+    }
+    if (endDt != null) {
+      this.endDt = endDt;
+    }
+    if (place != null) {
+      this.place = place;
+    }
+    if (color != null) {
+      this.color = color;
+    }
+  }
 }

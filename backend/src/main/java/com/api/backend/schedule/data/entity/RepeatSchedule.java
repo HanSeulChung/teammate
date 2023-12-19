@@ -56,6 +56,8 @@ public class RepeatSchedule extends BaseEntity {
   private String dayOfWeek;
   @Setter
   private String color;
+  @Setter
+  private Long originRepeatScheduleId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
@@ -63,6 +65,7 @@ public class RepeatSchedule extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "schedule_category_id")
+  @Setter
   private ScheduleCategory scheduleCategory;
 
   @Setter
