@@ -1,5 +1,6 @@
 package com.api.backend.global.config;
 
+import lombok.extern.slf4j.Slf4j;
 import com.api.backend.global.component.WebSocketErrorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSocketMessageBroker
@@ -24,6 +26,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   public void configureMessageBroker(MessageBrokerRegistry config) {
     config.enableSimpleBroker("/topic");
     config.setApplicationDestinationPrefixes("/app");
+    log.info("configureMessageBroker -----");
   }
 
   @Override
@@ -33,5 +36,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         .setAllowedOrigins("http://"+ host +":"+ port);
     registry.setErrorHandler(webSocketErrorHandler);
   }
-
 }
