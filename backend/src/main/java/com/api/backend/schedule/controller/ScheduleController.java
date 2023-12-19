@@ -38,14 +38,12 @@ public class ScheduleController {
   public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId) {
     ScheduleResponse scheduleResponse;
-    if (!request.isRepeat()) {
-      scheduleResponse = ScheduleResponse.from(
-          scheduleService.addSimpleScheduleAndSave(request)
-      );
+    if (request.getRepeatCycle() != null) {
+      RepeatScheduleResponse response = RepeatScheduleResponse.from(scheduleService.addRepeatScheduleAndSave(request));
+      scheduleResponse = ScheduleResponse.from(response);
     } else {
-      scheduleResponse = ScheduleResponse.from(
-          scheduleService.addRepeatScheduleAndSave(request)
-      );
+      SimpleScheduleResponse response = SimpleScheduleResponse.from(scheduleService.addSimpleScheduleAndSave(request));
+      scheduleResponse = ScheduleResponse.from(response);
     }
     return ResponseEntity.ok(scheduleResponse);
   }
