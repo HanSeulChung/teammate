@@ -44,9 +44,6 @@ public class NotificationService {
     Notification notification = getNotification(
         notificationId);
 
-    // 프록시 초기화
-    Hibernate.initialize(notification.getMember());
-
     if (Objects.isNull(notification.getMember()) &&
         !Objects.equals(memberId, notification.getMember().getMemberId())
     ) {
