@@ -4,7 +4,7 @@ import axiosInstance from "../../axios";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
-  teamListState,
+  // teamListState,
   useSearchState,
   userTeamsState,
   accessTokenState,
@@ -14,7 +14,6 @@ import { Team } from "../../interface/interface";
 const HomeContent = () => {
   const [userTeams, setUserTeams] = useRecoilState<Team[]>(userTeamsState);
   const { search } = useSearchState();
-  // const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const accessToken = useRecoilValue(accessTokenState);
   const navigate = useNavigate();
@@ -53,14 +52,6 @@ const HomeContent = () => {
   const filteredTeamList = userTeams.filter((team) =>
     team.name.toLowerCase().includes(search.toLowerCase()),
   );
-  // useEffect(() => {
-  //   const loggedInUserId = getLoggedInUserId();
-  //   // 이 부분에서 localStorage에서 teamList를 불러와서 userTeams에 설정합니다.
-  //   const storedTeamList = localStorage.getItem(`teamList_${loggedInUserId}`);
-  //   if (storedTeamList) {
-  //     setUserTeams(JSON.parse(storedTeamList));
-  //   }
-  // }, [setUserTeams]);
 
   return (
     <TeamListContainer>
