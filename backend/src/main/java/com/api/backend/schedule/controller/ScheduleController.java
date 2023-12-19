@@ -1,13 +1,14 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.category.type.CategoryType;
+import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.service.ScheduleService;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -58,18 +59,31 @@ public class ScheduleController {
 
 
   @GetMapping("/calendar")
-  public ResponseEntity<Page<ScheduleResponse>> getMonthlySchedules(
+  public ResponseEntity<Page<AllSchedulesMonthlyView>> getMonthlySchedules(
       @PathVariable Long teamId,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDt,
-      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDt,
-      @RequestParam(required = false) CategoryType type,
-      Pageable pageable) {
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDt,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDt,
+      @RequestParam(required = false) String categoryType,
+      Pageable pageable
+  ) {
+    if (startDt == null) {
+      startDt = LocalDateTime.now().withDayOfMonth(1);
+    }
+    if (endDt == null) {
+      endDt = startDt.plusMonths(1).withDayOfMonth(1).minusDays(1);
+    }
 
-    Page<ScheduleResponse> schedules = scheduleService.getSchedulesForMonth(teamId, startDt, endDt,
-        type, pageable);
+    Page<AllSchedulesMonthlyView> allSchedules;
+    if (categoryType == null) {
+      allSchedules = scheduleService.getAllMonthlySchedules(teamId, pageable);
+    } else {
+      CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
+      allSchedules = scheduleService.getCategoryTypeMonthlySchedules(teamId, enumCategoryType, pageable);
+    }
 
-    return ResponseEntity.ok(schedules);
+    return ResponseEntity.ok(allSchedules);
   }
+
 
   @PutMapping("/simple")
   public ResponseEntity<ScheduleEditResponse> editSimpleSchedule(@PathVariable Long teamId,

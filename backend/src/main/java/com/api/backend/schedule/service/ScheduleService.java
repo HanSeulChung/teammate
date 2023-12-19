@@ -12,9 +12,9 @@ import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
+import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
-import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.data.entity.RepeatSchedule;
 import com.api.backend.schedule.data.entity.SimpleSchedule;
@@ -28,16 +28,16 @@ import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -206,19 +206,37 @@ public class ScheduleService {
         teamId);
   }
 
-  public Page<ScheduleResponse> getSchedulesForMonth(Long teamId, LocalDate monthStart,
-      LocalDate monthEnd, CategoryType type, Pageable pageable) {
-    LocalDateTime startDt = monthStart.atStartOfDay();
-    LocalDateTime endDt = monthEnd.atTime(LocalTime.MAX);
-    Page<SimpleSchedule> schedules;
-    if (type != null) {
-      schedules = simpleScheduleRepository.findByTeam_TeamIdAndStartDtBetweenAndScheduleCategory_CategoryType(
-          teamId, startDt, endDt, type, pageable);
-    } else {
-      schedules = simpleScheduleRepository.findByTeam_TeamIdAndStartDtBetween(teamId, startDt,
-          endDt, pageable);
-    }
-    return ScheduleResponse.from(schedules);
+
+  public Page<AllSchedulesMonthlyView> getCategoryTypeMonthlySchedules(Long teamId, CategoryType categoryType, Pageable pageable) {
+    Page<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(
+        categoryType, teamId, pageable);
+    Page<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(
+        categoryType, teamId, pageable);
+
+    List<AllSchedulesMonthlyView> allSchedulesList = Stream.concat(
+        repeatSchedules.getContent().stream().map(AllSchedulesMonthlyView::from),
+        simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from)
+    ).collect(Collectors.toList());
+
+    return new PageImpl<>(allSchedulesList, pageable,
+        repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
+    );
+  }
+
+  public Page<AllSchedulesMonthlyView> getAllMonthlySchedules(Long teamId, Pageable pageable) {
+    Page<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByTeam_TeamId(
+         teamId, pageable);
+    Page<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByTeam_TeamId(
+         teamId, pageable);
+
+    List<AllSchedulesMonthlyView> allSchedulesList = Stream.concat(
+        repeatSchedules.getContent().stream().map(AllSchedulesMonthlyView::from),
+        simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from)
+    ).collect(Collectors.toList());
+
+    return new PageImpl<>(allSchedulesList, pageable,
+        repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
+    );
   }
 
   private SimpleSchedule findSimpleScheduleOrElseThrow(Long simpleScheduleId) {
