@@ -1,5 +1,6 @@
 package com.api.backend.global.aop.notify;
 
+import com.api.backend.notification.data.dto.DtoValueExtractor;
 import com.api.backend.notification.service.SendNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +28,10 @@ public class NotifyAop {
 
   @Async
   @AfterReturning(pointcut = "pointCut()", returning = "result")
-  public void checkNotify(JoinPoint joinPoint, Object result) {
+  public void checkNotify(JoinPoint joinPoint, ResponseEntity<DtoValueExtractor> result) {
+
     sendNotificationService.convertToDtoAndSendOrThrowsNotFoundClass(
-        ((ResponseEntity) result).getBody()
-    );
+        result.getBody()
+        );
   }
 }
