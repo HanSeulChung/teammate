@@ -200,9 +200,15 @@ public class ScheduleService {
     repeatScheduleRepository.delete(repeatSchedule);
   }
 
-  public SimpleSchedule searchScheduleDetailInfo(Long scheduleId, Long teamId) {
+  public SimpleSchedule getSimpleScheduleDetailInfo(Long scheduleId, Long teamId) {
     findTeamOrElseThrow(teamId);
     return simpleScheduleRepository.findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(scheduleId,
+        teamId);
+  }
+
+  public RepeatSchedule getRepeatScheduleDetailInfo(Long scheduleId, Long teamId) {
+    findTeamOrElseThrow(teamId);
+    return repeatScheduleRepository.findRepeatScheduleByRepeatScheduleIdAndTeam_TeamId(scheduleId,
         teamId);
   }
 

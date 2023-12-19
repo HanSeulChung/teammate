@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface RepeatScheduleRepository extends JpaRepository<RepeatSchedule, Long> {
 
   RepeatSchedule findByOriginRepeatScheduleId(Long originRepeatScheduleId);
+  RepeatSchedule findRepeatScheduleByRepeatScheduleIdAndTeam_TeamId(Long scheduleId, Long teamId);
 
   Page<RepeatSchedule> findAllByTeam_TeamId(Long teamId, Pageable pageable);
 

@@ -3,10 +3,12 @@ package com.api.backend.schedule.controller;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
+import com.api.backend.schedule.data.dto.RepeatScheduleResponse;
 import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
+import com.api.backend.schedule.data.dto.SimpleScheduleResponse;
 import com.api.backend.schedule.service.ScheduleService;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
@@ -48,11 +50,20 @@ public class ScheduleController {
     return ResponseEntity.ok(scheduleResponse);
   }
 
-  @GetMapping("/{scheduleId}")
-  public ResponseEntity<ScheduleResponse> searchScheduleDetailInfo(@PathVariable Long teamId,
+  @GetMapping("/repeat/{scheduleId}")
+  public ResponseEntity<RepeatScheduleResponse> getRepeatScheduleDetailInfo(@PathVariable Long teamId,
       @PathVariable Long scheduleId) {
-    ScheduleResponse response = ScheduleResponse.from(
-        scheduleService.searchScheduleDetailInfo(scheduleId, teamId)
+    RepeatScheduleResponse response = RepeatScheduleResponse.from(
+        scheduleService.getRepeatScheduleDetailInfo(scheduleId, teamId)
+    );
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/simple/{scheduleId}")
+  public ResponseEntity<SimpleScheduleResponse> getSimpleScheduleDetailInfo(@PathVariable Long teamId,
+      @PathVariable Long scheduleId) {
+    SimpleScheduleResponse response = SimpleScheduleResponse.from(
+        scheduleService.getSimpleScheduleDetailInfo(scheduleId, teamId)
     );
     return ResponseEntity.ok(response);
   }
