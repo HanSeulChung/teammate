@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -58,7 +59,6 @@ public class MemberServiceImpl implements MemberService {
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .name(request.getName())
-                .nickName(request.getNickName())
                 .sexType(request.getSexType())
                 .loginType(LoginType.TEAMMATE)
                 .authority(Authority.USER)
@@ -157,6 +157,26 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+
+    @Transactional
+    @Override
+    public void updateMemberPassword(String requestAccessTokenInHeader, UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+
+        String accessToken = authService.resolveToken(requestAccessTokenInHeader);
+        String principal = authService.getPrincipal(accessToken);
+
+        Member member = memberRepository.findById(Long.valueOf(principal))
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
+        if (!passwordEncoder.matches(updateMemberPasswordRequest.getOldPassword(), member.getPassword())) {
+            throw new CustomException(MEMBER_NOT_MATCH_PASSWORD_EXCEPTION);
+        }
+
+        if (!updateMemberPasswordRequest.getNewPassword().equals(updateMemberPasswordRequest.getReNewPassword())) {
+            throw new CustomException(NOT_MATCH_NEW_PASSWORD_EXCEPTION);
+        }
+    }
+
     @Transactional(readOnly = true)
     public Map<String, String> validateHandling(BindingResult bindingResult) {
         Map<String, String> validatorResult = new HashMap<>();
@@ -169,4 +189,23 @@ public class MemberServiceImpl implements MemberService {
         return validatorResult;
     }
 
+    @Override
+    public void checkEamilDuplicate(String email) {
+        if(memberRepository.existsByEmail(email)){
+            throw new CustomException(EMAIL_ALREADY_EXIST_EXCEPTION);
+        }
+    }
+
+    @Override
+    public MemberInfoResponse getMemberInfo(String requestAccessTokenInHeader) {
+        String accessToken = authService.resolveToken(requestAccessTokenInHeader);
+        String principal = authService.getPrincipal(accessToken);
+        Member member = memberRepository.findById(Long.valueOf(principal))
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+
+        return MemberInfoResponse.builder()
+                .email(member.getEmail())
+                .name(member.getName())
+                .build();
+    }
 }

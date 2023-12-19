@@ -156,7 +156,7 @@ public class TeamService {
     }
 
     TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), request.getUserId())
+        .findById(request.getParticipantId())
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     if (teamParticipants.getTeamParticipantsId()
@@ -242,9 +242,8 @@ public class TeamService {
     Team team = teamParticipants.getTeam();
 
     isDeletedCheck(team);
-    String teamName = teamUpdateRequest.getTeamName() == null ? team.getName() : teamUpdateRequest.getTeamName();
     String imgUrl = fileProcessService.uploadImage(teamUpdateRequest.getProfileImg(), FileFolder.TEAM);
-    team.updateNameOrProfileUrl(teamUpdateRequest.getTeamName(), imgUrl);
+    team.updateNameAndProfileUrl(teamUpdateRequest.getTeamName(), imgUrl);
     return team;
   }
 
@@ -267,5 +266,17 @@ public class TeamService {
         .equals(teamName)) {
       throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
     }
+  }
+
+  public Team getTeamByTeamIdAndMemberId(Long teamId, Long memberId) {
+    Team team = getTeam(teamId);
+
+    isDeletedCheck(team);
+
+    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, memberId)) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+    }
+
+    return team;
   }
 }

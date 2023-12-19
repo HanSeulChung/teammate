@@ -3,7 +3,6 @@ package com.api.backend.member.controller;
 import com.api.backend.global.security.AuthService;
 import com.api.backend.global.security.data.dto.TokenDto;
 import com.api.backend.member.data.dto.*;
-import com.api.backend.member.data.dto.TeamParticipantUpdateRequest;
 import com.api.backend.member.service.MemberService;
 import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.service.TeamParticipantsService;
@@ -11,8 +10,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,15 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.HttpCookie;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
@@ -64,8 +52,16 @@ public class MemberController {
         return ResponseEntity.ok(this.memberService.register(request));
     }
 
+    @PostMapping("/sign-up/email-check")
+    public ResponseEntity<Boolean> checkEmailDuplicate(
+            @RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        memberService.checkEamilDuplicate(email);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/email-verify/{key}/{email}")
-    public ResponseEntity<String> getVerify(@PathVariable("key") String key,@PathVariable("email") String email) {
+    public ResponseEntity<String> getVerify(@PathVariable("key") String key, @PathVariable("email") String email) {
 
         boolean result = memberService.verifyEmail(key, email);
 
@@ -101,7 +97,7 @@ public class MemberController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, httpCookie.toString())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + signInResponse.getAccessToken())
-            .body(signInResponse);
+                .body(signInResponse);
     }
 
     @PostMapping("/logout")
@@ -158,38 +154,56 @@ public class MemberController {
                     .build();
         }
     }
+    @GetMapping("/my-page") ResponseEntity<?> getMemberInfo(
+            @RequestHeader("Authorization") String requestAccessTokenInHeader
+    ){
+        MemberInfoResponse memberInfo = memberService.getMemberInfo(requestAccessTokenInHeader);
+
+        return ResponseEntity.ok(memberInfo);
+    }
+    @PutMapping("/member/password")
+    public ResponseEntity<?> updateMemberPassword(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest
+    ){
+
+        memberService.updateMemberPassword(accessToken, updateMemberPasswordRequest);
+
+        return ResponseEntity.ok().build();
+    }
 
 
-    @ApiOperation(value = "내가 속한 팀 참가자 조회 API",notes = "내가 속한 팀 참가자의 정보들을 반환")
+    @ApiOperation(value = "내가 속한 팀 참가자 조회 API", notes = "내가 속한 팀 참가자의 정보들을 반환")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "팀 참가자 정보들을 반환")
+            @ApiResponse(code = 200, message = "팀 참가자 정보들을 반환")
     })
     @GetMapping("/member/participants")
     public ResponseEntity<Page<TeamParticipantsDto>> getTeamParticipantRequest(
-        @ApiIgnore Principal principal,
-        Pageable pageable
+            @ApiIgnore Principal principal,
+            Pageable pageable
     ) {
         return ResponseEntity.ok(
-            TeamParticipantsDto.fromDtos(
-                teamParticipantsService
-                    .getTeamParticipantsByUserId(principal, pageable)
-            )
+                TeamParticipantsDto.fromDtos(
+                        teamParticipantsService
+                                .getTeamParticipantsByUserId(principal, pageable)
+                )
         );
     }
-    @ApiOperation(value = "팀 참가자 수정 API",notes = "참가자 이미지, 닉네임을 할 수 있다.")
+
+    @ApiOperation(value = "팀 참가자 수정 API", notes = "참가자 이미지, 닉네임을 할 수 있다.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "수정된 팀 참가자 정보를 반환"),
-        @ApiResponse(code = 200, message = "팀원이 아닌 경우, 허용되지 않은 회원,팀이 해체된 경우"),
+            @ApiResponse(code = 200, message = "수정된 팀 참가자 정보를 반환"),
+            @ApiResponse(code = 200, message = "팀원이 아닌 경우, 허용되지 않은 회원,팀이 해체된 경우"),
     })
-    @PostMapping(value = "/member/participant",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/member/participant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TeamParticipantsDto> updateTeamParticipantContentRequest(
-        @Valid TeamParticipantUpdateRequest teamParticipantUpdateRequest,
-        @ApiIgnore Principal principal
+            @Valid TeamParticipantUpdateRequest teamParticipantUpdateRequest,
+            @ApiIgnore Principal principal
     ) {
         return ResponseEntity.ok(
-            TeamParticipantsDto.from(
-                teamParticipantsService.updateParticipantContent(teamParticipantUpdateRequest, principal.getName())
-            )
+                TeamParticipantsDto.from(
+                        teamParticipantsService.updateParticipantContent(teamParticipantUpdateRequest, principal.getName())
+                )
         );
     }
 }

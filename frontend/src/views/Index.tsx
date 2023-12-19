@@ -5,7 +5,7 @@ const Index = () => {
   return (
     <main>
       <MainContents />
-      <HeaderLink to="/signup">시작하기</HeaderLink>
+      <HeaderLink to="/signup" className="btn btn-outline btn-accent">시작하기</HeaderLink>
     </main>
   );
 };

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import axios from "axios";
+import axiosInstance from "../../axios";
 import {
   teamNameState,
   selectedTeamSizeState,
   teamListState,
   userState,
+  accessTokenState,
 } from "../../state/authState";
+// import { useTeamCreation } from "./useTeamCreation";
 import { useNavigate } from "react-router-dom";
 import {
   StyledContainer,
   StyledFormItem,
-  StyledImagePreview,
   StyledErrorMessage,
   StyledHeading,
   StyledLabel,
@@ -20,39 +22,49 @@ import {
   StyledButton,
 } from "./TeamInfoStyled";
 import profileImg from "../../assets/profileImg.png";
+import { TeamInfoData } from "../../interface/interface";
 
 export default function TeamInfo() {
   const [teamName, setTeamName] = useRecoilState(teamNameState);
   const [selectedTeamSize, setSelectedTeamSize] = useRecoilState(
     selectedTeamSizeState,
   );
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [teamList, setTeamList] = useRecoilState(teamListState);
   const [error, setError] = useState<string | null>(null);
   const user = useRecoilValue(userState);
   const navigate = useNavigate();
+  const accessToken = useRecoilValue(accessTokenState);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = e.target;
+    const file = fileInput.files && fileInput.files[0];
 
     if (file) {
-      // 이미지 파일을 선택한 경우
       const reader = new FileReader();
       reader.readAsDataURL(file);
 
       reader.onload = () => {
         const result = reader.result as string;
-        setSelectedImage(result);
+        setSelectedImage(file); // 파일 경로(string)를 저장
+        setPreviewImage(result);
+        console.log("Selected Image:", result);
+      };
+
+      reader.onerror = (error) => {
+        console.error("Error reading the file:", error);
       };
     }
   };
+  useEffect(() => {
+    setTeamName("");
+    setSelectedTeamSize("");
+    setSelectedImage(null);
+    setError(null);
+  }, []);
 
-  const generateTeamId = () => {
-    return `team_${Date.now()}`;
-  };
-
-  const handleCreateTeam = () => {
+  const handleCreateTeam = async () => {
     let errorMessage = "";
 
     if (!teamName) {
@@ -72,37 +84,51 @@ export default function TeamInfo() {
 
     setError(null);
 
-    const newTeamId = generateTeamId();
-    const newTeam = {
-      id: newTeamId,
-      name: teamName,
-      size: selectedTeamSize,
-      image: selectedImage,
-      leaderId: user?.id || null,
-    };
-    setTeamList([...teamList, newTeam]);
+    try {
+      let memberLimit;
 
-    // 이동
-    navigate("/homeview");
-  };
+      if (selectedTeamSize === "1-9") {
+        memberLimit = 9;
+      } else if (selectedTeamSize === "10-99") {
+        memberLimit = 99;
+      } else if (selectedTeamSize === "100+") {
+        memberLimit = Infinity;
+      } else {
+        setError("올바르지 않은 teamSize 값입니다.");
+        return;
+      }
 
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileInput = e.target;
-    const file = fileInput.files && fileInput.files[0];
+      const formData = new FormData();
+      formData.append("teamName", teamName);
+      if (selectedImage instanceof File) {
+        formData.append("teamImg", selectedImage);
+      }
+      formData.append("memberLimit", memberLimit.toString());
+      const response = await axiosInstance.post("/team", formData, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      navigate("/homeview");
+      // 성공적으로 팀 생성이 완료되었을 때의 로직
+      console.log("팀 생성 성공:", response.data);
+    } catch (error) {
+      // 에러가 발생했을 때의 로직
+      console.error("팀 생성 중 오류:", error);
 
-    if (file) {
-      setSelectedFileName(file.name);
-      handleImageUpload(e);
+      if (axios.isAxiosError(error)) {
+        console.error("Axios Error Response:", error.response);
+      }
+      const axiosError = error as any;
+      if (axiosError.response?.status === 401) {
+        setError("토큰이 유효하지 않습니다.");
+      } else {
+        setError("팀 생성 중 오류가 발생했습니다.");
+      }
     }
   };
-
-  // 페이지 로드 시 초기값 설정
-  useEffect(() => {
-    setTeamName("");
-    setSelectedTeamSize("");
-    setSelectedImage(null);
-    setError(null);
-  }, []);
 
   return (
     <StyledContainer>
@@ -116,12 +142,11 @@ export default function TeamInfo() {
           placeholder="팀 이름"
           onChange={(e) => {
             setTeamName(e.target.value);
-            setError(null); // 팀 이름이 변경될 때 에러 상태 초기화
+            setError(null);
           }}
         />
-        {/* 이미 있는 팀 이름인 경우 에러 메시지 표시 */}
         {teamList.some((team) => team.name === teamName) && (
-          <div style={{ color: "red" }}>이미 있는 팀 이름입니다.</div>
+          <StyledErrorMessage>이미 있는 팀 이름입니다.</StyledErrorMessage>
         )}
       </StyledFormItem>
       <StyledFormItem>
@@ -132,7 +157,7 @@ export default function TeamInfo() {
           value={selectedTeamSize}
           onChange={(e) => {
             setSelectedTeamSize(e.target.value);
-            setError(null); // 인원 수 선택 시 에러 상태 초기화
+            setError(null);
           }}
         >
           <option value="" disabled>
@@ -144,7 +169,10 @@ export default function TeamInfo() {
         </select>
         <ImageUploadContainer>
           <img
-            src={selectedImage || profileImg}
+            src={
+              previewImage ||
+              (typeof selectedImage === "string" ? selectedImage : profileImg)
+            }
             alt="Selected"
             onClick={() => document.getElementById("imageUpload")?.click()}
           />

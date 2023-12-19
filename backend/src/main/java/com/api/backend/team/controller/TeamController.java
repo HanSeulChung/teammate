@@ -6,7 +6,7 @@ import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamDisbandResponse;
-import com.api.backend.team.data.dto.TeamDtoResponse;
+import com.api.backend.team.data.dto.TeamsDtoResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.TeamRestoreResponse;
@@ -69,7 +69,8 @@ public class TeamController {
         teamService.getTeamUrl(teamId, Long.valueOf(principal.getName()))
     );
   }
-  @ApiOperation(value = "팀을 생성하는 API",notes = "생성시 생성한 사람이 팀장으로 지정됩니다.")
+
+  @ApiOperation(value = "팀을 생성하는 API", notes = "생성시 생성한 사람이 팀장으로 지정됩니다.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "실패")
@@ -80,10 +81,11 @@ public class TeamController {
       @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
-        teamService.createTeam(teamRequest,Long.valueOf(principal.getName()))
+        teamService.createTeam(teamRequest, Long.valueOf(principal.getName()))
     );
   }
-  @ApiOperation(value = "팀 참가 API",notes = "해당 URL로 접근 한 사람이 팀 참가")
+
+  @ApiOperation(value = "팀 참가 API", notes = "해당 URL로 접근 한 사람이 팀 참가")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "팀 참가에 대한 정보를 반환"),
       @ApiResponse(
@@ -114,7 +116,7 @@ public class TeamController {
     );
   }
 
-  @ApiOperation(value = "팀원 강퇴 API",notes = "해당 URL로 접근한 사람의 팀 참가")
+  @ApiOperation(value = "팀원 강퇴 API", notes = "해당 URL로 접근한 사람의 팀 참가")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "팀장이 아닌경우, 회원이 없는 경우, 자기 자신을 강퇴하는 경우")
@@ -130,7 +132,8 @@ public class TeamController {
         teamService.kickOutTeamParticipants(teamKickOutRequest, Long.valueOf(principal.getName()))
     );
   }
-  @ApiOperation(value = "팀원 해체 API",notes = "해당 팀은 팀장만 해체가 가능하다.")
+
+  @ApiOperation(value = "팀원 해체 API", notes = "해당 팀은 팀장만 해체가 가능하다.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "권한이 옳바르지 않는 경우, 이미 해체된 경우")
@@ -146,11 +149,11 @@ public class TeamController {
         TeamDisbandResponse.from(
             teamService.disbandTeam(memberId, request),
             memberId)
-        );
+    );
 
   }
 
-  @ApiOperation(value = "팀 복구 API",notes = "팀 해체 이후로 30일 이내로 복구가 가능하다.")
+  @ApiOperation(value = "팀 복구 API", notes = "팀 해체 이후로 30일 이내로 복구가 가능하다.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
@@ -179,29 +182,30 @@ public class TeamController {
         )
     );
   }
-  @ApiOperation(value = "여러 팀 조회 API",notes = "자기 자신을 기준으로 팀을 조회한다.")
+
+  @ApiOperation(value = "여러 팀 조회 API", notes = "자기 자신을 기준으로 팀을 조회한다.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "생성한 팀정보를 반환"),
       @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
   })
   @GetMapping("/list")
-  public ResponseEntity<Page<TeamDtoResponse>> getTeamsRequest(
+  public ResponseEntity<Page<TeamsDtoResponse>> getTeamsRequest(
       @ApiIgnore Principal principal,
       Pageable pageable
-  ){
+  ) {
     return ResponseEntity.ok(
-        TeamDtoResponse.fromDtos(
+        TeamsDtoResponse.fromDtos(
             teamService.getTeams(Long.valueOf(principal.getName()), pageable)
         )
     );
   }
 
-  @ApiOperation(value = "팀 수정 API",notes = "자기 자신을 기준으로 팀을 조회한다.")
+  @ApiOperation(value = "팀 수정 API", notes = "자기 자신을 기준으로 팀을 조회한다.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "업데이트된 팀 정보를 반환"),
       @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
   })
-  @PostMapping(value = "/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<TeamUpdateResponse> updateTeamRequest(
       @Valid TeamUpdateRequest teamUpdateRequest,
       @ApiIgnore Principal principal
@@ -209,6 +213,23 @@ public class TeamController {
     return ResponseEntity.ok(
         TeamUpdateResponse.from(
             teamService.updateTeam(teamUpdateRequest, Long.valueOf(principal.getName()))
+        )
+    );
+  }
+
+  @ApiOperation(value = "팀 디테일",notes = "팀 조회")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "팀에 대한 세부사항을 알 수 있다."),
+      @ApiResponse(code = 500, message = "팀원이 아닌 경우, 팀이 이미 해체된 경우")
+  })
+  @GetMapping(value = "/{teamId}")
+  public ResponseEntity<TeamsDtoResponse> getTeam(
+      @PathVariable(value = "teamId") Long teamId,
+      @ApiIgnore Principal principal
+  ) {
+    return ResponseEntity.ok(
+        TeamsDtoResponse.from(
+            teamService.getTeamByTeamIdAndMemberId(teamId, Long.valueOf(principal.getName()))
         )
     );
   }

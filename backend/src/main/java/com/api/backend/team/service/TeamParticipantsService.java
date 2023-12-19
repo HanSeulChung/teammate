@@ -63,7 +63,7 @@ public class TeamParticipantsService {
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
     if (!readerParticipant.getTeam().getTeamId()
-        .equals(mateParticipant.getTeam().getTeamId())){
+        .equals(mateParticipant.getTeam().getTeamId())) {
       throw new CustomException(TEAM_NOT_EQUALS_EXCEPTION);
     }
     if (!mateParticipant.getTeamRole().equals(TeamRole.MATE)) {
@@ -97,11 +97,12 @@ public class TeamParticipantsService {
     return teamParticipants;
   }
 
-  public Page<TeamParticipants> getTeamParticipantsByUserId(Principal principal, Pageable pageable) {
+  public Page<TeamParticipants> getTeamParticipantsByUserId(Principal principal,
+      Pageable pageable) {
     return teamParticipantsRepository
         .findAllByMember_MemberIdAndTeam_IsDelete(
-        Long.valueOf(principal.getName()),DELETE_FALSE_FLAG, pageable
-    );
+            Long.valueOf(principal.getName()), DELETE_FALSE_FLAG, pageable
+        );
   }
 
   @Transactional
@@ -118,14 +119,16 @@ public class TeamParticipantsService {
         .equals(Long.valueOf(userId))) {
       throw new CustomException(MEMBER_NOT_EQUALS_EXCEPTION);
     }
-    String participantNickName = teamParticipant.getTeamNickName();
-    if (!Objects.equals(teamParticipantUpdateRequest.getTeamNickName(), "")) {
-      teamParticipant.changeNickName(teamParticipantUpdateRequest.getTeamNickName());
-      participantNickName = teamParticipantUpdateRequest.getTeamNickName();
+
+    if (!Objects.equals(
+        teamParticipantUpdateRequest.getTeamNickName(),
+        teamParticipant.getTeamNickName())
+    ) {
+      teamParticipant.setTeamNickName(teamParticipantUpdateRequest.getTeamNickName());
     }
 
     if (teamParticipantUpdateRequest.getParticipantImg() != null) {
-      teamParticipant.changeProfileUrl(
+      teamParticipant.setParticipantsProfileUrl(
           fileProcessService.uploadImage(
               teamParticipantUpdateRequest.getParticipantImg(), FileFolder.PARTICIPANT)
       );
@@ -134,10 +137,11 @@ public class TeamParticipantsService {
   }
 
   public List<TeamParticipants> getTeamParticipantsExcludeId(Long teamParticipantId, Long teamId) {
-    return teamParticipantsRepository.findByTeam_TeamIdAndTeamParticipantsIdNot(teamId ,teamParticipantId);
+    return teamParticipantsRepository.findByTeam_TeamIdAndTeamParticipantsIdNot(teamId,
+        teamParticipantId);
   }
 
-  public List<TeamParticipants> getTeamParticipantsByExcludeMemberId(Long teamId , Long memberId) {
+  public List<TeamParticipants> getTeamParticipantsByExcludeMemberId(Long teamId, Long memberId) {
     return teamParticipantsRepository.findAllByTeam_TeamIdAndMember_MemberIdNot(teamId, memberId);
   }
 }

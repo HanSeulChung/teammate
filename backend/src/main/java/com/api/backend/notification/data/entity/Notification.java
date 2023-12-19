@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
@@ -26,6 +27,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Table(name = "notification")
+@ToString
 public class Notification extends BaseEntity {
 
   @Id
@@ -49,6 +51,15 @@ public class Notification extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_participants_id")
   private TeamParticipants teamParticipants;
+
+  public static Notification convertToMemberNotify(Long memberId, String teamName, String message, Type type) {
+    return Notification.builder()
+        .member(Member.builder().memberId(memberId).build())
+        .teamName(teamName)
+        .message(message)
+        .type(type)
+        .build();
+  }
 
   public static Notification convertToMemberNotify(Member member, String teamName, String message, Type type) {
     return Notification.builder()

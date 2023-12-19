@@ -1,23 +1,61 @@
 import { atom, useRecoilState, selector } from "recoil";
+import { recoilPersist } from "recoil-persist";
 import { useEffect } from "react";
+import { Team, User, TokenState } from "../interface/interface";
 
-// 로그인 상태를 저장하는 atom
-export const isAuthenticatedState = atom({
-  key: "isAuthenticated",
-  default: false,
+const { persistAtom } = recoilPersist();
+
+//로그인된 사용자 상태
+export const loggedInUserState = atom<string | null>({
+  key: "loggedInUserState",
+  default: null,
 });
 
-//토큰을 저장
+// //리더인 팀 상태 선택기 (위에 string 을 User로 바꾸면됨)
+// export const teamsByLeaderState = selector({
+//   key: "teamsByLeaderState",
+//   get: ({ get }) => {
+//     const userTeams = get(userTeamsState);
+//     const loggedInUser = get(loggedInUserState);
+
+//     if (!loggedInUser) {
+//       return [];
+//     }
+
+//     // 로그인한 사용자가 리더인 팀만 반환
+//     return userTeams.filter((team) => team.leaderId === loggedInUser.id);
+//   },
+// });
+
+// 인증 상태
+export const isAuthenticatedState = atom({
+  key: "isAuthenticatedState",
+  default: false,
+  effects_UNSTABLE: [persistAtom],
+});
+
+// 액세스 토큰 상태
 export const accessTokenState = atom({
   key: "accessToken",
   default: "",
+  // effects_UNSTABLE: [persistAtom],
 });
 
+// 리프레시 토큰 상태
 export const refreshTokenState = atom({
   key: "refreshToken",
   default: "",
+  // effects_UNSTABLE: [persistAtom],
 });
 
+// 사용자 정보 상태
+export const userState = atom({
+  key: "userState",
+  default: null as { id: string; name: string } | null,
+  // effects_UNSTABLE: [persistAtom],
+});
+
+// 리프레시 토큰 저장 함수
 export const saveRefreshToken = (token: string | null) => {
   if (token) {
     localStorage.setItem("refreshToken", token);
@@ -26,6 +64,7 @@ export const saveRefreshToken = (token: string | null) => {
   }
 };
 
+// 액세스 토큰 저장 함수
 export const saveAccessToken = (token: string | null) => {
   if (token) {
     localStorage.setItem("accessToken", token);
@@ -34,19 +73,28 @@ export const saveAccessToken = (token: string | null) => {
   }
 };
 
-export const logout = () => {
-  localStorage.removeItem("accessToken");
+// 토큰 저장 함수
+export const saveToken = ({ accessToken, refreshToken }: TokenState) => {
+  localStorage.setItem("accessToken", accessToken);
+  localStorage.setItem("refreshToken", refreshToken);
 };
 
-// Home Screen Search State
+// 로그아웃 함수
+export const logout = () => {
+  saveToken({ accessToken: "", refreshToken: "" });
+};
+
+// 홈 화면 검색 상태
 export const searchState = atom({
   key: "searchState",
-  default: (() => {
-    const storedSearch = localStorage.getItem("search");
-    return storedSearch || "";
-  })() as string,
+  // default: (() => {
+  //   const storedSearch = localStorage.getItem("search");
+  //   return storedSearch || "";
+  // })() as string,
+  default: localStorage.getItem("search") || "",
 });
 
+// 검색 관련 상태 및 함수
 export const useSearchState = () => {
   const [search, setSearch] = useRecoilState(searchState);
   const [teamList, setTeamList] = useRecoilState(teamListState);
@@ -66,15 +114,18 @@ export const useSearchState = () => {
   return { search, setSearch, handleSearch, teamList, setTeamList };
 };
 
-// Team Creation State
-export const teamNameState = atom({
-  key: "teamNameState",
-  default: (() => {
-    const storedTeamName = localStorage.getItem("teamName");
-    return storedTeamName || "";
-  })(),
+// 사용자 정보 상태
+export const userInfoState = atom({
+  key: "userInfoState",
+  default: { teams: [] },
 });
 
+export const userTeamsState = atom<Team[]>({
+  key: "userTeamsState",
+  default: [],
+});
+
+//선택된 팀 크기 상태
 export const selectedTeamSizeState = atom({
   key: "selectedTeamSizeState",
   default: (() => {
@@ -83,56 +134,31 @@ export const selectedTeamSizeState = atom({
   })(),
 });
 
-// Team List State
-export interface Team {
-  id: string;
-  name: string;
-  size: string;
-  image: string | null;
-  leaderId: string | null;
-  nickname?: string | null;
-}
-
-export const teamListState = atom<Team[]>({
-  key: "teamListState",
-  default: [],
-
-  effects_UNSTABLE: [
-    ({ setSelf }) => {
-      const storedTeamList = localStorage.getItem("teamList");
-      if (storedTeamList) {
-        setSelf(JSON.parse(storedTeamList));
-      }
-    },
-  ],
+// 마이페이지 선택된 팀 상태
+// export const selectedTeamState = atom({
+//   key: "selectedTeam",
+//   default: "",
+// });
+export const selectedTeamState = atom<string | null>({
+  key: "selectedTeamState",
+  default: null,
 });
 
-// Selected Team State for MyPage
-export const selectedTeamState = atom({
-  key: "selectedTeam",
-  default: "",
-});
-
+// 선택된 팀 상태 관련 함수
 export const useSelectedTeamState = () => useRecoilState(selectedTeamState);
 
-// User State and Functions
-export interface User {
-  id: string;
-  name: string;
-}
+// export const userState = atom<User | null>({
+//   key: "userState",
+//   default: null,
 
-export const userState = atom<User | null>({
-  key: "userState",
-  default: null,
-
-  effects_UNSTABLE: [
-    ({ onSet }) => {
-      onSet((newValue) => {
-        localStorage.setItem("user", JSON.stringify(newValue));
-      });
-    },
-  ],
-});
+//   effects_UNSTABLE: [
+//     ({ onSet }) => {
+//       onSet((newValue) => {
+//         localStorage.setItem("user", JSON.stringify(newValue));
+//       });
+//     },
+//   ],
+// });
 
 export const useUser = () => {
   const [user, setUser] = useRecoilState(userState);
@@ -144,15 +170,20 @@ export const useUser = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Error parsing user from localStorage:", error);
+      }
     }
   }, [setUser]);
-
   return { user, setUser, saveUser };
 };
 
-// MyPage State
+// 마이페이지 선택된 팀 정보 상태
 export const selectedTeamInfoState = atom({
   key: "selectedTeamInfoState",
   default: {
@@ -160,4 +191,21 @@ export const selectedTeamInfoState = atom({
     image: "",
     nickname: "",
   },
+});
+
+//팀 목록 상태
+export const teamListState = atom<Team[]>({
+  key: "teamListState",
+  default: [],
+
+  effects_UNSTABLE: [persistAtom],
+});
+
+// 팀 생성 상태
+export const teamNameState = atom({
+  key: "teamNameState",
+  default: (() => {
+    const storedTeamName = localStorage.getItem("teamName");
+    return storedTeamName || "";
+  })(),
 });

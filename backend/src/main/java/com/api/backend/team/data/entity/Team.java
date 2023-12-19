@@ -48,7 +48,6 @@ public class Team extends BaseEntity {
   @Builder.Default
   private List<RepeatSchedule> repeatSchedules = new ArrayList<>();
 
-
   // TODO: 추후 재셋팅 예정
 //  @OneToMany(mappedBy = "team")
 //  private List<Documents> documents = new ArrayList<>();
@@ -58,6 +57,7 @@ public class Team extends BaseEntity {
     this.inviteLink = this.teamId +
         "/" + UUID.randomUUID();
   }
+
   public void updateReservationTime() {
     this.restorationDt = LocalDate.now().plusDays(30);
   }
@@ -70,12 +70,12 @@ public class Team extends BaseEntity {
     this.restorationDt = null;
   }
 
-  public void updateNameOrProfileUrl(String nickName, String url) {
-    if (!nickName.equals(this.name)) {
-      this.name = nickName;
+  public void updateNameAndProfileUrl(String nickName, String url) {
+    if (!name.equals(nickName)) {
+      name = nickName;
     }
-    if (!url.equals(this.profileUrl)) {
-      this.profileUrl = url;
+    if (!profileUrl.equals(url)) {
+      profileUrl = url;
     }
   }
 }
