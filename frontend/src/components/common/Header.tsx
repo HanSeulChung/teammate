@@ -30,6 +30,42 @@ const Header = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useRecoilState(userState);
 
+  const isTeamPage = location.pathname.startsWith("/team/");
+  const handleTeamMembersClick = () => {
+    if (isTeamPage) {
+      const currentPath = window.location.pathname;
+      navigate(`${currentPath}/teammembers`);
+    }
+  };
+
+  // teamId를 통해 팀 정보를 가져와서 teamName 설정
+  useEffect(() => {
+    const fetchTeamName = async () => {
+      try {
+        if (isTeamPage) {
+          // 현재 페이지의 URL에서 teamId 추출
+          const teamIdMatch = location.pathname.match(/\/team\/(\d+)/);
+
+          if (teamIdMatch) {
+            const teamId = parseInt(teamIdMatch[1]);
+
+            // teamId에 해당하는 팀 정보 찾기
+            const currentTeam = teamList.find((team) => team.teamId === teamId);
+
+            // 팀 정보가 있다면 teamName 설정
+            if (currentTeam) {
+              setTeamName(currentTeam.name);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("팀 정보를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchTeamName();
+  }, [isTeamPage, location.pathname, teamList]);
+
   const onLogoutSuccess = () => {
     // 로그아웃 성공 시 실행할 동작 정의
     console.log("로그아웃 성공!");
@@ -61,23 +97,6 @@ const Header = () => {
       }
     }
   };
-
-  const isTeamPage = location.pathname.startsWith("/team/");
-  const handleTeamMembersClick = () => {
-    if (isTeamPage) {
-      const currentPath = window.location.pathname;
-      navigate(`${currentPath}/teammembers`);
-    }
-  };
-
-  useEffect(() => {
-    // 현재 페이지가 팀 페이지이고 팀 목록이 존재할 경우에만 팀 이름 설정
-    if (isTeamPage && teamList.length > 0) {
-      const teamId = location.pathname.split("/")[2];
-      const team = teamList.find((team) => team.teamId === Number(teamId));
-      setTeamName(team ? team.name : "팀을 찾을 수 없음");
-    }
-  }, [location.pathname, isTeamPage, teamList]);
 
   const handleNotificationClick = () => {
     setModalOpen(true);
@@ -122,10 +141,6 @@ const Header = () => {
                 >
                   로그아웃
                 </span>
-                {/* Logout 컴포넌트 사용 
-                                    <Link to="/signin">
-                                    <Logout onLogoutSuccess={() => handleLogoutSuccess()} />
-                                    </Link>*/}
               </li>
               <li>
                 {isTeamPage ? (
@@ -144,7 +159,6 @@ const Header = () => {
                 <Link to="/signup">회원가입</Link>
               </li>
               <li>
-                {/* <span onClick={handleNotificationClick}>알람</span> */}
                 <button
                   className="btn btn-ghost btn-circle"
                   onClick={handleNotificationClick}
@@ -169,7 +183,6 @@ const Header = () => {
                   </div>
                 </button>
                 {isModalOpen && <AlarmModal closeModal={closeModal} />}{" "}
-                {/* 모달 렌더링 */}
               </li>
             </>
           )}
