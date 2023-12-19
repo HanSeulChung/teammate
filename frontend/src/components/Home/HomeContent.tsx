@@ -4,7 +4,6 @@ import axiosInstance from "../../axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
-  // teamListState,
   useSearchState,
   userTeamsState,
   accessTokenState,
