@@ -49,7 +49,7 @@ public class WebSecurityConfig {
         "/webjars/**",
         "/menus/**",
         "/h2-console/**",
-        "/sign-in","/sign-up","/logout","/email-verify/**","/sign-up/email-check/**",
+        "/sign-in","/sign-up","/logout","/my-page","/member/password","/email-verify/**","/sign-up/email-check/**",
         "/ws"
     };
 
@@ -75,6 +75,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests() // 요청에 대한 권한 설정
                 .antMatchers(AUTH_WHITELIST).permitAll()
+                .antMatchers("/my-page","/member/password").authenticated()
                 .anyRequest().authenticated();
 
         return http.build();

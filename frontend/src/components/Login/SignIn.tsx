@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios, { AxiosError } from "axios";
+import axiosInstance from "../../axios";
 import { useNavigate } from "react-router-dom";
 import { StyledContainer, StyledFormItem } from "./SignInStyled";
 import { useRecoilState } from "recoil";
@@ -20,7 +21,7 @@ const SignIn = () => {
     useRecoilState(isAuthenticatedState);
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-  const { setUser } = useUser();
+  const { saveUser } = useUser();
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
@@ -40,19 +41,10 @@ const SignIn = () => {
         setError("비밀번호는 최소 8자 이상이어야 합니다.");
         return;
       }
-      const response = await axios.post(
-        "http://118.67.128.124:8080/sign-in",
-        {
-          email: email,
-          password: password,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const response = await axiosInstance.post("/sign-in", {
+        email: email,
+        password: password,
+      });
 
       const { token } = response.data;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -70,7 +62,7 @@ const SignIn = () => {
         setRefreshToken(newRefreshToken);
       }
       setIsAuthenticated(true);
-      setUser({ id: email, name: response.data.name });
+      saveUser({ id: email, name: response.data.name });
       navigate("/homeview");
       console.log("login successful");
     } catch (error) {
@@ -82,7 +74,10 @@ const SignIn = () => {
 
       const axiosError = error as AxiosError;
       if (axiosError.response?.status === 401) {
-        setError("올바른 이메일 또는 비밀번호를 입력하세요.");
+        const errorMessage =
+          (axiosError.response.data as any)?.message ||
+          "올바른 이메일 또는 비밀번호를 입력하세요.";
+        setError(errorMessage);
       } else {
         setError("로그인 중 오류가 발생했습니다.");
       }
@@ -90,9 +85,6 @@ const SignIn = () => {
   };
 
   const handleLogout = () => {
-    //실제론 여기 지워야함
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("refreshToken");
     saveAccessToken("");
     saveRefreshToken("");
     navigate("/signin");
