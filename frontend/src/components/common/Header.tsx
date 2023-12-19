@@ -20,10 +20,6 @@ import Logout from "../Login/LogOut";
 import axiosInstance from "../../axios";
 import axios, { AxiosError } from "axios";
 
-interface LogoutProps {
-  onLogoutSuccess: () => void;
-}
-
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] =
     useRecoilState(isAuthenticatedState);
@@ -33,17 +29,11 @@ const Header = () => {
   const [teamName, setTeamName] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useRecoilState(userState);
-  const onLogoutSuccess = () => {
-    // 로그아웃 성공 시 실행할 동작 정의
-    console.log("로그아웃 성공!");
-    // 필요한 동작 수행
-  };
+
+  const onLogoutSuccess = () => {};
   const handleLogout = async () => {
     try {
-      // 로그아웃 API 호출
       await axiosInstance.post("/logout");
-
-      // setAccessToken(null); accessToken 초기화
       localStorage.clear();
       console.log("로컬 스토리지가 비워졌습니다.");
       console.log("로그아웃 되었습니다.");
@@ -51,7 +41,6 @@ const Header = () => {
       setUser(null);
       onLogoutSuccess();
 
-      // 로그아웃 후 페이지 이동
       navigate("/");
     } catch (error: AxiosError | any) {
       if (axios.isAxiosError(error)) {
@@ -75,13 +64,7 @@ const Header = () => {
       navigate(`${currentPath}/teammembers`);
     }
   };
-  // const handleLogoutSuccess = () => {
-  //   localStorage.removeItem("accessToken");
-  //   localStorage.removeItem("refreshToken");
-  //   setIsAuthenticated(false);
-  //   setUser(null);
-  //   navigate("/signin");
-  // };
+
   useEffect(() => {
     // 현재 페이지가 팀 페이지이고 팀 목록이 존재할 경우에만 팀 이름 설정
     if (isTeamPage && teamList.length > 0) {
@@ -92,11 +75,11 @@ const Header = () => {
   }, [location.pathname, isTeamPage, teamList]);
 
   const handleNotificationClick = () => {
-    setModalOpen(true); // 알람 모달 열기
+    setModalOpen(true);
   };
 
   const closeModal = () => {
-    setModalOpen(false); // 알람 모달 닫기
+    setModalOpen(false);
   };
 
   return (
