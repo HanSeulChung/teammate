@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
   // teamListState,
   useSearchState,
   userTeamsState,
   accessTokenState,
+  isAuthenticatedState,
 } from "../../state/authState";
 import { Team } from "../../interface/interface";
 
@@ -17,13 +18,25 @@ const HomeContent = () => {
   const [error, setError] = useState<string | null>(null);
   const accessToken = useRecoilValue(accessTokenState);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [team, setTeam] = useState<Team | null>(location.state?.team || null);
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   useEffect(() => {
     const fetchLoggedInUserId = async () => {
       try {
-        const teamListResponse = await axiosInstance.get("/team/list", {
-          params: { page: 0, size: 10, sort: "createDt-asc" },
-        });
+        if (!isAuthenticated) {
+          navigate("/signin");
+          return;
+        }
+        const [teamListResponse, inviteCodeResponse] = await Promise.all([
+          axiosInstance.get("/team/list", {
+            params: { page: 0, size: 10, sort: "createDt-asc" },
+          }),
+          team && axiosInstance.post(`/team/${team.teamId}/${team.code}`),
+        ]);
+
         // Recoil 상태 업데이트
         setUserTeams(teamListResponse.data.content);
 
@@ -32,13 +45,32 @@ const HomeContent = () => {
           `teamList_${accessToken}`,
           JSON.stringify(teamListResponse.data.content),
         );
+
+        //초대 url을 통해 들어온 사용자에게 팀 추가 (중복 방지)
+        if (team && inviteCodeResponse) {
+          const newTeam: Team = {
+            teamId: inviteCodeResponse.data.teamId,
+            code: inviteCodeResponse.data.code,
+            name: team.name,
+            profileUrl: team.profileUrl,
+            leaderId: null,
+            nickname: null,
+            members: [],
+            memberLimit: team.memberLimit,
+            inviteLink: team.inviteLink,
+          };
+
+          // 새로운 팀을 현재 유저의 팀 리스트에 추가
+          setUserTeams((prevTeams) => [...prevTeams, newTeam]);
+        }
       } catch (error: any) {
         console.error("Error fetching team list:", error);
+        setError(error.message || "An error occurred");
       }
     };
 
     fetchLoggedInUserId();
-  }, [accessToken, setUserTeams]);
+  }, [accessToken, setUserTeams, isAuthenticated]);
 
   if (error) {
     return <div>{error}</div>;
