@@ -12,7 +12,7 @@ export interface Team {
   name: string;
   teamId: number;
   profileUrl: string | null;
-  leaderId: string | null;
+  leaderId: number | null;
   nickname?: string | null;
   members?: User[];
   code: string;
