@@ -83,7 +83,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
               팀을 선택하세요
             </option>
             {teamList.map((team) => (
-              <option key={team.teamId} value={team.teamId}>
+              <option key={team.id} value={team.id}>
                 {team.name}
               </option>
             ))}
@@ -93,6 +93,72 @@ const UserProfile: React.FC<UserProfileProps> = ({
       {isPasswordChangeModalOpen && (
         <PasswordChangeModal onClose={handleClosePasswordChangeModal} />
       )}
+      {/* 231218 유나경 시작------------- */}
+      <div className="overflow-x-auto">
+        <table className="table">
+          <tbody>
+            {/* row 1 */}
+            <tr>
+              <th>이름</th>
+              <td>{user.name}</td>
+            </tr>
+            {/* row 2 */}
+            <tr>
+              <th>이메일 아이디</th>
+              <td>{user.id}</td>
+            </tr>
+            {/* row 3 */}
+            <tr>
+              <th>현재 비밀번호</th>
+              <td>
+                <label className="form-control w-full max-w-xs">
+                  <input
+                    type="text"
+                    placeholder="현재 비밀번호"
+                    className="input input-bordered w-full max-w-xs"
+                  />
+                  <div className="label">
+                    <span className="label-text-alt">8자 이상</span>
+                  </div>
+                </label>
+              </td>
+            </tr>
+            {/* row 4 */}
+            <tr>
+              <th>새 비밀번호</th>
+              <td>
+                <label className="form-control w-full max-w-xs">
+                  <input
+                    type="text"
+                    placeholder="새 비밀번호"
+                    className="input input-bordered w-full max-w-xs"
+                  />
+                  <div className="label">
+                    <span className="label-text-alt">8자 이상</span>
+                  </div>
+                </label>
+              </td>
+            </tr>
+            {/* row 5 */}
+            <tr>
+              <th>새 비밀번호 확인</th>
+              <td>
+                <label className="form-control w-full max-w-xs">
+                  <input
+                    type="text"
+                    placeholder="새 비밀번호"
+                    className="input input-bordered w-full max-w-xs"
+                  />
+                  <div className="label">
+                    <span className="label-text-alt">8자 이상</span>
+                  </div>
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {/* 231218 유나경 끝------------- */}
     </UserProfileContainer>
   );
 };

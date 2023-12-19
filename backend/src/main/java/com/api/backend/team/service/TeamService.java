@@ -267,4 +267,16 @@ public class TeamService {
       throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
     }
   }
+
+  public Team getTeamByTeamIdAndMemberId(Long teamId, Long memberId) {
+    Team team = getTeam(teamId);
+
+    isDeletedCheck(team);
+
+    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, memberId)) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+    }
+
+    return team;
+  }
 }

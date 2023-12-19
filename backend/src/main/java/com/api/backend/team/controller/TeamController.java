@@ -6,7 +6,7 @@ import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamDisbandResponse;
-import com.api.backend.team.data.dto.TeamDtoResponse;
+import com.api.backend.team.data.dto.TeamsDtoResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.TeamRestoreResponse;
@@ -185,12 +185,12 @@ public class TeamController {
       @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
   })
   @GetMapping("/list")
-  public ResponseEntity<Page<TeamDtoResponse>> getTeamsRequest(
+  public ResponseEntity<Page<TeamsDtoResponse>> getTeamsRequest(
       @ApiIgnore Principal principal,
       Pageable pageable
   ){
     return ResponseEntity.ok(
-        TeamDtoResponse.fromDtos(
+        TeamsDtoResponse.fromDtos(
             teamService.getTeams(Long.valueOf(principal.getName()), pageable)
         )
     );
@@ -209,6 +209,23 @@ public class TeamController {
     return ResponseEntity.ok(
         TeamUpdateResponse.from(
             teamService.updateTeam(teamUpdateRequest, Long.valueOf(principal.getName()))
+        )
+    );
+  }
+
+  @ApiOperation(value = "팀 디테일",notes = "팀 조회")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "팀에 대한 세부사항을 알 수 있다."),
+      @ApiResponse(code = 500, message = "팀원이 아닌 경우, 팀이 이미 해체된 경우")
+  })
+  @GetMapping(value = "/{teamId}")
+  public ResponseEntity<TeamsDtoResponse> getTeam(
+      @PathVariable(value = "teamId") Long teamId,
+      @ApiIgnore Principal principal
+  ) {
+    return ResponseEntity.ok(
+        TeamsDtoResponse.from(
+            teamService.getTeamByTeamIdAndMemberId(teamId, Long.valueOf(principal.getName()))
         )
     );
   }
