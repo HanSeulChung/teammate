@@ -148,6 +148,7 @@ const Header = () => {
                 <button
                   className="btn btn-ghost btn-circle"
                   onClick={handleNotificationClick}
+                  aria-label="알림 보기"
                 >
                   <div className="indicator">
                     <svg
