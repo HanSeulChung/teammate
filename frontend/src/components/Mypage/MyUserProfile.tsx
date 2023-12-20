@@ -27,7 +27,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await axiosInstance.get("/mypage");
+        const response = await axiosInstance.get("/my-page");
         // setUser를 통해 Recoil 상태 업데이트
         setUser(response.data);
       } catch (error) {
@@ -68,7 +68,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
         <UserProfileInfo>
           <p>이름: {user.name}</p>
           <span>
-            <Email>Email: {user.id}</Email>
+            <Email>Email: {user.email}</Email>
             <UpdateButton onClick={handleOpenPasswordChangeModal}>
               비밀번호 변경
             </UpdateButton>
@@ -83,7 +83,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
               팀을 선택하세요
             </option>
             {teamList.map((team) => (
-              <option key={team.id} value={team.id}>
+              <option key={team.teamId} value={team.teamId}>
                 {team.name}
               </option>
             ))}
@@ -100,12 +100,12 @@ const UserProfile: React.FC<UserProfileProps> = ({
             {/* row 1 */}
             <tr>
               <th>이름</th>
-              <td>{user.name}</td>
+              {/* <td>{user.name}</td> */}
             </tr>
             {/* row 2 */}
             <tr>
               <th>이메일 아이디</th>
-              <td>{user.id}</td>
+              {/* <td>{user.id}</td> */}
             </tr>
             {/* row 3 */}
             <tr>
