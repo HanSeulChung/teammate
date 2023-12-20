@@ -141,6 +141,28 @@ public class MemberController {
                 .body(logoutResponse);
     }
 
+
+    @GetMapping("/my-page") ResponseEntity<?> getMemberInfo(
+            @RequestHeader("Authorization") String requestAccessTokenInHeader
+    ){
+        MemberInfoResponse memberInfo = memberService.getMemberInfo(requestAccessTokenInHeader);
+
+        return ResponseEntity.ok(memberInfo);
+    }
+
+
+    @PutMapping("/member/password")
+    public ResponseEntity<?> updateMemberPassword(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest
+    ){
+
+        memberService.updateMemberPassword(accessToken, updateMemberPasswordRequest);
+
+        return ResponseEntity.ok().build();
+    }
+
+
     @ApiOperation(value = "내가 속한 팀 참가자 조회 API", notes = "내가 속한 팀 참가자의 정보들을 반환")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "팀 참가자 정보들을 반환")
