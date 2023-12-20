@@ -110,10 +110,13 @@ const HomeContent = () => {
 export default HomeContent;
 
 const TeamListContainer = styled.div`
+  position: absolute;
+  width: 1000px;
+  top: 280px;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 16px;
+  gap: 20px;
   padding: 16px;
 `;
 
@@ -150,4 +153,5 @@ const TeamImage = styled.img`
   max-height: 100px;
   border-radius: 8px;
   margin-bottom: 8px;
+  margin: 0 auto;
 `;

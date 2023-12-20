@@ -5,14 +5,11 @@ import searchImg from "../../assets/search.png";
 
 const SearchBarContainer = styled.div`
   position: absolute;
-  top: 200px; /* 조절할 원하는 위치로 설정 */
-  /* 조절할 원하는 위치로 설정 */
+  top: 150px;
   display: flex;
   align-items: center;
-  margin: 10px;
   width: 1000px;
-  height: 40px;
-  z-index: 1000;
+  height: 50px;
 
   input {
     padding: 8px;
@@ -23,6 +20,7 @@ const SearchBarContainer = styled.div`
     outline: none;
     position: relative;
     text-align: Center;
+    background: white;
   }
 
   .search-icon {
@@ -46,15 +44,26 @@ export default function HomeSearchBar() {
       setSearch("");
     }
   };
+  const handleFocus = () => {
+    setPlaceholderHidden(true);
+  };
+
+  const handleBlur = () => {
+    if (!search) {
+      setPlaceholderHidden(false);
+    }
+  };
 
   return (
     <SearchBarContainer>
       <input
         type="text"
-        placeholder={isPlaceholderHidden ? "" : "검색어를 입력하세요"}
+        placeholder={isPlaceholderHidden ? "" : "팀 명을 검색하세요"}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         onClick={handleClick}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
       />
       <img
         src={searchImg}
