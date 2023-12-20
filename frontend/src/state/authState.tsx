@@ -79,6 +79,30 @@ export const saveToken = ({ accessToken, refreshToken }: TokenState) => {
   localStorage.setItem("refreshToken", refreshToken);
 };
 
+//사용자 저장 함수
+export const useUser = () => {
+  const [user, setUser] = useRecoilState(userState);
+
+  const saveUser = (loggedInUser: User) => {
+    setUser(loggedInUser);
+    localStorage.setItem("user", JSON.stringify(loggedInUser));
+  };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Error parsing user from localStorage:", error);
+      }
+    }
+  }, [setUser]);
+  return { user, setUser, saveUser };
+};
+
 // 로그아웃 함수
 export const logout = () => {
   saveToken({ accessToken: "", refreshToken: "" });
@@ -159,29 +183,6 @@ export const useSelectedTeamState = () => useRecoilState(selectedTeamState);
 //     },
 //   ],
 // });
-
-export const useUser = () => {
-  const [user, setUser] = useRecoilState(userState);
-
-  const saveUser = (loggedInUser: User) => {
-    setUser(loggedInUser);
-    localStorage.setItem("user", JSON.stringify(loggedInUser));
-  };
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error parsing user from localStorage:", error);
-      }
-    }
-  }, [setUser]);
-  return { user, setUser, saveUser };
-};
 
 // 마이페이지 선택된 팀 정보 상태
 export const selectedTeamInfoState = atom({

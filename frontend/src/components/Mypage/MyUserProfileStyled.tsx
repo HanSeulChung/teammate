@@ -26,6 +26,7 @@ export const UserProfileInfo = styled.div`
 
   label {
     margin-right: 10px;
+    font-weight: bold;
   }
 
   select {
@@ -34,6 +35,7 @@ export const UserProfileInfo = styled.div`
     border: none;
     border-bottom: 1px solid #333333;
     border-radius: 0;
+    background: white;
   }
 `;
 export const Email = styled.span`
