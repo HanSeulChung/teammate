@@ -128,9 +128,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   useEffect(() => {
     const initializeQuill = () => {
-      // if (!title || !content) {
-      //   return;
-      // }
+      if (!title || !content) {
+        return;
+      }
 
       const editor = new Quill("#quill-editor", {
         theme: "snow",
@@ -194,8 +194,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
           }
         },
       );
-
-      // handleSave(delta);
     }
   };
 
@@ -219,7 +217,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         console.log("deltaMsg 브로드 캐스팅 받았음 - handleSelectionChange");
         console.log("data is ", data.body);
 
-        // 서버로부터 받은 데이터 객체를 JSON 파싱
         const selectionChangeData = JSON.parse(data.body);
 
         const index = selectionChangeData.index;
@@ -228,34 +225,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         console.log("Length:", length);
         editor.setSelection(index, length);
       });
-    }
-  };
-
-  const handleSave = (delta: string) => {
-    console.log("delta: ", delta);
-
-    if (client.current) {
-      console.log("Saving content:", content);
-      client.current!.publish({
-        destination: "/app/doc.saveDocs",
-        body: JSON.stringify({
-          id: docsId,
-          title: title,
-          content: content,
-          editorEmail: "w0w1278@naver.com",
-          teamId: teamid,
-        }),
-      });
-      console.log(
-        "changedDocument : ",
-        JSON.stringify({
-          id: docsId,
-          title: title,
-          content: content,
-          editorEmail: "w0w1278@naver.com",
-          teamId: teamid,
-        }),
-      );
     }
   };
 
