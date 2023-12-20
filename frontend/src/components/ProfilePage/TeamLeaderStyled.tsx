@@ -79,7 +79,11 @@ export const StyledInput = styled.input`
 `;
 
 export const TeamMembersContainer = styled.div`
-  width: 300px;
+  width: 350px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  padding: 20px;
+  margin-top: 20px;
 `;
 
 export const ConfirmationModal = styled.div`
