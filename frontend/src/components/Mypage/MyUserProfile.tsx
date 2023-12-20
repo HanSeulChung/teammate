@@ -64,35 +64,6 @@ const UserProfile: React.FC<UserProfileProps> = ({
     <UserProfileContainer>
       <UserProfileTitle>내 프로필</UserProfileTitle>
       <br />
-      {user && (
-        <UserProfileInfo>
-          <p>이름: {user.name}</p>
-          <span>
-            <Email>Email: {user.email}</Email>
-            <UpdateButton onClick={handleOpenPasswordChangeModal}>
-              비밀번호 변경
-            </UpdateButton>
-          </span>
-          <select
-            title="myteam"
-            id="teamSelect"
-            value={selectedTeam || ""}
-            onChange={handleTeamSelect}
-          >
-            <option value="" disabled>
-              팀을 선택하세요
-            </option>
-            {teamList.map((team) => (
-              <option key={team.teamId} value={team.teamId}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-        </UserProfileInfo>
-      )}
-      {isPasswordChangeModalOpen && (
-        <PasswordChangeModal onClose={handleClosePasswordChangeModal} />
-      )}
       {/* 231218 유나경 시작------------- */}
       <div className="overflow-x-auto">
         <table className="table">
@@ -100,12 +71,12 @@ const UserProfile: React.FC<UserProfileProps> = ({
             {/* row 1 */}
             <tr>
               <th>이름</th>
-              {/* <td>{user.name}</td> */}
+              <td>{user?.name}</td>
             </tr>
             {/* row 2 */}
             <tr>
               <th>이메일 아이디</th>
-              {/* <td>{user.id}</td> */}
+              <td>{user?.email}</td>
             </tr>
             {/* row 3 */}
             <tr>
@@ -159,6 +130,28 @@ const UserProfile: React.FC<UserProfileProps> = ({
         </table>
       </div>
       {/* 231218 유나경 끝------------- */}
+      {user && (
+        <UserProfileInfo>
+          <select
+            title="myteam"
+            id="teamSelect"
+            value={selectedTeam || ""}
+            onChange={handleTeamSelect}
+          >
+            <option value="" disabled>
+              소속 팀
+            </option>
+            {teamList.map((team) => (
+              <option key={team.teamId} value={team.teamId}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+        </UserProfileInfo>
+      )}
+      {isPasswordChangeModalOpen && (
+        <PasswordChangeModal onClose={handleClosePasswordChangeModal} />
+      )}
     </UserProfileContainer>
   );
 };
