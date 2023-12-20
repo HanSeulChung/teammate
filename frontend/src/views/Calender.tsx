@@ -8,7 +8,9 @@ const Calender = () => {
                 <div className="col-span-8">
                     <TeamCalender />
                 </div>
-                <CalendarCategory />
+                <div className="ml-8 w-full mt-16 lg:h-1/2">
+                    <CalendarCategory />
+                </div>
             </div>
         </div>
 
