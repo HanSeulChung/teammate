@@ -28,6 +28,7 @@ const Header = () => {
   const [teamName, setTeamName] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useRecoilState(userState);
+  const [isLogoutTriggered] = useState(false);
 
   const isTeamPage = location.pathname.startsWith("/team/");
   const handleTeamMembersClick = () => {
@@ -91,20 +92,23 @@ const Header = () => {
     }
   };
   //페이지 닫으면 자동 로그아웃
-  useEffect(() => {
-    const handleBeforeUnload = async () => {
-      if (isAuthenticated) {
-        localStorage.clear();
-        setIsAuthenticated(false);
-        setUser(null);
-        onLogoutSuccess();
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [isAuthenticated, setIsAuthenticated, setUser]);
+  // useEffect(() => {
+  //   const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
+  //     if (isLogoutTriggered) {
+  //       // 사용자가 로그아웃을 클릭한 경우의 로직
+  //       localStorage.clear();
+  //       setIsAuthenticated(false);
+  //       setUser(null);
+  //       onLogoutSuccess();
+  //     }
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, [isLogoutTriggered, setIsAuthenticated, setUser]);
 
   const handleNotificationClick = () => {
     setModalOpen(true);
