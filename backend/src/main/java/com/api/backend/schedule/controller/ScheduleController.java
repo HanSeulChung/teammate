@@ -5,6 +5,8 @@ import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.RepeatScheduleResponse;
+import com.api.backend.schedule.data.dto.RepeatToSimpleScheduleEditRequest;
+import com.api.backend.schedule.data.dto.ScheduleTypeConverterResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
@@ -296,7 +298,41 @@ public class ScheduleController {
         scheduleService.editRepeatScheduleInfoAndSave(editRequest, principal));
     return ResponseEntity.ok(response);
   }
-
+  @ApiOperation(value = "반복일정 -> 단순일정으로 변경")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "일정이 성공적으로 수정되었습니다."),
+      @ApiResponse(code = 404, message = "페이지를 찾을 수 없습니다."),
+      @ApiResponse(code = 400, message = "일정 수정에 실패했습니다.")
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "access token"
+              , value = "jwt access token"
+              , required = true
+              , dataType = "String"
+              , paramType = "header"
+              , defaultValue = "None"),
+          @ApiImplicitParam(
+              name = "teamId"
+              , value = "팀 id"
+              , required = true
+              , dataType = "Long"
+              , paramType = "path"
+              , defaultValue = "None"
+              , example = "1")
+      })
+  @PutMapping("/convert-repeat-to-simple")
+  public ResponseEntity<ScheduleTypeConverterResponse> convertRepeatToSimpleSchedule(
+      @PathVariable Long teamId,
+      @RequestBody @Valid RepeatToSimpleScheduleEditRequest editRequest,
+      @ApiIgnore Principal principal
+  ) {
+    ScheduleTypeConverterResponse response = ScheduleTypeConverterResponse.from(
+        scheduleService.convertRepeatToSimpleSchedule(editRequest, principal)
+    );
+    return ResponseEntity.ok(response);
+  }
 
   @ApiOperation(value = "단순일정 삭제")
   @ApiResponses(value = {
