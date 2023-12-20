@@ -96,107 +96,90 @@ const TeamCalender = () => {
     }
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="grid grid-cols-10">
-                <div className="col-span-8">
-                    {/* <h2>캘린더입니다.</h2> */}
-                    <FullCalendar
-                        locale="kr"
-                        plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
-                        timeZone="UTC"
-                        initialView="dayGridMonth"
-                        headerToolbar={{
-                            start: "today prev,next",
-                            center: "title",
-                            end: "dayGridMonth timeGridWeek"
-                        }}
-                        buttonText={{
-                            // prev: "이전", // 부트스트랩 아이콘으로 변경 가능
-                            // next: "다음",
-                            // prevYear: "이전 년도",
-                            // nextYear: "다음 년도",
-                            today: "오늘",
-                            month: "월별",
-                            week: "주별",
-                            day: "일별",
-                            list: "목록"
-                        }}
-                        events={eventList}
-                        dayMaxEvents={true}
-                        height="90vh"
-                        expandRows={true}
-                        eventClick={(e) => HandleEventClick(e)}
-                        dateClick={() => HandleDateClick()}
-                    />
-                    {/* 일정클릭 모달 */}
-                    {eventDetailModal && (
-                        <Modal>
-                            <Overlay
-                            // onClick={toggleModal}
-                            ></Overlay>
-                            <ModalContent>
-                                {isEdit ? (
-                                    <>
-                                        {/* 에디터컴포넌트 */}
-                                        <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
-                                    </>
-                                ) : (
-                                    <>
-                                        <h2>일정상세</h2>
-                                        <p>
-                                            {/* 일정 번호: {event.id} */}
-                                            이름: {event.title}<br />
-                                            일시: {event.start.toJSON()}<br />
-                                            내용: {event.contents}<br />
-                                            장소: {event.place}<br />
-                                            카테고리: {event.groupId}
-                                        </p>
-                                        <button onClick={toggleIsEdit}>수정</button>
-                                        <button onClick={handleEventDelete}>삭제</button>
-                                    </>
-                                )}
-                                {/* 수정중이 아닐때 close버튼 렌더링 */}
-                                {!isEdit &&
-                                    <CloseModal
-                                        onClick={toggleModal}
-                                    >
-                                        CLOSE
-                                    </CloseModal>
-                                }
-                            </ModalContent>
-                        </Modal>
-                    )}
-                    {/* 날짜클릭 모달 */}
-                    {eventFormModal && (
-                        <Modal>
-                            <Overlay
-                                onClick={toggleFormModal}
-                            ></Overlay>
-                            <ModalContent>
+        <>
+            <FullCalendar
+                locale="kr"
+                plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
+                timeZone="UTC"
+                initialView="dayGridMonth"
+                headerToolbar={{
+                    start: "today prev,next",
+                    center: "title",
+                    end: "dayGridMonth timeGridWeek"
+                }}
+                buttonText={{
+                    // prev: "이전", // 부트스트랩 아이콘으로 변경 가능
+                    // next: "다음",
+                    // prevYear: "이전 년도",
+                    // nextYear: "다음 년도",
+                    today: "오늘",
+                    month: "월별",
+                    week: "주별",
+                    day: "일별",
+                    list: "목록"
+                }}
+                events={eventList}
+                dayMaxEvents={true}
+                height="90vh"
+                expandRows={true}
+                eventClick={(e) => HandleEventClick(e)}
+                dateClick={() => HandleDateClick()}
+            />
+            {/* 일정클릭 모달 */}
+            {eventDetailModal && (
+                <Modal>
+                    <Overlay
+                    // onClick={toggleModal}
+                    ></Overlay>
+                    <ModalContent>
+                        {isEdit ? (
+                            <>
+                                {/* 에디터컴포넌트 */}
                                 <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
-                                <CloseModal
-                                    onClick={toggleFormModal}
-                                >
-                                    CLOSE
-                                </CloseModal>
-                            </ModalContent>
-                        </Modal>
-                    )}
-                </div>
-                <div id="draggable-el" className="ml-8 w-full border-2 p-2 rounded-md mt-16 lg:h-1/2 bg-violet-50">
-                    <h1 className="font-bold text-lg text-center">카테고리</h1>
-                    {event.map(event => (
-                        <div
-                            className="fc-event border-2 p-1 m-2 w-full rounded-md ml-auto text-center bg-white"
-                            title={event.title}
-                            key={event.id}
+                            </>
+                        ) : (
+                            <>
+                                <h2>일정상세</h2>
+                                <p>
+                                    {/* 일정 번호: {event.id} */}
+                                    이름: {event.title}<br />
+                                    일시: {event.start.toJSON()}<br />
+                                    내용: {event.contents}<br />
+                                    장소: {event.place}<br />
+                                    카테고리: {event.groupId}
+                                </p>
+                                <button onClick={toggleIsEdit}>수정</button>
+                                <button onClick={handleEventDelete}>삭제</button>
+                            </>
+                        )}
+                        {/* 수정중이 아닐때 close버튼 렌더링 */}
+                        {!isEdit &&
+                            <CloseModal
+                                onClick={toggleModal}
+                            >
+                                CLOSE
+                            </CloseModal>
+                        }
+                    </ModalContent>
+                </Modal>
+            )}
+            {/* 날짜클릭 모달 */}
+            {eventFormModal && (
+                <Modal>
+                    <Overlay
+                        onClick={toggleFormModal}
+                    ></Overlay>
+                    <ModalContent>
+                        <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
+                        <CloseModal
+                            onClick={toggleFormModal}
                         >
-                            {event.title}
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </main>
+                            CLOSE
+                        </CloseModal>
+                    </ModalContent>
+                </Modal>
+            )}
+        </>
     );
 };
 
