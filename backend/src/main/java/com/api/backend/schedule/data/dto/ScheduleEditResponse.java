@@ -15,9 +15,8 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class ScheduleEditResponse {
-
   private Long scheduleId;
-  private Long categoryId;
+  private String categoryName;
   private String title;
   private String content;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -30,11 +29,11 @@ public class ScheduleEditResponse {
   private List<Long> teamParticipantsIds;
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
+  private boolean isConverted;
 
   public static ScheduleEditResponse from(SimpleSchedule simpleSchedule) {
     return ScheduleEditResponse.builder()
-        .scheduleId(simpleSchedule.getSimpleScheduleId())
-        .categoryId(simpleSchedule.getScheduleCategory().getScheduleCategoryId())
+        .categoryName(simpleSchedule.getScheduleCategory().getCategoryName())
         .startDt(simpleSchedule.getStartDt())
         .endDt(simpleSchedule.getEndDt())
         .title(simpleSchedule.getTitle())
@@ -48,8 +47,7 @@ public class ScheduleEditResponse {
 
   public static ScheduleEditResponse from(RepeatSchedule repeatSchedule) {
     return ScheduleEditResponse.builder()
-        .scheduleId(repeatSchedule.getRepeatScheduleId())
-        .categoryId(repeatSchedule.getScheduleCategory().getScheduleCategoryId())
+        .categoryName(repeatSchedule.getScheduleCategory().getCategoryName())
         .startDt(repeatSchedule.getStartDt())
         .endDt(repeatSchedule.getEndDt())
         .title(repeatSchedule.getTitle())

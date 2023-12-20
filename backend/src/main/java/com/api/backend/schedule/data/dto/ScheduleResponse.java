@@ -19,9 +19,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class ScheduleResponse {
-  private String scheduleType;
+
   private Long scheduleId;
-  private Long categoryId;
+  private String scheduleType;
+  private String categoryName;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -29,6 +30,7 @@ public class ScheduleResponse {
   private String title;
   private String content;
   private String place;
+  private String color;
   private RepeatCycle repeatCycle;
   private String month;
   private int day;
@@ -39,9 +41,9 @@ public class ScheduleResponse {
 
   public static ScheduleResponse from(RepeatScheduleResponse repeatScheduleResponse) {
     return ScheduleResponse.builder()
-        .scheduleType("반복 일정")
         .scheduleId(repeatScheduleResponse.getScheduleId())
-        .categoryId(repeatScheduleResponse.getCategoryId())
+        .scheduleType("반복 일정")
+        .categoryName(repeatScheduleResponse.getCategoryName())
         .startDt(repeatScheduleResponse.getStartDt())
         .endDt(repeatScheduleResponse.getEndDt())
         .title(repeatScheduleResponse.getTitle())
@@ -59,9 +61,10 @@ public class ScheduleResponse {
 
   public static ScheduleResponse from(SimpleScheduleResponse simpleScheduleResponse) {
     return ScheduleResponse.builder()
-        .scheduleType("단순 일정")
         .scheduleId(simpleScheduleResponse.getScheduleId())
-        .categoryId(simpleScheduleResponse.getCategoryId())
+        .scheduleType("단순 일정")
+        .categoryName(simpleScheduleResponse.getCategoryName())
+        .scheduleId(simpleScheduleResponse.getScheduleId())
         .startDt(simpleScheduleResponse.getStartDt())
         .endDt(simpleScheduleResponse.getEndDt())
         .title(simpleScheduleResponse.getTitle())

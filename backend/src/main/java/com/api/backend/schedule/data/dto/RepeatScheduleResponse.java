@@ -16,10 +16,9 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class RepeatScheduleResponse {
-
-  private String scheduleType;
   private Long scheduleId;
-  private Long categoryId;
+  private String scheduleType;
+  private String categoryName;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -27,6 +26,7 @@ public class RepeatScheduleResponse {
   private String title;
   private String content;
   private String place;
+  private String color;
   private RepeatCycle repeatCycle;
   private String month;
   private int day;
@@ -37,9 +37,8 @@ public class RepeatScheduleResponse {
 
   public static RepeatScheduleResponse from(RepeatSchedule repeatSchedule) {
     return RepeatScheduleResponse.builder()
-        .scheduleType("단순 일정")
-        .scheduleId(repeatSchedule.getRepeatScheduleId())
-        .categoryId(repeatSchedule.getScheduleCategory().getScheduleCategoryId())
+        .scheduleType("반복 일정")
+        .categoryName(repeatSchedule.getScheduleCategory().getCategoryName())
         .startDt(repeatSchedule.getStartDt())
         .endDt(repeatSchedule.getEndDt())
         .title(repeatSchedule.getTitle())
