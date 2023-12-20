@@ -1,6 +1,5 @@
 package com.api.backend.member.controller;
 
-import com.api.backend.global.security.jwt.service.AuthService;
 import com.api.backend.member.data.dto.*;
 import com.api.backend.member.service.MemberService;
 import com.api.backend.team.data.dto.TeamParticipantsDto;
@@ -30,7 +29,6 @@ public class MemberController {
 
     private final MemberService memberService;
     private final TeamParticipantsService teamParticipantsService;
-    private final AuthService authService;
 
     private final long COOKIE_EXPIRATION = 7776000;
 
@@ -121,6 +119,7 @@ public class MemberController {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + signInResponse.getAccessToken())
                 .body(signInResponse);
     }
+
     @ApiOperation(value = "회원 로그아웃 API", notes = "헤더의 토큰정보를 바탕으로 로그아웃")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "정상처리시 토큰 삭제후 헤더값 삭제")
@@ -142,9 +141,10 @@ public class MemberController {
     }
 
 
-    @GetMapping("/my-page") ResponseEntity<?> getMemberInfo(
+    @GetMapping("/my-page")
+    ResponseEntity<?> getMemberInfo(
             @RequestHeader("Authorization") String requestAccessTokenInHeader
-    ){
+    ) {
         MemberInfoResponse memberInfo = memberService.getMemberInfo(requestAccessTokenInHeader);
 
         return ResponseEntity.ok(memberInfo);
@@ -155,7 +155,7 @@ public class MemberController {
     public ResponseEntity<?> updateMemberPassword(
             @RequestHeader("Authorization") String accessToken,
             @RequestBody @Valid UpdateMemberPasswordRequest updateMemberPasswordRequest
-    ){
+    ) {
 
         memberService.updateMemberPassword(accessToken, updateMemberPasswordRequest);
 
