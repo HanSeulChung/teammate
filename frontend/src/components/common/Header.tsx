@@ -34,7 +34,8 @@ const Header = () => {
   const handleTeamMembersClick = () => {
     if (isTeamPage) {
       const currentPath = window.location.pathname;
-      navigate(`${currentPath}/teammembers`);
+      // navigate(`${currentPath}/teammembers`);
+      navigate(`${currentPath}/teamleader`);
     }
   };
 
