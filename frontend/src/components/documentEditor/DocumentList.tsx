@@ -54,9 +54,20 @@ const Container = styled.section`
   min-height: 800px;
 `;
 
+const InputAndButton = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
 const SearchInput = styled.input`
   background-color: white;
-  width: 50%;
+  width: 100%;
   height: 28px;
   color: black;
   font-size: 16px;
@@ -90,7 +101,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     const fetchDocuments = async () => {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/team/${Id}/documents?page=${currentPage}&size=10`,
+          `${API_BASE_URL}/team/${Id}/documents`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -149,29 +160,42 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   };
   return (
     <Container>
-      <SearchInput
-        type="text"
-        placeholder="제목, 내용 검색"
-        value={searchTerm}
-        onChange={handleSearchChange}
-      />
-      <StyledButton>문서 작성</StyledButton>
+      <InputAndButton>
+        <SearchInput
+          type="text"
+          placeholder="제목, 내용 검색"
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        <ButtonContainer>
+          <StyledButton>문서 작성</StyledButton>
+          <StyledButton>캘린더</StyledButton>
+        </ButtonContainer>
+      </InputAndButton>
       <DocumentContainer>
-        {currentDocuments.map((doc) => (
-          <DocumentItem
-            key={doc.documentId}
-            onClick={() => handleDocumentClick(doc.documentId)}
-          >
-            <TitleContentContainer>
-              <h2>{doc.title}</h2>
-              <p>{doc.content}</p>
-            </TitleContentContainer>
-            <DatesContainer>
-              <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
-              <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
-            </DatesContainer>
-          </DocumentItem>
-        ))}
+        {currentDocuments.length !== 0 ? (
+          currentDocuments.map((doc) => (
+            <DocumentItem
+              key={doc.documentId}
+              onClick={() => handleDocumentClick(doc.documentId)}
+            >
+              <TitleContentContainer>
+                <h2>{doc.title}</h2>
+                <p>
+                  {doc.content.length > 20
+                    ? doc.content
+                    : doc.content.substring(20) + "..."}
+                </p>
+              </TitleContentContainer>
+              <DatesContainer>
+                <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
+                <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
+              </DatesContainer>
+            </DocumentItem>
+          ))
+        ) : (
+          <span>문서가 없습니다.</span>
+        )}
       </DocumentContainer>
       {renderPagination()}
     </Container>
