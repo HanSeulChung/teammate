@@ -1,7 +1,7 @@
 package com.api.backend.team.controller;
 
 
-import com.api.backend.global.aop.notify.SendNotify;
+import com.api.backend.notification.aop.annotation.SendNotify;
 import com.api.backend.notification.data.dto.DtoValueExtractor;
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;

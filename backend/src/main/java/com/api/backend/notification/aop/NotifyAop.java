@@ -1,4 +1,4 @@
-package com.api.backend.global.aop.notify;
+package com.api.backend.notification.aop;
 
 import com.api.backend.notification.data.dto.DtoValueExtractor;
 import com.api.backend.notification.service.SendNotificationService;
@@ -22,7 +22,7 @@ public class NotifyAop {
 
   private final SendNotificationService sendNotificationService;
 
-  @Pointcut("@annotation(com.api.backend.global.aop.notify.SendNotify)")
+  @Pointcut("@annotation(com.api.backend.notification.aop.annotation.SendNotify)")
   public void pointCut() {
   }
 

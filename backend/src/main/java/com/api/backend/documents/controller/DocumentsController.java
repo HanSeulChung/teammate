@@ -4,7 +4,7 @@ import com.api.backend.documents.data.dto.DocumentInitRequest;
 import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.service.DocumentService;
-import com.api.backend.global.aop.notify.SendNotify;
+import com.api.backend.notification.aop.annotation.SendNotify;
 import com.api.backend.notification.data.dto.DtoValueExtractor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

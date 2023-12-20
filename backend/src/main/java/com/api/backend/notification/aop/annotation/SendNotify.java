@@ -1,4 +1,4 @@
-package com.api.backend.global.aop.notify;
+package com.api.backend.notification.aop.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
