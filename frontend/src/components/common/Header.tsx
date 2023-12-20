@@ -157,15 +157,6 @@ const Header = () => {
                   <Link to="/mypage">마이페이지</Link>
                 )}
               </li>
-            </>
-          ) : (
-            <>
-              <li>
-                <Link to="/signin">로그인</Link>
-              </li>
-              <li>
-                <Link to="/signup">회원가입</Link>
-              </li>
               <li>
                 <button
                   className="btn btn-ghost btn-circle"
@@ -191,6 +182,15 @@ const Header = () => {
                   </div>
                 </button>
                 {isModalOpen && <AlarmModal closeModal={closeModal} />}{" "}
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <Link to="/signin">로그인</Link>
+              </li>
+              <li>
+                <Link to="/signup">회원가입</Link>
               </li>
             </>
           )}
