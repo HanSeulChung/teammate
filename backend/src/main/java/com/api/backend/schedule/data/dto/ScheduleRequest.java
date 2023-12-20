@@ -33,7 +33,6 @@ public class ScheduleRequest {
   private LocalDateTime endDt;
 
   private String place;
-  private boolean isRepeat;
   private RepeatCycle repeatCycle;
   private String month;
   private int day;
