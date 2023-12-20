@@ -12,6 +12,7 @@ import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleResponse;
+import com.api.backend.schedule.data.dto.SimpleToRepeatScheduleEditRequest;
 import com.api.backend.schedule.service.ScheduleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -334,6 +335,45 @@ public class ScheduleController {
     return ResponseEntity.ok(response);
   }
 
+
+  @ApiOperation(value = "단순일정 -> 반복일정으로 변경")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "일정이 성공적으로 수정되었습니다."),
+      @ApiResponse(code = 404, message = "페이지를 찾을 수 없습니다."),
+      @ApiResponse(code = 400, message = "일정 수정에 실패했습니다.")
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "access token"
+              , value = "jwt access token"
+              , required = true
+              , dataType = "String"
+              , paramType = "header"
+              , defaultValue = "None"),
+          @ApiImplicitParam(
+              name = "teamId"
+              , value = "팀 id"
+              , required = true
+              , dataType = "Long"
+              , paramType = "path"
+              , defaultValue = "None"
+              , example = "1")
+      })
+  @PutMapping("/convert-simple-to-repeat")
+  public ResponseEntity<ScheduleTypeConverterResponse> convertSimpleToRepeatSchedule(
+      @PathVariable Long teamId,
+      @RequestBody @Valid SimpleToRepeatScheduleEditRequest editRequest,
+      @ApiIgnore Principal principal
+  ) {
+    ScheduleTypeConverterResponse response = ScheduleTypeConverterResponse.from(
+        scheduleService.convertSimpleToRepeatSchedule(editRequest, principal)
+    );
+    return ResponseEntity.ok(response);
+  }
+
+
+
   @ApiOperation(value = "단순일정 삭제")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "일정이 성공적으로 삭제되었습니다."),
@@ -418,4 +458,5 @@ public class ScheduleController {
     scheduleService.deleteRepeatSchedule(scheduleId, principal);
     return ResponseEntity.ok("해당 반복 일정이 정상적으로 삭제되었습니다.");
   }
+
 }

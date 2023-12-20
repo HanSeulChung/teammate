@@ -149,6 +149,44 @@ public class ScheduleService {
   }
 
   @Transactional
+  public RepeatSchedule convertSimpleToRepeatSchedule(SimpleToRepeatScheduleEditRequest editRequest, Principal principal) {
+    Team team = findTeamOrElseThrow(editRequest.getTeamId());
+    ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
+    List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
+    validateSameTeamOrElsThrow(teamParticipantsIds, team.getTeamId());
+
+    String month = editRequest.getStartDt().getMonth().name();
+    int day = editRequest.getStartDt().getDayOfMonth();
+    String dayOfWeek = String.valueOf(editRequest.getStartDt().getDayOfWeek());
+
+    SimpleSchedule simpleSchedule = findSimpleScheduleOrElseThrow(editRequest.getSimpleScheduleId());
+
+    RepeatSchedule repeatSchedule = RepeatSchedule.builder()
+        .scheduleCategory(category)
+        .team(team)
+        .title(editRequest.getTitle())
+        .content(editRequest.getContent())
+        .place(editRequest.getPlace())
+        .startDt(editRequest.getStartDt())
+        .endDt(editRequest.getEndDt())
+        .repeatCycle(editRequest.getRepeatCycle())
+        .color(editRequest.getColor())
+        .build();
+
+    setRepeatScheduleFieldsByCycle(repeatSchedule, month, day, dayOfWeek,
+        editRequest.getRepeatCycle()
+    );
+    List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesByRepeatSchedule(
+        repeatSchedule, editRequest.getTeamParticipantsIds()
+    );
+
+    repeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
+
+    simpleScheduleRepository.delete(simpleSchedule);
+    return repeatScheduleRepository.save(repeatSchedule);
+  }
+
+  @Transactional
   public RepeatSchedule editRepeatScheduleInfoAndSave(RepeatScheduleInfoEditRequest editRequest, Principal principal) {
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
