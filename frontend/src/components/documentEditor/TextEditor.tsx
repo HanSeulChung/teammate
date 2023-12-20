@@ -7,6 +7,7 @@ import * as StompJs from "@stomp/stompjs";
 import Quill from "quill";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { accessTokenState } from "../../state/authState";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -57,6 +58,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const teamid = teamId;
   const document = documentsId;
   const url = `/team/${teamid}/documents/${document}`;
+
+  const headers = {
+    Authorization: `Bearer ${accessTokenState}`,
+  };
 
   const docsId = documentsId;
   const connect = (docsId: string) => {
@@ -169,9 +174,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       client.current!.publish({
         destination: "/app/doc.updateDocsByTextChange",
         body: JSON.stringify({ eventName: "text-change", deltaValue: delta }),
+        headers,
       });
       console.log("delta sent to server:", delta);
-      var Delta = Quill.import("delta");
+      const Delta = Quill.import("delta");
       client.current!.subscribe(
         "/topic/broadcastByTextChange",
         function (data) {
@@ -193,6 +199,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
             editor.updateContents(deleteDelta);
           }
         },
+        headers,
       );
     }
   };
@@ -210,21 +217,26 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
             length: delta.length,
           },
         }),
+        headers,
       });
       console.log("delta sent to server:", delta);
 
-      client.current!.subscribe("/topic/broadcastBySelectionChange", (data) => {
-        console.log("deltaMsg 브로드 캐스팅 받았음 - handleSelectionChange");
-        console.log("data is ", data.body);
+      client.current!.subscribe(
+        "/topic/broadcastBySelectionChange",
+        (data) => {
+          console.log("deltaMsg 브로드 캐스팅 받았음 - handleSelectionChange");
+          console.log("data is ", data.body);
 
-        const selectionChangeData = JSON.parse(data.body);
+          const selectionChangeData = JSON.parse(data.body);
 
-        const index = selectionChangeData.index;
-        const length = selectionChangeData.length;
-        console.log("Index:", index);
-        console.log("Length:", length);
-        editor.setSelection(index, length);
-      });
+          const index = selectionChangeData.index;
+          const length = selectionChangeData.length;
+          console.log("Index:", index);
+          console.log("Length:", length);
+          editor.setSelection(index, length);
+        },
+        headers,
+      );
     }
   };
 
@@ -235,9 +247,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         const response = await axios.delete(
           `/team/${teamId}/documents/${documentsId}`,
           {
-            headers: {
-              // Authorization: `Bearer ${accessToken}`, // accessToken 변수는 유효한 토큰으로 설정되어야 합니다.
-            },
+            headers,
           },
         );
         console.log(response.data.message); // 성공 메시지 로깅
