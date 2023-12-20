@@ -3,7 +3,14 @@ import { CommonSubmitBtn } from '../../styles/CommonStyled';
 import { useState, useEffect } from 'react';
 import axios from "axios";
 
-const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
+type EditEventProps = {
+    isEdit: boolean,
+    originEvent: any,
+    setEventList: React.Dispatch<React.SetStateAction<any>>,
+    toggleIsEdit: () => void,
+}
+
+const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}: EditEventProps) => {
     // input값 담아둘 state
     const [eventChange, setEventChange] = useState({
         id: originEvent.id,
@@ -26,7 +33,7 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
         }
     })
 
-    const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleEventChange = (e: React.ChangeEvent<HTMLInputElement|HTMLSelectElement>) => {
         setEventChange((prev) => ({...prev, [e.target.name] : e.target.value}));
     }
 
@@ -52,7 +59,7 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
     },[isEdit])
     
     // 새 일정 등록 요청
-    const handleScheduleSubmit = async (e) => {
+    const handleScheduleSubmit = async (e: any) => {
         e.preventDefault();
         // console.log("입력제목값000000000000 => "+eventChange.title);
         // console.log("0000000000000000"+JSON.stringify(newEvent));
@@ -91,7 +98,7 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
     };
 
     // 일정 수정 요청
-    const handleScheduleModify = async (e) => {
+    const handleScheduleModify = async (e: any) => {
         e.preventDefault();
         setNewEvent({
             id: originEvent.id,
@@ -175,8 +182,8 @@ const EditEvent = ({isEdit, originEvent, setEventList, toggleIsEdit}) => {
                 <option value="Weekly">매주</option>
             </select>
             
-            <label htmlFor="category" value={eventChange.groupId} onChange={handleEventChange}>카테고리</label>
-            <select id="category">
+            <label htmlFor="category">카테고리</label>
+            <select id="category" value={eventChange.groupId} onChange={handleEventChange}>
                 <option value="1">주간회의</option>
                 <option value="2">회의</option>
                 <option value="3">미팅</option>
