@@ -1,11 +1,11 @@
 package com.api.backend.documents.controller;
 
-import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentInitRequest;
 import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.service.DocumentService;
 import com.api.backend.global.aop.notify.SendNotify;
+import com.api.backend.notification.data.dto.DtoValueExtractor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -105,7 +105,7 @@ public class DocumentsController {
             })
   @PostMapping()
   @SendNotify
-  public ResponseEntity<DocumentResponse> createDocs(
+  public ResponseEntity<DtoValueExtractor> createDocs(
           @PathVariable
           Long teamId,
           @RequestBody @Valid DocumentInitRequest request,
@@ -153,7 +153,7 @@ public class DocumentsController {
       })
   @SendNotify
   @DeleteMapping("/{documentsId}")
-  public ResponseEntity<DeleteDocsResponse> deleteDocs(
+  public ResponseEntity<DtoValueExtractor> deleteDocs(
       @PathVariable
       Long teamId,
       @PathVariable

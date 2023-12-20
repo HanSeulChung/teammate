@@ -5,8 +5,8 @@ import "./TextEditor.css";
 import TextTitle from "./TextTitle";
 import * as StompJs from "@stomp/stompjs";
 import Quill from "quill";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -54,20 +54,28 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [content, setContent] = useState<string>("");
 
   const client = useRef<StompJs.Client | null>(null);
-  const id = teamId;
+  const teamid = teamId;
   const document = documentsId;
-  const url = `/team/${id}/documents/${document}`;
+  const url = `/team/${teamid}/documents/${document}`;
 
-  const docsIdx = documentsId;
-  const connect = (docsIdx: string) => {
-    const trimmedDocsIdx = docsIdx;
+  const docsId = documentsId;
+  const connect = (docsId: string) => {
+    const trimmedDocsId = docsId;
 
-    if (trimmedDocsIdx && client.current) {
-      client.current.activate();
-    }
+    // if (trimmedDocsId && client.current) {
+    //   client.current.activate();
+    //   console.log(" client.current.activate()");
+    // }
   };
 
   useEffect(() => {
+    // client.current = new StompJs.Client({
+    //   brokerURL: "ws://118.67.128.124:8080/ws",
+    //   // connectHeaders: {
+    //   //   Authorization: `Bearer ${accessToken}`,
+    //   // },
+    // });
+
     client.current = new StompJs.Client({
       brokerURL: "ws://localhost:8080/ws",
       // connectHeaders: {
@@ -75,16 +83,17 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       // },
     });
 
-    const onConnect = (trimmedDocsIdx: string) => {
-      console.log("Connected to WebSocket with", trimmedDocsIdx);
+    const onConnect = (trimmedDocsId: string) => {
+      console.log("Connected to WebSocket with", trimmedDocsId);
       const docsMessage = {
-        documentIdx: trimmedDocsIdx,
+        documentId: trimmedDocsId,
       };
 
       client.current!.publish({
-        destination: "/app/chat.showDocs",
+        destination: "/app/doc.showDocs",
         body: JSON.stringify(docsMessage),
       });
+      console.log("'/app/doc.showDocs'에 publish");
 
       client.current!.subscribe("/topic/public", (docs) => {
         displayDocs(JSON.parse(docs.body));
@@ -93,80 +102,160 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     client.current.onConnect = () => {
-      onConnect(docsIdx);
+      onConnect(docsId);
     };
 
     client.current.onStompError = onError;
+
+    // 웹 소켓 연결 및 구독 처리를 마운트 시에 실행되도록 변경
+    client.current.activate();
 
     return () => {
       if (client.current) {
         client.current.deactivate();
       }
     };
-  }, [docsIdx]);
+  }, [docsId]);
 
   const onError = (error: any) => {
     console.error("Could not connect to WebSocket server:", error);
   };
 
   const displayDocs = (docs: Docs) => {
-    setTitle(docs.title); // onchange로 inputtext를 위한 change 를 쓰고 싶으면
-    setContent(docs.content); // title, content 대신 객체를 받아와서 state로 관리
+    setTitle(docs.title);
+    setContent(docs.content);
   };
 
   useEffect(() => {
     const initializeQuill = () => {
       // if (!title || !content) {
-      //   // 여기도 객체로 관리 / 객체에서 꺼내서 디스트럭쳐링
       //   return;
       // }
 
       const editor = new Quill("#quill-editor", {
         theme: "snow",
       });
-      editor.on("text-change", () => {
-        console.log("textChange");
-        handleSave(editor.root.innerHTML);
-        sendWebSocketMessage(editor.root.innerHTML); // 웹 소켓 메시지 보내기
-      });
+
       editor.setText(content);
+
+      editor.on("text-change", (delta, oldDelta, source) => {
+        if (source != "user") {
+        }
+        console.log("text-change가 감지되었습니다.");
+        console.log("변화한 내용:", delta);
+        handleTextChange(editor, delta); // 변경된 delta 값을 전달합니다.
+      });
+
+      editor.on("selection-change", (delta, oldDelta, source) => {
+        if (source === "user") {
+          // 선택 변경이 발생했을 때의 처리
+          console.log("selection-change:", delta);
+          handleSelectionChange(editor, delta);
+        }
+      });
+
+      // editor.setText(content);
     };
 
-    connect(docsIdx);
+    connect(docsId);
     initializeQuill();
-  }, [content]); // 디펜던시도 객체로 관리
+  }, [content]);
 
-  const sendWebSocketMessage = (content: string) => {
+  const handleTextChange = (editor: Quill, delta: any) => {
     if (client.current) {
-      const formattedContent = content
-        .replace(/<p>/g, "")
-        .replace(/<\/p>/g, "\n");
+      console.log("range", delta);
+      const content = editor.getContents(); // 새로운 내용을 가져옵니다.
 
-      client.current.publish({
-        destination: url,
-        body: JSON.stringify({
-          title: title,
-          content: formattedContent,
-        }),
+      client.current!.publish({
+        destination: "/app/doc.updateDocsByTextChange",
+        body: JSON.stringify({ eventName: "text-change", deltaValue: delta }),
       });
-      console.log(
-        "WebSocket message sent: ",
-        JSON.stringify({
-          title: title,
-          content: formattedContent,
-        }),
+      console.log("delta sent to server:", delta);
+      var Delta = Quill.import("delta");
+      client.current!.subscribe(
+        "/topic/broadcastByTextChange",
+        function (data) {
+          console.log("deltaMsg 브로드 캐스팅 받았음 - handleTextChange");
+          const textChangeData = JSON.parse(data.body).deltaValue;
+
+          const keys = Object.keys(textChangeData.ops[1]);
+          if (keys.includes("insert")) {
+            const insertDelta = new Delta()
+              .retain(textChangeData.ops[0].retain)
+              .insert(textChangeData.ops[1].insert);
+            console.log(insertDelta);
+            editor.updateContents(insertDelta);
+          } else {
+            const deleteDelta = new Delta()
+              .retain(textChangeData.ops[0].retain)
+              .delete(textChangeData.ops[1].delete);
+            console.log(deleteDelta);
+            editor.updateContents(deleteDelta);
+          }
+        },
       );
+
+      // handleSave(delta);
     }
   };
 
-  const handleSave = (content: string) => {
-    console.log("Saving content:", content);
+  const handleSelectionChange = (editor: Quill, delta: any) => {
     if (client.current) {
-      client.current.publish({
-        destination: "/app/chat.showDocs",
-        body: JSON.stringify({ documentIdx: docsIdx }),
+      console.log("delta", delta);
+
+      client.current!.publish({
+        destination: "/app/doc.updateDocsBySelectionChange",
+        body: JSON.stringify({
+          eventName: "selection-change",
+          deltaValue: {
+            index: delta.index,
+            length: delta.length,
+          },
+        }),
       });
-      console.log("json : ", JSON.stringify({ documentIdx: docsIdx }));
+      console.log("delta sent to server:", delta);
+
+      client.current!.subscribe("/topic/broadcastBySelectionChange", (data) => {
+        console.log("deltaMsg 브로드 캐스팅 받았음 - handleSelectionChange");
+        console.log("data is ", data.body);
+
+        // 서버로부터 받은 데이터 객체를 JSON 파싱
+        const selectionChangeData = JSON.parse(data.body);
+
+        const index = selectionChangeData.index;
+        const length = selectionChangeData.length;
+        console.log("Index:", index);
+        console.log("Length:", length);
+        editor.setSelection(index, length);
+      });
+    }
+  };
+
+  const handleSave = (delta: string) => {
+    console.log("delta: ", delta);
+
+    if (client.current) {
+      console.log("Saving content:", content);
+      client.current!.publish({
+        destination: "/app/doc.saveDocs",
+        body: JSON.stringify({
+          id: docsId,
+          title: title,
+          content: content,
+          editorEmail: "w0w1278@naver.com",
+          teamId: teamid,
+        }),
+      });
+      console.log(
+        "changedDocument : ",
+        JSON.stringify({
+          id: docsId,
+          title: title,
+          content: content,
+          editorEmail: "w0w1278@naver.com",
+          teamId: teamid,
+        }),
+      );
     }
   };
 
@@ -208,7 +297,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       onChange={handleTitleChange}
       placeholder="제목을 입력하세요"
     >
-      <TitleInput value={title} />
+      <TitleInput value={title} onChange={handleTitleChange} />
       <QuillStyled id="quill-editor" />
       <ButtonContainer>
         <div>

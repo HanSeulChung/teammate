@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   teamListState,
@@ -17,6 +17,7 @@ const HomeContent = () => {
   // const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const accessToken = useRecoilValue(accessTokenState);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLoggedInUserId = async () => {
@@ -65,14 +66,19 @@ const HomeContent = () => {
     <TeamListContainer>
       {filteredTeamList.map((team, index) => (
         <TeamItem key={index}>
-          <TeamLink to={`/team/${team.teamId}`}>
-            <TeamCard>
-              <TeamName>{team.name}</TeamName>
-              {team.profileUrl && (
-                <TeamImage src={team.profileUrl} alt={`${team.name} 이미지`} />
-              )}
-            </TeamCard>
-          </TeamLink>
+          <TeamCard
+            onClick={() =>
+              navigate(`/team/${team.teamId}/documentsList`, {
+                state: { team },
+              })
+            }
+          >
+            <TeamName>{team.name}</TeamName>
+            {team.profileUrl && (
+              <TeamImage src={team.profileUrl} alt={`${team.name} 이미지`} />
+            )}
+          </TeamCard>
+          {/* </TeamLink> */}
         </TeamItem>
       ))}
     </TeamListContainer>
