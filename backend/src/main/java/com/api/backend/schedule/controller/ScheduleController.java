@@ -3,11 +3,12 @@ package com.api.backend.schedule.controller;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
+import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.RepeatScheduleResponse;
-import com.api.backend.schedule.data.dto.ScheduleEditResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
+import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleResponse;
 import com.api.backend.schedule.service.ScheduleService;
 import io.swagger.annotations.Api;
@@ -249,12 +250,12 @@ public class ScheduleController {
               , example = "1")
       })
   @PutMapping("/simple")
-  public ResponseEntity<ScheduleEditResponse> editSimpleSchedule(
+  public ResponseEntity<SimpleScheduleInfoEditResponse> editSimpleSchedule(
       @PathVariable Long teamId,
       @RequestBody @Valid SimpleScheduleInfoEditRequest editRequest,
       @ApiIgnore Principal principal
   ) {
-    ScheduleEditResponse response = ScheduleEditResponse.from(
+    SimpleScheduleInfoEditResponse response = SimpleScheduleInfoEditResponse.from(
         scheduleService.editSimpleScheduleInfoAndSave(editRequest, principal)
     );
     return ResponseEntity.ok(response);
@@ -286,12 +287,12 @@ public class ScheduleController {
               , example = "1")
       })
   @PutMapping("/repeat")
-  public ResponseEntity<ScheduleEditResponse> editRepeatSchedule(
+  public ResponseEntity<RepeatScheduleInfoEditResponse> editRepeatSchedule(
       @PathVariable Long teamId,
       @RequestBody @Valid RepeatScheduleInfoEditRequest editRequest,
       @ApiIgnore Principal principal
   ) {
-    ScheduleEditResponse response = ScheduleEditResponse.from(
+    RepeatScheduleInfoEditResponse response = RepeatScheduleInfoEditResponse.from(
         scheduleService.editRepeatScheduleInfoAndSave(editRequest, principal));
     return ResponseEntity.ok(response);
   }
