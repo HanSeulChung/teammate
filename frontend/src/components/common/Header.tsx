@@ -16,7 +16,6 @@ import {
 } from "../../state/authState";
 import { useNavigate } from "react-router-dom";
 import AlarmModal from "../alarm/AlarmModal";
-import Logout from "../Login/LogOut";
 import axiosInstance from "../../axios";
 import axios, { AxiosError } from "axios";
 
@@ -44,16 +43,10 @@ const Header = () => {
     const fetchTeamName = async () => {
       try {
         if (isTeamPage) {
-          // 현재 페이지의 URL에서 teamId 추출
           const teamIdMatch = location.pathname.match(/\/team\/(\d+)/);
-
           if (teamIdMatch) {
             const teamId = parseInt(teamIdMatch[1]);
-
-            // teamId에 해당하는 팀 정보 찾기
             const currentTeam = teamList.find((team) => team.teamId === teamId);
-
-            // 팀 정보가 있다면 teamName 설정
             if (currentTeam) {
               setTeamName(currentTeam.name);
             }
@@ -68,11 +61,10 @@ const Header = () => {
   }, [isTeamPage, location.pathname, teamList]);
 
   const onLogoutSuccess = () => {
-    // 로그아웃 성공 시 실행할 동작 정의
     console.log("로그아웃 성공!");
-    // 필요한 동작 수행
   };
 
+  //로그아웃
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/logout");
@@ -98,6 +90,21 @@ const Header = () => {
       }
     }
   };
+  //페이지 닫으면 자동 로그아웃
+  useEffect(() => {
+    const handleBeforeUnload = async () => {
+      if (isAuthenticated) {
+        localStorage.clear();
+        setIsAuthenticated(false);
+        setUser(null);
+        onLogoutSuccess();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isAuthenticated, setIsAuthenticated, setUser]);
 
   const handleNotificationClick = () => {
     setModalOpen(true);
