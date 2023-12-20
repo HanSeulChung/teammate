@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const StyledContainer = styled.div`
   color: #333333;
@@ -12,25 +12,42 @@ export const StyledFormItem = styled.div`
   display: flex;
 
   label {
-    margin-right: 60px; 
+    margin-right: 60px;
   }
 
-  input, button {
+  input,
+  button {
     flex: 2;
     padding: 5px;
-    outline: none; 
+    outline: none;
   }
 
   input {
     border: none;
-    border-bottom: 1px solid #333333; 
+    border-bottom: 1px solid #333333;
+    background: white;
   }
 
   button {
     flex: 1;
     margin-left: 10px;
     padding: 8px;
-    background-color: #A3CCA3;
+    background-color: #a3cca3;
+    color: #333333;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #cccccc;
+    }
+  }
+`;
+
+export const Button = styled.div`
+  button {
+    flex: 1;
+    margin-left: 10px;
+    padding: 8px;
+    background-color: #a3cca3;
     color: #333333;
     cursor: pointer;
 

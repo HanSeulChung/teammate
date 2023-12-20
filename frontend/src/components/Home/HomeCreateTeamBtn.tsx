@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const CenteredContainer = styled.div`
+  position: absolute;
+  width: 1000px;
+  top: 210px;
   display: flex;
   align-items: center;
   justify-content: center;
