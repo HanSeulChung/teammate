@@ -1,6 +1,5 @@
-import React, { useState, ChangeEvent, useEffect, useRef } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import axios from "axios";
 import {
   TeamLeaderContainer,
   TeamImageContainer,
@@ -16,6 +15,7 @@ import axiosInstance from "../../axios";
 import { Team, User } from "../../interface/interface";
 import { accessTokenState } from "../../state/authState";
 import { useRecoilValue } from "recoil";
+import linkImg from "../../assets/linkImg.png";
 
 export default function TeamLeader() {
   const { state } = useLocation();
@@ -23,9 +23,6 @@ export default function TeamLeader() {
   const accessToken = useRecoilValue(accessTokenState);
   const teamFromPreviousPage = state?.team || null;
   const [team, setTeam] = useState<Team | null>(teamFromPreviousPage);
-  const [teamLeader, setTeamLeader] = useState<User | null>(
-    teamFromPreviousPage,
-  );
   const [searchTeam, setSearchTeam] = useState<string>("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [memberIndexToRemove, setMemberIndexToRemove] = useState<number | null>(
@@ -194,7 +191,15 @@ export default function TeamLeader() {
     }
     navigate("/homeview");
   };
-
+  //초대코드
+  const handleCopyClick = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("클립보드에 링크가 복사되었습니다.");
+    } catch (e) {
+      alert("복사에 실패하였습니다");
+    }
+  };
   return (
     <TeamLeaderContainer>
       <div>
@@ -276,7 +281,21 @@ export default function TeamLeader() {
           </div>
         </TeamInfoContainer>
       </div>
-
+      <br />
+      <div>
+        <span style={{ display: "flex", alignItems: "center" }}>
+          <span>초대코드 URL</span>
+          <img
+            style={{
+              width: "30px",
+              cursor: "pointer",
+            }}
+            src={linkImg}
+            alt="복사"
+            onClick={() => handleCopyClick("초대코드url")}
+          />
+        </span>
+      </div>
       <TeamMembersContainer>
         <StyledInput
           style={{
