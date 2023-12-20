@@ -74,6 +74,7 @@ public class MemberServiceImpl implements MemberService {
 
         return SignUpResponse.builder()
                 .email(member.getEmail())
+                .name(member.getName())
                 .message("이메일 인증후 로그인 가능합니다.")
                 .build();
     }
