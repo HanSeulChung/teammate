@@ -158,6 +158,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const handleDocumentClick = (documentId: string) => {
     navigate(`/team/${teamId}/documents/${documentId}`);
   };
+
+  const handleDocumentCreate = () => {
+    navigate(`/team/${teamId}/documents`);
+  };
+
   return (
     <Container>
       <InputAndButton>
@@ -168,7 +173,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
           onChange={handleSearchChange}
         />
         <ButtonContainer>
-          <StyledButton>문서 작성</StyledButton>
+          <StyledButton onClick={handleDocumentCreate}>문서 작성</StyledButton>
           <StyledButton>캘린더</StyledButton>
         </ButtonContainer>
       </InputAndButton>
