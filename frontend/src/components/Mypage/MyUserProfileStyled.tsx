@@ -57,3 +57,36 @@ export const UpdateButton = styled.button`
     background-color: #a3cca3;
   }
 `;
+export const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+`;
+export const ErrorText = styled.p`
+  color: red;
+  margin-top: 10px;
+  margin-right: 150px;
+`;
+export const Button = styled.button`
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #cccccc;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #333333;
+  margin-right: 90px;
+  &:hover {
+    background-color: #a3cca3;
+  }
+`;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+`;
+export const LinkContainer = styled.div`
+  text-align: right;
+`;

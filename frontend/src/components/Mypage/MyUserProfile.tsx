@@ -5,22 +5,18 @@ import axios from "axios";
 import {
   UserProfileContainer,
   UserProfileTitle,
-  UserProfileInfo,
-  Email,
-  UpdateButton,
+  ErrorText,
+  Button,
+  ButtonContainer,
+  ErrorContainer,
+  LinkContainer,
 } from "./MyUserProfileStyled";
-import PasswordChangeModal from "./PasswordChangeModal";
 import { useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
+import { Link } from "react-router-dom";
 
-const UserProfile: React.FC<UserProfileProps> = ({
-  teamList,
-  selectedTeam,
-  handleTeamSelect,
-}) => {
+const UserProfile: React.FC<UserProfileProps> = () => {
   const [user, setUser] = useRecoilState(userState);
-  const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] =
-    useState(false);
   const [error, setError] = useState<string>("");
   const [myTeamList, setMyTeamList] = useState<Team[]>([]);
 
@@ -59,16 +55,60 @@ const UserProfile: React.FC<UserProfileProps> = ({
     fetchProfileData();
   }, []);
 
-  const handleOpenPasswordChangeModal = () => {
-    setIsPasswordChangeModalOpen(true);
-  };
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordChangeError, setPasswordChangeError] = useState<string | null>(
+    null,
+  );
+  const handleUpdatePassword = async () => {
+    try {
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        setPasswordChangeError("입력되지 않은 항목이 있습니다.");
+        return;
+      } else if (currentPassword !== "password1") {
+        setPasswordChangeError("기존 비밀번호와 일치하지 않습니다.");
+        return;
+      } else if (newPassword !== confirmPassword) {
+        setPasswordChangeError("비밀번호를 재확인해주세요.");
+        return;
+      } else if (newPassword.length < 8) {
+        setPasswordChangeError("비밀번호는 최소 8자 이상이어야 합니다.");
+        return;
+      }
 
-  const handleClosePasswordChangeModal = () => {
-    setIsPasswordChangeModalOpen(false);
+      // 서버로 요청을 보내는 코드
+      const response = await axiosInstance.post("/member/password", {
+        oldpassword: currentPassword,
+        newpassword: newPassword,
+      });
+
+      //성공 여부만 확인
+      if (response.status === 200) {
+        setPasswordChangeError("");
+      } else {
+        setPasswordChangeError(
+          "비밀번호 변경에 실패했습니다. 다시 시도해주세요.",
+        );
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          setPasswordChangeError("토큰이 유효하지 않습니다.");
+        } else {
+          setPasswordChangeError("서버 오류가 발생했습니다.");
+        }
+      } else {
+        setPasswordChangeError("네트워크 오류가 발생했습니다.");
+      }
+    }
   };
   return (
     <UserProfileContainer>
       <UserProfileTitle>내 프로필</UserProfileTitle>
+      <LinkContainer>
+        <Link to="/myteamprofile">팀 프로필로 이동</Link>
+      </LinkContainer>
       <br />
       {/* 231218 유나경 시작------------- */}
       <div className="overflow-x-auto">
@@ -90,9 +130,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
               <td>
                 <label className="form-control w-full max-w-xs">
                   <input
-                    type="text"
+                    type="password"
                     placeholder="현재 비밀번호"
                     className="input input-bordered w-full max-w-xs"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
                   />
                   <div className="label">
                     <span className="label-text-alt">8자 이상</span>
@@ -106,9 +148,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
               <td>
                 <label className="form-control w-full max-w-xs">
                   <input
-                    type="text"
+                    type="password"
                     placeholder="새 비밀번호"
                     className="input input-bordered w-full max-w-xs"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <div className="label">
                     <span className="label-text-alt">8자 이상</span>
@@ -122,9 +166,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
               <td>
                 <label className="form-control w-full max-w-xs">
                   <input
-                    type="text"
+                    type="password"
                     placeholder="새 비밀번호"
                     className="input input-bordered w-full max-w-xs"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                   <div className="label">
                     <span className="label-text-alt">8자 이상</span>
@@ -134,30 +180,15 @@ const UserProfile: React.FC<UserProfileProps> = ({
             </tr>
           </tbody>
         </table>
+        <ErrorContainer>
+          {passwordChangeError && <ErrorText>{passwordChangeError}</ErrorText>}
+        </ErrorContainer>
       </div>
+      <ButtonContainer>
+        <Button onClick={handleUpdatePassword}>변경하기</Button>
+      </ButtonContainer>
+      <br />
       {/* 231218 유나경 끝------------- */}
-      {user && (
-        <UserProfileInfo>
-          <select
-            title="myteam"
-            id="teamSelect"
-            value={selectedTeam || ""}
-            onChange={handleTeamSelect}
-          >
-            <option value="" disabled>
-              소속 팀
-            </option>
-            {myTeamList.map((team) => (
-              <option key={team.teamId} value={team.teamId}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-        </UserProfileInfo>
-      )}
-      {isPasswordChangeModalOpen && (
-        <PasswordChangeModal onClose={handleClosePasswordChangeModal} />
-      )}
     </UserProfileContainer>
   );
 };
