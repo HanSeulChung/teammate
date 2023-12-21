@@ -95,8 +95,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 10;
   const accessToken = useRecoilValue(accessTokenState);
-  const [Id, setId] = useState<number>(1);
+  const [Id, setId] = useState<number>(teamId);
 
+  console.log("id:", Id);
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
