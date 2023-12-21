@@ -1,14 +1,16 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.category.type.CategoryType;
+import com.api.backend.notification.aop.annotation.MentionTeamParticipantsSendNotify;
+import com.api.backend.notification.transfers.MentionTeamParticipantsNotifyByDto;
 import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.RepeatScheduleResponse;
 import com.api.backend.schedule.data.dto.RepeatToSimpleScheduleEditRequest;
+import com.api.backend.schedule.data.dto.ScheduleCreateResponse;
 import com.api.backend.schedule.data.dto.ScheduleTypeConverterResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
-import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleResponse;
@@ -72,21 +74,23 @@ public class ScheduleController {
               , example = "1")
       })
   @PostMapping
-  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request,
+  @MentionTeamParticipantsSendNotify
+  public ResponseEntity<MentionTeamParticipantsNotifyByDto> addSchedule(@RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId, @ApiIgnore Principal principal) {
-    ScheduleResponse scheduleResponse;
+    ScheduleCreateResponse scheduleCreateResponse;
     if (request.getRepeatCycle() != null) {
       RepeatScheduleResponse response = RepeatScheduleResponse.from(
           scheduleService.addRepeatScheduleAndSave(request, principal)
       );
-      scheduleResponse = ScheduleResponse.from(response);
+      scheduleCreateResponse = ScheduleCreateResponse.from(response);
     } else {
       SimpleScheduleResponse response = SimpleScheduleResponse.from(
           scheduleService.addSimpleScheduleAndSave(request, principal)
       );
-      scheduleResponse = ScheduleResponse.from(response);
+      scheduleCreateResponse = ScheduleCreateResponse.from(response);
     }
-    return ResponseEntity.ok(scheduleResponse);
+
+    return ResponseEntity.ok(scheduleCreateResponse);
   }
 
 
