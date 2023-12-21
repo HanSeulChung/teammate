@@ -15,8 +15,9 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class RepeatScheduleResponse {
+public class RepeatScheduleInfoEditResponse {
   private Long scheduleId;
+  private Long originRepeatScheduleId;
   private String scheduleType;
   private String categoryName;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -35,8 +36,10 @@ public class RepeatScheduleResponse {
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
 
-  public static RepeatScheduleResponse from(RepeatSchedule repeatSchedule) {
-    return RepeatScheduleResponse.builder()
+  public static RepeatScheduleInfoEditResponse from(RepeatSchedule repeatSchedule) {
+    return RepeatScheduleInfoEditResponse.builder()
+        .scheduleId(repeatSchedule.getRepeatScheduleId())
+        .originRepeatScheduleId(repeatSchedule.getOriginRepeatScheduleId())
         .scheduleType("반복 일정")
         .categoryName(repeatSchedule.getScheduleCategory().getCategoryName())
         .startDt(repeatSchedule.getStartDt())
@@ -44,14 +47,13 @@ public class RepeatScheduleResponse {
         .title(repeatSchedule.getTitle())
         .content(repeatSchedule.getContent())
         .place(repeatSchedule.getPlace())
+        .color(repeatSchedule.getColor())
         .repeatCycle(repeatSchedule.getRepeatCycle())
         .month(repeatSchedule.getMonth())
         .day(repeatSchedule.getDay())
         .dayOfWeek(repeatSchedule.getDayOfWeek())
-        .teamParticipantsIds(
-            getTeamParticipantsIdsFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
-        .teamParticipantsNames(
-            getTeamParticipantsNameFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .teamParticipantsIds(getTeamParticipantsIdsFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .teamParticipantsNames(getTeamParticipantsNameFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
         .teamRoles(getTeamParticipantsRoleFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
         .build();
   }
