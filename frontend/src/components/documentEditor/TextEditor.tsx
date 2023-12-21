@@ -56,6 +56,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const docsId = documentsId;
   const client = useRef<StompJs.Client | null>(null);
   const navigate = useNavigate();
+  const textAreaRef = useRef<HTMLTextAreaElement>(null); // 추가: textArea 참조 생성
 
   const headers = {
     Authorization: `Bearer ${accessTokenState}`,
@@ -122,9 +123,17 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = event.target.value;
+    const cursorPosition = event.target.selectionStart; // 현재 커서 위치 저장
+
     setContent(newText); // 상태 업데이트
 
-    if (client.current) {
+    // 마지막 문자가 한글이 아닌지 확인
+    const lastChar = newText.charCodeAt(newText.length - 1);
+    const isNotKorean =
+      lastChar < 0x3131 ||
+      (lastChar > 0x3163 && lastChar < 0xac00) ||
+      lastChar > 0xd7a3;
+    if (client.current && isNotKorean) {
       const message = {
         text: newText,
         documentId: documentsId,
@@ -134,6 +143,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         destination: "/topic/broadcastByTextChange",
         body: JSON.stringify(message),
       });
+    }
+    if (textAreaRef.current) {
+      textAreaRef.current.selectionStart = cursorPosition;
+      textAreaRef.current.selectionEnd = cursorPosition;
     }
   };
 
@@ -167,7 +180,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         onChange={handleTitleChange}
         placeholder="제목을 입력하세요"
       />
-      <TextArea value={content} onChange={handleTextChange} />
+      <TextArea ref={textAreaRef} value={content} onChange={handleTextChange} />
       <ButtonContainer>
         <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
