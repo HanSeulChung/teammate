@@ -137,6 +137,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       const message = {
         text: newText,
         documentId: documentsId,
+        userId: JSON.parse(localStorage.getItem("user") ?? "").id,
       };
 
       client.current.publish({
