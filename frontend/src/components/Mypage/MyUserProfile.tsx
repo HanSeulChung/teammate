@@ -22,6 +22,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] =
     useState(false);
   const [error, setError] = useState<string>("");
+  const [myTeamList, setMyTeamList] = useState<Team[]>([]);
 
   //api 연결 부분
   useEffect(() => {
@@ -30,6 +31,11 @@ const UserProfile: React.FC<UserProfileProps> = ({
         const response = await axiosInstance.get("/my-page");
         // setUser를 통해 Recoil 상태 업데이트
         setUser(response.data);
+
+        const teamResponse = await axiosInstance.get(
+          "/team/list?page=0&size=10&sort=createDt,asc",
+        );
+        setMyTeamList(teamResponse.data.content);
       } catch (error) {
         console.error("Error fetching profile data:", error);
 
@@ -141,7 +147,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
             <option value="" disabled>
               소속 팀
             </option>
-            {teamList.map((team) => (
+            {myTeamList.map((team) => (
               <option key={team.teamId} value={team.teamId}>
                 {team.name}
               </option>
