@@ -14,8 +14,10 @@ import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
+import com.api.backend.schedule.data.dto.RepeatToSimpleScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
+import com.api.backend.schedule.data.dto.SimpleToRepeatScheduleEditRequest;
 import com.api.backend.schedule.data.entity.RepeatSchedule;
 import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
@@ -115,6 +117,73 @@ public class ScheduleService {
 
     updatedSimpleSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
     return simpleScheduleRepository.save(updatedSimpleSchedule);
+  }
+
+
+  @Transactional
+  public SimpleSchedule convertRepeatToSimpleSchedule(RepeatToSimpleScheduleEditRequest editRequest, Principal principal) {
+    Team team = findTeamOrElseThrow(editRequest.getTeamId());
+    ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
+    List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
+    validateSameTeamOrElsThrow(teamParticipantsIds, team.getTeamId());
+    RepeatSchedule repeatSchedule = findRepeatScheduleOrElseThrow(editRequest.getRepeatScheduleId());
+
+    SimpleSchedule simpleSchedule = SimpleSchedule.builder()
+        .team(team)
+        .scheduleCategory(category)
+        .title(editRequest.getTitle())
+        .content(editRequest.getContent())
+        .startDt(editRequest.getStartDt())
+        .endDt(editRequest.getEndDt())
+        .place(editRequest.getPlace())
+        .color(editRequest.getColor())
+        .build();
+
+    List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesBySimpleSchedule(
+        simpleSchedule, editRequest.getTeamParticipantsIds()
+    );
+
+    simpleSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
+    repeatScheduleRepository.delete(repeatSchedule);
+    return simpleScheduleRepository.save(simpleSchedule);
+  }
+
+  @Transactional
+  public RepeatSchedule convertSimpleToRepeatSchedule(SimpleToRepeatScheduleEditRequest editRequest, Principal principal) {
+    Team team = findTeamOrElseThrow(editRequest.getTeamId());
+    ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
+    List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
+    validateSameTeamOrElsThrow(teamParticipantsIds, team.getTeamId());
+
+    String month = editRequest.getStartDt().getMonth().name();
+    int day = editRequest.getStartDt().getDayOfMonth();
+    String dayOfWeek = String.valueOf(editRequest.getStartDt().getDayOfWeek());
+
+    SimpleSchedule simpleSchedule = findSimpleScheduleOrElseThrow(editRequest.getSimpleScheduleId());
+
+    RepeatSchedule repeatSchedule = RepeatSchedule.builder()
+        .scheduleCategory(category)
+        .team(team)
+        .title(editRequest.getTitle())
+        .content(editRequest.getContent())
+        .place(editRequest.getPlace())
+        .startDt(editRequest.getStartDt())
+        .endDt(editRequest.getEndDt())
+        .repeatCycle(editRequest.getRepeatCycle())
+        .color(editRequest.getColor())
+        .build();
+
+    setRepeatScheduleFieldsByCycle(repeatSchedule, month, day, dayOfWeek,
+        editRequest.getRepeatCycle()
+    );
+    List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesByRepeatSchedule(
+        repeatSchedule, editRequest.getTeamParticipantsIds()
+    );
+
+    repeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
+
+    simpleScheduleRepository.delete(simpleSchedule);
+    return repeatScheduleRepository.save(repeatSchedule);
   }
 
   @Transactional

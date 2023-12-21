@@ -15,9 +15,10 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class SimpleScheduleResponse {
-  private String scheduleType;
+
   private Long scheduleId;
-  private Long categoryId;
+  private String scheduleType;
+  private String categoryName;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -25,6 +26,7 @@ public class SimpleScheduleResponse {
   private String title;
   private String content;
   private String place;
+  private String color;
   private List<Long> teamParticipantsIds;
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
@@ -32,8 +34,7 @@ public class SimpleScheduleResponse {
   public static SimpleScheduleResponse from(SimpleSchedule simpleSchedule) {
     return SimpleScheduleResponse.builder()
         .scheduleType("단순 일정")
-        .scheduleId(simpleSchedule.getSimpleScheduleId())
-        .categoryId(simpleSchedule.getScheduleCategory().getScheduleCategoryId())
+        .categoryName(simpleSchedule.getScheduleCategory().getCategoryName())
         .startDt(simpleSchedule.getStartDt())
         .endDt(simpleSchedule.getEndDt())
         .title(simpleSchedule.getTitle())
@@ -43,9 +44,11 @@ public class SimpleScheduleResponse {
             getTeamParticipantsIdsFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .teamParticipantsNames(
             getTeamParticipantsNameFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
-        .teamRoles(getTeamParticipantsRoleFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
+        .teamRoles(
+            getTeamParticipantsRoleFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .build();
   }
+
   public static List<Long> getTeamParticipantsIdsFromSchedules(
       List<TeamParticipantsSchedule> teamParticipantsSchedules) {
     List<Long> teamParticipantsIds = new ArrayList<>();

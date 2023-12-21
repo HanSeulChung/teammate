@@ -3,12 +3,16 @@ package com.api.backend.schedule.controller;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
+import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.RepeatScheduleResponse;
-import com.api.backend.schedule.data.dto.ScheduleEditResponse;
+import com.api.backend.schedule.data.dto.RepeatToSimpleScheduleEditRequest;
+import com.api.backend.schedule.data.dto.ScheduleTypeConverterResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
+import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleResponse;
+import com.api.backend.schedule.data.dto.SimpleToRepeatScheduleEditRequest;
 import com.api.backend.schedule.service.ScheduleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -249,12 +253,12 @@ public class ScheduleController {
               , example = "1")
       })
   @PutMapping("/simple")
-  public ResponseEntity<ScheduleEditResponse> editSimpleSchedule(
+  public ResponseEntity<SimpleScheduleInfoEditResponse> editSimpleSchedule(
       @PathVariable Long teamId,
       @RequestBody @Valid SimpleScheduleInfoEditRequest editRequest,
       @ApiIgnore Principal principal
   ) {
-    ScheduleEditResponse response = ScheduleEditResponse.from(
+    SimpleScheduleInfoEditResponse response = SimpleScheduleInfoEditResponse.from(
         scheduleService.editSimpleScheduleInfoAndSave(editRequest, principal)
     );
     return ResponseEntity.ok(response);
@@ -286,15 +290,88 @@ public class ScheduleController {
               , example = "1")
       })
   @PutMapping("/repeat")
-  public ResponseEntity<ScheduleEditResponse> editRepeatSchedule(
+  public ResponseEntity<RepeatScheduleInfoEditResponse> editRepeatSchedule(
       @PathVariable Long teamId,
       @RequestBody @Valid RepeatScheduleInfoEditRequest editRequest,
       @ApiIgnore Principal principal
   ) {
-    ScheduleEditResponse response = ScheduleEditResponse.from(
+    RepeatScheduleInfoEditResponse response = RepeatScheduleInfoEditResponse.from(
         scheduleService.editRepeatScheduleInfoAndSave(editRequest, principal));
     return ResponseEntity.ok(response);
   }
+  @ApiOperation(value = "반복일정 -> 단순일정으로 변경")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "일정이 성공적으로 수정되었습니다."),
+      @ApiResponse(code = 404, message = "페이지를 찾을 수 없습니다."),
+      @ApiResponse(code = 400, message = "일정 수정에 실패했습니다.")
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "access token"
+              , value = "jwt access token"
+              , required = true
+              , dataType = "String"
+              , paramType = "header"
+              , defaultValue = "None"),
+          @ApiImplicitParam(
+              name = "teamId"
+              , value = "팀 id"
+              , required = true
+              , dataType = "Long"
+              , paramType = "path"
+              , defaultValue = "None"
+              , example = "1")
+      })
+  @PutMapping("/convert-repeat-to-simple")
+  public ResponseEntity<ScheduleTypeConverterResponse> convertRepeatToSimpleSchedule(
+      @PathVariable Long teamId,
+      @RequestBody @Valid RepeatToSimpleScheduleEditRequest editRequest,
+      @ApiIgnore Principal principal
+  ) {
+    ScheduleTypeConverterResponse response = ScheduleTypeConverterResponse.from(
+        scheduleService.convertRepeatToSimpleSchedule(editRequest, principal)
+    );
+    return ResponseEntity.ok(response);
+  }
+
+
+  @ApiOperation(value = "단순일정 -> 반복일정으로 변경")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "일정이 성공적으로 수정되었습니다."),
+      @ApiResponse(code = 404, message = "페이지를 찾을 수 없습니다."),
+      @ApiResponse(code = 400, message = "일정 수정에 실패했습니다.")
+  })
+  @ApiImplicitParams(
+      {
+          @ApiImplicitParam(
+              name = "access token"
+              , value = "jwt access token"
+              , required = true
+              , dataType = "String"
+              , paramType = "header"
+              , defaultValue = "None"),
+          @ApiImplicitParam(
+              name = "teamId"
+              , value = "팀 id"
+              , required = true
+              , dataType = "Long"
+              , paramType = "path"
+              , defaultValue = "None"
+              , example = "1")
+      })
+  @PutMapping("/convert-simple-to-repeat")
+  public ResponseEntity<ScheduleTypeConverterResponse> convertSimpleToRepeatSchedule(
+      @PathVariable Long teamId,
+      @RequestBody @Valid SimpleToRepeatScheduleEditRequest editRequest,
+      @ApiIgnore Principal principal
+  ) {
+    ScheduleTypeConverterResponse response = ScheduleTypeConverterResponse.from(
+        scheduleService.convertSimpleToRepeatSchedule(editRequest, principal)
+    );
+    return ResponseEntity.ok(response);
+  }
+
 
 
   @ApiOperation(value = "단순일정 삭제")
@@ -381,4 +458,5 @@ public class ScheduleController {
     scheduleService.deleteRepeatSchedule(scheduleId, principal);
     return ResponseEntity.ok("해당 반복 일정이 정상적으로 삭제되었습니다.");
   }
+
 }
