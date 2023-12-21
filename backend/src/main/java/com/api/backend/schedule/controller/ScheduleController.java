@@ -3,7 +3,6 @@ package com.api.backend.schedule.controller;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.notification.aop.annotation.MentionTeamParticipantsSendNotify;
 import com.api.backend.notification.transfers.MentionTeamParticipantsNotifyByDto;
-import com.api.backend.schedule.data.dto.AlarmScheduleDeleteResponse;
 import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditResponse;
@@ -412,7 +411,8 @@ public class ScheduleController {
               , example = "1")
       })
   @DeleteMapping("/simple/{scheduleId}")
-  public ResponseEntity<AlarmScheduleDeleteResponse> deleteSimpleSchedule(
+  @MentionTeamParticipantsSendNotify
+  public ResponseEntity<MentionTeamParticipantsNotifyByDto> deleteSimpleSchedule(
       @PathVariable Long teamId,
       @PathVariable Long scheduleId,
       @ApiIgnore Principal principal
@@ -458,8 +458,9 @@ public class ScheduleController {
               , defaultValue = "None"
               , example = "1")
       })
+  @MentionTeamParticipantsSendNotify
   @DeleteMapping("/repeat/{scheduleId}")
-  public ResponseEntity<AlarmScheduleDeleteResponse> deleteSchedule(
+  public ResponseEntity<MentionTeamParticipantsNotifyByDto> deleteSchedule(
       @PathVariable Long teamId,
       @PathVariable Long scheduleId,
       @ApiIgnore Principal principal
