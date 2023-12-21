@@ -62,22 +62,12 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   };
 
   useEffect(() => {
-    const fetchDocumentData = async () => {
-      try {
-        const response = await axios.get(
-          `/team/${teamId}/documents/${documentsId}`,
-          { headers },
-        );
-        if (response.data) {
-          setTitle(response.data.title);
-          setContent(response.data.content);
-        }
-      } catch (error) {
-        console.error("Error fetching document data:", error);
-      }
-    };
-
-    fetchDocumentData();
+    client.current = new StompJs.Client({
+      brokerURL: "ws://localhost:8080/ws",
+      // connectHeaders: {
+      //   Authorization: `Bearer ${accessToken}`,
+      // },
+    });
 
     const onConnect = (trimmedDocsId: string) => {
       console.log("Connected to WebSocket with", trimmedDocsId);
@@ -91,14 +81,33 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       });
       console.log("'/app/doc.showDocs'에 publish");
 
+      const displayDocs = (docs: any) => {
+        setTitle(docs.title); // docs.title이 undefined나 null이면 빈 문자열을 사용
+        setContent(docs.content); // docs.content가 undefined나 null이면 빈 문자열을 사용
+      };
+
       client.current!.subscribe("/topic/public", (docs) => {
         displayDocs(JSON.parse(docs.body));
         console.log("docs.body : ", docs.body);
       });
     };
 
+    const textChange = (trimmedDocsId: string) => {
+      const displayDocs = (docs: any) => {
+        setTitle(docs.title); // docs.title이 undefined나 null이면 빈 문자열을 사용
+        setContent(docs.content); // docs.content가 undefined나 null이면 빈 문자열을 사용
+      };
+      client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
+        console.log(docs);
+        displayDocs(JSON.parse(docs.body));
+        console.log("comming docs.body : ", docs.body);
+        const docsbody = docs.body;
+      });
+    };
+
     client.current!.onConnect = () => {
       onConnect(docsId);
+      textChange(docsId);
     };
 
     client.current!.activate();
@@ -109,18 +118,13 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
   }, []);
 
-  const displayDocs = (docs: any) => {
-    setTitle(docs.title);
-    setContent(docs.content);
-    console.log(title, content);
-  };
-
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(event.target.value);
+    const newText = event.target.value;
+    setContent(newText); // 상태 업데이트
 
     if (client.current) {
       const message = {
-        text: event.target.value,
+        text: newText,
         documentId: documentsId,
       };
 
