@@ -4,7 +4,7 @@ import "quill/dist/quill.snow.css";
 import Quill from "quill";
 import TextTitle from "./TextTitle";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { accessTokenState } from "../../state/authState";
 import { useRecoilValue } from "recoil";
 
@@ -31,8 +31,7 @@ interface QuillEditorProps {}
 const CreateText: React.FC<QuillEditorProps> = () => {
   const [quill, setQuill] = useState<Quill | null>(null);
   const [title, setTitle] = useState<string>("");
-  const writerEmail = useState<string>("default@mail.com");
-  const teamId = useState<number>(0);
+  const { teamId } = useParams<{ teamId: string }>(); // URL에서 teamId 파라미터 추출
   const navigate = useNavigate();
   const accessToken = useRecoilValue(accessTokenState);
 
@@ -62,6 +61,10 @@ const CreateText: React.FC<QuillEditorProps> = () => {
       content: content,
       writerEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
     };
+
+    console.log(requestData);
+
+    console.log("teamid : ", teamId);
 
     try {
       const response = await axios.post(
