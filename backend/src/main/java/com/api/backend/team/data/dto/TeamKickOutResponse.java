@@ -1,10 +1,8 @@
 package com.api.backend.team.data.dto;
 
-import static com.api.backend.notification.data.NotificationMessage.KICK_OUT_TEAM;
-
-import com.api.backend.notification.data.dto.DtoValueExtractor;
+import com.api.backend.notification.data.NotificationMessage;
 import com.api.backend.notification.data.type.AlarmType;
-import com.api.backend.notification.data.type.SenderType;
+import com.api.backend.notification.transfers.MemberNotifyByDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,32 +14,18 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class TeamKickOutResponse implements DtoValueExtractor {
+public class TeamKickOutResponse implements MemberNotifyByDto {
   private Long teamId;
-  private Long userId;
-  private Long kickOutMemberId;
   private String teamName;
   private String message;
 
-  @Override
-  public Long getExcludeMemberId() {
-    return null;
-  }
+  // 알람
+  private Long kickOutMemberId;
+  private String alarmMessage;
 
   @Override
   public Long getMemberId() {
     return kickOutMemberId;
-  }
-
-  @Override
-  public Long getExcludeTeamParticipantId() {
-    return null;
-  }
-
-
-  @Override
-  public SenderType getSenderType() {
-    return SenderType.MEMBER;
   }
 
   @Override
@@ -50,17 +34,8 @@ public class TeamKickOutResponse implements DtoValueExtractor {
   }
 
   @Override
-  public String getTeamNameOrTeamParticipantNickName() {
-    return teamName;
-  }
-
-  @Override
-  public String getUrl() {
-    return null;
-  }
-
-  @Override
   public String getSendMessage() {
-    return KICK_OUT_TEAM;
+    return NotificationMessage.getKickOutMessage(alarmMessage);
   }
+
 }
