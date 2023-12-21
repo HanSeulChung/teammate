@@ -56,7 +56,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const docsId = documentsId;
   const client = useRef<StompJs.Client | null>(null);
   const navigate = useNavigate();
-  const textAreaRef = useRef<HTMLTextAreaElement>(null); // 추가: textArea 참조 생성
 
   const headers = {
     Authorization: `Bearer ${accessTokenState}`,
@@ -83,8 +82,8 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       console.log("'/app/doc.showDocs'에 publish");
 
       const displayDocs = (docs: any) => {
-        setTitle(docs.title); // docs.title이 undefined나 null이면 빈 문자열을 사용
-        setContent(docs.content); // docs.content가 undefined나 null이면 빈 문자열을 사용
+        setTitle(docs.title);
+        setContent(docs.content);
       };
 
       client.current!.subscribe("/topic/public", (docs) => {
@@ -95,8 +94,8 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
     const textChange = (trimmedDocsId: string) => {
       const displayDocs = (docs: any) => {
-        setTitle(docs.title); // docs.title이 undefined나 null이면 빈 문자열을 사용
-        setContent(docs.content); // docs.content가 undefined나 null이면 빈 문자열을 사용
+        setTitle(docs.title);
+        setContent(docs.content);
       };
       client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
         console.log(docs);
@@ -123,7 +122,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = event.target.value;
-    const cursorPosition = event.target.selectionStart; // 현재 커서 위치 저장
 
     setContent(newText); // 상태 업데이트
 
@@ -135,19 +133,17 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       lastChar > 0xd7a3;
     if (client.current && isNotKorean) {
       const message = {
+        memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
+        title: title,
         text: newText,
         documentId: documentsId,
-        userId: JSON.parse(localStorage.getItem("user") ?? "").id,
       };
+      console.log("message : ", message);
 
       client.current.publish({
         destination: "/topic/broadcastByTextChange",
         body: JSON.stringify(message),
       });
-    }
-    if (textAreaRef.current) {
-      textAreaRef.current.selectionStart = cursorPosition;
-      textAreaRef.current.selectionEnd = cursorPosition;
     }
   };
 
@@ -181,7 +177,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         onChange={handleTitleChange}
         placeholder="제목을 입력하세요"
       />
-      <TextArea ref={textAreaRef} value={content} onChange={handleTextChange} />
+      <TextArea value={content} onChange={handleTextChange} />
       <ButtonContainer>
         <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
