@@ -4,8 +4,6 @@ import { useParams } from "react-router-dom";
 
 interface TextEditorViewProps {}
 
-// const teamId = 1;
-
 const DocumentListContainer: React.FC<TextEditorViewProps> = () => {
   const { teamId } = useParams<{ teamId: string }>();
 
