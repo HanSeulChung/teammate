@@ -39,4 +39,8 @@ public class NotificationMessage {
 
     return "팀장이 해당 사유로 '" + reason + "' 강퇴 됐습니다.";
   }
+
+  public static String getDeleteScheduleMessage(String title) {
+    return "팀원이 " + title + " 일정을 삭제했습니다.";
+  }
 }
