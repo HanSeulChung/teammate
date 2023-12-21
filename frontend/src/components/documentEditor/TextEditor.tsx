@@ -93,17 +93,15 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     const textChange = (trimmedDocsId: string) => {
-      const displayDocs = (docs: any) => {
-        setTitle(docs.title);
-        setContent(docs.content);
-      };
+      const currentUserId = JSON.parse(localStorage.getItem("user") ?? "").id;
+
       client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
-        console.log(docs);
-        displayDocs(JSON.parse(docs.body));
-        console.log("comming docs.body : ", docs.body);
         const docsbody = JSON.parse(docs.body);
-        setContent(docsbody.text);
-        console.log("content: ", docsbody.title);
+        if (docsbody.memberId !== currentUserId) {
+          // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
+          setTitle(docsbody.title);
+          setContent(docsbody.text);
+        }
       });
     };
 
@@ -125,13 +123,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
     setContent(newText); // 상태 업데이트
 
-    // 마지막 문자가 한글이 아닌지 확인
-    const lastChar = newText.charCodeAt(newText.length - 1);
-    const isNotKorean =
-      lastChar < 0x3131 ||
-      (lastChar > 0x3163 && lastChar < 0xac00) ||
-      lastChar > 0xd7a3;
-    if (client.current && isNotKorean) {
+    if (client.current) {
       const message = {
         memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
         title: title,
@@ -148,7 +140,22 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
+    const newTitle = event.target.value;
+    setTitle(newTitle); // 상태 업데이트
+
+    if (client.current) {
+      const message = {
+        memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
+        title: newTitle,
+        text: content, // 현재 내용을 유지
+        documentId: documentsId,
+      };
+
+      client.current.publish({
+        destination: "/topic/broadcastByTextChange",
+        body: JSON.stringify(message),
+      });
+    }
   };
 
   const handleDelete = async () => {
