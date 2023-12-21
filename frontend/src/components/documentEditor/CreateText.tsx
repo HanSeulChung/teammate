@@ -60,7 +60,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
     const requestData = {
       title: title,
       content: content,
-      writerEmail: writerEmail,
+      writerEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
     };
 
     try {
