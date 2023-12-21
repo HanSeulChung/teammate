@@ -18,6 +18,7 @@ import TeamLeader from "../components/ProfilePage/TeamLeader";
 import TeamMembers from "../components/ProfilePage/TeamMembers";
 import TeamInfo from "../components/TeamCreate/TeamInfo";
 import Mypage from "../components/Mypage/Mypage";
+import MyTeamProfile from "../components/Mypage/MyTeamProfile";
 
 const Router = () => {
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ const Router = () => {
       <Route path="/team/:teamId/teamleader" element={<TeamLeader />} />
       <Route path="/TeamInfo" element={<TeamInfo />} />
       <Route path="/mypage" element={<Mypage />} />
+      <Route path="/myteamprofile" element={<MyTeamProfile />} />
       <Route />
     </Routes>
   );
