@@ -32,7 +32,8 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
 
   @PostMapping
-  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request,
+  @MentionTeamParticipantsSendNotify
+  public ResponseEntity<MentionTeamParticipantsNotifyByDto> addSchedule(@RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId) {
     ScheduleResponse scheduleResponse;
     if (!request.isRepeat()) {

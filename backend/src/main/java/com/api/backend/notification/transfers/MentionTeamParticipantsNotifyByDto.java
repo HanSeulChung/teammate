@@ -12,4 +12,9 @@ public interface MentionTeamParticipantsNotifyByDto {
   AlarmType getAlarmType();
 
   String getSendMessage();
+
+  String getTeamParticipantsNickName();
+
+  Long getTeamId();
+
 }

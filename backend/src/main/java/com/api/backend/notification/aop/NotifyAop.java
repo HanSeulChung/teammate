@@ -3,6 +3,7 @@ package com.api.backend.notification.aop;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.notification.data.dto.NotificationDto;
 import com.api.backend.notification.data.entity.Notification;
+import com.api.backend.notification.data.type.AlarmType;
 import com.api.backend.notification.service.EmitterService;
 import com.api.backend.notification.service.NotificationService;
 import com.api.backend.notification.service.SendNotificationService;
@@ -160,6 +161,48 @@ public class NotifyAop {
   @Async
   @AfterReturning(pointcut = "mentionTeamParticipantsPointCut()", returning = "result")
   public void mentionTeamParticipantsCheckNotify(JoinPoint joinPoint, ResponseEntity<MentionTeamParticipantsNotifyByDto> result) {
+    log.info("mentionTeamParticipantsPointCut 알람 진입");
+    MentionTeamParticipantsNotifyByDto info = result.getBody();
+
+    List<Long> teamParticipantIds = info.getMentionTeamParticipantIds()
+        .stream().filter(i -> !i.equals(info.getExcludeTeamParticipantId()))
+        .collect(Collectors.toList());
+
+
+    List<TeamParticipants> teamParticipants = teamParticipantsService
+        .getTeamParticipantsByIds(
+            teamParticipantIds
+        );
+
+    if (teamParticipants.isEmpty()) {
+      log.info("teamParticipants null");
+      return ;
+    }
+    String nickName = info.getTeamParticipantsNickName();
+    String sendMessage = info.getSendMessage();
+    AlarmType alarmType = info.getAlarmType();
+
+    List<Notification> notifications = teamParticipants
+        .stream().map(i ->
+            Notification.convertNickNameToTeamParticipantsNotify(
+                i,
+                nickName,
+                sendMessage,
+                alarmType
+            )
+        )
+        .collect(Collectors.toList());
+
+    sendNotificationService.sendNotifications(
+        sendNotificationService.getTeamEmitters(info.getTeamId(), teamParticipants),
+        NotificationDto.from(notifications.get(0))
+    );
+
+    log.info("mentionTeamParticipantsPointCut 알람전송 종료");
+
+    notificationService.saveAllNotification(notifications);
+
+    log.info("mentionTeamParticipantsPointCut 알람저장 종료");
 
   }
 
