@@ -29,7 +29,7 @@ const Router = () => {
 
   return (
     <Routes>
-      <Route path="/캘린더" element={<Calender />} />
+      <Route path="/" element={<Index />} />
       <Route path="/create-text/" element={<CreateTextView />} />
       <Route
         path="/team/:teamId/documents/:documentsId"
@@ -43,8 +43,7 @@ const Router = () => {
         path="/team/:teamId/documentsList/"
         element={<DocumentListView />}
       />
-      <Route path="/" element={<Index />} />
-      <Route path="/schedules" element={<Calender />} />
+      <Route path="/team/:teamId/schedules" element={<Calender />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<SignInView />} />
       <Route path="/kakaoLogin" element={<KakaoLogin />} />

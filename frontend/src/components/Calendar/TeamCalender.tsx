@@ -103,9 +103,9 @@ const TeamCalender = () => {
                 timeZone="UTC"
                 initialView="dayGridMonth"
                 headerToolbar={{
-                    start: "today prev,next",
-                    center: "title",
-                    end: "dayGridMonth timeGridWeek"
+                    start: "prev title next",
+                    center: "",
+                    end: "today dayGridMonth,timeGridWeek"
                 }}
                 buttonText={{
                     // prev: "이전", // 부트스트랩 아이콘으로 변경 가능
@@ -113,9 +113,9 @@ const TeamCalender = () => {
                     // prevYear: "이전 년도",
                     // nextYear: "다음 년도",
                     today: "오늘",
-                    month: "월별",
-                    week: "주별",
-                    day: "일별",
+                    month: "월간",
+                    week: "주간",
+                    day: "일간",
                     list: "목록"
                 }}
                 events={eventList}
