@@ -2,6 +2,7 @@ package com.api.backend.documents.service;
 
 import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentInitRequest;
+import com.api.backend.documents.data.dto.DocumentInitResponse;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.documents.valid.DocumentAndCommentValidCheck;
@@ -54,7 +55,7 @@ public class DocumentService {
     return Page.empty();
   }
 
-  public Documents createDocs(DocumentInitRequest request, Long teamId, Principal principal) throws CustomException {
+  public DocumentInitResponse createDocs(DocumentInitRequest request, Long teamId, Principal principal) throws CustomException {
     Long memberId = validCheck.getMemberId(principal);
 
     validCheck.validTeamParticipant(memberId);
@@ -68,7 +69,10 @@ public class DocumentService {
         .teamId(teamId)
         .build());
 
-    return saveDocuments;
+    return DocumentInitResponse.from(
+        saveDocuments,
+        teamParticipant.getTeamNickName()
+    );
   }
 
   @Transactional

@@ -111,7 +111,9 @@ public class DocumentsController {
           @RequestBody @Valid DocumentInitRequest request,
           @ApiIgnore
           Principal principal) {
-    return ResponseEntity.ok(DocumentResponse.from(documentService.createDocs(request, teamId, principal)));
+    return ResponseEntity.ok(
+        documentService.createDocs(request, teamId, principal)
+    );
   }
 
   @ApiOperation(value = "해당 팀의 문서를 삭제했습니다.")
