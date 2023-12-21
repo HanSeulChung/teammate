@@ -3,6 +3,7 @@ import axios from "axios";
 import { StyledContainer, StyledFormItem, Button } from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../axios.tsx";
 
 interface SignUpProps {}
 
@@ -54,9 +55,9 @@ const SignUp: React.FC<SignUpProps> = () => {
       setSignupMessage("이미 가입된 이메일입니다.");
       return;
     }
-    axios
+    axiosInstance
       .post(
-        "http://118.67.128.124:8080/sign-up",
+        "/sign-up",
         {
           email: email,
           password: password,
@@ -125,8 +126,8 @@ const SignUp: React.FC<SignUpProps> = () => {
     // if (isEmailFormatValid === null || !isEmailFormatValid) {
     //   return;
     // }
-    axios
-      .post(`http://118.67.128.124:8080/sign-up/email-check`, { email })
+    axiosInstance
+      .post(`/sign-up/email-check`, { email })
       .then((response) => {
         const isEmailAvailable = response.data.errorCode;
         console.log(isEmailAvailable);
