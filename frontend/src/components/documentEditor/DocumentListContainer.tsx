@@ -1,12 +1,15 @@
 import React from "react";
 import DocumentList from "./DocumentList";
+import { useParams } from "react-router-dom";
 
 interface TextEditorViewProps {}
 
-const teamId = 1;
+// const teamId = 1;
 
 const DocumentListContainer: React.FC<TextEditorViewProps> = () => {
-  return <DocumentList teamId={teamId} />;
+  const { teamId } = useParams<{ teamId: string }>();
+
+  return <DocumentList teamId={Number(teamId)} />;
 };
 
 export default DocumentListContainer;
