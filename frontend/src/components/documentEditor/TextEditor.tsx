@@ -101,7 +101,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         console.log(docs);
         displayDocs(JSON.parse(docs.body));
         console.log("comming docs.body : ", docs.body);
-        const docsbody = docs.body;
+        const docsbody = JSON.parse(docs.body);
+        setContent(docsbody.text);
+        console.log("content: ", docsbody.title);
       });
     };
 
