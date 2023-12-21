@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import axios from "axios";
-import { StyledContainer, StyledFormItem } from "./SignUpStyled.tsx";
+import { StyledContainer, StyledFormItem, Button } from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
 import { useNavigate } from "react-router-dom";
 
@@ -140,7 +140,11 @@ const SignUp: React.FC<SignUpProps> = () => {
       })
       .catch((error) => {
         console.error("이메일 중복 확인 실패:", error);
-        if (error.response) {
+        if (error.response && error.response.data.errorCode === TEST) {
+          // 중복된 이메일 에러 처리
+          setIsIdAvailable(false);
+          console.log("중복된 이메일입니다.");
+        } else if (error.response) {
           // 서버 응답이 있을 경우
           console.error("서버 응답 데이터:", error.response.data);
           console.error("서버 응답 상태 코드:", error.response.status);
@@ -273,7 +277,7 @@ const SignUp: React.FC<SignUpProps> = () => {
       {isModalOpen && (
         <div className="modal">
           <p>아이디로 이메일 인증을 보냈습니다. 확인해주세요.</p>
-          <button onClick={handleModalConfirm}>확인</button>
+          <Button onClick={handleModalConfirm}>확인</Button>
         </div>
       )}
     </StyledContainer>

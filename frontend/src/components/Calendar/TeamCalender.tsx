@@ -12,7 +12,7 @@ const TeamCalender = () => {
     // 모달팝업 유무 값
     const [eventDetailModal, setEventDetailModal] = useState<any>(false);
     const [eventFormModal, setEventFormModal] = useState<any>(false);
-    
+
     // 일정 전체 목록
     const [eventList, setEventList] = useState<any>([]);
 
@@ -43,7 +43,7 @@ const TeamCalender = () => {
     }
 
     // 날짜클릭 핸들링
-    const HandleDateClick = (e) => {
+    const HandleDateClick = () => {
         // console.log(e.dayEl);
         toggleFormModal();
     }
@@ -79,10 +79,10 @@ const TeamCalender = () => {
         const eventId = event.id;
         try {
             const res = await axios.delete(`/schedules`, {
-                headers:{
+                headers: {
                     "Content-Type": "application/json"
                 },
-                data:{
+                data: {
                     eventId
                 }
             });
@@ -96,36 +96,46 @@ const TeamCalender = () => {
     }
 
     return (
-        <CalendarDiv>
-            {/* <h2>캘린더입니다.</h2> */}
+        <>
             <FullCalendar
                 locale="kr"
                 plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
-                timeZone= "UTC"
+                timeZone="UTC"
                 initialView="dayGridMonth"
                 headerToolbar={{
                     start: "today prev,next",
                     center: "title",
                     end: "dayGridMonth timeGridWeek"
                 }}
+                buttonText={{
+                    // prev: "이전", // 부트스트랩 아이콘으로 변경 가능
+                    // next: "다음",
+                    // prevYear: "이전 년도",
+                    // nextYear: "다음 년도",
+                    today: "오늘",
+                    month: "월별",
+                    week: "주별",
+                    day: "일별",
+                    list: "목록"
+                }}
                 events={eventList}
                 dayMaxEvents={true}
                 height="90vh"
-                expandRows= {true}
+                expandRows={true}
                 eventClick={(e) => HandleEventClick(e)}
-                dateClick={(e) => HandleDateClick(e)}
+                dateClick={() => HandleDateClick()}
             />
             {/* 일정클릭 모달 */}
             {eventDetailModal && (
                 <Modal>
                     <Overlay
-                        // onClick={toggleModal}
+                    // onClick={toggleModal}
                     ></Overlay>
                     <ModalContent>
                         {isEdit ? (
                             <>
                                 {/* 에디터컴포넌트 */}
-                                <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit}/>
+                                <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
                             </>
                         ) : (
                             <>
@@ -143,7 +153,7 @@ const TeamCalender = () => {
                             </>
                         )}
                         {/* 수정중이 아닐때 close버튼 렌더링 */}
-                        { !isEdit && 
+                        {!isEdit &&
                             <CloseModal
                                 onClick={toggleModal}
                             >
@@ -160,7 +170,7 @@ const TeamCalender = () => {
                         onClick={toggleFormModal}
                     ></Overlay>
                     <ModalContent>
-                        <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit}/>
+                        <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
                         <CloseModal
                             onClick={toggleFormModal}
                         >
@@ -169,7 +179,7 @@ const TeamCalender = () => {
                     </ModalContent>
                 </Modal>
             )}
-        </CalendarDiv>
+        </>
     );
 };
 

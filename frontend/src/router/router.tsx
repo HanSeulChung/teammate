@@ -51,8 +51,15 @@ const Router = () => {
       <Route path="/home" element={<Home />} />
       <Route path="/homeview" element={<HomeView />} />
       <Route path="/team/:teamId" element={<TeamDetail />} />
-      <Route path="/teamleader" element={<TeamLeader />} />
-      <Route path="/team/:teamid/teammembers" element={<TeamMembers />} />
+      {/* <Route path="/teamleader" element={<TeamLeader />} /> */}
+      <Route
+        path="/team/:teamid/documentsList/teammembers"
+        element={<TeamMembers />}
+      />
+      <Route
+        path="/team/:teamid/documentsList/teamleader"
+        element={<TeamLeader />}
+      />
       <Route path="/TeamInfo" element={<TeamInfo />} />
       <Route path="/mypage" element={<Mypage />} />
       <Route />

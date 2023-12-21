@@ -7,6 +7,7 @@ import * as StompJs from "@stomp/stompjs";
 import Quill from "quill";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { accessTokenState } from "../../state/authState";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -58,6 +59,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const document = documentsId;
   const url = `/team/${teamid}/documents/${document}`;
 
+  const headers = {
+    Authorization: `Bearer ${accessTokenState}`,
+  };
+
   const docsId = documentsId;
   const connect = (docsId: string) => {
     const trimmedDocsId = docsId;
@@ -69,7 +74,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   };
 
   useEffect(() => {
-
     // client.current = new StompJs.Client({
     //   brokerURL: "ws://118.67.128.124:8080/ws",
     //   // connectHeaders: {
@@ -93,7 +97,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       client.current!.publish({
         destination: "/app/doc.showDocs",
         body: JSON.stringify(docsMessage),
-        
       });
       console.log("'/app/doc.showDocs'에 publish");
 
@@ -102,7 +105,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         console.log("docs.body : ", docs.body);
       });
     };
-
 
     client.current.onConnect = () => {
       onConnect(docsId);
@@ -131,9 +133,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   useEffect(() => {
     const initializeQuill = () => {
-      // if (!title || !content) {
-      //   return;
-      // }
+      if (!title || !content) {
+        return;
+      }
 
       const editor = new Quill("#quill-editor", {
         theme: "snow",
@@ -141,20 +143,18 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
       editor.setText(content);
 
-      editor.on("text-change", (delta, oldDelta, source ) => {
-        if (source != 'user') {
-
+      editor.on("text-change", (delta, oldDelta, source) => {
+        if (source != "user") {
         }
         console.log("text-change가 감지되었습니다.");
         console.log("변화한 내용:", delta);
         handleTextChange(editor, delta); // 변경된 delta 값을 전달합니다.
       });
 
-
-      editor.on('selection-change', (delta, oldDelta, source) => {
-        if (source === 'user') {
+      editor.on("selection-change", (delta, oldDelta, source) => {
+        if (source === "user") {
           // 선택 변경이 발생했을 때의 처리
-          console.log('selection-change:', delta);
+          console.log("selection-change:", delta);
           handleSelectionChange(editor, delta);
         }
       });
@@ -172,33 +172,35 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       const content = editor.getContents(); // 새로운 내용을 가져옵니다.
 
       client.current!.publish({
-        destination: '/app/doc.updateDocsByTextChange',
-        body: JSON.stringify({ eventName: 'text-change', deltaValue: delta }),
+        destination: "/app/doc.updateDocsByTextChange",
+        body: JSON.stringify({ eventName: "text-change", deltaValue: delta }),
+        headers,
       });
-      console.log('delta sent to server:', delta);
-      var Delta = Quill.import('delta');  
-      client.current!.subscribe("/topic/broadcastByTextChange", function(data) {
-        console.log("deltaMsg 브로드 캐스팅 받았음 - handleTextChange");
-        const textChangeData = JSON.parse(data.body).deltaValue;
+      console.log("delta sent to server:", delta);
+      const Delta = Quill.import("delta");
+      client.current!.subscribe(
+        "/topic/broadcastByTextChange",
+        function (data) {
+          console.log("deltaMsg 브로드 캐스팅 받았음 - handleTextChange");
+          const textChangeData = JSON.parse(data.body).deltaValue;
 
-        const keys = Object.keys( textChangeData.ops[1]);
-        if (keys.includes('insert')) {
-          const insertDelta = new Delta()
-          .retain(textChangeData.ops[0].retain)
-          .insert(textChangeData.ops[1].insert);
-          console.log(insertDelta);
-          editor.updateContents(insertDelta);
-
-        } else {
-          const deleteDelta = new Delta()
-            .retain(textChangeData.ops[0].retain)
-            .delete(textChangeData.ops[1].delete);
+          const keys = Object.keys(textChangeData.ops[1]);
+          if (keys.includes("insert")) {
+            const insertDelta = new Delta()
+              .retain(textChangeData.ops[0].retain)
+              .insert(textChangeData.ops[1].insert);
+            console.log(insertDelta);
+            editor.updateContents(insertDelta);
+          } else {
+            const deleteDelta = new Delta()
+              .retain(textChangeData.ops[0].retain)
+              .delete(textChangeData.ops[1].delete);
             console.log(deleteDelta);
-          editor.updateContents(deleteDelta);
-        }
-      });
-
-      // handleSave(delta);
+            editor.updateContents(deleteDelta);
+          }
+        },
+        headers,
+      );
     }
   };
 
@@ -207,57 +209,33 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       console.log("delta", delta);
 
       client.current!.publish({
-        destination: '/app/doc.updateDocsBySelectionChange',
-        body: JSON.stringify({ 
-          eventName: 'selection-change',  
-          deltaValue: {
-            index: delta.index, 
-            length: delta.length
-          }
-      }),
-      });
-      console.log('delta sent to server:', delta);
-
-      client.current!.subscribe("/topic/broadcastBySelectionChange", (data) => {
-        console.log("deltaMsg 브로드 캐스팅 받았음 - handleSelectionChange");
-        console.log("data is ", data.body);
-        
-        // 서버로부터 받은 데이터 객체를 JSON 파싱
-        const selectionChangeData = JSON.parse(data.body);
-
-        const index = selectionChangeData.index;
-        const length = selectionChangeData.length;
-        console.log("Index:", index);
-        console.log("Length:", length);
-        editor.setSelection(index, length);
-      });
-    }
-  };
-
-  const handleSave = (delta: string) => {
-    console.log("delta: ", delta);
-
-    if (client.current) {
-      console.log("Saving content:", content);
-      client.current!.publish({
-        destination: "/app/doc.saveDocs",
+        destination: "/app/doc.updateDocsBySelectionChange",
         body: JSON.stringify({
-          id: docsId,
-          title: title,
-          content: content,
-          editorEmail: "w0w1278@naver.com",
-          teamId: teamid,
+          eventName: "selection-change",
+          deltaValue: {
+            index: delta.index,
+            length: delta.length,
+          },
         }),
+        headers,
       });
-      console.log(
-        "changedDocument : ",
-        JSON.stringify({
-          id: docsId,
-          title: title,
-          content: content,
-          editorEmail: "w0w1278@naver.com",
-          teamId: teamid,
-        })
+      console.log("delta sent to server:", delta);
+
+      client.current!.subscribe(
+        "/topic/broadcastBySelectionChange",
+        (data) => {
+          console.log("deltaMsg 브로드 캐스팅 받았음 - handleSelectionChange");
+          console.log("data is ", data.body);
+
+          const selectionChangeData = JSON.parse(data.body);
+
+          const index = selectionChangeData.index;
+          const length = selectionChangeData.length;
+          console.log("Index:", index);
+          console.log("Length:", length);
+          editor.setSelection(index, length);
+        },
+        headers,
       );
     }
   };
@@ -269,9 +247,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         const response = await axios.delete(
           `/team/${teamId}/documents/${documentsId}`,
           {
-            headers: {
-              // Authorization: `Bearer ${accessToken}`, // accessToken 변수는 유효한 토큰으로 설정되어야 합니다.
-            },
+            headers,
           },
         );
         console.log(response.data.message); // 성공 메시지 로깅
@@ -300,7 +276,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       onChange={handleTitleChange}
       placeholder="제목을 입력하세요"
     >
-      <TitleInput value={title}  onChange={handleTitleChange} />
+      <TitleInput value={title} onChange={handleTitleChange} />
       <QuillStyled id="quill-editor" />
       <ButtonContainer>
         <div>

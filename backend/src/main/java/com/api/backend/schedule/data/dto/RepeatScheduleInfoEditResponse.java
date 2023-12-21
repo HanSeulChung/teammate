@@ -1,26 +1,23 @@
 package com.api.backend.schedule.data.dto;
 
 import com.api.backend.schedule.data.entity.RepeatSchedule;
-import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import org.springframework.data.domain.Page;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @Builder
 @AllArgsConstructor
-public class ScheduleResponse {
-
+public class RepeatScheduleInfoEditResponse {
   private Long scheduleId;
+  private Long originRepeatScheduleId;
   private String scheduleType;
   private String categoryName;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -39,50 +36,26 @@ public class ScheduleResponse {
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
 
-  public static ScheduleResponse from(RepeatScheduleResponse repeatScheduleResponse) {
-    return ScheduleResponse.builder()
-        .scheduleId(repeatScheduleResponse.getScheduleId())
+  public static RepeatScheduleInfoEditResponse from(RepeatSchedule repeatSchedule) {
+    return RepeatScheduleInfoEditResponse.builder()
+        .scheduleId(repeatSchedule.getRepeatScheduleId())
+        .originRepeatScheduleId(repeatSchedule.getOriginRepeatScheduleId())
         .scheduleType("반복 일정")
-        .categoryName(repeatScheduleResponse.getCategoryName())
-        .startDt(repeatScheduleResponse.getStartDt())
-        .endDt(repeatScheduleResponse.getEndDt())
-        .title(repeatScheduleResponse.getTitle())
-        .content(repeatScheduleResponse.getContent())
-        .place(repeatScheduleResponse.getPlace())
-        .repeatCycle(repeatScheduleResponse.getRepeatCycle())
-        .month(repeatScheduleResponse.getMonth())
-        .day(repeatScheduleResponse.getDay())
-        .dayOfWeek(repeatScheduleResponse.getDayOfWeek())
-        .teamParticipantsIds(repeatScheduleResponse.getTeamParticipantsIds())
-        .teamParticipantsNames(repeatScheduleResponse.getTeamParticipantsNames())
-        .teamRoles(repeatScheduleResponse.getTeamRoles())
+        .categoryName(repeatSchedule.getScheduleCategory().getCategoryName())
+        .startDt(repeatSchedule.getStartDt())
+        .endDt(repeatSchedule.getEndDt())
+        .title(repeatSchedule.getTitle())
+        .content(repeatSchedule.getContent())
+        .place(repeatSchedule.getPlace())
+        .color(repeatSchedule.getColor())
+        .repeatCycle(repeatSchedule.getRepeatCycle())
+        .month(repeatSchedule.getMonth())
+        .day(repeatSchedule.getDay())
+        .dayOfWeek(repeatSchedule.getDayOfWeek())
+        .teamParticipantsIds(getTeamParticipantsIdsFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .teamParticipantsNames(getTeamParticipantsNameFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+        .teamRoles(getTeamParticipantsRoleFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
         .build();
-  }
-
-  public static ScheduleResponse from(SimpleScheduleResponse simpleScheduleResponse) {
-    return ScheduleResponse.builder()
-        .scheduleId(simpleScheduleResponse.getScheduleId())
-        .scheduleType("단순 일정")
-        .categoryName(simpleScheduleResponse.getCategoryName())
-        .scheduleId(simpleScheduleResponse.getScheduleId())
-        .startDt(simpleScheduleResponse.getStartDt())
-        .endDt(simpleScheduleResponse.getEndDt())
-        .title(simpleScheduleResponse.getTitle())
-        .content(simpleScheduleResponse.getContent())
-        .place(simpleScheduleResponse.getPlace())
-        .teamParticipantsIds(simpleScheduleResponse.getTeamParticipantsIds())
-        .teamParticipantsNames(simpleScheduleResponse.getTeamParticipantsNames())
-        .teamRoles(simpleScheduleResponse.getTeamRoles())
-        .build();
-  }
-
-
-  public static Page<RepeatScheduleResponse> fromRepeatSchedule(Page<RepeatSchedule> schedules) {
-    return schedules.map(RepeatScheduleResponse::from);
-  }
-
-  public static Page<SimpleScheduleResponse> fromSimpleSchedule(Page<SimpleSchedule> schedules) {
-    return schedules.map(SimpleScheduleResponse::from);
   }
 
   public static List<Long> getTeamParticipantsIdsFromSchedules(
@@ -118,5 +91,4 @@ public class ScheduleResponse {
     }
     return teamParticipantsRoles;
   }
-
 }

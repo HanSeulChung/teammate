@@ -9,7 +9,6 @@ import {
   userState,
   accessTokenState,
 } from "../../state/authState";
-// import { useTeamCreation } from "./useTeamCreation";
 import { useNavigate } from "react-router-dom";
 import {
   StyledContainer,
@@ -111,6 +110,7 @@ export default function TeamInfo() {
           "Content-Type": "multipart/form-data",
         },
       });
+
       navigate("/homeview");
       // 성공적으로 팀 생성이 완료되었을 때의 로직
       console.log("팀 생성 성공:", response.data);

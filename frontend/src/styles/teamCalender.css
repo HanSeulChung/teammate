@@ -1,21 +1,78 @@
+:root {
+    /* 달력 오늘날짜 배경 색 */
+    --fc-today-bg-color: rgba(163, 204, 163, 0.2);
+
+    /* 달력 버튼 */
+    --fc-button-bg-color: #CCCCCC;
+}
+
 /* 일요일 날짜 빨간색 */
 .fc-day-sun a {
-    color: red;
+    color: #E21D29;
     text-decoration: none;
 }
 
 /* 토요일 날짜 파란색 */
 .fc-day-sat a {
-    color: blue;
+    color: #336699;
     text-decoration: none;
 }
 
 /* 달력 요일 스타일링 */
 .fc-col-header {
     background-color: rgb(163, 204, 163);
+    border-radius: 1rem 1rem 0 0;
+    padding: 1rem 0 1rem 0;
+}
+
+.fc .fc-scrollgrid-section, .fc .fc-scrollgrid-section table  {
+    height: 45px;
+}
+
+.fc-scrollgrid-sync-inner {
+    padding-top: 7px;
+}
+
+.fc-col-header-cell-cushion {
+    font-weight: bold;
 }
 
 /* 모달여부에 따른 스탈일 적용 */
 body.active-modal {
     overflow-y: hidden;
+}
+
+
+/* 달력 이번달 날짜가 아닌 날짜 배경색 */
+.fc-day.fc-day-other {
+    background-color: rgba(243,243,243, 0.5);
+}
+
+/* 달력 이번달 날짜가 아닌 날짜 텍스트 투명도 */
+.fc .fc-day-other .fc-daygrid-day-top {
+    background-color: rgba(243,243,243, 0.5);
+    opacity: 0.5;
+}
+
+/* 달력 테두리 */
+.fc-theme-standard .fc-scrollgrid {
+    border-top: none;
+    /* border-left: none; */
+    border-top-left-radius: 6%;
+}
+
+.fc-theme-standard th {
+    border: none;
+}
+
+/* 달력 날짜 위치 */
+.fc .fc-daygrid-day-top {
+    display: flex;
+    flex-direction: row;
+    padding: 0 0 0 0.5rem;
+}
+
+/* 달력 현재 보여주는 달 혹은 주간 헤더 */
+.fc-toolbar-title {
+    font-weight: bold;
 }
