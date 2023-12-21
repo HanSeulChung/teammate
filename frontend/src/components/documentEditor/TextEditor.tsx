@@ -141,13 +141,13 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
-    setTitle(newTitle); // 상태 업데이트
+    setTitle(newTitle);
 
     if (client.current) {
       const message = {
         memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
         title: newTitle,
-        text: content, // 현재 내용을 유지
+        text: content,
         documentId: documentsId,
       };
 
