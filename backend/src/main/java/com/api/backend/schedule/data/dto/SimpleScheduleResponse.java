@@ -38,6 +38,7 @@ public class SimpleScheduleResponse {
   public static SimpleScheduleResponse from(SimpleSchedule simpleSchedule) {
     return SimpleScheduleResponse.builder()
         .scheduleType("단순 일정")
+        .scheduleId(simpleSchedule.getSimpleScheduleId())
         .categoryName(simpleSchedule.getScheduleCategory().getCategoryName())
         .startDt(simpleSchedule.getStartDt())
         .endDt(simpleSchedule.getEndDt())

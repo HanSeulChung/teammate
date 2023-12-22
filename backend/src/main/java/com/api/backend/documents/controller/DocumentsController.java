@@ -4,8 +4,8 @@ import com.api.backend.documents.data.dto.DocumentInitRequest;
 import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.service.DocumentService;
-import com.api.backend.global.aop.notify.SendNotify;
-import com.api.backend.notification.data.dto.DtoValueExtractor;
+import com.api.backend.notification.aop.annotation.TeamParticipantsSendNotify;
+import com.api.backend.notification.transfers.TeamParticipantsNotifyByDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -103,15 +103,17 @@ public class DocumentsController {
               , defaultValue = "None"
               , example = "1")
             })
+  @TeamParticipantsSendNotify
   @PostMapping()
-  @SendNotify
-  public ResponseEntity<DtoValueExtractor> createDocs(
+  public ResponseEntity<TeamParticipantsNotifyByDto> createDocs(
           @PathVariable
           Long teamId,
           @RequestBody @Valid DocumentInitRequest request,
           @ApiIgnore
           Principal principal) {
-    return ResponseEntity.ok(DocumentResponse.from(documentService.createDocs(request, teamId, principal)));
+    return ResponseEntity.ok(
+        documentService.createDocs(request, teamId, principal)
+    );
   }
 
   @ApiOperation(value = "해당 팀의 문서를 삭제했습니다.")
@@ -151,9 +153,9 @@ public class DocumentsController {
               , example = "657595c6c97b622e0440f394"
           )
       })
-  @SendNotify
+  @TeamParticipantsSendNotify
   @DeleteMapping("/{documentsId}")
-  public ResponseEntity<DtoValueExtractor> deleteDocs(
+  public ResponseEntity<TeamParticipantsNotifyByDto> deleteDocs(
       @PathVariable
       Long teamId,
       @PathVariable

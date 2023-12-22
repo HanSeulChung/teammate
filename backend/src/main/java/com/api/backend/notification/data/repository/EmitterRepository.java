@@ -48,7 +48,7 @@ public class EmitterRepository {
     memberEmitterMap.remove(memberId);
   }
   public SseEmitter getTeamParticipantEmitter(Long teamId, String emitterId) {
-    if (!teamEmitterMap.containsKey(teamId)) {
+    if (teamEmitterMap.isEmpty() || !teamEmitterMap.containsKey(teamId)) {
       return null;
     }
 
