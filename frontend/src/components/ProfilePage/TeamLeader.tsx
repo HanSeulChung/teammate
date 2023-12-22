@@ -53,12 +53,7 @@ export default function TeamLeader() {
   useEffect(() => {
     const fetchTeamInfo = async () => {
       try {
-        const response = await axiosInstance.get(`/team/${teamId}`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await axiosInstance.get(`/team/${teamId}`);
         setTeam(response.data);
       } catch (error) {
         console.error("Error fetching team info:", error);
