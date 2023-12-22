@@ -38,7 +38,6 @@ export const ErrorContainer = styled.div`
 export const ErrorText = styled.p`
   color: red;
   margin-top: 10px;
-  margin-right: 150px;
 `;
 export const Button = styled.button`
   margin-top: 10px;
@@ -49,7 +48,6 @@ export const Button = styled.button`
   border-radius: 10px;
   cursor: pointer;
   color: #333333;
-  margin-right: 90px;
   &:hover {
     background-color: #a3cca3;
   }

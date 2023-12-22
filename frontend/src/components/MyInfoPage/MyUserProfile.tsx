@@ -199,13 +199,13 @@ export default function MyUserProfile() {
             </tr>
           </tbody>
         </table>
-        <ErrorContainer>
-          {passwordChangeError && <ErrorText>{passwordChangeError}</ErrorText>}
-        </ErrorContainer>
       </div>
       <ButtonContainer>
         <Button onClick={handleUpdatePassword}>변경하기</Button>
       </ButtonContainer>
+      <ErrorContainer>
+        {passwordChangeError && <ErrorText>{passwordChangeError}</ErrorText>}
+      </ErrorContainer>
       <br />
       {/* 231218 유나경 끝------------- */}
     </UserProfileContainer>
