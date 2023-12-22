@@ -16,6 +16,8 @@ import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleToRepeatScheduleEditRequest;
 import com.api.backend.schedule.service.ScheduleService;
+import com.api.backend.team.data.entity.TeamParticipants;
+import com.api.backend.team.service.TeamParticipantsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -48,6 +50,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class ScheduleController {
 
   private final ScheduleService scheduleService;
+  private final TeamParticipantsService teamParticipantsService;
 
   @ApiOperation(value = "일정 생성")
   @ApiResponses(value = {
@@ -78,6 +81,9 @@ public class ScheduleController {
   public ResponseEntity<MentionTeamParticipantsNotifyByDto> addSchedule(@RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId, @ApiIgnore Principal principal) {
     ScheduleCreateResponse scheduleCreateResponse;
+
+    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(teamId, Long.valueOf(principal.getName()));
+
     if (request.getRepeatCycle() != null) {
       RepeatScheduleResponse response = RepeatScheduleResponse.from(
           scheduleService.addRepeatScheduleAndSave(request, principal)
@@ -89,6 +95,12 @@ public class ScheduleController {
       );
       scheduleCreateResponse = ScheduleCreateResponse.from(response);
     }
+
+    scheduleCreateResponse.AddAlarmValue(
+        teamId,
+        teamParticipants.getTeamParticipantsId(),
+        teamParticipants.getTeamNickName()
+    );
 
     return ResponseEntity.ok(scheduleCreateResponse);
   }

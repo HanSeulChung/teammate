@@ -35,5 +35,4 @@ public class ScheduleRequest {
 
   // 알람
   private Long createParticipantId;
-  private String createNickName;
 }
