@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { userState } from "../../state/authState";
-import { User, Team, UserProfileProps } from "../../interface/interface";
+import { userState, isAuthenticatedState } from "../../state/authState";
+import { User, Team } from "../../interface/interface.ts";
 import axios from "axios";
 import {
   UserProfileContainer,
@@ -13,12 +13,15 @@ import {
 } from "./MyUserProfileStyled";
 import { useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const UserProfile: React.FC<UserProfileProps> = () => {
+export default function MyUserProfile() {
+  const [isAuthenticated, setIsAuthenticated] =
+    useRecoilState(isAuthenticatedState);
   const [user, setUser] = useRecoilState(userState);
   const [error, setError] = useState<string>("");
   const [myTeamList, setMyTeamList] = useState<Team[]>([]);
+  const navigate = useNavigate();
 
   //api 연결 부분
   useEffect(() => {
@@ -66,7 +69,7 @@ const UserProfile: React.FC<UserProfileProps> = () => {
       if (!currentPassword || !newPassword || !confirmPassword) {
         setPasswordChangeError("입력되지 않은 항목이 있습니다.");
         return;
-      } else if (currentPassword !== "password1") {
+      } else if (currentPassword !== currentPassword) {
         setPasswordChangeError("기존 비밀번호와 일치하지 않습니다.");
         return;
       } else if (newPassword !== confirmPassword) {
@@ -78,36 +81,52 @@ const UserProfile: React.FC<UserProfileProps> = () => {
       }
 
       // 서버로 요청을 보내는 코드
-      const response = await axiosInstance.post("/member/password", {
-        oldpassword: currentPassword,
-        newpassword: newPassword,
-      });
+      try {
+        const response = await axiosInstance.put("/member/password", {
+          oldPassword: currentPassword,
+          newPassword: newPassword,
+          reNewPassword: confirmPassword,
+        });
+        if (response.status === 200) {
+          setPasswordChangeError("");
+          alert("비밀번호가 변경되었습니다.");
 
-      //성공 여부만 확인
-      if (response.status === 200) {
-        setPasswordChangeError("");
-      } else {
-        setPasswordChangeError(
-          "비밀번호 변경에 실패했습니다. 다시 시도해주세요.",
-        );
+          //로그아웃 처리
+          setIsAuthenticated(false);
+          setUser(null);
+          localStorage.clear();
+
+          // SignIn 페이지로 이동
+          navigate("/signin");
+        } else {
+          setPasswordChangeError(
+            "비밀번호 변경에 실패했습니다. 다시 시도해주세요.",
+          );
+        }
+      } catch (error) {
+        console.error("Error in handleUpdatePassword:", error);
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            setPasswordChangeError("토큰이 유효하지 않습니다.");
+          } else if (error.response?.status === 400) {
+            setPasswordChangeError(error.response.data.error);
+          } else {
+            setPasswordChangeError("서버 오류가 발생했습니다.");
+          }
+        } else {
+          setPasswordChangeError("네트워크 오류가 발생했습니다.");
+        }
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          setPasswordChangeError("토큰이 유효하지 않습니다.");
-        } else {
-          setPasswordChangeError("서버 오류가 발생했습니다.");
-        }
-      } else {
-        setPasswordChangeError("네트워크 오류가 발생했습니다.");
-      }
+      // Handle any other errors here
+      console.error("Unexpected error:", error);
     }
   };
   return (
     <UserProfileContainer>
       <UserProfileTitle>내 프로필</UserProfileTitle>
       <LinkContainer>
-        <Link to="/myteamprofile">팀 프로필로 이동</Link>
+        <Link to="/myteamprofile">내 팀 프로필로 이동</Link>
       </LinkContainer>
       <br />
       {/* 231218 유나경 시작------------- */}
@@ -191,6 +210,4 @@ const UserProfile: React.FC<UserProfileProps> = () => {
       {/* 231218 유나경 끝------------- */}
     </UserProfileContainer>
   );
-};
-
-export default UserProfile;
+}
