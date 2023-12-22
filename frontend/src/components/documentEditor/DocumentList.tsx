@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useRecoilValue } from "recoil";
 import { accessTokenState } from "../../state/authState";
+import axiosInstance from "../../axios";
 
 const API_BASE_URL = "http://118.67.128.124:8080";
 
@@ -101,14 +102,10 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_BASE_URL}/team/${Id}/documents`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
         );
+        console.log("data :", response.data);
         setDocuments(response.data);
         setFilteredDocuments(response.data);
       } catch (error) {
@@ -120,13 +117,28 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   }, [currentPage, teamId, accessToken]);
 
   useEffect(() => {
-    const filtered = documents.filter(
-      (doc) =>
-        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    setFilteredDocuments(filtered);
-  }, [searchTerm, documents]);
+    const fetchDocuments = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${API_BASE_URL}/team/${Id}/documents`,
+        );
+        console.log("Response data:", response.data);
+
+        // 'content' 필드에서 문서 배열을 추출하여 상태 업데이트
+        if (response.data && Array.isArray(response.data.content)) {
+          setDocuments(response.data.content);
+          setFilteredDocuments(response.data.content);
+        } else {
+          // 응답에 'content' 배열이 없는 경우
+          console.error("Invalid response structure:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchDocuments();
+  }, [currentPage, teamId, accessToken]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -137,7 +149,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   };
 
   const renderPagination = () => {
-    const totalPages = Math.ceil(filteredDocuments.length / pageSize);
+    const totalPages = Math.ceil(
+      filteredDocuments ? filteredDocuments.length : 0 / pageSize,
+    );
     let pages = [];
     for (let i = 0; i < totalPages; i++) {
       pages.push(
@@ -153,6 +167,8 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     currentPage * pageSize,
     (currentPage + 1) * pageSize,
   );
+
+  console.log(currentDocuments);
 
   const navigate = useNavigate();
 
