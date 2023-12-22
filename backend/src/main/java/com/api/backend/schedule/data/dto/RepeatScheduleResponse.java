@@ -41,6 +41,7 @@ public class RepeatScheduleResponse {
   public static RepeatScheduleResponse from(RepeatSchedule repeatSchedule) {
     return RepeatScheduleResponse.builder()
         .scheduleType("반복 일정")
+        .scheduleId(repeatSchedule.getRepeatScheduleId())
         .categoryName(repeatSchedule.getScheduleCategory().getCategoryName())
         .startDt(repeatSchedule.getStartDt())
         .endDt(repeatSchedule.getEndDt())
