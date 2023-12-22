@@ -79,7 +79,7 @@ const SignIn = () => {
           "올바른 이메일 또는 비밀번호를 입력하세요.";
         setError(errorMessage);
       } else {
-        setError("로그인 중 오류가 발생했습니다.");
+        setError("이메일 인증 후 로그인 해주세요.");
       }
     }
   };
