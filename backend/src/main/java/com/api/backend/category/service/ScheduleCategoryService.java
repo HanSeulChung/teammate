@@ -28,7 +28,7 @@ public class ScheduleCategoryService {
 
   @Transactional
   public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest) {
-    Team team = validateTeam(scheduleCategoryRequest.getTeamId());
+    Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
         .team(team)
@@ -48,8 +48,8 @@ public class ScheduleCategoryService {
 
   @Transactional
   public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest) {
-    validateTeam(scheduleCategoryEditRequest.getTeamId());
-    ScheduleCategory scheduleCategory = validateScheduleCategory(
+    findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
+    ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
         scheduleCategoryEditRequest.getCategoryId());
     scheduleCategory.editScheduleCategory(scheduleCategoryEditRequest);
     return scheduleCategoryRepository.save(scheduleCategory);
@@ -57,17 +57,17 @@ public class ScheduleCategoryService {
 
   @Transactional
   public void delete(Long categoryId) {
-    validateScheduleCategory(categoryId);
+    findCategoryOrElseThrow(categoryId);
     scheduleCategoryRepository.deleteById(categoryId);
   }
 
 
-  public Team validateTeam(Long teamId) {
+  private Team findTeamOrElseThrow(Long teamId) {
     return teamRepository.findById(teamId)
         .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
   }
 
-  public ScheduleCategory validateScheduleCategory(Long scheduleCategoryId) {
+  private ScheduleCategory findCategoryOrElseThrow(Long scheduleCategoryId) {
     return scheduleCategoryRepository.findById(scheduleCategoryId)
         .orElseThrow(() -> new CustomException(SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
   }
