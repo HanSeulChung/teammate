@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { accessTokenState } from "../../state/authState";
 import { useRecoilValue } from "recoil";
+import axiosInstance from "../../axios";
 
 const StyledTexteditor = styled.div`
   displey: flex;
@@ -34,7 +35,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
   const { teamId } = useParams<{ teamId: string }>(); // URL에서 teamId 파라미터 추출
   const navigate = useNavigate();
   const accessToken = useRecoilValue(accessTokenState);
-
+  console.log(accessToken);
   useEffect(() => {
     const editor = new Quill("#quill-editor", {
       theme: "snow",
@@ -67,14 +68,9 @@ const CreateText: React.FC<QuillEditorProps> = () => {
     console.log("teamid : ", teamId);
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `http://118.67.128.124:8080/team/${teamId}/documents`,
         requestData,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
       );
 
       if (response.status === 200) {
