@@ -177,7 +177,7 @@ export default function TeamInfo() {
             onClick={() => document.getElementById("imageUpload")?.click()}
           />
           <input
-            title="imgupload"
+            title="imgUpload"
             type="file"
             id="imageUpload"
             accept="image/*"

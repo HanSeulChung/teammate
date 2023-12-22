@@ -52,9 +52,9 @@ const Header = () => {
           const userTeamRole = response.data.teamRole;
 
           if (userTeamRole === "READER") {
-            navigate(`/team/${teamId}/teamleader`);
+            navigate(`/team/${teamId}/teamLeader`);
           } else if (userTeamRole === "MATE") {
-            navigate(`/team/${teamId}/teammembers`);
+            navigate(`/team/${teamId}/teamMembers`);
           } else {
             // Handle other roles if needed
           }

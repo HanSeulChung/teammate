@@ -107,7 +107,7 @@ export default function TeamLeader() {
       };
     }
   };
-  
+
   //팀멤버조회
   const [teamParticipants, setTeamParticipants] = useState<TeamParticipant[]>(
     [],
@@ -264,7 +264,7 @@ export default function TeamLeader() {
               />
               <span>팀명 </span>
               <input
-                title="imgupload"
+                title="imgUpload"
                 id="imageUpload"
                 type="file"
                 accept="image/*"

@@ -161,7 +161,7 @@ const MyTeamProfile: React.FC = () => {
       <UserProfileInfo>
         <h2>내 팀 프로필</h2>
         <select
-          title="myteamlist"
+          title="profile"
           onChange={(e) =>
             handleTeamClick(
               teamList.find((team) => team.name === e.target.value)!,
@@ -193,7 +193,7 @@ const MyTeamProfile: React.FC = () => {
                 onClick={() => document.getElementById("imageUpload")?.click()}
               />
               <input
-                title="imgupload"
+                title="imgUpload"
                 type="file"
                 id="imageUpload"
                 accept="image/*"

@@ -97,7 +97,7 @@ export default function MyUserProfile() {
           localStorage.clear();
 
           // SignIn 페이지로 이동
-          navigate("/signin");
+          navigate("/signIn");
         } else {
           setPasswordChangeError(
             "비밀번호 변경에 실패했습니다. 다시 시도해주세요.",
@@ -126,7 +126,7 @@ export default function MyUserProfile() {
     <UserProfileContainer>
       <UserProfileTitle>내 프로필</UserProfileTitle>
       <LinkContainer>
-        <Link to="/myteamprofile">내 팀 프로필로 이동</Link>
+        <Link to="/myTeamProfile">내 팀 프로필로 이동</Link>
       </LinkContainer>
       <br />
       {/* 231218 유나경 시작------------- */}
