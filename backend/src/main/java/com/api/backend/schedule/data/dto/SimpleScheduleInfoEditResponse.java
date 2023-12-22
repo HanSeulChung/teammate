@@ -1,11 +1,13 @@
 package com.api.backend.schedule.data.dto;
 
+import static com.api.backend.schedule.data.dto.ScheduleResponse.getTeamParticipantsIdsFromSchedules;
+import static com.api.backend.schedule.data.dto.ScheduleResponse.getTeamParticipantsNameFromSchedules;
+import static com.api.backend.schedule.data.dto.ScheduleResponse.getTeamParticipantsRoleFromSchedules;
+
 import com.api.backend.schedule.data.entity.SimpleSchedule;
-import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,39 +51,5 @@ public class SimpleScheduleInfoEditResponse {
         .teamRoles(
             getTeamParticipantsRoleFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .build();
-  }
-
-  public static List<Long> getTeamParticipantsIdsFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<Long> teamParticipantsIds = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsIds.add(
-            teamParticipantsSchedule.getTeamParticipants().getTeamParticipantsId());
-      }
-    }
-    return teamParticipantsIds;
-  }
-
-  public static List<String> getTeamParticipantsNameFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<String> teamParticipantsNames = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsNames.add(teamParticipantsSchedule.getTeamParticipants().getTeamNickName());
-      }
-    }
-    return teamParticipantsNames;
-  }
-
-  public static List<TeamRole> getTeamParticipantsRoleFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<TeamRole> teamParticipantsRoles = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsRoles.add(teamParticipantsSchedule.getTeamParticipants().getTeamRole());
-      }
-    }
-    return teamParticipantsRoles;
   }
 }

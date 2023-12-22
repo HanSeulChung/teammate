@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.domain.Page;
 
 @Getter
 @AllArgsConstructor
@@ -56,15 +55,5 @@ public class AllSchedulesMonthlyView {
         .endDt(simpleSchedule.getEndDt())
         .color(simpleSchedule.getColor())
         .build();
-  }
-
-  public static Page<AllSchedulesMonthlyView> fromSimpleSchedulePage(
-      Page<SimpleSchedule> simpleSchedules) {
-    return simpleSchedules.map(AllSchedulesMonthlyView::from);
-  }
-
-  public static Page<AllSchedulesMonthlyView> fromRepeatSchedulePage(
-      Page<RepeatSchedule> repeatSchedules) {
-    return repeatSchedules.map(AllSchedulesMonthlyView::from);
   }
 }
