@@ -1,11 +1,12 @@
 package com.api.backend.schedule.data.dto;
 
-import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
+import com.api.backend.notification.data.NotificationMessage;
+import com.api.backend.notification.data.type.AlarmType;
+import com.api.backend.notification.transfers.MentionTeamParticipantsNotifyByDto;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,8 +15,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ScheduleResponse {
-
+public class ScheduleCreateResponse implements MentionTeamParticipantsNotifyByDto {
   private Long scheduleId;
   private String scheduleType;
   private String categoryName;
@@ -35,8 +35,13 @@ public class ScheduleResponse {
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
 
-  public static ScheduleResponse from(RepeatScheduleResponse repeatScheduleResponse) {
-    return ScheduleResponse.builder()
+  // 알람
+  private Long createParticipantsId;
+  private String createParticipantsNickName;
+  private Long teamId;
+
+  public static ScheduleCreateResponse from(RepeatScheduleResponse repeatScheduleResponse) {
+    return ScheduleCreateResponse.builder()
         .scheduleId(repeatScheduleResponse.getScheduleId())
         .scheduleType("반복 일정")
         .categoryName(repeatScheduleResponse.getCategoryName())
@@ -55,8 +60,8 @@ public class ScheduleResponse {
         .build();
   }
 
-  public static ScheduleResponse from(SimpleScheduleResponse simpleScheduleResponse) {
-    return ScheduleResponse.builder()
+  public static ScheduleCreateResponse from(SimpleScheduleResponse simpleScheduleResponse) {
+    return ScheduleCreateResponse.builder()
         .scheduleId(simpleScheduleResponse.getScheduleId())
         .scheduleType("단순 일정")
         .categoryName(simpleScheduleResponse.getCategoryName())
@@ -73,38 +78,34 @@ public class ScheduleResponse {
   }
 
 
-  public static List<Long> getTeamParticipantsIdsFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<Long> teamParticipantsIds = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsIds.add(
-            teamParticipantsSchedule.getTeamParticipants().getTeamParticipantsId());
-      }
-    }
+  public void AddAlarmValue(Long teamId, Long teamParticipantsId,String nickName) {
+    this.teamId = teamId;
+    this.createParticipantsId = teamParticipantsId;
+    this.createParticipantsNickName = nickName;
+  }
+
+  @Override
+  public List<Long> getMentionTeamParticipantIds() {
     return teamParticipantsIds;
   }
 
-  public static List<String> getTeamParticipantsNameFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<String> teamParticipantsNames = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsNames.add(teamParticipantsSchedule.getTeamParticipants().getTeamNickName());
-      }
-    }
-    return teamParticipantsNames;
+  @Override
+  public Long getExcludeTeamParticipantId() {
+    return createParticipantsId;
   }
 
-  public static List<TeamRole> getTeamParticipantsRoleFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<TeamRole> teamParticipantsRoles = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsRoles.add(teamParticipantsSchedule.getTeamParticipants().getTeamRole());
-      }
-    }
-    return teamParticipantsRoles;
+  @Override
+  public AlarmType getAlarmType() {
+    return AlarmType.SCHEDULE_CREATE;
   }
 
+  @Override
+  public String getSendMessage() {
+    return NotificationMessage.getCreateSchedule(title);
+  }
+
+  @Override
+  public String getTeamParticipantsNickName() {
+    return createParticipantsNickName;
+  }
 }

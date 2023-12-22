@@ -1,5 +1,9 @@
 package com.api.backend.schedule.data.dto;
 
+import static com.api.backend.schedule.data.dto.ScheduleResponse.getTeamParticipantsIdsFromSchedules;
+import static com.api.backend.schedule.data.dto.ScheduleResponse.getTeamParticipantsNameFromSchedules;
+import static com.api.backend.schedule.data.dto.ScheduleResponse.getTeamParticipantsRoleFromSchedules;
+
 import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.team.data.type.TeamRole;
@@ -34,6 +38,7 @@ public class SimpleScheduleResponse {
   public static SimpleScheduleResponse from(SimpleSchedule simpleSchedule) {
     return SimpleScheduleResponse.builder()
         .scheduleType("단순 일정")
+        .scheduleId(simpleSchedule.getSimpleScheduleId())
         .categoryName(simpleSchedule.getScheduleCategory().getCategoryName())
         .startDt(simpleSchedule.getStartDt())
         .endDt(simpleSchedule.getEndDt())
@@ -49,37 +54,4 @@ public class SimpleScheduleResponse {
         .build();
   }
 
-  public static List<Long> getTeamParticipantsIdsFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<Long> teamParticipantsIds = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsIds.add(
-            teamParticipantsSchedule.getTeamParticipants().getTeamParticipantsId());
-      }
-    }
-    return teamParticipantsIds;
-  }
-
-  public static List<String> getTeamParticipantsNameFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<String> teamParticipantsNames = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsNames.add(teamParticipantsSchedule.getTeamParticipants().getTeamNickName());
-      }
-    }
-    return teamParticipantsNames;
-  }
-
-  public static List<TeamRole> getTeamParticipantsRoleFromSchedules(
-      List<TeamParticipantsSchedule> teamParticipantsSchedules) {
-    List<TeamRole> teamParticipantsRoles = new ArrayList<>();
-    if (teamParticipantsSchedules != null) {
-      for (TeamParticipantsSchedule teamParticipantsSchedule : teamParticipantsSchedules) {
-        teamParticipantsRoles.add(teamParticipantsSchedule.getTeamParticipants().getTeamRole());
-      }
-    }
-    return teamParticipantsRoles;
-  }
 }

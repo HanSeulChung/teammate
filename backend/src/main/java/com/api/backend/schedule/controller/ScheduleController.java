@@ -1,19 +1,23 @@
 package com.api.backend.schedule.controller;
 
 import com.api.backend.category.type.CategoryType;
+import com.api.backend.notification.aop.annotation.MentionTeamParticipantsSendNotify;
+import com.api.backend.notification.transfers.MentionTeamParticipantsNotifyByDto;
 import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.RepeatScheduleResponse;
 import com.api.backend.schedule.data.dto.RepeatToSimpleScheduleEditRequest;
+import com.api.backend.schedule.data.dto.ScheduleCreateResponse;
 import com.api.backend.schedule.data.dto.ScheduleTypeConverterResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
-import com.api.backend.schedule.data.dto.ScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleResponse;
 import com.api.backend.schedule.data.dto.SimpleToRepeatScheduleEditRequest;
 import com.api.backend.schedule.service.ScheduleService;
+import com.api.backend.team.data.entity.TeamParticipants;
+import com.api.backend.team.service.TeamParticipantsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -46,6 +50,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class ScheduleController {
 
   private final ScheduleService scheduleService;
+  private final TeamParticipantsService teamParticipantsService;
 
   @ApiOperation(value = "일정 생성")
   @ApiResponses(value = {
@@ -72,21 +77,32 @@ public class ScheduleController {
               , example = "1")
       })
   @PostMapping
-  public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody @Valid ScheduleRequest request,
+  @MentionTeamParticipantsSendNotify
+  public ResponseEntity<MentionTeamParticipantsNotifyByDto> addSchedule(@RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId, @ApiIgnore Principal principal) {
-    ScheduleResponse scheduleResponse;
+    ScheduleCreateResponse scheduleCreateResponse;
+
+    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(teamId, Long.valueOf(principal.getName()));
+
     if (request.getRepeatCycle() != null) {
       RepeatScheduleResponse response = RepeatScheduleResponse.from(
           scheduleService.addRepeatScheduleAndSave(request, principal)
       );
-      scheduleResponse = ScheduleResponse.from(response);
+      scheduleCreateResponse = ScheduleCreateResponse.from(response);
     } else {
       SimpleScheduleResponse response = SimpleScheduleResponse.from(
           scheduleService.addSimpleScheduleAndSave(request, principal)
       );
-      scheduleResponse = ScheduleResponse.from(response);
+      scheduleCreateResponse = ScheduleCreateResponse.from(response);
     }
-    return ResponseEntity.ok(scheduleResponse);
+
+    scheduleCreateResponse.AddAlarmValue(
+        teamId,
+        teamParticipants.getTeamParticipantsId(),
+        teamParticipants.getTeamNickName()
+    );
+
+    return ResponseEntity.ok(scheduleCreateResponse);
   }
 
 
@@ -407,13 +423,18 @@ public class ScheduleController {
               , example = "1")
       })
   @DeleteMapping("/simple/{scheduleId}")
-  public ResponseEntity<String> deleteSimpleSchedule(
+  @MentionTeamParticipantsSendNotify
+  public ResponseEntity<MentionTeamParticipantsNotifyByDto> deleteSimpleSchedule(
       @PathVariable Long teamId,
       @PathVariable Long scheduleId,
       @ApiIgnore Principal principal
   ) {
-    scheduleService.deleteSimpleSchedule(scheduleId, principal);
-    return ResponseEntity.ok("해당 단순 일정이 정상적으로 삭제되었습니다.");
+    return ResponseEntity.ok(
+        scheduleService
+            .deleteSimpleSchedule(
+                scheduleId, Long.valueOf(principal.getName()), teamId
+            )
+    );
   }
 
 
@@ -449,14 +470,19 @@ public class ScheduleController {
               , defaultValue = "None"
               , example = "1")
       })
+  @MentionTeamParticipantsSendNotify
   @DeleteMapping("/repeat/{scheduleId}")
-  public ResponseEntity<String> deleteSchedule(
+  public ResponseEntity<MentionTeamParticipantsNotifyByDto> deleteSchedule(
       @PathVariable Long teamId,
       @PathVariable Long scheduleId,
       @ApiIgnore Principal principal
   ) {
-    scheduleService.deleteRepeatSchedule(scheduleId, principal);
-    return ResponseEntity.ok("해당 반복 일정이 정상적으로 삭제되었습니다.");
+    return ResponseEntity.ok(
+        scheduleService
+            .deleteRepeatSchedule(
+                scheduleId, Long.valueOf(principal.getName()), teamId
+            )
+    );
   }
 
 }

@@ -2,6 +2,9 @@ package com.api.backend.documents.data.dto;
 
 import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.documents.data.entity.Documents;
+import com.api.backend.notification.data.NotificationMessage;
+import com.api.backend.notification.data.type.AlarmType;
+import com.api.backend.notification.transfers.TeamParticipantsNotifyByDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +23,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class DocumentResponse {
+public class DocumentInitResponse implements TeamParticipantsNotifyByDto {
 
   @NotBlank
   @Schema(description = "document id", example = "1")
@@ -51,15 +54,18 @@ public class DocumentResponse {
   @NotNull
   private LocalDateTime updatedDt;
 
-  public static DocumentResponse from(Documents documents) {
+  private String writerNickName;
 
-    DocumentResponse documentResponse = DocumentResponse.builder()
+  public static DocumentInitResponse from(Documents documents,String nickName) {
+
+    DocumentInitResponse documentResponse = DocumentInitResponse.builder()
         .id(documents.getId())
         .title(documents.getTitle())
         .content(documents.getContent())
         .writerId(documents.getWriterId())
         .modifierId(documents.getModifierId())
         .teamId(documents.getTeamId())
+        .writerNickName(nickName)
         .createdDt(documents.getCreatedDt())
         .updatedDt(documents.getUpdatedDt())
         .build();
@@ -87,4 +93,23 @@ public class DocumentResponse {
     }
   }
 
+  @Override
+  public Long getExcludeTeamParticipantId() {
+    return writerId;
+  }
+
+  @Override
+  public AlarmType getAlarmType() {
+    return AlarmType.DOCUMENTS;
+  }
+
+  @Override
+  public String getTeamParticipantsNickName() {
+    return writerNickName;
+  }
+
+  @Override
+  public String getSendMessage() {
+    return NotificationMessage.getCreateDocumentName(title);
+  }
 }

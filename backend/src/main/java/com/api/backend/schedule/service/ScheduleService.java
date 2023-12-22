@@ -15,6 +15,7 @@ import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.schedule.data.dto.AllSchedulesMonthlyView;
 import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.RepeatToSimpleScheduleEditRequest;
+import com.api.backend.schedule.data.dto.AlarmScheduleDeleteResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.SimpleToRepeatScheduleEditRequest;
@@ -30,6 +31,7 @@ import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
+import com.api.backend.team.service.TeamParticipantsService;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,6 +57,9 @@ public class ScheduleService {
   private final TeamParticipantsRepository teamParticipantsRepository;
   private final TeamParticipantsScheduleRepository teamParticipantsScheduleRepository;
 
+
+  // 알람
+  private final TeamParticipantsService teamParticipantsService;
 
   @Transactional
   public SimpleSchedule addSimpleScheduleAndSave(ScheduleRequest scheduleRequest, Principal principal) {
@@ -257,17 +262,47 @@ public class ScheduleService {
 
 
   @Transactional
-  public void deleteSimpleSchedule(Long scheduleId, Principal principal) {
+  public AlarmScheduleDeleteResponse deleteSimpleSchedule(Long scheduleId, Long userId, Long teamId) {
     SimpleSchedule simpleSchedule = simpleScheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
+
+    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(teamId, userId);
+
+    List<Long> teamParticipantsIds = simpleSchedule.getTeamParticipantsSchedules()
+        .stream().map(TeamParticipantsSchedule::getTeamParticipants)
+        .map(TeamParticipants::getTeamParticipantsId)
+        .collect(Collectors.toList());
+
     simpleScheduleRepository.delete(simpleSchedule);
+
+    return AlarmScheduleDeleteResponse.builder()
+        .teamParticipantsId(teamParticipants.getTeamParticipantsId())
+        .teamParticipantIds(teamParticipantsIds)
+        .title(simpleSchedule.getTitle())
+        .message("해당 단순 일정이 정상적으로 삭제되었습니다.")
+        .build();
   }
 
   @Transactional
-  public void deleteRepeatSchedule(Long scheduleId, Principal principal) {
+  public AlarmScheduleDeleteResponse deleteRepeatSchedule(Long scheduleId, Long userId, Long teamId) {
     RepeatSchedule repeatSchedule = repeatScheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
+
+    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(teamId, userId);
+
+    List<Long> teamParticipantsIds = repeatSchedule.getTeamParticipantsSchedules()
+        .stream().map(TeamParticipantsSchedule::getTeamParticipants)
+        .map(TeamParticipants::getTeamParticipantsId)
+        .collect(Collectors.toList());
+
     repeatScheduleRepository.delete(repeatSchedule);
+
+    return AlarmScheduleDeleteResponse.builder()
+        .teamParticipantsId(teamParticipants.getTeamParticipantsId())
+        .teamParticipantIds(teamParticipantsIds)
+        .title(repeatSchedule.getTitle())
+        .message("해당 반복 일정이 정상적으로 삭제되었습니다.")
+        .build();
   }
 
   public SimpleSchedule getSimpleScheduleDetailInfo(Long scheduleId, Long teamId, Principal principal) {
