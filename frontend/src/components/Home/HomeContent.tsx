@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -26,7 +26,7 @@ const HomeContent = () => {
     const fetchLoggedInUserId = async () => {
       try {
         if (!isAuthenticated) {
-          navigate("/signin");
+          navigate("/signIn");
           return;
         }
         const [teamListResponse, inviteCodeResponse] = await Promise.all([

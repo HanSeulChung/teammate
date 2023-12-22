@@ -63,7 +63,7 @@ const SignIn = () => {
       }
       setIsAuthenticated(true);
       saveUser({ id: email, name: response.data.name });
-      navigate("/homeview");
+      navigate("/homeView");
       console.log("login successful");
     } catch (error) {
       console.error("Sign In Error:", error);
@@ -87,12 +87,12 @@ const SignIn = () => {
   const handleLogout = () => {
     saveAccessToken("");
     saveRefreshToken("");
-    navigate("/signin");
+    navigate("/signIn");
     setIsAuthenticated(false);
   };
 
   const handleSignUp = () => {
-    navigate("/signup");
+    navigate("/signUp");
   };
 
   return (

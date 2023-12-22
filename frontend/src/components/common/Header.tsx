@@ -34,8 +34,8 @@ const Header = () => {
   // const handleTeamMembersClick = () => {
   //   if (isTeamPage) {
   //     const currentPath = window.location.pathname;
-  //     // navigate(`${currentPath}/teammembers`);
-  //     navigate(`${currentPath}/teamleader`);
+  //     // navigate(`${currentPath}/teamMembers`);
+  //     navigate(`${currentPath}/teamLeader`);
   //   }
   // };
 
@@ -52,9 +52,9 @@ const Header = () => {
           const userTeamRole = response.data.teamRole;
 
           if (userTeamRole === "READER") {
-            navigate(`/team/${teamId}/teamleader`);
+            navigate(`/team/${teamId}/teamLeader`);
           } else if (userTeamRole === "MATE") {
-            navigate(`/team/${teamId}/teammembers`);
+            navigate(`/team/${teamId}/teamMembers`);
           } else {
             // Handle other roles if needed
           }
@@ -130,7 +130,7 @@ const Header = () => {
           <>
             <LogoContainer>
               <div>
-                <Link to="/homeview">
+                <Link to="/homeView">
                   <HeaderImg src={logo} />
                 </Link>
               </div>
@@ -163,7 +163,7 @@ const Header = () => {
                 {isTeamPage ? (
                   <span onClick={handleTeamProfileClick}>팀프로필</span>
                 ) : (
-                  <Link to="/mypage">마이페이지</Link>
+                  <Link to="/myPage">마이페이지</Link>
                 )}
               </li>
               <li>
@@ -196,10 +196,10 @@ const Header = () => {
           ) : (
             <>
               <li>
-                <Link to="/signin">로그인</Link>
+                <Link to="/signIn">로그인</Link>
               </li>
               <li>
-                <Link to="/signup">회원가입</Link>
+                <Link to="/signUp">회원가입</Link>
               </li>
             </>
           )}

@@ -57,7 +57,7 @@ axiosInstance.interceptors.response.use(
           } catch (refreshError) {
             // 토큰 갱신에 실패하면 로그인 페이지로 이동 또는 다른 로직 수행
             console.error("토큰 갱신 중 오류:", refreshError);
-            // navigate('/signin'); // 예시로 로그인 페이지로 이동
+            // navigate('/signIn'); // 예시로 로그인 페이지로 이동
             return Promise.reject(refreshError);
           }
         }
