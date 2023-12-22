@@ -1,5 +1,12 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import profileImg from "../../assets/profileImg.png";
+import StyledModal from "../Modal";
+import axiosInstance from "../../axios";
+import { Team, TeamParticipant } from "../../interface/interface.ts";
+import { accessTokenState } from "../../state/authState";
+import { useRecoilValue } from "recoil";
+import linkImg from "../../assets/linkImg.png";
 import {
   TeamLeaderContainer,
   TeamImageContainer,
@@ -9,13 +16,6 @@ import {
   TeamMembersContainer,
   ConfirmationModal,
 } from "./TeamLeaderStyled";
-import profileImg from "../../assets/profileImg.png";
-import StyledModal from "../Modal";
-import axiosInstance from "../../axios";
-import { Team, TeamParticipant } from "../../interface/interface.ts";
-import { accessTokenState } from "../../state/authState";
-import { useRecoilValue } from "recoil";
-import linkImg from "../../assets/linkImg.png";
 
 export default function TeamLeader() {
   const { state } = useLocation();
@@ -28,18 +28,20 @@ export default function TeamLeader() {
   const [memberIndexToRemove, setMemberIndexToRemove] = useState<number | null>(
     null,
   );
+  const [isDeleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [editingTeamName, setEditingTeamName] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
   const [editingTeamLeader, setEditingTeamLeader] = useState(false);
   const [newLeaderSelect, setNewLeaderSelect] = useState<string | null>(null);
   const [kickReason, setKickReason] = useState("");
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  // const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [newSelectedImage, setNewSelectedImage] = useState<File | null>(null);
+
   const [teamMembers, setTeamMembers] = useState<string[]>([
     "Member 1",
     "Member 2",
@@ -143,6 +145,12 @@ export default function TeamLeader() {
     setShowConfirmation(true);
   };
 
+  const cancelRemoveMember = () => {
+    setMemberIndexToRemove(null);
+    setKickReason("");
+    setShowConfirmation(false);
+  };
+
   const confirmRemoveMember = () => {
     if (memberIndexToRemove !== null && kickReason.trim() !== "") {
       const updatedTeamMembers = [...teamMembers];
@@ -154,12 +162,6 @@ export default function TeamLeader() {
     } else {
       console.log("강퇴 사유를 입력하세요.");
     }
-  };
-
-  const cancelRemoveMember = () => {
-    setMemberIndexToRemove(null);
-    setKickReason("");
-    setShowConfirmation(false);
   };
 
   const handleEditTeamLeader = () => {
@@ -180,25 +182,41 @@ export default function TeamLeader() {
     setNewLeaderSelect(null);
   };
 
-  const openPasswordModal = () => {
-    setIsPasswordModalOpen(true);
+  //팀 삭제
+  const [teamNameConfirmationOpen, setTeamNameConfirmationOpen] =
+    useState(false);
+  const [inputTeamName, setInputTeamName] = useState("");
+  const [teamNameError, setTeamNameError] = useState("");
+
+  const openTeamNameConfirmation = () => {
+    setInputTeamName("");
+    setTeamNameError("");
+    setTeamNameConfirmationOpen(true);
   };
 
-  const closePasswordModal = () => {
-    setIsPasswordModalOpen(false);
+  const closeTeamNameConfirmation = () => {
+    setTeamNameConfirmationOpen(false);
   };
 
-  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
+  const handleTeamNameConfirmation = async () => {
+    try {
+      if (inputTeamName === team?.name) {
+        const response = await axiosInstance.put(`/team/disband`, {
+          teamId: team?.teamId,
+          teamName: team?.name,
+        });
+        alert("팀이 삭제되었습니다.");
+        console.log("팀 삭제 응답:", response.data);
 
-  const handleConfirmDelete = () => {
-    console.log("비밀번호 확인 및 삭제 로직을 구현하세요.");
-    if (!passwordInput) {
-      console.log("비밀번호를 입력하세요.");
-      return;
+        // 성공적으로 삭제되었을 때 홈 화면으로 이동하거나 다른 처리를 수행할 수 있습니다.
+        navigate("/homeView");
+      } else {
+        setTeamNameError("팀 명이 올바르지 않습니다.");
+        console.error("팀 명이 올바르지 않습니다.");
+      }
+    } catch (error) {
+      console.error("팀 삭제 중 오류:", error);
     }
-    navigate("/homeView");
   };
 
   //초대코드
@@ -395,22 +413,32 @@ export default function TeamLeader() {
       )}
 
       <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <StyledButton onClick={openPasswordModal}>
+        <StyledButton onClick={openTeamNameConfirmation}>
           팀 계정 삭제하기
         </StyledButton>
       </div>
-      <StyledModal isOpen={isPasswordModalOpen} onClose={closePasswordModal}>
+      <StyledModal
+        isOpen={teamNameConfirmationOpen}
+        onClose={closeTeamNameConfirmation}
+      >
         <div className="modal-content">
           <div>팀 계정을 삭제하시겠습니까?</div>
-          <p>비밀번호를 입력하세요:</p>
+          <p>팀 명을 입력하세요:</p>
           <input
-            title="password"
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
+            title="teamName"
+            type="text"
+            value={inputTeamName}
+            onChange={(e) => setInputTeamName(e.target.value)}
           />
-          <StyledButton onClick={handleConfirmDelete}>확인</StyledButton>
-          <StyledButton onClick={closePasswordModal}>취소</StyledButton>
+          {teamNameError && <p style={{ color: "red" }}>{teamNameError}</p>}
+          <div>
+            <StyledButton onClick={handleTeamNameConfirmation}>
+              확인
+            </StyledButton>
+            <StyledButton onClick={closeTeamNameConfirmation}>
+              취소
+            </StyledButton>
+          </div>
         </div>
       </StyledModal>
     </TeamLeaderContainer>
