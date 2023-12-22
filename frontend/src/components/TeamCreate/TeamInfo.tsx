@@ -21,7 +21,7 @@ import {
   StyledButton,
 } from "./TeamInfoStyled";
 import profileImg from "../../assets/profileImg.png";
-import { TeamInfoData } from "../../interface/interface";
+import { TeamInfoData } from "../../interface/interface.ts";
 
 export default function TeamInfo() {
   const [teamName, setTeamName] = useRecoilState(teamNameState);

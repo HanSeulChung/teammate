@@ -12,7 +12,7 @@ import {
 import profileImg from "../../assets/profileImg.png";
 import StyledModal from "../Modal";
 import axiosInstance from "../../axios";
-import { Team, TeamParticipant } from "../../interface/interface";
+import { Team, TeamParticipant } from "../../interface/interface.ts";
 import { accessTokenState } from "../../state/authState";
 import { useRecoilValue } from "recoil";
 import linkImg from "../../assets/linkImg.png";

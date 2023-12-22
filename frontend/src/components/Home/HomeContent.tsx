@@ -9,7 +9,7 @@ import {
   accessTokenState,
   isAuthenticatedState,
 } from "../../state/authState";
-import { Team } from "../../interface/interface";
+import { Team } from "../../interface/interface.ts";
 
 const HomeContent = () => {
   const [userTeams, setUserTeams] = useRecoilState<Team[]>(userTeamsState);
