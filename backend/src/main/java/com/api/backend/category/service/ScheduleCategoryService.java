@@ -11,6 +11,7 @@ import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
+import java.security.Principal;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,7 @@ public class ScheduleCategoryService {
 
 
   @Transactional
-  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest) {
+  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest, Principal principal) {
     Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
@@ -42,12 +43,12 @@ public class ScheduleCategoryService {
 
 
   public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
-      Pageable pageable, Long teamId) {
+      Pageable pageable, Long teamId, Principal principal) {
     return scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable, teamId);
   }
 
   @Transactional
-  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest) {
+  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest, Principal principal) {
     findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
     ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
         scheduleCategoryEditRequest.getCategoryId());
@@ -56,7 +57,7 @@ public class ScheduleCategoryService {
   }
 
   @Transactional
-  public void delete(Long categoryId) {
+  public void delete(Long categoryId, Principal principal) {
     findCategoryOrElseThrow(categoryId);
     scheduleCategoryRepository.deleteById(categoryId);
   }
