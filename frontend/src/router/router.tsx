@@ -13,12 +13,12 @@ import React, { useEffect } from "react";
 import CreateTextView from "../views/CreateTextView";
 import DocumentListView from "../views/DocumentListView";
 import CommentView from "../views/CommentView";
-import TeamDetail from "../components/TeamPage/TeamDetail";
+// import TeamDetail from "../components/TeamPage/TeamDetail";
 import TeamLeader from "../components/ProfilePage/TeamLeader";
 import TeamMembers from "../components/ProfilePage/TeamMembers";
 import TeamInfo from "../components/TeamCreate/TeamInfo";
-import Mypage from "../components/Mypage/Mypage";
 import MyTeamProfile from "../components/Mypage/MyTeamProfile";
+import MyUserProfile from "../components/Mypage/MyUserProfile";
 
 const Router = () => {
   const navigate = useNavigate();
@@ -51,12 +51,12 @@ const Router = () => {
       <Route path="/kakaoLogin" element={<KakaoLogin />} />
       <Route path="/home" element={<Home />} />
       <Route path="/homeview" element={<HomeView />} />
-      <Route path="/team/:teamId" element={<TeamDetail />} />
+      {/* <Route path="/team/:teamId" element={<TeamDetail />} /> */}
       <Route path="/team/:teamId/teammembers" element={<TeamMembers />} />
       <Route path="/team/:teamId/teamleader" element={<TeamLeader />} />
       <Route path="/TeamInfo" element={<TeamInfo />} />
-      <Route path="/mypage" element={<Mypage />} />
       <Route path="/myteamprofile" element={<MyTeamProfile />} />
+      <Route path="/myuserprofile" element={<MyUserProfile />} />
       <Route />
     </Routes>
   );
