@@ -80,7 +80,7 @@ export default function MyUserProfile() {
         return;
       }
 
-      // 서버로 요청을 보내는 코드
+      // 비밀번호 변경
       try {
         const response = await axiosInstance.put("/member/password", {
           oldPassword: currentPassword,
