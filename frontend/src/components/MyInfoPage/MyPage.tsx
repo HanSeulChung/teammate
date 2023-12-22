@@ -9,7 +9,7 @@ import UserProfile from "./MyUserProfile";
 import TeamProfile from "./MyTeamProfile";
 import { TeamProfileProps } from "../../interface/interface";
 
-const Mypage = () => {
+const MyPage = () => {
   const { user } = useUser();
   const teamList = useRecoilValue(teamListState);
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
@@ -83,4 +83,4 @@ const Mypage = () => {
   );
 };
 
-export default Mypage;
+export default MyPage;

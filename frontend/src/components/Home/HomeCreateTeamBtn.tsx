@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -29,7 +28,7 @@ const CreateTeamButton = styled.button`
 export default function HomeCreateTeamBtn() {
   return (
     <CenteredContainer>
-      <Link to="/teaminfo">
+      <Link to="/teamInfo">
         <CreateTeamButton>+ 팀 생성하기</CreateTeamButton>
       </Link>
     </CenteredContainer>
