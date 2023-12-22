@@ -20,7 +20,6 @@ public class TeamParticipantsUpdateResponse implements TeamParticipantsNotifyByD
   private Long teamId;
   private Long updateTeamParticipantId;
   private String updateTeamParticipantNickName;
-  private String teamName;
   private String message;
 
 

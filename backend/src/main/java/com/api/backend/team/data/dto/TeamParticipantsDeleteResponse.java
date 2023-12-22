@@ -1,6 +1,6 @@
 package com.api.backend.team.data.dto;
 
-import static com.api.backend.notification.data.NotificationMessage.EXIT_TEAM_PARTICIPANT;
+import static com.api.backend.notification.data.NotificationMessage.getTeamParticipantDeleteName;
 
 import com.api.backend.notification.data.type.AlarmType;
 import com.api.backend.notification.transfers.TeamParticipantsNotifyByDto;
@@ -40,6 +40,6 @@ public class TeamParticipantsDeleteResponse implements TeamParticipantsNotifyByD
 
   @Override
   public String getSendMessage() {
-    return EXIT_TEAM_PARTICIPANT;
+    return getTeamParticipantDeleteName(nickName);
   }
 }
