@@ -131,6 +131,7 @@ export default function TeamLeader() {
       participant.teamNickName.toLowerCase().includes(searchTeam.toLowerCase()),
   );
 
+  //강퇴
   const handleTeamMemberChange = (
     index: number,
     e: ChangeEvent<HTMLInputElement>,
@@ -151,33 +152,57 @@ export default function TeamLeader() {
     setShowConfirmation(false);
   };
 
-  const confirmRemoveMember = () => {
+  //강퇴 api 호출
+  const handleKickOutMember = async () => {
     if (memberIndexToRemove !== null && kickReason.trim() !== "") {
-      const updatedTeamMembers = [...teamMembers];
-      updatedTeamMembers.splice(memberIndexToRemove, 1);
-      setTeamMembers(updatedTeamMembers);
-      setMemberIndexToRemove(null);
-      setKickReason("");
-      setShowConfirmation(false);
-    } else {
-      console.log("강퇴 사유를 입력하세요.");
-    }
-  };
-
-  const handleEditTeamLeader = () => {
-    setEditingTeamLeader(true);
-    setNewLeaderSelect("");
-  };
-
-  const confirmEditTeamLeader = () => {
-    if (newLeaderSelect !== null) {
-      const updatedTeamMembers = teamMembers.filter(
-        (member) => member !== newLeaderSelect,
+      const selectedMember = teamParticipants.find(
+        (_, index) => index === memberIndexToRemove,
       );
-      setTeamMembers(updatedTeamMembers);
-      // setTeamMembers((prevTeamMembers) => [...prevTeamMembers, teamLeader]);
+
+      try {
+        const response = await axiosInstance.post("/team/kick-out", {
+          teamId: team?.teamId,
+          participantId: selectedMember?.teamParticipantsId,
+          kickOutReason: kickReason,
+        });
+        alert("해당 팀원이 강퇴되었습니다.");
+        console.log("강퇴 응답:", response.data);
+        const updatedTeamParticipants = teamParticipants.filter(
+          (_, index) => index !== memberIndexToRemove,
+        );
+        setTeamParticipants(updatedTeamParticipants);
+        setShowConfirmation(false);
+      } catch (error) {
+        console.error("강퇴 중 오류 발생:", error);
+      }
+    } else {
+      alert("강퇴 사유를 입력하세요.");
     }
-    // setTeamLeader(newLeaderSelect || "");
+  };
+
+  //팀장 권한 부여
+  const confirmEditTeamLeader = async () => {
+    const selectedParticipant = teamParticipants.find(
+      (participant) => participant.teamNickName === newLeaderSelect,
+    );
+
+    if (selectedParticipant && selectedParticipant.teamRole === "MATE") {
+      try {
+        const response = await axiosInstance.patch(
+          `/team/${teamId}/participant/${selectedParticipant.teamParticipantsId}`,
+          {
+            teamRole: "READER",
+          },
+        );
+        alert("팀장이 변경되었습니다.");
+        navigate("/homeView");
+      } catch (error) {
+        console.error("팀장 변경 중 오류:", error);
+      }
+    } else {
+      alert("기존 팀장을 선택했습니다. 다시 선택해 주세요.");
+    }
+
     setEditingTeamLeader(false);
     setNewLeaderSelect(null);
   };
@@ -407,7 +432,7 @@ export default function TeamLeader() {
               />
             </>
           )}
-          <StyledButton onClick={confirmRemoveMember}>확인</StyledButton>
+          <StyledButton onClick={handleKickOutMember}>확인</StyledButton>
           <StyledButton onClick={cancelRemoveMember}>취소</StyledButton>
         </ConfirmationModal>
       )}
