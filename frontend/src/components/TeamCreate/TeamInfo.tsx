@@ -111,7 +111,7 @@ export default function TeamInfo() {
         },
       });
       alert(`팀 프로필에서 초대코드를 확인하세요!`);
-      navigate("/homeview");
+      navigate("/homeView");
       // 성공적으로 팀 생성이 완료되었을 때의 로직
       console.log("팀 생성 성공:", response.data);
     } catch (error) {

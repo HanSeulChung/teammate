@@ -3,7 +3,7 @@ package com.api.backend.member.service.impl;
 import com.api.backend.global.email.MailService;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.redis.RedisService;
-import com.api.backend.global.security.AuthService;
+import com.api.backend.global.security.jwt.service.AuthService;
 import com.api.backend.global.security.data.dto.TokenDto;
 import com.api.backend.global.security.jwt.JwtTokenProvider;
 import com.api.backend.member.data.dto.*;
@@ -24,7 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.api.backend.global.exception.type.ErrorCode.*;
@@ -71,6 +74,7 @@ public class MemberServiceImpl implements MemberService {
 
         return SignUpResponse.builder()
                 .email(member.getEmail())
+                .name(member.getName())
                 .message("이메일 인증후 로그인 가능합니다.")
                 .build();
     }
@@ -81,11 +85,12 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
-        String VERIFICATION_LINK = "http://localhost:8080/email-verify/";
         UUID uuid = UUID.randomUUID();
-        redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
-        mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", VERIFICATION_LINK + uuid +"/"+email);
+        String text = "가입을 축하합니다. 아래 링크를 클릭하여서 가입을 완료하세요.<br>"
+                + "<a href='http://localhost:8080/email-verify/" + uuid + "/" + email + "'> 이메일 인증 </a>";
 
+        redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
+        mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", text);
 
     }
 
@@ -95,7 +100,7 @@ public class MemberServiceImpl implements MemberService {
         boolean result = false;
 
         String redisEmail = redisService.getValues(key);
-        if(email == null || !email.equals(redisEmail)){
+        if (email == null || !email.equals(redisEmail)) {
             sendVerificationMail(email);
             return result;
         }
@@ -117,16 +122,19 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findByEmail(signInRequest.getEmail())
                 .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
-        if(!member.getIsAuthenticatedEmail()){
+        if (!member.getIsAuthenticatedEmail()) {
             sendVerificationMail(member.getEmail());
             throw new CustomException(EMAIL_NOT_VERIFICATION_EXCEPTION);
+        }
+
+        if(!passwordEncoder.matches(signInRequest.getPassword(), member.getPassword())){
+            throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(member.getMemberId().toString(), signInRequest.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        // 비밀번호 틀렸을때 BadCredentialsException 던짐 이부분 처리하는 로직 구현해야함
 
         TokenDto tokenDto = authService.generateToken(authentication.getName(), authService.getAuthorities(authentication));
 
@@ -175,6 +183,10 @@ public class MemberServiceImpl implements MemberService {
         if (!updateMemberPasswordRequest.getNewPassword().equals(updateMemberPasswordRequest.getReNewPassword())) {
             throw new CustomException(NOT_MATCH_NEW_PASSWORD_EXCEPTION);
         }
+
+        String encodePassword = passwordEncoder.encode(updateMemberPasswordRequest.getNewPassword());
+        updateMemberPasswordRequest.setNewPassword(encodePassword);
+        memberRepository.save(member);
     }
 
     @Transactional(readOnly = true)
@@ -191,7 +203,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void checkEamilDuplicate(String email) {
-        if(memberRepository.existsByEmail(email)){
+        if (memberRepository.existsByEmail(email)) {
             throw new CustomException(EMAIL_ALREADY_EXIST_EXCEPTION);
         }
     }

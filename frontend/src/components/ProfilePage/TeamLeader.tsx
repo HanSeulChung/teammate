@@ -107,6 +107,7 @@ export default function TeamLeader() {
       };
     }
   };
+  
   //팀멤버조회
   const [teamParticipants, setTeamParticipants] = useState<TeamParticipant[]>(
     [],
@@ -202,7 +203,7 @@ export default function TeamLeader() {
       console.log("비밀번호를 입력하세요.");
       return;
     }
-    navigate("/homeview");
+    navigate("/homeView");
   };
 
   //초대코드

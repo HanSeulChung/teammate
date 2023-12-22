@@ -16,6 +16,8 @@ public enum ErrorCode {
   SCHEDULE_CATEGORY_ALREADY_EXIST_EXCEPTION(500, "이미 존재하는 일정 카테고리 입니다."),
   SCHEDULE_NOT_FOUND_EXCEPTION(500, "존재하지 않는 일정입니다."),
   INVALID_REPEAT_CYCLE_EXCEPTION(400, "잘못된 반복 주기입니다."),
+  NON_REPEATING_SCHEDULE_EXCEPTION(500, "반복일정이 아닙니다."),
+  TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION(400, "일정 팀참가자번호는 중복될 수 없습니다."),
 
   // team
   TEAM_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀입니다."),
@@ -36,6 +38,11 @@ public enum ErrorCode {
   TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION(500, "팀 해체는 리더만 가능합니다."),
   TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀원입니다."),
   TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION(500, "해당 팀의 팀원이 아닙니다."),
+
+  // notification
+  NOTIFICATION_NOT_FOUND_EXCEPTION(500, "존재하지 않는 알람입니다."),
+  NOTIFICATION_IS_READ_TRUE_EXCEPTION(500, "이미 읽은 알람입니다."),
+  NOTIFICATION_NOT_VALID_EXCEPTION(500, "읽을 권한이 없는 사용자입니다."),
 
   MEMBER_NOT_FOUND_EXCEPTION(500, "존재하지 않는 회원입니다."),
   MEMBER_NOT_EQUALS_EXCEPTION(500, "회원 정보가 일치하지 않습니다."),

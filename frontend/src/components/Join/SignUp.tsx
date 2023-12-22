@@ -165,7 +165,7 @@ const SignUp: React.FC<SignUpProps> = () => {
   };
   const handleModalConfirm = () => {
     setIsModalOpen(false);
-    navigate("/signin");
+    navigate("/signIn");
   };
 
   return (

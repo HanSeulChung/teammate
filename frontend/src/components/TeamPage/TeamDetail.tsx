@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../axios";
 import styled from "styled-components";
 import { useParams, useLocation } from "react-router-dom";

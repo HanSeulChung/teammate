@@ -1,4 +1,4 @@
-package com.api.backend.global.security.config;
+package com.api.backend.global.config;
 
 import com.api.backend.global.security.jwt.JwtAccessDeniedHandler;
 import com.api.backend.global.security.jwt.JwtAuthenticationEntryPoint;
