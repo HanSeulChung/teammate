@@ -11,6 +11,7 @@ import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
+import java.security.Principal;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,8 +28,8 @@ public class ScheduleCategoryService {
 
 
   @Transactional
-  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest) {
-    Team team = validateTeam(scheduleCategoryRequest.getTeamId());
+  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest, Principal principal) {
+    Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
         .team(team)
@@ -42,32 +43,32 @@ public class ScheduleCategoryService {
 
 
   public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
-      Pageable pageable, Long teamId) {
+      Pageable pageable, Long teamId, Principal principal) {
     return scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable, teamId);
   }
 
   @Transactional
-  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest) {
-    validateTeam(scheduleCategoryEditRequest.getTeamId());
-    ScheduleCategory scheduleCategory = validateScheduleCategory(
+  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest, Principal principal) {
+    findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
+    ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
         scheduleCategoryEditRequest.getCategoryId());
     scheduleCategory.editScheduleCategory(scheduleCategoryEditRequest);
     return scheduleCategoryRepository.save(scheduleCategory);
   }
 
   @Transactional
-  public void delete(Long categoryId) {
-    validateScheduleCategory(categoryId);
+  public void delete(Long categoryId, Principal principal) {
+    findCategoryOrElseThrow(categoryId);
     scheduleCategoryRepository.deleteById(categoryId);
   }
 
 
-  public Team validateTeam(Long teamId) {
+  private Team findTeamOrElseThrow(Long teamId) {
     return teamRepository.findById(teamId)
         .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
   }
 
-  public ScheduleCategory validateScheduleCategory(Long scheduleCategoryId) {
+  private ScheduleCategory findCategoryOrElseThrow(Long scheduleCategoryId) {
     return scheduleCategoryRepository.findById(scheduleCategoryId)
         .orElseThrow(() -> new CustomException(SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
   }

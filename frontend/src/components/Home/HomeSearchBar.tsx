@@ -12,7 +12,6 @@ const SearchBarContainer = styled.div`
   height: 50px;
   justify-content: center;
 
-
 //   input {
 //     padding: 8px;
 //     border: 2px solid #ccc;

@@ -1,8 +1,7 @@
 package com.api.backend.schedule.data.dto;
 
-import com.api.backend.schedule.data.entity.RepeatSchedule;
+import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
-import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
@@ -15,7 +14,8 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class RepeatScheduleResponse {
+public class SimpleScheduleInfoEditResponse {
+
   private Long scheduleId;
   private String scheduleType;
   private String categoryName;
@@ -27,32 +27,27 @@ public class RepeatScheduleResponse {
   private String content;
   private String place;
   private String color;
-  private RepeatCycle repeatCycle;
-  private String month;
-  private int day;
-  private String dayOfWeek;
   private List<Long> teamParticipantsIds;
   private List<String> teamParticipantsNames;
   private List<TeamRole> teamRoles;
 
-  public static RepeatScheduleResponse from(RepeatSchedule repeatSchedule) {
-    return RepeatScheduleResponse.builder()
-        .scheduleType("반복 일정")
-        .categoryName(repeatSchedule.getScheduleCategory().getCategoryName())
-        .startDt(repeatSchedule.getStartDt())
-        .endDt(repeatSchedule.getEndDt())
-        .title(repeatSchedule.getTitle())
-        .content(repeatSchedule.getContent())
-        .place(repeatSchedule.getPlace())
-        .repeatCycle(repeatSchedule.getRepeatCycle())
-        .month(repeatSchedule.getMonth())
-        .day(repeatSchedule.getDay())
-        .dayOfWeek(repeatSchedule.getDayOfWeek())
+  public static SimpleScheduleInfoEditResponse from(SimpleSchedule simpleSchedule) {
+    return SimpleScheduleInfoEditResponse.builder()
+        .scheduleId(simpleSchedule.getSimpleScheduleId())
+        .scheduleType("단순 일정")
+        .categoryName(simpleSchedule.getScheduleCategory().getCategoryName())
+        .startDt(simpleSchedule.getStartDt())
+        .endDt(simpleSchedule.getEndDt())
+        .title(simpleSchedule.getTitle())
+        .content(simpleSchedule.getContent())
+        .place(simpleSchedule.getPlace())
+        .color(simpleSchedule.getColor())
         .teamParticipantsIds(
-            getTeamParticipantsIdsFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+            getTeamParticipantsIdsFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .teamParticipantsNames(
-            getTeamParticipantsNameFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
-        .teamRoles(getTeamParticipantsRoleFromSchedules(repeatSchedule.getTeamParticipantsSchedules()))
+            getTeamParticipantsNameFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
+        .teamRoles(
+            getTeamParticipantsRoleFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .build();
   }
 
