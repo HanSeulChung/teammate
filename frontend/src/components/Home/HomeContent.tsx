@@ -90,7 +90,7 @@ const HomeContent = () => {
         <TeamItem key={index}>
           <TeamCard
             onClick={() =>
-              navigate(`/team/${team.teamId}/documentsList`, {
+              navigate(`/team/${team.teamId}/schedules`, {
                 state: { team },
               })
             }
@@ -110,7 +110,7 @@ const HomeContent = () => {
 export default HomeContent;
 
 const TeamListContainer = styled.div`
-  position: absolute;
+//   position: absolute;
   width: 1000px;
   top: 280px;
   display: flex;

@@ -107,6 +107,7 @@ export default function TeamLeader() {
       };
     }
   };
+  
   //팀멤버조회
   const [teamParticipants, setTeamParticipants] = useState<TeamParticipant[]>(
     [],

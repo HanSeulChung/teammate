@@ -28,6 +28,7 @@ const Header = () => {
   const [teamName, setTeamName] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useRecoilState(userState);
+
   const isTeamPage = location.pathname.startsWith("/team/");
 
   // const handleTeamMembersClick = () => {
