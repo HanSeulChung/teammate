@@ -72,11 +72,19 @@ const SignIn = () => {
         console.error("Axios Error Response:", error.response);
       }
 
-      const axiosError = error as AxiosError;
-      if (axiosError.response?.status === 401) {
-        const errorMessage =
-          (axiosError.response.data as any)?.message ||
-          "올바른 이메일 또는 비밀번호를 입력하세요.";
+      const axiosError = error as AxiosError<any>;
+      if (axiosError.response?.status === 400) {
+        const errorCode = axiosError.response.data.errorCode;
+        let errorMessage = "";
+
+        if (errorCode === "PASSWORD_NOT_MATCH_EXCEPTION") {
+          errorMessage = "비밀번호가 일치하지 않습니다. 다시 입력해주세요.";
+        } else if (errorCode === "EMAIL_NOT_MATCH_EXCEPTION") {
+          errorMessage = "이메일이 일치하지 않습니다. 다시 입력해주세요.";
+        } else if (errorCode === "EMAIL_NOT_FOUND_EXCEPTION") {
+          errorMessage = "이메일로 가입된 사용자가 없습니다.";
+        }
+
         setError(errorMessage);
       } else {
         setError("이메일 인증 후 로그인 해주세요.");
