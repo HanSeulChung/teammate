@@ -63,7 +63,7 @@ const SignIn = () => {
       }
       setIsAuthenticated(true);
       saveUser({ id: email, name: response.data.name });
-      navigate("/homeview");
+      navigate("/homeView");
       console.log("login successful");
     } catch (error) {
       console.error("Sign In Error:", error);
@@ -79,7 +79,7 @@ const SignIn = () => {
           "올바른 이메일 또는 비밀번호를 입력하세요.";
         setError(errorMessage);
       } else {
-        setError("로그인 중 오류가 발생했습니다.");
+        setError("이메일 인증 후 로그인 해주세요.");
       }
     }
   };
@@ -87,12 +87,12 @@ const SignIn = () => {
   const handleLogout = () => {
     saveAccessToken("");
     saveRefreshToken("");
-    navigate("/signin");
+    navigate("/signIn");
     setIsAuthenticated(false);
   };
 
   const handleSignUp = () => {
-    navigate("/signup");
+    navigate("/signUp");
   };
 
   return (

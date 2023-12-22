@@ -1,9 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const CenteredContainer = styled.div`
-  position: absolute;
+//   position: absolute;
   width: 1000px;
   top: 210px;
   display: flex;
@@ -29,7 +28,7 @@ const CreateTeamButton = styled.button`
 export default function HomeCreateTeamBtn() {
   return (
     <CenteredContainer>
-      <Link to="/teaminfo">
+      <Link to="/teamInfo">
         <CreateTeamButton>+ 팀 생성하기</CreateTeamButton>
       </Link>
     </CenteredContainer>

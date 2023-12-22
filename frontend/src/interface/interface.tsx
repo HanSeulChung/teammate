@@ -51,3 +51,11 @@ export interface UserProfileProps {
   selectedTeam: string | null;
   handleTeamSelect: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
+
+//멤버
+export interface TeamParticipant {
+  teamParticipantsId: number;
+  teamRole: string;
+  participantsProfileUrl: string;
+  teamNickName: string;
+}

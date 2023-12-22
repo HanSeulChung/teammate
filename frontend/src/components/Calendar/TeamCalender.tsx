@@ -4,11 +4,17 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import '../../styles/teamCalender.css'
-import { Modal, Overlay, ModalContent, CloseModal, CalendarDiv } from '../../styles/TeamCalenderStyled.tsx'
+import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalenderStyled.tsx'
 import EditEvent from "./EditEvent.tsx";
-import axios from "axios";
+// import axios from "axios";
+import axiosInstance from "../../axios";
+
+// import { Team } from "../../interface/interface";
 
 const TeamCalender = () => {
+    // 팀 아이디
+    // const [team, setTeam] = useState<Team | null>(location.state?.team || null);
+
     // 모달팝업 유무 값
     const [eventDetailModal, setEventDetailModal] = useState<any>(false);
     const [eventFormModal, setEventFormModal] = useState<any>(false);
@@ -55,12 +61,12 @@ const TeamCalender = () => {
     // 일정목록 불러오기
     const getAllEvents = async () => {
         try {
-            const res = await axios({
+            const res = await axiosInstance({
                 method: "get",
-                url: "/schedules",
+                url: `/team/1/schedules/calendar`,
             });
             if (res.status === 200) {
-                console.log(res.data);
+                console.log(res);
                 setEventList(res.data);
                 return;
             }
@@ -78,7 +84,7 @@ const TeamCalender = () => {
         if (!window.confirm(`번째 일정을 삭제하시겠습니까?`)) return;
         const eventId = event.id;
         try {
-            const res = await axios.delete(`/schedules`, {
+            const res = await axiosInstance.delete(`/schedules`, {
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -103,9 +109,9 @@ const TeamCalender = () => {
                 timeZone="UTC"
                 initialView="dayGridMonth"
                 headerToolbar={{
-                    start: "today prev,next",
-                    center: "title",
-                    end: "dayGridMonth timeGridWeek"
+                    start: "prev title next",
+                    center: "",
+                    end: "today dayGridMonth,timeGridWeek"
                 }}
                 buttonText={{
                     // prev: "이전", // 부트스트랩 아이콘으로 변경 가능
@@ -113,9 +119,9 @@ const TeamCalender = () => {
                     // prevYear: "이전 년도",
                     // nextYear: "다음 년도",
                     today: "오늘",
-                    month: "월별",
-                    week: "주별",
-                    day: "일별",
+                    month: "월간",
+                    week: "주간",
+                    day: "일간",
                     list: "목록"
                 }}
                 events={eventList}

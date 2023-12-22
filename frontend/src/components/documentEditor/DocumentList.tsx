@@ -95,8 +95,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 10;
   const accessToken = useRecoilValue(accessTokenState);
-  const [Id, setId] = useState<number>(1);
+  const [Id, setId] = useState<number>(teamId);
 
+  console.log("id:", Id);
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
@@ -158,6 +159,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const handleDocumentClick = (documentId: string) => {
     navigate(`/team/${teamId}/documents/${documentId}`);
   };
+
+  const handleDocumentCreate = () => {
+    navigate(`/team/${teamId}/documents`);
+  };
+
   return (
     <Container>
       <InputAndButton>
@@ -168,7 +174,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
           onChange={handleSearchChange}
         />
         <ButtonContainer>
-          <StyledButton>문서 작성</StyledButton>
+          <StyledButton onClick={handleDocumentCreate}>문서 작성</StyledButton>
           <StyledButton>캘린더</StyledButton>
         </ButtonContainer>
       </InputAndButton>

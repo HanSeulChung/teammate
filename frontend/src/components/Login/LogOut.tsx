@@ -24,7 +24,7 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
       onLogoutSuccess();
 
       // 로그아웃 후 페이지 이동
-      navigate("/signin");
+      navigate("/signIn");
     } catch (error: AxiosError | any) {
       if (axios.isAxiosError(error)) {
         console.error("네트워크 에러:", error.message);

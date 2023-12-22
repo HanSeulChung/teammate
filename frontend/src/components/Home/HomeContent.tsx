@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -26,7 +26,7 @@ const HomeContent = () => {
     const fetchLoggedInUserId = async () => {
       try {
         if (!isAuthenticated) {
-          navigate("/signin");
+          navigate("/signIn");
           return;
         }
         const [teamListResponse, inviteCodeResponse] = await Promise.all([
@@ -90,7 +90,7 @@ const HomeContent = () => {
         <TeamItem key={index}>
           <TeamCard
             onClick={() =>
-              navigate(`/team/${team.teamId}/documentsList`, {
+              navigate(`/team/${team.teamId}/schedules`, {
                 state: { team },
               })
             }
@@ -110,7 +110,7 @@ const HomeContent = () => {
 export default HomeContent;
 
 const TeamListContainer = styled.div`
-  position: absolute;
+//   position: absolute;
   width: 1000px;
   top: 280px;
   display: flex;

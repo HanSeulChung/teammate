@@ -28,38 +28,43 @@ const Header = () => {
   const [teamName, setTeamName] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [user, setUser] = useRecoilState(userState);
-  const [isLogoutTriggered] = useState(false);
 
   const isTeamPage = location.pathname.startsWith("/team/");
-  const handleTeamMembersClick = () => {
+
+  // const handleTeamMembersClick = () => {
+  //   if (isTeamPage) {
+  //     const currentPath = window.location.pathname;
+  //     // navigate(`${currentPath}/teamMembers`);
+  //     navigate(`${currentPath}/teamLeader`);
+  //   }
+  // };
+
+  const handleTeamProfileClick = async () => {
     if (isTeamPage) {
-      const currentPath = window.location.pathname;
-      // navigate(`${currentPath}/teammembers`);
-      navigate(`${currentPath}/teamleader`);
+      const teamIdMatch = location.pathname.match(/\/team\/(\d+)/);
+      if (teamIdMatch) {
+        const teamId = parseInt(teamIdMatch[1]);
+
+        try {
+          const response = await axiosInstance.get(
+            `/team/${teamId}/participant`,
+          );
+          const userTeamRole = response.data.teamRole;
+
+          if (userTeamRole === "READER") {
+            navigate(`/team/${teamId}/teamLeader`);
+          } else if (userTeamRole === "MATE") {
+            navigate(`/team/${teamId}/teamMembers`);
+          } else {
+            // Handle other roles if needed
+          }
+        } catch (error) {
+          console.error("Error fetching user team role:", error);
+          // Handle error if needed
+        }
+      }
     }
   };
-
-  // teamId를 통해 팀 정보를 가져와서 teamName 설정
-  useEffect(() => {
-    const fetchTeamName = async () => {
-      try {
-        if (isTeamPage) {
-          const teamIdMatch = location.pathname.match(/\/team\/(\d+)/);
-          if (teamIdMatch) {
-            const teamId = parseInt(teamIdMatch[1]);
-            const currentTeam = teamList.find((team) => team.teamId === teamId);
-            if (currentTeam) {
-              setTeamName(currentTeam.name);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("팀 정보를 가져오는 중 오류 발생:", error);
-      }
-    };
-
-    fetchTeamName();
-  }, [isTeamPage, location.pathname, teamList]);
 
   const onLogoutSuccess = () => {
     console.log("로그아웃 성공!");
@@ -125,7 +130,7 @@ const Header = () => {
           <>
             <LogoContainer>
               <div>
-                <Link to="/homeview">
+                <Link to="/homeView">
                   <HeaderImg src={logo} />
                 </Link>
               </div>
@@ -156,9 +161,9 @@ const Header = () => {
               </li>
               <li>
                 {isTeamPage ? (
-                  <span onClick={handleTeamMembersClick}>팀프로필</span>
+                  <span onClick={handleTeamProfileClick}>팀프로필</span>
                 ) : (
-                  <Link to="/mypage">마이페이지</Link>
+                  <Link to="/myPage">마이페이지</Link>
                 )}
               </li>
               <li>
@@ -191,10 +196,10 @@ const Header = () => {
           ) : (
             <>
               <li>
-                <Link to="/signin">로그인</Link>
+                <Link to="/signIn">로그인</Link>
               </li>
               <li>
-                <Link to="/signup">회원가입</Link>
+                <Link to="/signUp">회원가입</Link>
               </li>
             </>
           )}

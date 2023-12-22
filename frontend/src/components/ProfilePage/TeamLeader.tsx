@@ -1,6 +1,5 @@
-import React, { useState, ChangeEvent, useEffect, useRef } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import axios from "axios";
 import {
   TeamLeaderContainer,
   TeamImageContainer,
@@ -13,9 +12,10 @@ import {
 import profileImg from "../../assets/profileImg.png";
 import StyledModal from "../Modal";
 import axiosInstance from "../../axios";
-import { Team, User } from "../../interface/interface";
+import { Team, TeamParticipant } from "../../interface/interface";
 import { accessTokenState } from "../../state/authState";
 import { useRecoilValue } from "recoil";
+import linkImg from "../../assets/linkImg.png";
 
 export default function TeamLeader() {
   const { state } = useLocation();
@@ -23,9 +23,6 @@ export default function TeamLeader() {
   const accessToken = useRecoilValue(accessTokenState);
   const teamFromPreviousPage = state?.team || null;
   const [team, setTeam] = useState<Team | null>(teamFromPreviousPage);
-  const [teamLeader, setTeamLeader] = useState<User | null>(
-    teamFromPreviousPage,
-  );
   const [searchTeam, setSearchTeam] = useState<string>("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [memberIndexToRemove, setMemberIndexToRemove] = useState<number | null>(
@@ -52,8 +49,8 @@ export default function TeamLeader() {
     "Member 6",
     "Member 7",
   ]);
+
   useEffect(() => {
-    // teamId가 변경될 때마다 해당 팀 정보를 가져오는 로직 추가
     const fetchTeamInfo = async () => {
       try {
         const response = await axiosInstance.get(`/team/${teamId}`, {
@@ -71,6 +68,25 @@ export default function TeamLeader() {
     fetchTeamInfo();
   }, [teamId, accessToken]);
 
+  //팀 수정
+  const handleCreateTeam = async () => {
+    const formData = new FormData();
+    formData.append("teamName", newTeamName);
+    formData.append("teamId", team?.teamId.toString() || "");
+    if (newSelectedImage instanceof File) {
+      formData.append("profileImg", newSelectedImage);
+    }
+    console.log("FormData:", newSelectedImage);
+    const response = await axiosInstance.post("/team/update", formData, {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("팀 수정 성공 :", response.data);
+  };
+  //이미지업로드
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileInput = e.target;
     const file = fileInput.files && fileInput.files[0];
@@ -91,23 +107,32 @@ export default function TeamLeader() {
       };
     }
   };
-  const handleCreateTeam = async () => {
-    const formData = new FormData();
-    formData.append("teamName", newTeamName);
-    formData.append("teamId", team?.teamId.toString() || "");
-    if (newSelectedImage instanceof File) {
-      formData.append("profileImg", newSelectedImage);
-    }
-    console.log("FormData:", newSelectedImage);
-    const response = await axiosInstance.post("/team/update", formData, {
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log("팀 수정 성공 :", response.data);
-  };
+  
+  //팀멤버조회
+  const [teamParticipants, setTeamParticipants] = useState<TeamParticipant[]>(
+    [],
+  );
+  useEffect(() => {
+    const fetchTeamParticipants = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/team/${teamId}/participant/list`,
+        );
+        setTeamParticipants(response.data);
+      } catch (error) {
+        console.error("Error fetching team participants:", error);
+      }
+    };
+
+    fetchTeamParticipants();
+  }, [teamId, accessToken]);
+
+  //팀멤버
+  const filteredTeamMembers = teamParticipants.filter(
+    (participant) =>
+      participant.teamRole === "MATE" &&
+      participant.teamNickName.toLowerCase().includes(searchTeam.toLowerCase()),
+  );
 
   const handleTeamMemberChange = (
     index: number,
@@ -117,10 +142,6 @@ export default function TeamLeader() {
     updatedTeamMembers[index] = e.target.value;
     setTeamMembers(updatedTeamMembers);
   };
-
-  const filteredTeamMembers = teamMembers.filter((member) =>
-    member.toLowerCase().includes(searchTeam.toLowerCase()),
-  );
 
   const handleRemoveMember = (index: number) => {
     setMemberIndexToRemove(index);
@@ -146,11 +167,6 @@ export default function TeamLeader() {
     setShowConfirmation(false);
   };
 
-  const handleEditTeamName = () => {
-    setEditingTeamName(true);
-    // setNewTeamName(teamName);
-  };
-
   const handleEditTeamLeader = () => {
     setEditingTeamLeader(true);
     setNewLeaderSelect("");
@@ -165,11 +181,6 @@ export default function TeamLeader() {
       // setTeamMembers((prevTeamMembers) => [...prevTeamMembers, teamLeader]);
     }
     // setTeamLeader(newLeaderSelect || "");
-    setEditingTeamLeader(false);
-    setNewLeaderSelect(null);
-  };
-
-  const cancelEditTeamLeader = () => {
     setEditingTeamLeader(false);
     setNewLeaderSelect(null);
   };
@@ -192,7 +203,35 @@ export default function TeamLeader() {
       console.log("비밀번호를 입력하세요.");
       return;
     }
-    navigate("/homeview");
+    navigate("/homeView");
+  };
+
+  //초대코드
+  const [codeUrl, setCodeUrl] = useState("");
+  useEffect(() => {
+    const fetchTeamCode = async () => {
+      try {
+        const response = await axiosInstance.get(`/team/${teamId}/code`);
+        const teamCode = response.data;
+        // console.log("초대코드", teamCode);
+        const codeUrl = `http://118.67.128.124:8080/team/${teamCode}`;
+        setCodeUrl(codeUrl);
+        // await axiosInstance.post(codeUrl);
+      } catch (error) {
+        console.error("Error fetching team code:", error);
+      }
+    };
+
+    fetchTeamCode();
+  }, [teamId, accessToken]);
+
+  const handleCopyClick = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("클립보드에 링크가 복사되었습니다.");
+    } catch (e) {
+      alert("복사에 실패하였습니다");
+    }
   };
 
   return (
@@ -219,7 +258,7 @@ export default function TeamLeader() {
                   height: "100px",
                   cursor: "pointer",
                   marginTop: "20px",
-                  marginLeft: "70px",
+                  marginLeft: "90px",
                   marginBottom: "20px",
                 }}
               />
@@ -235,7 +274,12 @@ export default function TeamLeader() {
             </label>
             <span title="teamNameChange">
               <input
-                style={{ height: "40px", marginRight: "10px", padding: "5px" }}
+                style={{
+                  width: "150px",
+                  height: "40px",
+                  marginRight: "10px",
+                  padding: "5px",
+                }}
                 id="teamName"
                 placeholder=" 팀 이름"
                 title="text"
@@ -250,33 +294,53 @@ export default function TeamLeader() {
           <div>
             <span>팀장 </span>
             <select
-              style={{ height: "40px", marginRight: "10px" }}
+              style={{ width: "150px", height: "40px", marginRight: "10px" }}
               title="select"
               value={newLeaderSelect || ""}
               onChange={(e) => setNewLeaderSelect(e.target.value)}
             >
-              {/* <option value="" disabled>
-                선택
-              </option> */}
-              {teamMembers.map((member, index) => (
-                <option key={index} value={member}>
-                  {member}
-                </option>
-              ))}
+              <option
+                value={
+                  teamParticipants.find(
+                    (participant) => participant.teamRole === "READER",
+                  )?.teamNickName
+                }
+              >
+                {
+                  teamParticipants.find(
+                    (participant) => participant.teamRole === "READER",
+                  )?.teamNickName
+                }
+              </option>
+              {teamParticipants
+                .filter((participant) => participant.teamRole !== "READER")
+                .map((participant, index) => (
+                  <option key={index} value={participant.teamNickName}>
+                    {participant.teamNickName}
+                  </option>
+                ))}
             </select>
-            <span>
-              {/* {user && teamInfo?.leaderId === user.id
-                  ? user.name
-                  : "No Leader"} */}
-              {team ? team.leaderId : ""}
-            </span>
             <StyledButton onClick={confirmEditTeamLeader}>
               변경하기
             </StyledButton>
           </div>
         </TeamInfoContainer>
       </div>
-
+      <br />
+      <div>
+        <span style={{ display: "flex", alignItems: "center" }}>
+          <span>초대코드 URL</span>
+          <img
+            style={{
+              width: "30px",
+              cursor: "pointer",
+            }}
+            src={linkImg}
+            alt="복사"
+            onClick={() => handleCopyClick(codeUrl)}
+          />
+        </span>
+      </div>
       <TeamMembersContainer>
         <StyledInput
           style={{
@@ -294,7 +358,7 @@ export default function TeamLeader() {
             overflowY: "auto",
           }}
         >
-          {filteredTeamMembers.map((member, index) => (
+          {filteredTeamMembers.map((participant, index) => (
             <div
               key={index}
               style={{
@@ -305,7 +369,7 @@ export default function TeamLeader() {
               <StyledInput
                 title="disband"
                 type="text"
-                value={member}
+                value={participant.teamNickName}
                 onChange={(e) => handleTeamMemberChange(index, e)}
               />
               <StyledButton onClick={() => handleRemoveMember(index)}>
