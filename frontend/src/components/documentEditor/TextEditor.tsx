@@ -4,6 +4,8 @@ import * as StompJs from "@stomp/stompjs";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { accessTokenState } from "../../state/authState";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -15,6 +17,7 @@ const TextArea = styled.textarea`
   border: 1px solid gray;
   padding: 4px;
   font-size: 16px;
+  background-color: white;
 `;
 
 const TitleInput = styled.input`
@@ -118,15 +121,20 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
   }, []);
 
-  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newText = event.target.value;
+  const handleTextChange = (
+    content: any,
+    delta: any,
+    source: any,
+    editor: any,
+  ) => {
+    const newText = content;
 
     setContent(newText); // 상태 업데이트
 
     if (client.current) {
       const message = {
         memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
-        title: title,
+        // title: title,
         text: newText,
         documentId: documentsId,
       };
@@ -142,6 +150,8 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
     setTitle(newTitle);
+
+    setContent(content.replace(/<p>/g, "").replace(/<\/p>/g, "\n"));
 
     if (client.current) {
       const message = {
@@ -184,7 +194,12 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         onChange={handleTitleChange}
         placeholder="제목을 입력하세요"
       />
-      <TextArea value={content} onChange={handleTextChange} />
+      {/* <TextArea value={content} onChange={handleTextChange} /> */}
+      <ReactQuill
+        value={content}
+        onChange={handleTextChange}
+        preserveWhitespace={true}
+      />
       <ButtonContainer>
         <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
