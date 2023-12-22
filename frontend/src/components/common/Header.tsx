@@ -162,7 +162,7 @@ const Header = () => {
                 {isTeamPage ? (
                   <span onClick={handleTeamProfileClick}>팀프로필</span>
                 ) : (
-                  <Link to="/mypage">마이페이지</Link>
+                  <Link to="/myuserprofile">마이페이지</Link>
                 )}
               </li>
               <li>
