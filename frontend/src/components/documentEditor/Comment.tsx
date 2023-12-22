@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { accessTokenState } from "../../state/authState";
+import axiosInstance from "../../axios";
 
 // 스타일 컴포넌트 정의
 const CommentSection = styled.div`
@@ -87,9 +88,8 @@ const Comment: React.FC = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get<{ content: CommentType[] }>(
+        const response = await axiosInstance.get<{ content: CommentType[] }>(
           `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
-          { headers: { Authorization: `Bearer ${accessToken}` } },
         );
         setCommentsPage(response.data);
       } catch (error) {
@@ -113,10 +113,9 @@ const Comment: React.FC = () => {
     if (editingComment.trim() && editingIndex !== null) {
       const commentToUpdate = commentsPage.content[editingIndex];
       try {
-        const response = await axios.put(
+        const response = await axiosInstance.put(
           `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
           { comment: editingComment, editorId: commentToUpdate.writerId },
-          { headers: { Authorization: `Bearer ${accessToken}` } },
         );
         const updatedComments = commentsPage.content.map((comment, index) =>
           index === editingIndex ? response.data : comment,
@@ -137,9 +136,8 @@ const Comment: React.FC = () => {
 
   const handleDelete = async (commentId: number) => {
     try {
-      await axios.delete(
+      await axiosInstance.delete(
         `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
-        { headers: { Authorization: `Bearer ${accessToken}` } },
       );
       const updatedComments = commentsPage.content.filter(
         (comment) => comment.id !== commentId,
@@ -153,10 +151,9 @@ const Comment: React.FC = () => {
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
         { comment: newComment, writerId: 1 }, // writerId 교체하기!!!!!!!
-        { headers: { Authorization: `Bearer ${accessToken}` } },
       );
       setCommentsPage({
         ...commentsPage,
