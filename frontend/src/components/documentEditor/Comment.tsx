@@ -58,7 +58,7 @@ const CommentButton = styled.button`
 `;
 
 interface CommentType {
-  content: ReactNode;
+  content: string;
   id: number;
   comment: string;
   writerId: number;
@@ -128,10 +128,12 @@ const Comment: React.FC = () => {
     if (editingComment.trim() && editingIndex !== null) {
       const commentToUpdate = commentsPage.content[editingIndex];
       try {
+        console.warn(editingComment, commentToUpdate.writerId + "");
         const response = await axiosInstance.put(
           `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
-          { comment: editingComment, editorId: commentToUpdate.writerId },
+          { content: editingComment, editorId: commentToUpdate.writerId + "" },
         );
+
         const updatedComments = commentsPage.content.map((comment, index) =>
           index === editingIndex ? response.data : comment,
         );
@@ -151,6 +153,7 @@ const Comment: React.FC = () => {
 
   const handleDelete = async (commentId: number) => {
     try {
+      console.log("deleate : ", teamId, documentsId, commentId);
       await axiosInstance.delete(
         `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
       );
@@ -251,7 +254,8 @@ const Comment: React.FC = () => {
       <CommentList>
         {commentsPage.content.length > 0 ? (
           commentsPage.content.map((comment, index) => {
-            // 여기에서 각 댓글의 내용을 콘솔에 로그합니다.
+            const isAuthor = comment.writerId == participantIds;
+
             return (
               <CommentListItem key={comment.id}>
                 {editingIndex === index ? (
@@ -276,14 +280,16 @@ const Comment: React.FC = () => {
                       <strong>{nicknames[comment.writerId]}</strong>:{" "}
                       {comment.content}
                     </CommentContent>
-                    <CommentActions>
-                      <CommentButton onClick={() => handleEdit(index)}>
-                        수정
-                      </CommentButton>
-                      <CommentButton onClick={() => handleDelete(comment.id)}>
-                        삭제
-                      </CommentButton>
-                    </CommentActions>
+                    {isAuthor && (
+                      <CommentActions>
+                        <CommentButton onClick={() => handleEdit(index)}>
+                          수정
+                        </CommentButton>
+                        <CommentButton onClick={() => handleDelete(comment.id)}>
+                          삭제
+                        </CommentButton>
+                      </CommentActions>
+                    )}
                   </>
                 )}
               </CommentListItem>
