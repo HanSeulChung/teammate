@@ -70,6 +70,8 @@ const SearchInput = styled.input`
   border-radius: 8px;
 `;
 
+const titleDomStyled = styled.h1``;
+
 type Document = {
   id: string;
   title: string;
@@ -99,7 +101,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         const response = await axiosInstance.get(
           `${API_BASE_URL}/team/${Id}/documents`,
         );
-        console.log("Response data:", response.data);
 
         // 'content' 필드에서 문서 배열을 추출하여 상태 업데이트
         if (response.data && Array.isArray(response.data.content)) {
@@ -114,8 +115,20 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
       }
     };
 
-    fetchDocuments();
-  }, [currentPage, teamId]);
+    if (teamId) {
+      fetchDocuments();
+    }
+  }, [teamId]);
+
+  useEffect(() => {
+    // 검색 필터링
+    const filtered = documents.filter(
+      (doc) =>
+        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setFilteredDocuments(filtered);
+  }, [searchTerm, documents]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -180,8 +193,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
               onClick={() => handleDocumentClick(doc.id)}
             >
               <TitleContentContainer>
-                <h2>{doc.title}</h2>
+                <h2>title : {doc.title}</h2>
                 <p>
+                  content :
                   {doc.content.length < 20
                     ? doc.content
                     : doc.content.slice(0, 20) + "..."}
