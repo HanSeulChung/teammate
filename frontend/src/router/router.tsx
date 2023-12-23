@@ -37,9 +37,18 @@ const Router = () => {
       <Route path="/homeView" element={<HomeView />} />
       <Route path="/team/:teamId/schedules" element={<Calender />} />
       <Route path="/team/:teamId/documents" element={<CreateTextView />} />
-      <Route path="/team/:teamId/documents/:documentsId" element={<TextEditorView />} />
-      <Route path="/team/:teamId/documentsList/" element={<DocumentListView />} />
-      <Route path="/team/:teamId/documents/:documentsId/comment" element={<CommentView />} />
+      <Route
+        path="/team/:teamId/documents/:documentsId"
+        element={<TextEditorView />}
+      />
+      <Route
+        path="/team/:teamId/documentsList/"
+        element={<DocumentListView />}
+      />
+      <Route
+        path="/team/:teamId/documents/:documentsId/comment"
+        element={<CommentView />}
+      />
       <Route path="/myPage" element={<MyPage />} />
       <Route path="/TeamInfo" element={<TeamInfo />} />
       <Route path="/team/:teamId/teamLeader" element={<TeamLeader />} />
