@@ -9,8 +9,8 @@ import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.RepeatScheduleResponse;
 import com.api.backend.schedule.data.dto.RepeatToSimpleScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleCreateResponse;
-import com.api.backend.schedule.data.dto.ScheduleTypeConverterResponse;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
+import com.api.backend.schedule.data.dto.ScheduleTypeConverterResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleResponse;
@@ -78,20 +78,22 @@ public class ScheduleController {
       })
   @PostMapping
   @MentionTeamParticipantsSendNotify
-  public ResponseEntity<MentionTeamParticipantsNotifyByDto> addSchedule(@RequestBody @Valid ScheduleRequest request,
+  public ResponseEntity<MentionTeamParticipantsNotifyByDto> addSchedule(
+      @RequestBody @Valid ScheduleRequest request,
       @PathVariable Long teamId, @ApiIgnore Principal principal) {
     ScheduleCreateResponse scheduleCreateResponse;
 
-    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(teamId, Long.valueOf(principal.getName()));
+    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(teamId,
+        Long.valueOf(principal.getName()));
 
     if (request.getRepeatCycle() != null) {
       RepeatScheduleResponse response = RepeatScheduleResponse.from(
-          scheduleService.addRepeatScheduleAndSave(request, principal)
+          scheduleService.addRepeatScheduleAndSave(request, Long.valueOf(principal.getName()))
       );
       scheduleCreateResponse = ScheduleCreateResponse.from(response);
     } else {
       SimpleScheduleResponse response = SimpleScheduleResponse.from(
-          scheduleService.addSimpleScheduleAndSave(request, principal)
+          scheduleService.addSimpleScheduleAndSave(request, Long.valueOf(principal.getName()))
       );
       scheduleCreateResponse = ScheduleCreateResponse.from(response);
     }
@@ -143,7 +145,8 @@ public class ScheduleController {
       @PathVariable Long teamId,
       @PathVariable Long scheduleId, @ApiIgnore Principal principal) {
     RepeatScheduleResponse response = RepeatScheduleResponse.from(
-        scheduleService.getRepeatScheduleDetailInfo(scheduleId, teamId, principal)
+        scheduleService.getRepeatScheduleDetailInfo(scheduleId, teamId,
+            Long.valueOf(principal.getName()))
     );
     return ResponseEntity.ok(response);
   }
@@ -186,7 +189,8 @@ public class ScheduleController {
       @PathVariable Long teamId,
       @PathVariable Long scheduleId, @ApiIgnore Principal principal) {
     SimpleScheduleResponse response = SimpleScheduleResponse.from(
-        scheduleService.getSimpleScheduleDetailInfo(scheduleId, teamId, principal)
+        scheduleService.getSimpleScheduleDetailInfo(scheduleId, teamId,
+            Long.valueOf(principal.getName()))
     );
     return ResponseEntity.ok(response);
   }
@@ -234,11 +238,12 @@ public class ScheduleController {
 
     Page<AllSchedulesMonthlyView> allSchedules;
     if (categoryType == null) {
-      allSchedules = scheduleService.getAllMonthlySchedules(teamId, pageable, principal);
+      allSchedules = scheduleService.getAllMonthlySchedules(teamId, pageable,
+          Long.valueOf(principal.getName()));
     } else {
       CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
       allSchedules = scheduleService.getCategoryTypeMonthlySchedules(teamId, enumCategoryType,
-          pageable, principal);
+          pageable, Long.valueOf(principal.getName()));
     }
 
     return ResponseEntity.ok(allSchedules);
@@ -275,8 +280,8 @@ public class ScheduleController {
       @ApiIgnore Principal principal
   ) {
     SimpleScheduleInfoEditResponse response = SimpleScheduleInfoEditResponse.from(
-        scheduleService.editSimpleScheduleInfoAndSave(editRequest, principal)
-    );
+        scheduleService.editSimpleScheduleInfoAndSave(editRequest,
+            Long.valueOf(principal.getName())));
     return ResponseEntity.ok(response);
   }
 
@@ -312,9 +317,11 @@ public class ScheduleController {
       @ApiIgnore Principal principal
   ) {
     RepeatScheduleInfoEditResponse response = RepeatScheduleInfoEditResponse.from(
-        scheduleService.editRepeatScheduleInfoAndSave(editRequest, principal));
+        scheduleService.editRepeatScheduleInfoAndSave(editRequest,
+            Long.valueOf(principal.getName())));
     return ResponseEntity.ok(response);
   }
+
   @ApiOperation(value = "반복일정 -> 단순일정으로 변경")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "일정이 성공적으로 수정되었습니다."),
@@ -346,7 +353,8 @@ public class ScheduleController {
       @ApiIgnore Principal principal
   ) {
     ScheduleTypeConverterResponse response = ScheduleTypeConverterResponse.from(
-        scheduleService.convertRepeatToSimpleSchedule(editRequest, principal)
+        scheduleService.convertRepeatToSimpleSchedule(editRequest,
+            Long.valueOf(principal.getName()))
     );
     return ResponseEntity.ok(response);
   }
@@ -383,11 +391,11 @@ public class ScheduleController {
       @ApiIgnore Principal principal
   ) {
     ScheduleTypeConverterResponse response = ScheduleTypeConverterResponse.from(
-        scheduleService.convertSimpleToRepeatSchedule(editRequest, principal)
+        scheduleService.convertSimpleToRepeatSchedule(editRequest,
+            Long.valueOf(principal.getName()))
     );
     return ResponseEntity.ok(response);
   }
-
 
 
   @ApiOperation(value = "단순일정 삭제")
