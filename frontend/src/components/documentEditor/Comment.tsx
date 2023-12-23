@@ -2,8 +2,8 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
+import axios from "axios";
 
-// 스타일 컴포넌트 정의
 const CommentSection = styled.div`
   align-items: center;
   padding: 20px;
@@ -57,8 +57,8 @@ const CommentButton = styled.button`
   background-color: #a3cca3;
 `;
 
-// 댓글 타입 정의
 interface CommentType {
+  content: ReactNode;
   id: number;
   comment: string;
   writerId: number;
@@ -67,7 +67,6 @@ interface CommentType {
   updatedDT: string;
 }
 
-// 페이지 형식의 댓글 데이터
 interface CommentsPage {
   content: CommentType[];
 }
@@ -83,6 +82,25 @@ const Comment: React.FC = () => {
     teamId: string;
     documentsId: string;
   }>();
+  const [participantIds, setParticipantIds] = useState<number>();
+  const [nicknames, setNicknames] = useState<{ [key: number]: string }>({});
+
+  useEffect(() => {
+    // userTeamId 가져오기
+    const fetchParticipants = async () => {
+      try {
+        const response = await axiosInstance.get("/member/participants", {});
+        const participant = response.data.content.find(
+          (item: { teamId: number }) => item.teamId === Number(teamId),
+        );
+        setParticipantIds(participant ? participant.teamParticipantsId : null);
+        console.log(commentsPage);
+      } catch (error) {
+        console.error("Error fetching participants:", error);
+      }
+    };
+    fetchParticipants();
+  }, [teamId]);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -95,7 +113,6 @@ const Comment: React.FC = () => {
         console.error("댓글 가져오기 실패:", error);
       }
     };
-
     fetchComments();
   }, [teamId, documentsId]);
 
@@ -153,8 +170,8 @@ const Comment: React.FC = () => {
       const response = await axiosInstance.post(
         `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
         {
-          comment: newComment,
-          writerId: JSON.parse(localStorage.getItem("user") ?? "").id,
+          content: newComment,
+          writerId: participantIds,
         },
       );
       setCommentsPage({
@@ -170,6 +187,57 @@ const Comment: React.FC = () => {
   const handleNewCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };
+
+  const getTeamParticipantNickname = async (
+    teamParticipantsId: number,
+    teamId: number,
+  ) => {
+    try {
+      const response = await axiosInstance.get(
+        "http://118.67.128.124:8080/member/participants",
+      );
+
+      const participants = response.data.content;
+      console.log(participants);
+      const participant = participants.map((data: any) =>
+        console.log("data : ", data),
+      );
+      const nicknames = response.data.content
+        .filter((data: { teamId: number }) => data.teamId === teamId)
+        .filter(
+          (data: { teamParticipantsId: number | undefined }) =>
+            data.teamParticipantsId === participantIds,
+        )
+        .map((data: { teamNickName: any }) => data.teamNickName);
+      // const participant = participants.find(
+      //   (p: { teamParticipantsId: any; teamId: any }) =>
+      //     p.teamParticipantsId === teamParticipantsId && p.teamId === teamId,
+      // );
+      return nicknames;
+      // return participant ? participant.teamNickName : "참가자가 없습니다.";
+    } catch (error) {
+      console.error("Error fetching team participants:", error);
+      return "데이터를 가져오는데 실패했습니다.";
+    }
+  };
+
+  useEffect(() => {
+    const fetchNicknames = async () => {
+      const newNicknames: { [key: string]: string } = {};
+      for (const comment of commentsPage.content) {
+        const nickname = await getTeamParticipantNickname(
+          comment.writerId,
+          Number(teamId),
+        );
+        newNicknames[comment.writerId.toString()] = nickname; // writerId를 문자열로 변환하여 사용
+      }
+      setNicknames(newNicknames);
+    };
+
+    if (commentsPage.content.length > 0) {
+      fetchNicknames();
+    }
+  }, [commentsPage, teamId]);
 
   return (
     <CommentSection>
@@ -190,41 +258,45 @@ const Comment: React.FC = () => {
 
       <CommentList>
         {commentsPage.content.length > 0 ? (
-          commentsPage.content.map((comment, index) => (
-            <CommentListItem key={comment.id}>
-              {editingIndex === index ? (
-                <>
-                  <CommentInput
-                    type="text"
-                    value={editingComment}
-                    onChange={handleCommentChange}
-                  />
-                  <CommentActions>
-                    <CommentButton onClick={handleUpdateComment}>
-                      확인
-                    </CommentButton>
-                    <CommentButton onClick={handleCancelEdit}>
-                      취소
-                    </CommentButton>
-                  </CommentActions>
-                </>
-              ) : (
-                <>
-                  <CommentContent>
-                    <strong>{comment.writerId}</strong>: {comment.comment}
-                  </CommentContent>
-                  <CommentActions>
-                    <CommentButton onClick={() => handleEdit(index)}>
-                      수정
-                    </CommentButton>
-                    <CommentButton onClick={() => handleDelete(comment.id)}>
-                      삭제
-                    </CommentButton>
-                  </CommentActions>
-                </>
-              )}
-            </CommentListItem>
-          ))
+          commentsPage.content.map((comment, index) => {
+            // 여기에서 각 댓글의 내용을 콘솔에 로그합니다.
+            return (
+              <CommentListItem key={comment.id}>
+                {editingIndex === index ? (
+                  <>
+                    <CommentInput
+                      type="text"
+                      value={editingComment}
+                      onChange={handleCommentChange}
+                    />
+                    <CommentActions>
+                      <CommentButton onClick={handleUpdateComment}>
+                        확인
+                      </CommentButton>
+                      <CommentButton onClick={handleCancelEdit}>
+                        취소
+                      </CommentButton>
+                    </CommentActions>
+                  </>
+                ) : (
+                  <>
+                    <CommentContent>
+                      <strong>{nicknames[comment.writerId]}</strong>:{" "}
+                      {comment.content}
+                    </CommentContent>
+                    <CommentActions>
+                      <CommentButton onClick={() => handleEdit(index)}>
+                        수정
+                      </CommentButton>
+                      <CommentButton onClick={() => handleDelete(comment.id)}>
+                        삭제
+                      </CommentButton>
+                    </CommentActions>
+                  </>
+                )}
+              </CommentListItem>
+            );
+          })
         ) : (
           <div>댓글이 없습니다.</div>
         )}
