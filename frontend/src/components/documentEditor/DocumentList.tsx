@@ -155,6 +155,10 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     navigate(`/team/${teamId}/documents`);
   };
 
+  const handleCalendarClick = () => {
+    navigate(`/team/${teamId}/schedules`);
+  };
+
   return (
     <Container>
       <InputAndButton>
@@ -166,7 +170,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         />
         <ButtonContainer>
           <StyledButton onClick={handleDocumentCreate}>문서 작성</StyledButton>
-          <StyledButton>캘린더</StyledButton>
+          <StyledButton onClick={handleCalendarClick}>캘린더</StyledButton>
         </ButtonContainer>
       </InputAndButton>
       <DocumentContainer>
