@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import "quill/dist/quill.snow.css";
-import Quill from "quill";
+import ReactQuill from "react-quill";
 import TextTitle from "./TextTitle";
-import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { accessTokenState } from "../../state/authState";
-import { useRecoilValue } from "recoil";
 import axiosInstance from "../../axios";
+import "./ReactQuill.css";
 
 const StyledTexteditor = styled.div`
   displey: flex;
@@ -22,44 +20,27 @@ const SaveButton = styled.button`
   margin: 12px;
 `;
 
-const QuillStyled = styled.div`
-  height: auto;
-  min-height: 300px;
-`;
-
 interface QuillEditorProps {}
 
 const CreateText: React.FC<QuillEditorProps> = () => {
-  const [quill, setQuill] = useState<Quill | null>(null);
   const [title, setTitle] = useState<string>("");
-  const { teamId } = useParams<{ teamId: string }>(); // URL에서 teamId 파라미터 추출
+  const [content, setContent] = useState<string>(""); // 편집 내용을 저장하는 상태
+  const { teamId } = useParams<{ teamId: string }>();
   const navigate = useNavigate();
-  const accessToken = useRecoilValue(accessTokenState);
-  console.log(accessToken);
-  useEffect(() => {
-    const editor = new Quill("#quill-editor", {
-      theme: "snow",
-    });
-    setQuill(editor);
-  }, []);
 
   const handleSave = async () => {
-    if (!quill) return;
     if (title === "") {
       alert("제목을 입력해 주세요.");
       return;
     }
-    let content = quill.root.innerHTML;
     if (content === "<p><br></p>") {
       alert("내용을 입력해 주세요.");
       return;
     }
 
-    content = content.replace(/<p>/g, "").replace(/<\/p>/g, "\n");
-
     const requestData = {
       title: title,
-      content: content,
+      content: content.replace(/<p>/g, "").replace(/<\/p>/g, "\n"),
       writerEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
     };
 
@@ -87,10 +68,9 @@ const CreateText: React.FC<QuillEditorProps> = () => {
   return (
     <StyledTexteditor className="texteditor">
       <TextTitle titleProps={title} onTitleChange={setTitle} />
-      <QuillStyled id="quill-editor" />
+      <ReactQuill value={content} onChange={setContent} />
       <SaveButton onClick={handleSave}>저장</SaveButton>
     </StyledTexteditor>
   );
 };
-
 export default CreateText;
