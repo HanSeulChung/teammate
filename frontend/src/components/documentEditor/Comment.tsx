@@ -121,7 +121,7 @@ const Comment: React.FC = () => {
 
   const handleEdit = (index: number) => {
     setEditingIndex(index);
-    setEditingComment(commentsPage.content[index].comment);
+    setEditingComment(commentsPage.content[index].comment || "");
   };
 
   const handleUpdateComment = async () => {
@@ -152,20 +152,22 @@ const Comment: React.FC = () => {
   };
 
   const handleDelete = async (commentId: number) => {
-    try {
-      console.log("deleate : ", teamId, documentsId, commentId);
-      await axiosInstance.delete(
-        `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
-      );
-      const updatedComments = commentsPage.content.filter(
-        (comment) => comment.id !== commentId,
-      );
-      setCommentsPage({ ...commentsPage, content: updatedComments });
-    } catch (error) {
-      console.error("댓글 삭제 실패:", error);
+    const confirmDelete = window.confirm("삭제하시겠습니까?");
+
+    if (confirmDelete) {
+      try {
+        await axiosInstance.delete(
+          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
+        );
+        const updatedComments = commentsPage.content.filter(
+          (comment) => comment.id !== commentId,
+        );
+        setCommentsPage({ ...commentsPage, content: updatedComments });
+      } catch (error) {
+        console.error("댓글 삭제 실패:", error);
+      }
     }
   };
-
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
     try {
