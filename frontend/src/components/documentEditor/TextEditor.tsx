@@ -7,6 +7,7 @@ import { accessTokenState } from "../../state/authState";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axiosInstance from "../../axios";
+import "./ReactQuill.css";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -61,20 +62,16 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const client = useRef<StompJs.Client | null>(null);
   const navigate = useNavigate();
 
-  const headers = {
-    Authorization: `Bearer ${accessTokenState}`,
-  };
-
   useEffect(() => {
     client.current = new StompJs.Client({
-      brokerURL: "ws://localhost:8080/ws",
+      brokerURL: "ws://118.67.128.124:8080/ws",
       // connectHeaders: {
-      //   Authorization: `Bearer ${accessToken}`,
+      //   Authorization: `Bearer ${accessTokenState}`,
       // },
     });
 
     const onConnect = (trimmedDocsId: string) => {
-      console.log("Connected to WebSocket with", trimmedDocsId);
+      //console.log("Connected to WebSocket with", trimmedDocsId);
       const docsMessage = {
         documentId: trimmedDocsId,
       };
@@ -83,7 +80,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         destination: "/app/doc.showDocs",
         body: JSON.stringify(docsMessage),
       });
-      console.log("'/app/doc.showDocs'에 publish");
+      //console.log("'/app/doc.showDocs'에 publish");
 
       const displayDocs = (docs: any) => {
         setTitle(docs.title);
@@ -92,7 +89,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
       client.current!.subscribe("/topic/public", (docs) => {
         displayDocs(JSON.parse(docs.body));
-        console.log("docs.body : ", docs.body);
+        //console.log("docs.body : ", docs.body);
       });
     };
 
@@ -115,7 +112,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     client.current!.activate();
-    console.log("title content : ", title, content);
+    //console.log("title content : ", title, content);
 
     return () => {
       client.current?.deactivate();
@@ -139,7 +136,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         text: newText,
         documentId: documentsId,
       };
-      console.log("message : ", message);
+      //console.log("message : ", message);
 
       client.current.publish({
         destination: "/topic/broadcastByTextChange",
@@ -193,7 +190,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         onChange={handleTitleChange}
         placeholder="제목을 입력하세요"
       />
-      {/* <TextArea value={content} onChange={handleTextChange} /> */}
       <ReactQuill
         value={content}
         onChange={handleTextChange}
