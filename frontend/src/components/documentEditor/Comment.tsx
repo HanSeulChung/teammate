@@ -13,6 +13,7 @@ const CommentSection = styled.div`
 `;
 
 const CommentInputContainer = styled.form`
+  margin-bottom: 12px;
   display: flex;
 `;
 
@@ -42,6 +43,7 @@ const CommentActions = styled.div`
 const CommentInput = styled.input`
   width: 520px;
   padding: 8px;
+  border: 1px solid black;
   border-radius: 8px;
   background-color: white;
   color: black;
@@ -51,7 +53,8 @@ const CommentInput = styled.input`
 const CommentButton = styled.button`
   float: right;
   width: 80px;
-  margin-right: 5px;
+  margin-left: 5px;
+  background-color: #a3cca3;
 `;
 
 // 댓글 타입 정의
@@ -180,7 +183,7 @@ const Comment: React.FC = () => {
           type="text"
           value={newComment}
           onChange={handleNewCommentChange}
-          placeholder="Write a comment..."
+          placeholder="댓글을 작성해 주세요."
         />
         <CommentButton type="submit">확인</CommentButton>
       </CommentInputContainer>
