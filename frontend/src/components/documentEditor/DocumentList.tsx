@@ -145,8 +145,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     (currentPage + 1) * pageSize,
   );
 
-  console.log(currentDocuments);
-
   const navigate = useNavigate();
 
   const handleDocumentClick = (id: string) => {
@@ -173,30 +171,25 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
       </InputAndButton>
       <DocumentContainer>
         {currentDocuments.length !== 0 ? (
-          currentDocuments.map(
-            (doc) => (
-              console.warn(doc.id),
-              (
-                <DocumentItem
-                  key={doc.id}
-                  onClick={() => handleDocumentClick(doc.id)}
-                >
-                  <TitleContentContainer>
-                    <h2>{doc.title}</h2>
-                    <p>
-                      {doc.content.length < 20
-                        ? doc.content
-                        : doc.content.substring(20) + "..."}
-                    </p>
-                  </TitleContentContainer>
-                  <DatesContainer>
-                    <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
-                    <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
-                  </DatesContainer>
-                </DocumentItem>
-              )
-            ),
-          )
+          currentDocuments.map((doc) => (
+            <DocumentItem
+              key={doc.id}
+              onClick={() => handleDocumentClick(doc.id)}
+            >
+              <TitleContentContainer>
+                <h2>{doc.title}</h2>
+                <p>
+                  {doc.content.length < 20
+                    ? doc.content
+                    : doc.content.slice(0, 20) + "..."}
+                </p>
+              </TitleContentContainer>
+              <DatesContainer>
+                <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
+                <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
+              </DatesContainer>
+            </DocumentItem>
+          ))
         ) : (
           <span>문서가 없습니다.</span>
         )}
