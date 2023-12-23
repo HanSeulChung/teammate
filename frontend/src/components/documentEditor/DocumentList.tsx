@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axiosInstance from "../../axios";
+import "flatpickr/dist/flatpickr.min.css";
+import flatpickr from "flatpickr";
+import { Instance } from "flatpickr/dist/types/instance";
 
 const DocumentContainer = styled.div`
   box-sizing: border-box;
@@ -74,6 +77,7 @@ const SearchInput = styled.input`
   border: 1px solid black;
   border-radius: 8px;
   padding: 12px;
+  margin-right: 4px;
 `;
 
 const TitleDomStyled = styled.h1`
@@ -90,6 +94,17 @@ const PagenationButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-bottom: 24px;
+`;
+
+const DayTimeInput = styled.input`
+  background-color: white;
+  width: 100%;
+  height: 45px;
+  color: black;
+  font-size: 16px;
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 12px;
 `;
 
 type Document = {
@@ -115,6 +130,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const navigate = useNavigate();
   const API_BASE_URL = "http://118.67.128.124:8080";
   const [totalPages, setTotlaPages] = useState<number>(0);
+  const datepickerRef = useRef<HTMLInputElement>(null);
+  const [startDt, setStartDt] = useState<string>("");
+  const [endDt, setEndDt] = useState<string>("3000-12-30");
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -145,6 +163,34 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   }, [teamId, currentPage, pageSize]);
 
   useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${API_BASE_URL}/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
+        );
+
+        setTotlaPages(response.data.totalPages);
+
+        if (response.data && Array.isArray(response.data.content)) {
+          const sortedDocuments = response.data.content.sort(
+            (a: any, b: any) =>
+              new Date(b.createdDt).getTime() - new Date(a.createdDt).getTime(),
+          );
+          setFilteredDocuments(sortedDocuments);
+        } else {
+          console.error("Invalid response structure:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    if (teamId) {
+      fetchDocuments();
+    }
+  }, [startDt, endDt]);
+
+  useEffect(() => {
     const filtered = filteredDocuments.filter(
       (doc) =>
         doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -152,6 +198,29 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     );
     setDocuments(filtered);
   }, [searchTerm, filteredDocuments]);
+
+  useEffect(() => {
+    let fpInstance: Instance | null = null;
+
+    if (datepickerRef.current) {
+      fpInstance = flatpickr(datepickerRef.current, {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: (selectedDates) => {
+          if (selectedDates.length === 2) {
+            setStartDt(selectedDates[0].toISOString().substring(0, 10));
+            setEndDt(selectedDates[1].toISOString().substring(0, 10));
+          }
+        },
+      });
+    }
+
+    return () => {
+      if (fpInstance) {
+        fpInstance.destroy();
+      }
+    };
+  }, []);
 
   const handlePageChange = (page: any) => {
     setCurrentPage(page + 1);
@@ -199,6 +268,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
           value={searchTerm}
           onChange={handleSearchChange}
         />
+        <DayTimeInput ref={datepickerRef} type="text" placeholder="날짜 검색" />
         <ButtonContainer>
           <StyledButton onClick={handleDocumentCreate}>문서 작성</StyledButton>
           <StyledButton onClick={handleCalendarClick}>캘린더</StyledButton>
