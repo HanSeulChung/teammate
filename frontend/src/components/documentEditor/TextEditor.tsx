@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { accessTokenState } from "../../state/authState";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import axiosInstance from "../../axios";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -172,9 +173,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     const isConfirmed = window.confirm("문서를 삭제하시겠습니까?");
     if (isConfirmed) {
       try {
-        await axios.delete(`/team/${teamId}/documents/${documentsId}`, {
-          headers,
-        });
+        await axiosInstance.delete(`/team/${teamId}/documents/${documentsId}`);
         navigate(`/team/${teamId}/documentsList`);
       } catch (error) {
         console.error("Error deleting document:", error);
