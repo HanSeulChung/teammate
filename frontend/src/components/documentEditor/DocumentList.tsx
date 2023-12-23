@@ -84,6 +84,8 @@ const PagenationButton = styled.button`
 
 const PagenationButtonContainer = styled.div`
   display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
 `;
 
 type Document = {
@@ -197,6 +199,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     navigate(`/team/${teamId}/schedules`);
   };
 
+  const formatDate = (dateString: string | number | Date) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
+
   return (
     <Container>
       <InputAndButton>
@@ -228,8 +235,12 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
                 </p>
               </TitleContentContainer>
               <DatesContainer>
-                <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
-                <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
+                <TitleDaytime>
+                  Created: {formatDate(doc.createdDt)}
+                </TitleDaytime>
+                <TitleDaytime>
+                  Updated: {formatDate(doc.updatedDt)}
+                </TitleDaytime>
               </DatesContainer>
             </DocumentItem>
           ))
