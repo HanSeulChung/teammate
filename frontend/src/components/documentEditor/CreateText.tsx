@@ -44,9 +44,9 @@ const CreateText: React.FC<QuillEditorProps> = () => {
       writerEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
     };
 
-    console.log(requestData);
+    //console.log(requestData);
 
-    console.log("teamid : ", teamId);
+    //console.log("teamid : ", teamId);
 
     try {
       const response = await axiosInstance.post(
@@ -55,7 +55,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
       );
 
       if (response.status === 200) {
-        console.log("문서 저장 성공:", response.data);
+        //console.log("문서 저장 성공:", response.data);
         navigate(`/team/${teamId}/documentsList`);
       } else {
         console.error("문서 저장 실패:", response.status);
