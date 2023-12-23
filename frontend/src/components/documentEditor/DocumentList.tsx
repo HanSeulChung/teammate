@@ -64,16 +64,26 @@ const ButtonContainer = styled.div`
 const SearchInput = styled.input`
   background-color: white;
   width: 100%;
-  height: 28px;
+  height: 45px;
   color: black;
   font-size: 16px;
+  border: 1px solid black;
   border-radius: 8px;
+  padding: 12px;
 `;
 
 const TitleDomStyled = styled.h1`
   font-size: 24px;
   margin-bottom: 12px;
   font-weight: 700;
+`;
+
+const PagenationButton = styled.button`
+  background-color: rgb(163, 204, 163);
+`;
+
+const PagenationButtonContainer = styled.div`
+  display: flex;
 `;
 
 type Document = {
@@ -106,10 +116,22 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
           `${API_BASE_URL}/team/${Id}/documents`,
         );
 
-        // 'content' 필드에서 문서 배열을 추출하여 상태 업데이트
+        console.log(response);
+
         if (response.data && Array.isArray(response.data.content)) {
-          setDocuments(response.data.content);
-          setFilteredDocuments(response.data.content);
+          const sortedDocuments = response.data.content.sort(
+            (
+              a: { createdDt: string | number | Date },
+              b: { createdDt: string | number | Date },
+            ) => {
+              return (
+                new Date(b.createdDt).getTime() -
+                new Date(a.createdDt).getTime()
+              );
+            },
+          );
+          setDocuments(sortedDocuments);
+          setFilteredDocuments(sortedDocuments);
         } else {
           // 응답에 'content' 배열이 없는 경우
           console.error("Invalid response structure:", response.data);
@@ -148,12 +170,12 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     let pages = [];
     for (let i = 0; i < totalPages; i++) {
       pages.push(
-        <button key={i} onClick={() => handlePageChange(i)}>
+        <PagenationButton key={i} onClick={() => handlePageChange(i)}>
           {i + 1}
-        </button>,
+        </PagenationButton>,
       );
     }
-    return <div>{pages}</div>;
+    return <PagenationButtonContainer>{pages}</PagenationButtonContainer>;
   };
 
   const currentDocuments = filteredDocuments.slice(
