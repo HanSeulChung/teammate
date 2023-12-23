@@ -5,7 +5,7 @@ import axiosInstance from "../../axios";
 
 const DocumentContainer = styled.div`
   box-sizing: border-box;
-  width: 1024px;
+  width: 800px;
   height: auto;
   display: flex;
   align-content: space-between;
@@ -110,36 +110,37 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  const [Id, setId] = useState<number>(teamId);
+  const navigate = useNavigate();
   const API_BASE_URL = "http://118.67.128.124:8080";
+  const [totalPages, setTotlaPages] = useState<number>(0);
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const response = await axiosInstance.get(
-          `${API_BASE_URL}/team/${Id}/documents`,
+          `${API_BASE_URL}/team/${teamId}/documents?page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
         );
 
-        console.log(response);
+        console.log(
+          "response : ",
+          `${API_BASE_URL}/team/${teamId}/documents?page=${currentPage}&size=${pageSize}`,
+        );
+
+        console.log("data : ", response.data);
+
+        setTotlaPages(response.data.totalPages);
+
+        console.log("currentpage : ", currentPage);
 
         if (response.data && Array.isArray(response.data.content)) {
           const sortedDocuments = response.data.content.sort(
-            (
-              a: { createdDt: string | number | Date },
-              b: { createdDt: string | number | Date },
-            ) => {
-              return (
-                new Date(b.createdDt).getTime() -
-                new Date(a.createdDt).getTime()
-              );
-            },
+            (a: any, b: any) =>
+              new Date(b.createdDt).getTime() - new Date(a.createdDt).getTime(),
           );
-          setDocuments(sortedDocuments);
           setFilteredDocuments(sortedDocuments);
         } else {
-          // 응답에 'content' 배열이 없는 경우
           console.error("Invalid response structure:", response.data);
         }
       } catch (error) {
@@ -150,29 +151,27 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     if (teamId) {
       fetchDocuments();
     }
-  }, [teamId]);
+  }, [teamId, currentPage, pageSize]);
 
   useEffect(() => {
-    // 검색 필터링
-    const filtered = documents.filter(
+    const filtered = filteredDocuments.filter(
       (doc) =>
         doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-    setFilteredDocuments(filtered);
-  }, [searchTerm, documents]);
+    setDocuments(filtered);
+  }, [searchTerm, filteredDocuments]);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const handlePageChange = (page: any) => {
+    console.log("page : ", page);
+    setCurrentPage(page + 1);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: { target: { value: any } }) => {
     setSearchTerm(event.target.value);
   };
 
   const renderPagination = () => {
-    const totalPages = Math.ceil(filteredDocuments.length / pageSize);
-
     let pages = [];
     for (let i = 0; i < totalPages; i++) {
       pages.push(
@@ -184,14 +183,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     return <PagenationButtonContainer>{pages}</PagenationButtonContainer>;
   };
 
-  const currentDocuments = filteredDocuments.slice(
-    currentPage * pageSize,
-    (currentPage + 1) * pageSize,
-  );
-
-  const navigate = useNavigate();
-
-  const handleDocumentClick = (id: string) => {
+  const navigateToDocument = (id: string) => {
     navigate(`/team/${teamId}/documents/${id}`);
   };
 
@@ -223,11 +215,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         </ButtonContainer>
       </InputAndButton>
       <DocumentContainer>
-        {currentDocuments.length !== 0 ? (
-          currentDocuments.map((doc) => (
+        {documents.length !== 0 ? (
+          documents.map((doc) => (
             <DocumentItem
               key={doc.id}
-              onClick={() => handleDocumentClick(doc.id)}
+              onClick={() => navigateToDocument(doc.id)}
             >
               <TitleContentContainer>
                 <TitleDomStyled>제목 : {doc.title}</TitleDomStyled>
