@@ -14,7 +14,7 @@ const DocumentContainer = styled.div`
 `;
 
 const DocumentItem = styled.div`
-  width: 100%;
+  width: 800px;
   border: 1px solid black;
   display: flex;
   justify-content: space-between;
@@ -47,7 +47,11 @@ const DatesContainer = styled.div`
 `;
 
 const Container = styled.section`
+  width: 800px;
   min-height: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 `;
 
 const InputAndButton = styled.div`
