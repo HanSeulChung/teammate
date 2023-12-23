@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axiosInstance from "../../axios";
 
-const API_BASE_URL = "http://118.67.128.124:8080";
-
 const DocumentContainer = styled.div`
   box-sizing: border-box;
   width: 1024px;
@@ -93,6 +91,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 10;
   const [Id, setId] = useState<number>(teamId);
+  const API_BASE_URL = "http://118.67.128.124:8080";
 
   useEffect(() => {
     const fetchDocuments = async () => {
