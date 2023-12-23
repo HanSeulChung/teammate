@@ -94,7 +94,6 @@ const Comment: React.FC = () => {
           (item: { teamId: number }) => item.teamId === Number(teamId),
         );
         setParticipantIds(participant ? participant.teamParticipantsId : null);
-        console.log(commentsPage);
       } catch (error) {
         console.error("Error fetching participants:", error);
       }
@@ -198,10 +197,7 @@ const Comment: React.FC = () => {
       );
 
       const participants = response.data.content;
-      console.log(participants);
-      const participant = participants.map((data: any) =>
-        console.log("data : ", data),
-      );
+
       const nicknames = response.data.content
         .filter((data: { teamId: number }) => data.teamId === teamId)
         .filter(
@@ -209,12 +205,8 @@ const Comment: React.FC = () => {
             data.teamParticipantsId === participantIds,
         )
         .map((data: { teamNickName: any }) => data.teamNickName);
-      // const participant = participants.find(
-      //   (p: { teamParticipantsId: any; teamId: any }) =>
-      //     p.teamParticipantsId === teamParticipantsId && p.teamId === teamId,
-      // );
+
       return nicknames;
-      // return participant ? participant.teamNickName : "참가자가 없습니다.";
     } catch (error) {
       console.error("Error fetching team participants:", error);
       return "데이터를 가져오는데 실패했습니다.";
