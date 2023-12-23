@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useRecoilValue } from "recoil";
-import { accessTokenState } from "../../state/authState";
 import axiosInstance from "../../axios";
 
 const API_BASE_URL = "http://118.67.128.124:8080";
@@ -76,7 +73,7 @@ const SearchInput = styled.input`
 `;
 
 type Document = {
-  documentId: string;
+  id: string;
   title: string;
   content: string;
   teamId: string;
@@ -95,26 +92,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 10;
-  const accessToken = useRecoilValue(accessTokenState);
   const [Id, setId] = useState<number>(teamId);
-
-  console.log("id:", Id);
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `${API_BASE_URL}/team/${Id}/documents`,
-        );
-        console.log("data :", response.data);
-        setDocuments(response.data);
-        setFilteredDocuments(response.data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    fetchDocuments();
-  }, [currentPage, teamId, accessToken]);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -138,7 +116,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     };
 
     fetchDocuments();
-  }, [currentPage, teamId, accessToken]);
+  }, [currentPage, teamId]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -149,9 +127,8 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   };
 
   const renderPagination = () => {
-    const totalPages = Math.ceil(
-      filteredDocuments ? filteredDocuments.length : 0 / pageSize,
-    );
+    const totalPages = Math.ceil(filteredDocuments.length / pageSize);
+
     let pages = [];
     for (let i = 0; i < totalPages; i++) {
       pages.push(
@@ -172,8 +149,8 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
 
   const navigate = useNavigate();
 
-  const handleDocumentClick = (documentId: string) => {
-    navigate(`/team/${teamId}/documents/${documentId}`);
+  const handleDocumentClick = (id: string) => {
+    navigate(`/team/${teamId}/documents/${id}`);
   };
 
   const handleDocumentCreate = () => {
@@ -196,25 +173,30 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
       </InputAndButton>
       <DocumentContainer>
         {currentDocuments.length !== 0 ? (
-          currentDocuments.map((doc) => (
-            <DocumentItem
-              key={doc.documentId}
-              onClick={() => handleDocumentClick(doc.documentId)}
-            >
-              <TitleContentContainer>
-                <h2>{doc.title}</h2>
-                <p>
-                  {doc.content.length > 20
-                    ? doc.content
-                    : doc.content.substring(20) + "..."}
-                </p>
-              </TitleContentContainer>
-              <DatesContainer>
-                <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
-                <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
-              </DatesContainer>
-            </DocumentItem>
-          ))
+          currentDocuments.map(
+            (doc) => (
+              console.warn(doc.id),
+              (
+                <DocumentItem
+                  key={doc.id}
+                  onClick={() => handleDocumentClick(doc.id)}
+                >
+                  <TitleContentContainer>
+                    <h2>{doc.title}</h2>
+                    <p>
+                      {doc.content.length < 20
+                        ? doc.content
+                        : doc.content.substring(20) + "..."}
+                    </p>
+                  </TitleContentContainer>
+                  <DatesContainer>
+                    <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
+                    <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
+                  </DatesContainer>
+                </DocumentItem>
+              )
+            ),
+          )
         ) : (
           <span>문서가 없습니다.</span>
         )}
