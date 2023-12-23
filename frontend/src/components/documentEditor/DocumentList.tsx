@@ -70,7 +70,11 @@ const SearchInput = styled.input`
   border-radius: 8px;
 `;
 
-const titleDomStyled = styled.h1``;
+const TitleDomStyled = styled.h1`
+  font-size: 24px;
+  margin-bottom: 12px;
+  font-weight: 700;
+`;
 
 type Document = {
   id: string;
@@ -193,9 +197,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
               onClick={() => handleDocumentClick(doc.id)}
             >
               <TitleContentContainer>
-                <h2>title : {doc.title}</h2>
+                <TitleDomStyled>제목 : {doc.title}</TitleDomStyled>
                 <p>
-                  content :
+                  내용 :{" "}
                   {doc.content.length < 20
                     ? doc.content
                     : doc.content.slice(0, 20) + "..."}
