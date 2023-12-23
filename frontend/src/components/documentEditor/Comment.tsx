@@ -86,7 +86,6 @@ const Comment: React.FC = () => {
   const [nicknames, setNicknames] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
-    // userTeamId 가져오기
     const fetchParticipants = async () => {
       try {
         const response = await axiosInstance.get("/member/participants", {});
@@ -226,7 +225,7 @@ const Comment: React.FC = () => {
           comment.writerId,
           Number(teamId),
         );
-        newNicknames[comment.writerId.toString()] = nickname; // writerId를 문자열로 변환하여 사용
+        newNicknames[comment.writerId.toString()] = nickname;
       }
       setNicknames(newNicknames);
     };
