@@ -123,16 +123,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
           `${API_BASE_URL}/team/${teamId}/documents?page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
         );
 
-        console.log(
-          "response : ",
-          `${API_BASE_URL}/team/${teamId}/documents?page=${currentPage}&size=${pageSize}`,
-        );
-
-        console.log("data : ", response.data);
-
         setTotlaPages(response.data.totalPages);
-
-        console.log("currentpage : ", currentPage);
 
         if (response.data && Array.isArray(response.data.content)) {
           const sortedDocuments = response.data.content.sort(
@@ -163,7 +154,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   }, [searchTerm, filteredDocuments]);
 
   const handlePageChange = (page: any) => {
-    console.log("page : ", page);
     setCurrentPage(page + 1);
   };
 
