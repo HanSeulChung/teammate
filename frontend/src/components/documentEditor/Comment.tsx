@@ -1,9 +1,6 @@
-import axios from "axios";
 import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { accessTokenState } from "../../state/authState";
 import axiosInstance from "../../axios";
 
 // 스타일 컴포넌트 정의
@@ -79,7 +76,6 @@ const Comment: React.FC = () => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingComment, setEditingComment] = useState("");
   const [newComment, setNewComment] = useState("");
-  const accessToken = useRecoilValue(accessTokenState);
   const { teamId, documentsId } = useParams<{
     teamId: string;
     documentsId: string;
@@ -98,7 +94,7 @@ const Comment: React.FC = () => {
     };
 
     fetchComments();
-  }, [teamId, documentsId, accessToken]);
+  }, [teamId, documentsId]);
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEditingComment(e.target.value);
@@ -153,7 +149,10 @@ const Comment: React.FC = () => {
     try {
       const response = await axiosInstance.post(
         `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
-        { comment: newComment, writerId: 1 }, // writerId 교체하기!!!!!!!
+        {
+          comment: newComment,
+          writerId: JSON.parse(localStorage.getItem("user") ?? "").id,
+        },
       );
       setCommentsPage({
         ...commentsPage,
