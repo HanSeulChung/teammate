@@ -35,7 +35,7 @@ public class CommentService {
 
     Documents validDocument = validCheck.findValidDocument(documentId);
 
-    validCheck.validDocumentByTeamId(teamId, validDocument);
+    validCheck.validDocumentByTeamId(teamId, validDocument.getTeamId());
 
     Comment comment = commentRepository.save(Comment.builder()
         .teamId(teamId)
@@ -54,9 +54,9 @@ public class CommentService {
     validCheck.validTeamParticipant(memberId);
     TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
 
-    Documents documents = validCheck.findValidDocument(documentId);
-    validCheck.validDocumentByTeamId(teamId, documents);
-    List<Comment> commentIds = documents.getCommentIds();
+    Documents validDocument = validCheck.findValidDocument(documentId);
+    validCheck.validDocumentByTeamId(teamId, validDocument.getTeamId());
+    List<Comment> commentIds = validDocument.getCommentIds();
 
     if (commentIds != null && !commentIds.isEmpty()) {
       int start = (int) pageable.getOffset();
@@ -75,12 +75,12 @@ public class CommentService {
     validCheck.validTeamParticipant(memberId);
     TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
 
-    Documents documents = validCheck.findValidDocument(documentId);
-    validCheck.validDocumentByTeamId(teamId, documents);
+    Documents validDocument = validCheck.findValidDocument(documentId);
+    validCheck.validDocumentByTeamId(teamId, validDocument.getTeamId());
 
     Comment comment = validCheck.findValidComment(commentId);
 
-    validCheck.validCommentByWrterId(comment, commentEditRequest.getEditorId());
+    validCheck.validCommentByWriterId(comment.getWriterId(), commentEditRequest.getEditorId());
 
     return commentRepository.save(Comment.builder()
         .id(commentId)
@@ -98,22 +98,22 @@ public class CommentService {
     validCheck.validTeamParticipant(memberId);
     TeamParticipants teamParticipants = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
 
-    Documents documents = validCheck.findValidDocument(documentId);
+    Documents validDocument = validCheck.findValidDocument(documentId);
 
-    validCheck.validDocumentByTeamId(teamId, documents);
+    validCheck.validDocumentByTeamId(teamId, validDocument.getTeamId());
 
-    Comment comment = validCheck.findValidComment(commentId);
+    Comment validComment = validCheck.findValidComment(commentId);
 
-    validCheck.validCommentByWrterId(comment, teamParticipants.getTeamParticipantsId());
+    validCheck.validCommentByWriterId(validComment.getWriterId(), teamParticipants.getTeamParticipantsId());
 
     commentRepository.deleteById(commentId);
-    documents.getCommentIds().removeIf(deletedComment -> deletedComment.getId().equals(commentId));
-    documentsRepository.save(documents);
+    validDocument.getCommentIds().removeIf(deletedComment -> deletedComment.getId().equals(commentId));
+    documentsRepository.save(validDocument);
 
     return DeleteCommentsResponse.builder()
         .id(commentId)
-        .writerId(comment.getWriterId())
-        .content(comment.getContent())
+        .writerId(validComment.getWriterId())
+        .content(validComment.getContent())
         .message("해당 댓글이 삭제 되었습니다.")
         .build();
   }

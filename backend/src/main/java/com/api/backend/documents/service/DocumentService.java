@@ -84,17 +84,17 @@ public class DocumentService {
 
     TeamParticipants teamParticipant = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
 
-    Documents documents = validCheck.findValidDocument(documentId);
-    validCheck.validDocumentByTeamId(teamId, documents);
-    validCheck.validDocumentByWriterId(teamParticipant, documents);
+    Documents validDocument = validCheck.findValidDocument(documentId);
+    validCheck.validDocumentByTeamId(teamId, validDocument.getTeamId());
+    validCheck.validDocumentByWriterId(validDocument.getWriterId(), teamParticipant.getTeamParticipantsId());
     documentsRepository.deleteById(documentId);
 
     return DeleteDocsResponse.builder()
-        .id(documents.getId())
+        .id(validDocument.getId())
         .deleteParticipantId(teamParticipant.getTeamParticipantsId())
         .teamId(teamId)
         .deleteParticipantNickName(teamParticipant.getTeamNickName())
-        .title(documents.getTitle())
+        .title(validDocument.getTitle())
         .message("삭제 되었습니다.")
         .build();
   }
