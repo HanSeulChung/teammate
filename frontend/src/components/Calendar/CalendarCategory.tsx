@@ -59,18 +59,18 @@ const CalendarCategory = () => {
 
     return (
         <>
-            <div className="p-3 bg-white rounded-lg shadow w-60 dark:bg-gray-700">
+            <div className="p-3 bg-white rounded-lg shadow w-60">
                 <div className="relative flex justify-between items-center px-2">
                     <h2 className=''>카테고리</h2>
-                    <button onClick={toggleCat} className="p-3 text-sm font-medium text-gray-600 border-t border-gray-200 rounded-b-lg bg-gray-50 dark:border-gray-600 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-500">
+                    <button onClick={toggleCat} className="p-3 text-sm font-medium text-gray-600 border-t border-gray-200 rounded-b-lg bg-gray-50 hover:bg-gray-100">
                         추가
                     </button>
                 </div>
-                <ul className="h-48 px-3 pb-3  text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSearchButton">
+                <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
                     {dummyCatList.map((opt) => (
-                        <li key={opt.id} className="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                            <input type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-                            <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">{opt.category}</label>
+                        <li key={opt.id} className="flex items-center p-2 rounded hover:bg-gray-100">
+                            <input type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-50" />
+                            <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.category}</label>
                         </li>
                     ))}
                 </ul>
