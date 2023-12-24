@@ -8,11 +8,13 @@ import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalen
 import EditEvent from "./EditEvent.tsx";
 // import axios from "axios";
 import axiosInstance from "../../axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 // import { Team } from "../../interface/interface";
 
 const TeamCalender = () => {
+    const navigate = useNavigate();
+
     // 팀 아이디
     const { teamId } = useParams();
 
@@ -110,7 +112,7 @@ const TeamCalender = () => {
                 timeZone="UTC"
                 initialView="dayGridMonth"
                 headerToolbar={{
-                    start: "prev title next",
+                    start: "goTeamHomeButton prev title next",
                     center: "",
                     end: "today dayGridMonth,timeGridWeek"
                 }}
@@ -125,6 +127,14 @@ const TeamCalender = () => {
                     day: "일간",
                     list: "목록"
                 }}
+                customButtons={{
+                    goTeamHomeButton: {
+                      text: "팀 홈",
+                      click: () => {
+                        navigate(`/team/${teamId}`)
+                      }
+                    }
+                  }}
                 events={eventList}
                 dayMaxEvents={true}
                 height="90vh"
