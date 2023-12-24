@@ -5,7 +5,7 @@ const TitleInput = styled.input`
   border: 1px solid black;
   background-color: white;
   color: black;
-  width: 646px;
+  width: 100%;
   font-size: 16px;
   margin-bottom: 4px;
   border: 1px solid gray;

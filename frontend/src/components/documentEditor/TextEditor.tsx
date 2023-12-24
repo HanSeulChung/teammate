@@ -4,6 +4,10 @@ import * as StompJs from "@stomp/stompjs";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { accessTokenState } from "../../state/authState";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import axiosInstance from "../../axios";
+import "./ReactQuill.css";
 
 const StyledTexteditor = styled.div`
   width: 41rem;
@@ -15,6 +19,7 @@ const TextArea = styled.textarea`
   border: 1px solid gray;
   padding: 4px;
   font-size: 16px;
+  background-color: white;
 `;
 
 const TitleInput = styled.input`
@@ -57,20 +62,16 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const client = useRef<StompJs.Client | null>(null);
   const navigate = useNavigate();
 
-  const headers = {
-    Authorization: `Bearer ${accessTokenState}`,
-  };
-
   useEffect(() => {
     client.current = new StompJs.Client({
-      brokerURL: "ws://localhost:8080/ws",
+      brokerURL: "ws://118.67.128.124:8080/ws",
       // connectHeaders: {
-      //   Authorization: `Bearer ${accessToken}`,
+      //   Authorization: `Bearer ${accessTokenState}`,
       // },
     });
 
     const onConnect = (trimmedDocsId: string) => {
-      console.log("Connected to WebSocket with", trimmedDocsId);
+      //console.log("Connected to WebSocket with", trimmedDocsId);
       const docsMessage = {
         documentId: trimmedDocsId,
       };
@@ -79,7 +80,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         destination: "/app/doc.showDocs",
         body: JSON.stringify(docsMessage),
       });
-      console.log("'/app/doc.showDocs'에 publish");
+      //console.log("'/app/doc.showDocs'에 publish");
 
       const displayDocs = (docs: any) => {
         setTitle(docs.title);
@@ -88,7 +89,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
       client.current!.subscribe("/topic/public", (docs) => {
         displayDocs(JSON.parse(docs.body));
-        console.log("docs.body : ", docs.body);
+        //console.log("docs.body : ", docs.body);
       });
     };
 
@@ -111,26 +112,31 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     client.current!.activate();
-    console.log("title content : ", title, content);
+    //console.log("title content : ", title, content);
 
     return () => {
       client.current?.deactivate();
     };
   }, []);
 
-  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newText = event.target.value;
+  const handleTextChange = (
+    content: any,
+    delta: any,
+    source: any,
+    editor: any,
+  ) => {
+    const newText = content;
 
     setContent(newText); // 상태 업데이트
 
     if (client.current) {
       const message = {
         memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
-        title: title,
+        // title: title,
         text: newText,
         documentId: documentsId,
       };
-      console.log("message : ", message);
+      //console.log("message : ", message);
 
       client.current.publish({
         destination: "/topic/broadcastByTextChange",
@@ -142,6 +148,8 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
     setTitle(newTitle);
+
+    setContent(content.replace(/<p>/g, "").replace(/<\/p>/g, "\n"));
 
     if (client.current) {
       const message = {
@@ -162,9 +170,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     const isConfirmed = window.confirm("문서를 삭제하시겠습니까?");
     if (isConfirmed) {
       try {
-        await axios.delete(`/team/${teamId}/documents/${documentsId}`, {
-          headers,
-        });
+        await axiosInstance.delete(`/team/${teamId}/documents/${documentsId}`);
         navigate(`/team/${teamId}/documentsList`);
       } catch (error) {
         console.error("Error deleting document:", error);
@@ -184,7 +190,11 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         onChange={handleTitleChange}
         placeholder="제목을 입력하세요"
       />
-      <TextArea value={content} onChange={handleTextChange} />
+      <ReactQuill
+        value={content}
+        onChange={handleTextChange}
+        preserveWhitespace={true}
+      />
       <ButtonContainer>
         <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
