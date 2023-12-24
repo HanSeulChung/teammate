@@ -1,116 +1,117 @@
 :root {
-    /* 달력 오늘날짜 배경 색 */
-    --fc-today-bg-color: rgba(163, 204, 163, 0.2);
+  /* 달력 오늘날짜 배경 색 */
+  --fc-today-bg-color: rgba(163, 204, 163, 0.2);
 
-    /* 달력 오늘, 이전, 이후, 월별, 주별 버튼 누르고있는동안 스타일 */
-    /* --fc-button-bg-color: #CCCCCC; */
-    --fc-button-active-bg-color: #7aac7a;
-    --fc-button-active-border-color: #7aac7a;
+  /* 달력 오늘, 이전, 이후, 월별, 주별 버튼 누르고있는동안 스타일 */
+  /* --fc-button-bg-color: #CCCCCC; */
+  --fc-button-active-bg-color: #7aac7a;
+  --fc-button-active-border-color: #7aac7a;
 
-    /* 일정 기본색 */
-    --fc-event-bg-color: #7aac7a;
-    --fc-event-border-color: #7aac7a;
+  /* 일정 기본색 */
+  --fc-event-bg-color: #7aac7a;
+  --fc-event-border-color: #7aac7a;
 }
 
 /* 일요일 날짜 빨간색 */
 .fc-day-sun a {
-    color: #E21D29;
-    text-decoration: none;
+  color: #E21D29;
+  text-decoration: none;
 }
 
 /* 토요일 날짜 파란색 */
 .fc-day-sat a {
-    color: #336699;
-    text-decoration: none;
+  color: #336699;
+  text-decoration: none;
 }
 
 /* 달력 요일 스타일링 */
 .fc-col-header {
-    background-color: rgb(163, 204, 163);
-    border-radius: 1rem 1rem 0 0;
-    padding: 1rem 0 1rem 0;
+  background-color: rgb(163, 204, 163);
+  border-radius: 1rem 1rem 0 0;
+  padding: 1rem 0 1rem 0;
 }
 
-.fc .fc-scrollgrid-section, .fc .fc-scrollgrid-section table  {
-    height: 45px;
+.fc .fc-scrollgrid-section,
+.fc .fc-scrollgrid-section table {
+  height: 45px;
 }
 
 .fc-scrollgrid-sync-inner {
-    padding-top: 7px;
+  padding-top: 7px;
 }
 
 .fc-col-header-cell-cushion {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /* 모달여부에 따른 스탈일 적용 */
 body.active-modal {
-    overflow-y: hidden;
+  overflow-y: hidden;
 }
 
 /* 달력 이번달 날짜가 아닌 날짜 배경색 */
 .fc-day.fc-day-other {
-    background-color: #F5F6F7;
+  background-color: #F5F6F7;
 }
 
 /* 달력 이번달 날짜가 아닌 날짜 */
 .fc .fc-day-other .fc-daygrid-day-top {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 
 /* 달력 테두리 */
 .fc-theme-standard .fc-scrollgrid {
-    border-top: none;
-    /* border-left: none; */
-    border-top-left-radius: 6%;
+  border-top: none;
+  /* border-left: none; */
+  border-top-left-radius: 6%;
 }
 
 .fc-theme-standard th {
-    border: none;
+  border: none;
 }
 
 /* 달력 날짜 위치 */
 .fc .fc-daygrid-day-top {
-    display: flex;
-    flex-direction: row;
-    padding: 0 0 0 0.5rem;
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 0 0.5rem;
 }
 
 /* 달력 현재 보여주는 달 혹은 주간 헤더 */
 .fc-toolbar-title {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /* 달력 헤더 날짜랑 버튼 나란히 */
 .fc-toolbar-chunk:nth-of-type(1) {
-    display: flex;
-    color: #333333;
+  display: flex;
+  color: #333333;
 }
 
 /* 달력 오늘, 이전, 이후, 월별, 주별 버튼 */
 /* 테스트 */
-.fc .fc-button{
-    background-color: white;
+.fc .fc-button {
+  background-color: white;
 }
-  
+
 .fc .fc-button-primary:not(:disabled).fc-button-active {
-    background-color: #7aac7a;
-    color: white;
+  background-color: #7aac7a;
+  color: white;
 }
-  
+
 .fc .fc-button-primary {
-    background-color: white;
-    color: #333333;
+  background-color: white;
+  color: #333333;
 }
 
-.fc .fc-button:hover{
-    background-color: #a3cca3;
+.fc .fc-button:hover {
+  background-color: #a3cca3;
 }
 
-.fc .fc-button:focus{
-    background-color: #a3cca3;
+.fc .fc-button:focus {
+  background-color: #a3cca3;
 }
 
-.fc .fc-button:active{
-    background-color: #a3cca3;
+.fc .fc-button:active {
+  background-color: #a3cca3;
 }
