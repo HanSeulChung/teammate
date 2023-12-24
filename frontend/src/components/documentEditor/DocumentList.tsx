@@ -326,7 +326,7 @@ interface BlurLayerProps {
   width: string;
 }
 
-const ContentDomStyled = styled.p`
+const ContentDomStyled = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
