@@ -24,6 +24,8 @@ const DocumentItem = styled.div`
   margin: 4px 0;
   padding: 10px;
   border-radius: 12px;
+  // background-color: rgb(163, 204, 163);
+  box-shadow: 4px 6px 10px 0px rgb(163, 204, 163);
 `;
 
 const TitleContentContainer = styled.div`
@@ -88,6 +90,7 @@ const TitleDomStyled = styled.h1`
 
 const PagenationButton = styled.button`
   background-color: rgb(163, 204, 163);
+  margin-right: 4px;
 `;
 
 const PagenationButtonContainer = styled.div`
@@ -291,7 +294,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
                 </p>
               </TitleContentContainer>
               <DatesContainer>
-                <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
+                <TitleDaytime>
+                  Created: {formatDate(doc.createdDt)}
+                </TitleDaytime>
                 <TitleDaytime>
                   Updated: {formatDate(doc.updatedDt)}
                 </TitleDaytime>
