@@ -183,6 +183,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     navigate(`${currentPath}/comment`);
   };
 
+  const handleSaveAndExit = async () => {
+    navigate(`/team/${teamId}/documentsList`);
+  };
+
   return (
     <StyledTexteditor>
       <TitleInput
@@ -197,6 +201,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       />
       <ButtonContainer>
         <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
+        <StyledButton onClick={handleSaveAndExit}>저장 후 나가기</StyledButton>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
       </ButtonContainer>
     </StyledTexteditor>
