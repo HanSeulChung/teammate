@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,8 +34,5 @@ public class TeamParticipantsDto {
         .teamRole(teamParticipants.getTeamRole())
         .participantsProfileUrl(teamParticipants.getParticipantsProfileUrl())
         .build();
-  }
-  public static Page<TeamParticipantsDto> fromDtos(Page<TeamParticipants> teamParticipantsPage){
-    return teamParticipantsPage.map(TeamParticipantsDto::from);
   }
 }
