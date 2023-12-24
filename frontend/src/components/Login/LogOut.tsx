@@ -19,7 +19,7 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
       // 로그아웃 API 호출
       await axiosInstance.post("/logout");
 
-      localStorage.clear();
+      window.sessionStorage.clear();
       console.log("로그아웃 되었습니다.");
       onLogoutSuccess();
 

@@ -12,7 +12,7 @@ const axiosInstance: AxiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     //토큰이 있는지 확인하고, 있다면 헤더에 추가합니다.
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = window.sessionStorage.getItem("accessToken");
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
       // 토큰 갱신 로직
       const originalConfig = error.config;
       if (originalConfig) {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const refreshToken = window.sessionStorage.getItem("refreshToken");
         if (refreshToken) {
           try {
             // 새로운 토큰 요청

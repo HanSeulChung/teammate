@@ -3,7 +3,14 @@ import { recoilPersist } from "recoil-persist";
 import { useEffect } from "react";
 import { Team, User, TokenState } from "../interface/interface.ts";
 
-const { persistAtom } = recoilPersist();
+// window.sessionStorage 선언
+const sessionStorage =
+  typeof window !== "undefined" ? window.sessionStorage : undefined;
+
+const { persistAtom } = recoilPersist({
+  key: "persistAtom",
+  storage: sessionStorage,
+});
 
 //로그인된 사용자 상태
 export const loggedInUserState = atom<string | null>({
@@ -58,25 +65,25 @@ export const userState = atom({
 // 리프레시 토큰 저장 함수
 export const saveRefreshToken = (token: string | null) => {
   if (token) {
-    localStorage.setItem("refreshToken", token);
+    window.sessionStorage.setItem("refreshToken", token);
   } else {
-    localStorage.removeItem("refreshToken");
+    window.sessionStorage.removeItem("refreshToken");
   }
 };
 
 // 액세스 토큰 저장 함수
 export const saveAccessToken = (token: string | null) => {
   if (token) {
-    localStorage.setItem("accessToken", token);
+    window.sessionStorage.setItem("accessToken", token);
   } else {
-    localStorage.removeItem("accessToken");
+    window.sessionStorage.removeItem("accessToken");
   }
 };
 
 // 토큰 저장 함수
 export const saveToken = ({ accessToken, refreshToken }: TokenState) => {
-  localStorage.setItem("accessToken", accessToken);
-  localStorage.setItem("refreshToken", refreshToken);
+  window.sessionStorage.setItem("accessToken", accessToken);
+  window.sessionStorage.setItem("refreshToken", refreshToken);
 };
 
 //사용자 저장 함수
@@ -85,18 +92,18 @@ export const useUser = () => {
 
   const saveUser = (loggedInUser: User) => {
     setUser(loggedInUser);
-    localStorage.setItem("user", JSON.stringify(loggedInUser));
+    window.sessionStorage.setItem("user", JSON.stringify(loggedInUser));
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = window.sessionStorage.getItem("user");
 
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       } catch (error) {
-        console.error("Error parsing user from localStorage:", error);
+        console.error("Error parsing user from window.sessionStorage:", error);
       }
     }
   }, [setUser]);
@@ -112,10 +119,10 @@ export const logout = () => {
 export const searchState = atom({
   key: "searchState",
   // default: (() => {
-  //   const storedSearch = localStorage.getItem("search");
+  //   const storedSearch = window.sessionStorage.getItem("search");
   //   return storedSearch || "";
   // })() as string,
-  default: localStorage.getItem("search") || "",
+  default: window.sessionStorage.getItem("search") || "",
 });
 
 // 검색 관련 상태 및 함수
@@ -153,7 +160,7 @@ export const userTeamsState = atom<Team[]>({
 export const selectedTeamSizeState = atom({
   key: "selectedTeamSizeState",
   default: (() => {
-    const storedTeamSize = localStorage.getItem("selectedTeamSize");
+    const storedTeamSize = window.sessionStorage.getItem("selectedTeamSize");
     return storedTeamSize || "1-9";
   })(),
 });
@@ -178,7 +185,7 @@ export const useSelectedTeamState = () => useRecoilState(selectedTeamState);
 //   effects_UNSTABLE: [
 //     ({ onSet }) => {
 //       onSet((newValue) => {
-//         localStorage.setItem("user", JSON.stringify(newValue));
+//         window.sessionStorage.setItem("user", JSON.stringify(newValue));
 //       });
 //     },
 //   ],
@@ -206,7 +213,7 @@ export const teamListState = atom<Team[]>({
 export const teamNameState = atom({
   key: "teamNameState",
   default: (() => {
-    const storedTeamName = localStorage.getItem("teamName");
+    const storedTeamName = window.sessionStorage.getItem("teamName");
     return storedTeamName || "";
   })(),
 });

@@ -34,9 +34,9 @@ const HomeContent = () => {
         });
         // Recoil 상태 업데이트
         setUserTeams(teamListResponse.data.content);
-
+        console.log(accessToken);
         // localStorage에 저장
-        localStorage.setItem(
+        window.sessionStorage.setItem(
           `teamList_${accessToken}`,
           JSON.stringify(teamListResponse.data.content),
         );
