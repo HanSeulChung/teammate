@@ -35,7 +35,7 @@ const Router = () => {
       <Route path="/signIn" element={<SignInView />} />
       <Route path="/kakaoLogin" element={<KakaoLogin />} />
       <Route path="/homeView" element={<HomeView />} />
-      <Route path="/team/:teamId/schedules" element={<Calender />} />
+      <Route path="/team/:teamId/schedule" element={<Calender />} />
       <Route path="/team/:teamId/documents" element={<CreateTextView />} />
       <Route path="/team/:teamId/documents/:documentsId" element={<TextEditorView />} />
       <Route path="/team/:teamId/documentsList/" element={<DocumentListView />} />
