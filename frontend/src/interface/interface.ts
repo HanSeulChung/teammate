@@ -33,23 +33,13 @@ export interface TokenState {
   refreshToken: string;
 }
 
-export interface TeamProfileProps {
-  selectedTeam: string | null;
-  selectedImage: string | null;
-  nickname: string;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleNicknameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleUpdateProfile: (image: string | null, nickname: string) => void;
-  teamList: Team[];
-  teamId: string;
-  accessToken: string;
-}
-
-export interface UserProfileProps {
-  user: User | null;
-  teamList: Team[];
-  selectedTeam: string | null;
-  handleTeamSelect: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+//내 팀 프로필
+export interface TeamProfileUpdate {
+  teamParticipantsId: number;
+  teamId: number;
+  teamRole: string;
+  participantsProfileUrl: string;
+  teamNickName: string;
 }
 
 //멤버

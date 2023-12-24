@@ -1,124 +1,88 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import profileImg from "../../assets/profileImg.png";
-
-interface MemberInputProps {
-  isTeamLeader?: boolean;
-}
-
-const TeamProfileContainer = styled.div`
-  text-align: center;
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`;
-const TeamProfileTitle = styled.h2`
-  text-align: center;
-  margin-bottom: 30px;
-`;
-
-const TeamInfoContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-`;
-
-const TeamImage = styled.img`
-  max-width: 100px;
-  max-height: 100px;
-  border-radius: 50%;
-  margin-right: 20px;
-`;
-
-const TeamInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const TeamName = styled.span`
-  font-weight: bold;
-`;
-
-const SelectContainer = styled.div`
-  text-align: center;
-  margin-top: 10px;
-`;
-
-const SearchInput = styled.input`
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-  margin: 20px 0 10px 0;
-`;
-
-const MemberContainer = styled.div`
-  max-height: 150px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const MemberInput = styled.input<MemberInputProps>`
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 5px;
-  font-weight: ${({ isTeamLeader }) => (isTeamLeader ? "bold" : "normal")};
-  border: none;
-  padding: 5px;
-  background-color: transparent;
-  cursor: pointer;
-  &:hover {
-    background-color: #f0f0f0;
-  }
-`;
+import { Team, TeamParticipant } from "../../interface/interface";
+import axiosInstance from "../../axios";
 
 const TeamMembers = () => {
-  const teamInfo = {
-    name: "팀 명", // 실제 데이터로 교체
-    image: "팀 이미지 경로", // 실제 데이터로 교체
-  };
+  const [team, setTeam] = useState<Team | null>(null);
+  const [searchTeam, setSearchTeam] = useState("");
+  const [teamParticipants, setTeamParticipants] = useState<TeamParticipant[]>(
+    [],
+  );
+  const { teamId } = useParams();
+
+  //팀 정보 가져오기
+  useEffect(() => {
+    const fetchTeamInfo = async () => {
+      try {
+        const response = await axiosInstance.get<Team>(`/team/${teamId}`);
+        setTeam(response.data);
+      } catch (error) {
+        console.error("Error fetching team info:", error);
+      }
+    };
+    const fetchTeamParticipants = async () => {
+      try {
+        const response = await axiosInstance.get<TeamParticipant[]>(
+          `/team/${teamId}/participant/list`,
+        );
+        console.log(response.data);
+        setTeamParticipants(response.data);
+      } catch (error) {
+        console.error("Error fetching team participants:", error);
+      }
+    };
+    if (teamId) {
+      fetchTeamInfo();
+      fetchTeamParticipants();
+    }
+  }, [teamId]);
 
   // 팀원 목록
-  const teamMembers = [
-    { id: 1, name: "팀원1" },
-    { id: 2, name: "팀원2" },
-    { id: 3, name: "팀원3" },
-    { id: 4, name: "팀원4" },
-    { id: 5, name: "김팀장" },
-    { id: 6, name: "팀원6" },
-    { id: 7, name: "팀원7" },
-    { id: 8, name: "팀원8" },
-    // ... 다른 팀원 데이터
-  ];
-
-  // 검색어 상태
-  const [searchTeam, setSearchTeam] = useState("");
+  const teamMembers = teamParticipants.map((participant) => ({
+    id: participant.teamParticipantsId,
+    name: participant.teamNickName,
+    role: participant.teamRole,
+  }));
 
   // 검색된 팀원 목록
   const filteredTeamMembers = teamMembers
-    .filter((member) =>
-      member.name.toLowerCase().includes(searchTeam.toLowerCase()),
-    )
-    .sort((a, b) => (a.name === "김팀장" ? -1 : b.name === "김팀장" ? 1 : 0));
+    ? teamMembers
+        .filter((member) =>
+          member.name.toLowerCase().includes(searchTeam.toLowerCase()),
+        )
+        .sort((a, b) => {
+          if (a.role === "READER" && b.role !== "READER") {
+            return -1;
+          } else if (a.role !== "READER" && b.role === "READER") {
+            return 1;
+          } else {
+            return a.name.localeCompare(b.name);
+          }
+        })
+    : [];
+  // 팀장 여부에 따라 스타일을 적용하는 함수
+  const getMemberStyle = (isTeamLeader: boolean) => {
+    return {
+      fontWeight: isTeamLeader ? "bold" : "normal",
+    };
+  };
 
   return (
     <div>
       <TeamProfileContainer>
-        <TeamProfileTitle>팀 프로필</TeamProfileTitle>
-
+        <TeamProfileTitle>{team?.name} 프로필</TeamProfileTitle>
         <TeamInfoContainer>
-          <TeamImage src={profileImg} alt={teamInfo.name} />
-          <TeamInfo>
-            <TeamName>{teamInfo.name}</TeamName>
-          </TeamInfo>
+          {team ? (
+            <>
+              <TeamImage src={team.profileUrl || profileImg} alt="프로필" />
+            </>
+          ) : (
+            <div>Loading...</div>
+          )}
         </TeamInfoContainer>
-
         <SelectContainer>
           <SearchInput
             type="text"
@@ -138,10 +102,9 @@ const TeamMembers = () => {
                   key={member.id}
                   type="text"
                   value={`${member.name} ${
-                    member.name === "김팀장" ? "(팀장)" : ""
+                    member.role === "READER" ? "(팀장)" : ""
                   }`}
-                  readOnly
-                  isTeamLeader={member.name === "김팀장"}
+                  style={getMemberStyle(member.role === "READER")}
                 />
               ))}
             </MemberContainer>
@@ -153,3 +116,68 @@ const TeamMembers = () => {
 };
 
 export default TeamMembers;
+
+const TeamProfileContainer = styled.div`
+  text-align: center;
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+const TeamProfileTitle = styled.h2`
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold; // 팀 이름 bold 스타일 적용
+  font-size: 1.5em;
+`;
+
+const TeamInfoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`;
+
+const TeamImage = styled.img`
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+`;
+
+const SelectContainer = styled.div`
+  text-align: center;
+  margin-top: 10px;
+`;
+
+const SearchInput = styled.input`
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin: 20px 0 10px 0;
+  background: white;
+  width: 100%;
+`;
+
+const MemberContainer = styled.div`
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const MemberInput = styled.input`
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 5px;
+  border: none;
+  padding: 5px;
+  background-color: transparent;
+  cursor: pointer;
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;

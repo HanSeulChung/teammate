@@ -47,7 +47,7 @@ const StyledModal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
     <ModalOverlay isOpen={isOpen}>
       <ModalContent>
         {children}
-        <CloseButton onClick={onClose}>닫기</CloseButton>
+        {/* <CloseButton onClick={onClose}>닫기</CloseButton> */}
       </ModalContent>
     </ModalOverlay>
   );

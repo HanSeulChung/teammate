@@ -9,7 +9,7 @@ import {
   accessTokenState,
   isAuthenticatedState,
 } from "../../state/authState";
-import { Team } from "../../interface/interface";
+import { Team } from "../../interface/interface.ts";
 
 const HomeContent = () => {
   const [userTeams, setUserTeams] = useRecoilState<Team[]>(userTeamsState);
@@ -110,7 +110,7 @@ const HomeContent = () => {
 export default HomeContent;
 
 const TeamListContainer = styled.div`
-//   position: absolute;
+  position: absolute;
   width: 1000px;
   top: 280px;
   display: flex;
