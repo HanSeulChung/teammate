@@ -108,7 +108,7 @@ public class TeamController {
           )
       })
   @TeamParticipantsSendNotify
-  @PostMapping("/{teamId}/{code}")
+  @GetMapping("/{teamId}/{code}")
   public ResponseEntity<TeamParticipantsNotifyByDto> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,
       @PathVariable("code") String code,
