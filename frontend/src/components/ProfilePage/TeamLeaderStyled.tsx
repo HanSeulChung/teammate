@@ -87,11 +87,13 @@ export const TeamMembersContainer = styled.div`
 `;
 
 export const ConfirmationModal = styled.div`
-  position: fixed;
-  top: 50%;
+  position: absolute;
+  top: 80%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 20px;
   background: white;
   z-index: 999;
+  border: 1px solid #cccccc;
+  width: 15%;
 `;

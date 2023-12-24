@@ -292,11 +292,11 @@ export default function TeamLeader() {
                 alt="Team Logo"
                 // onClick={() => document.getElementById("imageUpload")?.click()}
                 style={{
-                  width: "100px",
-                  height: "100px",
+                  width: "200px",
+                  height: "200px",
                   cursor: "pointer",
                   marginTop: "20px",
-                  marginLeft: "90px",
+                  marginLeft: "35px",
                   marginBottom: "20px",
                 }}
               />
@@ -460,6 +460,7 @@ export default function TeamLeader() {
             <StyledButton onClick={handleTeamNameConfirmation}>
               확인
             </StyledButton>
+            &nbsp;
             <StyledButton onClick={closeTeamNameConfirmation}>
               취소
             </StyledButton>
