@@ -8,12 +8,13 @@ import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalen
 import EditEvent from "./EditEvent.tsx";
 // import axios from "axios";
 import axiosInstance from "../../axios";
+import { useParams } from "react-router-dom";
 
 // import { Team } from "../../interface/interface";
 
 const TeamCalender = () => {
     // 팀 아이디
-    // const [team, setTeam] = useState<Team | null>(location.state?.team || null);
+    const { teamId } = useParams();
 
     // 모달팝업 유무 값
     const [eventDetailModal, setEventDetailModal] = useState<any>(false);
@@ -63,10 +64,10 @@ const TeamCalender = () => {
         try {
             const res = await axiosInstance({
                 method: "get",
-                url: `/team/1/schedules/calendar`,
+                url: `/team/${teamId}/calender`,
             });
             if (res.status === 200) {
-                console.log(res);
+                console.log(res.data);
                 setEventList(res.data);
                 return;
             }
@@ -76,7 +77,7 @@ const TeamCalender = () => {
     };
     useEffect(() => {
         getAllEvents();
-    }, []);
+    }, [teamId]);
 
     // 일정 삭제
     const handleEventDelete = async (e: any) => {
