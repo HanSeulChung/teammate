@@ -1,12 +1,6 @@
-# time zone
-ARG DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get install -y tzdata
-
-RUN ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
-## java
 FROM openjdk:17-alpine
+
+ENV TZ=Asia/Seoul
 
 WORKDIR /usr/src/app
 
