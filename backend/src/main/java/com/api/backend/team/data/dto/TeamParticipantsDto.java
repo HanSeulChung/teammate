@@ -23,6 +23,7 @@ public class TeamParticipantsDto {
   private Long teamId;
   @Enumerated(EnumType.STRING)
   private TeamRole teamRole;
+  private String teamName;
   private String participantsProfileUrl;
   private String teamNickName;
 
@@ -31,6 +32,7 @@ public class TeamParticipantsDto {
         .teamId(teamParticipants.getTeam().getTeamId())
         .teamParticipantsId(teamParticipants.getTeamParticipantsId())
         .teamNickName(teamParticipants.getTeamNickName())
+        .teamName(teamParticipants.getTeam().getName())
         .teamRole(teamParticipants.getTeamRole())
         .participantsProfileUrl(teamParticipants.getParticipantsProfileUrl())
         .build();
