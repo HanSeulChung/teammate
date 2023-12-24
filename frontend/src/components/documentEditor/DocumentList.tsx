@@ -21,11 +21,10 @@ const DocumentItem = styled.div`
   border: 1px solid black;
   display: flex;
   justify-content: space-between;
-  margin: 4px 0;
+  margin: 8px 0;
   padding: 10px;
   border-radius: 12px;
-  // background-color: rgb(163, 204, 163);
-  box-shadow: 4px 6px 10px 0px rgb(163, 204, 163);
+  box-shadow: 8px 8px 12px 0px rgb(163, 204, 163);
 `;
 
 const TitleContentContainer = styled.div`
