@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useRecoilValue } from "recoil";
-import { accessTokenState } from "../../state/authState";
-
-const API_BASE_URL = "http://118.67.128.124:8080";
+import axiosInstance from "../../axios";
+import "flatpickr/dist/flatpickr.min.css";
+import flatpickr from "flatpickr";
+import { Instance } from "flatpickr/dist/types/instance";
 
 const DocumentContainer = styled.div`
   box-sizing: border-box;
-  width: 1024px;
+  width: 800px;
   height: auto;
   display: flex;
   align-content: space-between;
@@ -18,7 +17,7 @@ const DocumentContainer = styled.div`
 `;
 
 const DocumentItem = styled.div`
-  width: 100%;
+  width: 800px;
   border: 1px solid black;
   display: flex;
   justify-content: space-between;
@@ -51,7 +50,11 @@ const DatesContainer = styled.div`
 `;
 
 const Container = styled.section`
+  width: 800px;
   min-height: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 `;
 
 const InputAndButton = styled.div`
@@ -68,14 +71,44 @@ const ButtonContainer = styled.div`
 const SearchInput = styled.input`
   background-color: white;
   width: 100%;
-  height: 28px;
+  height: 45px;
   color: black;
   font-size: 16px;
+  border: 1px solid black;
   border-radius: 8px;
+  padding: 12px;
+  margin-right: 4px;
+`;
+
+const TitleDomStyled = styled.h1`
+  font-size: 24px;
+  margin-bottom: 12px;
+  font-weight: 700;
+`;
+
+const PagenationButton = styled.button`
+  background-color: rgb(163, 204, 163);
+`;
+
+const PagenationButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+`;
+
+const DayTimeInput = styled.input`
+  background-color: white;
+  width: 100%;
+  height: 45px;
+  color: black;
+  font-size: 16px;
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 12px;
 `;
 
 type Document = {
-  documentId: string;
+  id: string;
   title: string;
   content: string;
   teamId: string;
@@ -92,76 +125,138 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  const accessToken = useRecoilValue(accessTokenState);
-  const [Id, setId] = useState<number>(teamId);
+  const navigate = useNavigate();
+  const API_BASE_URL = "http://118.67.128.124:8080";
+  const [totalPages, setTotlaPages] = useState<number>(0);
+  const datepickerRef = useRef<HTMLInputElement>(null);
+  const [startDt, setStartDt] = useState<string>("");
+  const [endDt, setEndDt] = useState<string>("3000-12-30");
 
-  console.log("id:", Id);
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/team/${Id}/documents`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
+        const response = await axiosInstance.get(
+          `${API_BASE_URL}/team/${teamId}/documents?page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
         );
-        setDocuments(response.data);
-        setFilteredDocuments(response.data);
+
+        setTotlaPages(response.data.totalPages);
+
+        if (response.data && Array.isArray(response.data.content)) {
+          const sortedDocuments = response.data.content.sort(
+            (a: any, b: any) =>
+              new Date(b.createdDt).getTime() - new Date(a.createdDt).getTime(),
+          );
+          setFilteredDocuments(sortedDocuments);
+        } else {
+          console.error("Invalid response structure:", response.data);
+        }
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
 
-    fetchDocuments();
-  }, [currentPage, teamId, accessToken]);
+    if (teamId) {
+      fetchDocuments();
+    }
+  }, [teamId, currentPage, pageSize]);
 
   useEffect(() => {
-    const filtered = documents.filter(
+    const fetchDocuments = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${API_BASE_URL}/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
+        );
+
+        setTotlaPages(response.data.totalPages);
+
+        if (response.data && Array.isArray(response.data.content)) {
+          const sortedDocuments = response.data.content.sort(
+            (a: any, b: any) =>
+              new Date(b.createdDt).getTime() - new Date(a.createdDt).getTime(),
+          );
+          setFilteredDocuments(sortedDocuments);
+        } else {
+          console.error("Invalid response structure:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    if (teamId) {
+      fetchDocuments();
+    }
+  }, [startDt, endDt]);
+
+  useEffect(() => {
+    const filtered = filteredDocuments.filter(
       (doc) =>
         doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-    setFilteredDocuments(filtered);
-  }, [searchTerm, documents]);
+    setDocuments(filtered);
+  }, [searchTerm, filteredDocuments]);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  useEffect(() => {
+    let fpInstance: Instance | null = null;
+
+    if (datepickerRef.current) {
+      fpInstance = flatpickr(datepickerRef.current, {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: (selectedDates) => {
+          if (selectedDates.length === 2) {
+            setStartDt(selectedDates[0].toISOString().substring(0, 10));
+            setEndDt(selectedDates[1].toISOString().substring(0, 10));
+          }
+        },
+      });
+    }
+
+    return () => {
+      if (fpInstance) {
+        fpInstance.destroy();
+      }
+    };
+  }, []);
+
+  const handlePageChange = (page: any) => {
+    setCurrentPage(page + 1);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: { target: { value: any } }) => {
     setSearchTerm(event.target.value);
   };
 
   const renderPagination = () => {
-    const totalPages = Math.ceil(filteredDocuments.length / pageSize);
     let pages = [];
     for (let i = 0; i < totalPages; i++) {
       pages.push(
-        <button key={i} onClick={() => handlePageChange(i)}>
+        <PagenationButton key={i} onClick={() => handlePageChange(i)}>
           {i + 1}
-        </button>,
+        </PagenationButton>,
       );
     }
-    return <div>{pages}</div>;
+    return <PagenationButtonContainer>{pages}</PagenationButtonContainer>;
   };
 
-  const currentDocuments = filteredDocuments.slice(
-    currentPage * pageSize,
-    (currentPage + 1) * pageSize,
-  );
-
-  const navigate = useNavigate();
-
-  const handleDocumentClick = (documentId: string) => {
-    navigate(`/team/${teamId}/documents/${documentId}`);
+  const navigateToDocument = (id: string) => {
+    navigate(`/team/${teamId}/documents/${id}`);
   };
 
   const handleDocumentCreate = () => {
     navigate(`/team/${teamId}/documents`);
+  };
+
+  const handleCalendarClick = () => {
+    navigate(`/team/${teamId}/schedule`);
+  };
+
+  const formatDate = (dateString: string | number | Date) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
   };
 
   return (
@@ -173,29 +268,33 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
           value={searchTerm}
           onChange={handleSearchChange}
         />
+        <DayTimeInput ref={datepickerRef} type="text" placeholder="날짜 검색" />
         <ButtonContainer>
           <StyledButton onClick={handleDocumentCreate}>문서 작성</StyledButton>
-          <StyledButton>캘린더</StyledButton>
+          <StyledButton onClick={handleCalendarClick}>캘린더</StyledButton>
         </ButtonContainer>
       </InputAndButton>
       <DocumentContainer>
-        {currentDocuments.length !== 0 ? (
-          currentDocuments.map((doc) => (
+        {documents.length !== 0 ? (
+          documents.map((doc) => (
             <DocumentItem
-              key={doc.documentId}
-              onClick={() => handleDocumentClick(doc.documentId)}
+              key={doc.id}
+              onClick={() => navigateToDocument(doc.id)}
             >
               <TitleContentContainer>
-                <h2>{doc.title}</h2>
+                <TitleDomStyled>제목 : {doc.title}</TitleDomStyled>
                 <p>
-                  {doc.content.length > 20
+                  내용 :{" "}
+                  {doc.content.length < 20
                     ? doc.content
-                    : doc.content.substring(20) + "..."}
+                    : doc.content.slice(0, 20) + "..."}
                 </p>
               </TitleContentContainer>
               <DatesContainer>
                 <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
-                <TitleDaytime>Updated: {doc.updatedDt}</TitleDaytime>
+                <TitleDaytime>
+                  Updated: {formatDate(doc.updatedDt)}
+                </TitleDaytime>
               </DatesContainer>
             </DocumentItem>
           ))
