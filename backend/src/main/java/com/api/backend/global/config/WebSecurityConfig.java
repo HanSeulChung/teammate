@@ -1,5 +1,8 @@
 package com.api.backend.global.config;
 
+import com.api.backend.global.oauth2.handler.OAuth2LoginFailureHandler;
+import com.api.backend.global.oauth2.handler.OAuth2LoginSuccessHandler;
+import com.api.backend.global.oauth2.service.CustomOAuth2UserService;
 import com.api.backend.global.security.jwt.JwtAccessDeniedHandler;
 import com.api.backend.global.security.jwt.JwtAuthenticationEntryPoint;
 import com.api.backend.global.security.jwt.JwtAuthenticationFilter;
@@ -40,17 +43,20 @@ public class WebSecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     private static final String[] AUTH_WHITELIST = {
-        "/swagger-resources/**",
-        "/swagger-ui/**",
-        "/swagger-ui.html",
-        "/v2/api-docs",
-        "/webjars/**",
-        "/menus/**",
-        "/h2-console/**",
-        "/sign-in","/sign-up","/logout","/my-page","/member/password","/email-verify/**","/sign-up/email-check/**",
-        "/ws"
+            "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**",
+            "/menus/**",
+            "/h2-console/**",
+            "/sign-in", "/sign-up", "/logout", "/email-verify/**","/sign-up/email-check/**",
+            "/ws"
     };
 
     @Bean
@@ -61,7 +67,7 @@ public class WebSecurityConfig {
         http
                 .httpBasic().disable()
                 .csrf().disable()
-                 .cors().and()
+                .cors().and()
                 .formLogin().disable()
                 .logout().disable()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
@@ -76,10 +82,17 @@ public class WebSecurityConfig {
                 .authorizeRequests() // 요청에 대한 권한 설정
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/my-page","/member/password").authenticated()
-                .anyRequest().authenticated();
-
+                .anyRequest().authenticated()
+                .and()
+                //oAuth2관련
+                .oauth2Login()
+                .successHandler(oAuth2LoginSuccessHandler) // 동의하고 계속하기를 눌렀을 때 Handler 설정
+                .failureHandler(oAuth2LoginFailureHandler) // 소셜 로그인 실패 시 핸들러 설정
+                .userInfoEndpoint().userService(customOAuth2UserService);
+        http.cors();
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();

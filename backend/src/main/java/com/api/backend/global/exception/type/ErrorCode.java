@@ -57,6 +57,8 @@ public enum ErrorCode {
   NOT_MATCH_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호가 재확인 비밀번호와 일치하지 않습니다."),
 
 
+  TARGET_URL_EMPTY_EXCEPTION(400, "비어 있는 반환 url이 있습니다."),
+
   //email
   EMAIL_NOT_TRANSFER_EXCEPTION(400,"이메일 전송에 실패했습니다."),
   EMAIL_NOT_VERIFICATION_EXCEPTION(400, "이메일 인증이 되지 않았습니다."),
