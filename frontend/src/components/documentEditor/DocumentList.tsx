@@ -85,6 +85,36 @@ const TitleDomStyled = styled.h1`
   font-size: 24px;
   margin-bottom: 12px;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 600px;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10%;
+    height: 100%;
+    box-sizing: border-box;
+    backdrop-filter: blur(1px) grayscale(0);
+  }
+`;
+interface BlurLayerProps {
+  blur: number;
+  width: string;
+}
+
+const BlurLayer = styled.div<BlurLayerProps>`
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  box-sizing: border-box;
+  width: ${(props) => props.width};
+  backdrop-filter: blur(${(props) => props.blur}px) grayscale(0);
 `;
 
 const PagenationButton = styled.button`
@@ -284,7 +314,17 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
               onClick={() => navigateToDocument(doc.id)}
             >
               <TitleContentContainer>
-                <TitleDomStyled>제목 : {doc.title}</TitleDomStyled>
+                <TitleDomStyled>
+                  제목 : {doc.title}
+                  <BlurLayer blur={3.6} width="5px" />
+                  <BlurLayer blur={3.2} width="10px" />
+                  <BlurLayer blur={2.8} width="15px" />
+                  <BlurLayer blur={2.4} width="20px" />
+                  <BlurLayer blur={2.0} width="25px" />
+                  <BlurLayer blur={1.6} width="30px" />
+                  <BlurLayer blur={0.8} width="35px" />
+                  <BlurLayer blur={0.4} width="40px" />
+                </TitleDomStyled>
                 <p>
                   내용 :{" "}
                   {doc.content.length < 20
