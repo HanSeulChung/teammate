@@ -75,6 +75,7 @@ public class OAuthAttributes {
                 .socialId(oauth2UserInfo.getId())
                 .email(oauth2UserInfo.getEmail())
                 .authority(Authority.USER)
+                .isAuthenticatedEmail(true)
                 .build();
     }
 }
