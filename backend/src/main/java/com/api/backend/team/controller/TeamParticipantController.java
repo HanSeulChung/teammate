@@ -2,7 +2,8 @@ package com.api.backend.team.controller;
 
 import static com.api.backend.team.data.ResponseMessage.DELETE_TEAM_PARTICIPANT;
 
-import com.api.backend.global.aop.notify.SendNotify;
+import com.api.backend.notification.aop.annotation.TeamParticipantsSendNotify;
+import com.api.backend.notification.transfers.TeamParticipantsNotifyByDto;
 import com.api.backend.team.data.dto.TeamParticipantsDeleteResponse;
 import com.api.backend.team.data.dto.TeamParticipantsDto;
 import com.api.backend.team.data.entity.TeamParticipants;
@@ -47,8 +48,8 @@ public class TeamParticipantController {
           )
       })
   @DeleteMapping
-  @SendNotify
-  public ResponseEntity<TeamParticipantsDeleteResponse> deleteTeamParticipantRequest(
+  @TeamParticipantsSendNotify
+  public ResponseEntity<TeamParticipantsNotifyByDto> deleteTeamParticipantRequest(
       @ApiIgnore Principal principal,
       @PathVariable(value = "teamId") Long teamId
   ) {

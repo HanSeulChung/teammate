@@ -1,17 +1,20 @@
 package com.api.backend.team.controller;
 
 
-import com.api.backend.global.aop.notify.SendNotify;
+import com.api.backend.notification.aop.annotation.MemberSendNotifyByTeam;
+import com.api.backend.notification.aop.annotation.MembersSendNotifyByTeam;
+import com.api.backend.notification.aop.annotation.TeamParticipantsSendNotify;
+import com.api.backend.notification.transfers.MemberNotifyByDto;
+import com.api.backend.notification.transfers.MembersNotifyByDto;
+import com.api.backend.notification.transfers.TeamParticipantsNotifyByDto;
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamDisbandResponse;
 import com.api.backend.team.data.dto.TeamsDtoResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
-import com.api.backend.team.data.dto.TeamKickOutResponse;
 import com.api.backend.team.data.dto.TeamRestoreResponse;
 import com.api.backend.team.data.dto.TeamUpdateRequest;
-import com.api.backend.team.data.dto.TeamParticipantsUpdateResponse;
 import com.api.backend.team.data.dto.TeamUpdateResponse;
 import com.api.backend.team.service.TeamService;
 import io.swagger.annotations.Api;
@@ -104,9 +107,9 @@ public class TeamController {
               , paramType = "path", defaultValue = "None", example = "nklndsiofnefm"
           )
       })
-  @SendNotify
+  @TeamParticipantsSendNotify
   @PostMapping("/{teamId}/{code}")
-  public ResponseEntity<TeamParticipantsUpdateResponse> updateTeamParticipantRequest(
+  public ResponseEntity<TeamParticipantsNotifyByDto> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,
       @PathVariable("code") String code,
       @ApiIgnore Principal principal
@@ -122,8 +125,8 @@ public class TeamController {
       @ApiResponse(code = 500, message = "팀장이 아닌경우, 회원이 없는 경우, 자기 자신을 강퇴하는 경우")
   })
   @PostMapping("/kick-out")
-  @SendNotify
-  public ResponseEntity<TeamKickOutResponse> kickOutTeamParticipantsRequest(
+  @MemberSendNotifyByTeam
+  public ResponseEntity<MemberNotifyByDto> kickOutTeamParticipantsRequest(
       @RequestBody @Valid
       TeamKickOutRequest teamKickOutRequest,
       @ApiIgnore Principal principal
@@ -139,8 +142,8 @@ public class TeamController {
       @ApiResponse(code = 500, message = "권한이 옳바르지 않는 경우, 이미 해체된 경우")
   })
   @PutMapping("/disband")
-  @SendNotify
-  public ResponseEntity<TeamDisbandResponse> disbandTeamRequest(
+  @MembersSendNotifyByTeam
+  public ResponseEntity<MembersNotifyByDto> disbandTeamRequest(
       @RequestBody @Valid TeamDisbandRequest request,
       @ApiIgnore Principal principal
   ) {

@@ -1,20 +1,28 @@
-import React, { useState, ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { CenteredContainer, TeamLeaderModal } from "./TeamLeaderStyled";
+import React, { useState, ChangeEvent, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  TeamLeaderContainer,
+  TeamImageContainer,
+  TeamInfoContainer,
+  StyledButton,
+  StyledInput,
+  TeamMembersContainer,
+  ConfirmationModal,
+} from "./TeamLeaderStyled";
 import profileImg from "../../assets/profileImg.png";
-import StyledModal from "../Modal"; // StyledModal 컴포넌트 가져오기
+import StyledModal from "../Modal";
+import axiosInstance from "../../axios";
+import { Team, TeamParticipant } from "../../interface/interface";
+import { accessTokenState } from "../../state/authState";
+import { useRecoilValue } from "recoil";
+import linkImg from "../../assets/linkImg.png";
 
 export default function TeamLeader() {
-  const navigate = useNavigate();
-  const [teamName, setTeamName] = useState("Your Team");
-  const [teamLeader, setTeamLeader] = useState("Team Leader");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [teamMembers, setTeamMembers] = useState<string[]>([
-    "Team Member 1",
-    "Team Member 2",
-    "Team Member 3",
-    "Team Member 4",
-  ]);
+  const { state } = useLocation();
+  const { teamId } = useParams();
+  const accessToken = useRecoilValue(accessTokenState);
+  const teamFromPreviousPage = state?.team || null;
+  const [team, setTeam] = useState<Team | null>(teamFromPreviousPage);
   const [searchTeam, setSearchTeam] = useState<string>("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [memberIndexToRemove, setMemberIndexToRemove] = useState<number | null>(
@@ -28,17 +36,103 @@ export default function TeamLeader() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
+  const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [newSelectedImage, setNewSelectedImage] = useState<File | null>(null);
+  const [teamMembers, setTeamMembers] = useState<string[]>([
+    "Member 1",
+    "Member 2",
+    "Member 3",
+    "Member 4",
+    "Member 5",
+    "Member 6",
+    "Member 7",
+  ]);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  useEffect(() => {
+    const fetchTeamInfo = async () => {
+      try {
+        const response = await axiosInstance.get(`/team/${teamId}`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setTeam(response.data);
+      } catch (error) {
+        console.error("Error fetching team info:", error);
+      }
+    };
+
+    fetchTeamInfo();
+  }, [teamId, accessToken]);
+
+  //팀 수정
+  const handleCreateTeam = async () => {
+    const formData = new FormData();
+    formData.append("teamName", newTeamName);
+    formData.append("teamId", team?.teamId.toString() || "");
+    if (newSelectedImage instanceof File) {
+      formData.append("profileImg", newSelectedImage);
+    }
+    console.log("FormData:", newSelectedImage);
+    const response = await axiosInstance.post("/team/update", formData, {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("팀 수정 성공 :", response.data);
+  };
+  //이미지업로드
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = e.target;
+    const file = fileInput.files && fileInput.files[0];
+
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedImage(reader.result as string);
-      };
       reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        const result = reader.result as string;
+        setNewSelectedImage(file); // 파일 경로(string)를 저장
+        setPreviewImage(result);
+        console.log("Selected Image:", result);
+      };
+
+      reader.onerror = (error) => {
+        console.error("Error reading the file:", error);
+      };
     }
   };
+  
+  //팀멤버조회
+  const [teamParticipants, setTeamParticipants] = useState<TeamParticipant[]>(
+    [],
+  );
+  useEffect(() => {
+    const fetchTeamParticipants = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/team/${teamId}/participant/list`,
+        );
+        setTeamParticipants(response.data);
+      } catch (error) {
+        console.error("Error fetching team participants:", error);
+      }
+    };
+
+    fetchTeamParticipants();
+  }, [teamId, accessToken]);
+
+  //팀멤버
+  const filteredTeamMembers = teamParticipants.filter(
+    (participant) =>
+      participant.teamRole === "MATE" &&
+      participant.teamNickName.toLowerCase().includes(searchTeam.toLowerCase()),
+  );
 
   const handleTeamMemberChange = (
     index: number,
@@ -48,10 +142,6 @@ export default function TeamLeader() {
     updatedTeamMembers[index] = e.target.value;
     setTeamMembers(updatedTeamMembers);
   };
-
-  const filteredTeamMembers = teamMembers.filter((member) =>
-    member.toLowerCase().includes(searchTeam.toLowerCase()),
-  );
 
   const handleRemoveMember = (index: number) => {
     setMemberIndexToRemove(index);
@@ -67,7 +157,6 @@ export default function TeamLeader() {
       setKickReason("");
       setShowConfirmation(false);
     } else {
-      // 강퇴 사유를 입력하지 않은 경우 예외 처리 또는 메시지 표시
       console.log("강퇴 사유를 입력하세요.");
     }
   };
@@ -76,20 +165,6 @@ export default function TeamLeader() {
     setMemberIndexToRemove(null);
     setKickReason("");
     setShowConfirmation(false);
-  };
-
-  const handleEditTeamName = () => {
-    setEditingTeamName(true);
-    setNewTeamName(teamName);
-  };
-
-  const confirmEditTeamName = () => {
-    setEditingTeamName(false);
-    setTeamName(newTeamName);
-  };
-
-  const cancelEditTeamName = () => {
-    setEditingTeamName(false);
   };
 
   const handleEditTeamLeader = () => {
@@ -103,15 +178,9 @@ export default function TeamLeader() {
         (member) => member !== newLeaderSelect,
       );
       setTeamMembers(updatedTeamMembers);
-
-      setTeamMembers((prevTeamMembers) => [...prevTeamMembers, teamLeader]);
+      // setTeamMembers((prevTeamMembers) => [...prevTeamMembers, teamLeader]);
     }
-    setTeamLeader(newLeaderSelect || "");
-    setEditingTeamLeader(false);
-    setNewLeaderSelect(null);
-  };
-
-  const cancelEditTeamLeader = () => {
+    // setTeamLeader(newLeaderSelect || "");
     setEditingTeamLeader(false);
     setNewLeaderSelect(null);
   };
@@ -129,171 +198,226 @@ export default function TeamLeader() {
   };
 
   const handleConfirmDelete = () => {
-    // 여기에 비밀번호 확인 및 삭제 로직 추가
     console.log("비밀번호 확인 및 삭제 로직을 구현하세요.");
     if (!passwordInput) {
       console.log("비밀번호를 입력하세요.");
       return;
     }
-    // 삭제가 성공했다고 가정하고 homeview로 이동
-    navigate("/homeview");
+    navigate("/homeView");
+  };
+
+  //초대코드
+  const [codeUrl, setCodeUrl] = useState("");
+  useEffect(() => {
+    const fetchTeamCode = async () => {
+      try {
+        const response = await axiosInstance.get(`/team/${teamId}/code`);
+        const teamCode = response.data;
+        // console.log("초대코드", teamCode);
+        const codeUrl = `http://118.67.128.124:8080/team/${teamCode}`;
+        setCodeUrl(codeUrl);
+        // await axiosInstance.post(codeUrl);
+      } catch (error) {
+        console.error("Error fetching team code:", error);
+      }
+    };
+
+    fetchTeamCode();
+  }, [teamId, accessToken]);
+
+  const handleCopyClick = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("클립보드에 링크가 복사되었습니다.");
+    } catch (e) {
+      alert("복사에 실패하였습니다");
+    }
   };
 
   return (
-    <>
-      <CenteredContainer>
-        <div>
-          <h1 style={{ textAlign: "center" }}>팀 프로필</h1>
-
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div>
+    <TeamLeaderContainer>
+      <div>
+        <h3
+          style={{ textAlign: "center", fontSize: "30px", fontWeight: "bold" }}
+        >
+          팀 프로필
+        </h3>
+        <TeamInfoContainer>
+          <TeamImageContainer>
+            <label>
+              <img
+                src={
+                  typeof selectedImage === "string"
+                    ? selectedImage
+                    : previewImage || team?.profileUrl || profileImg
+                }
+                alt="Team Logo"
+                // onClick={() => document.getElementById("imageUpload")?.click()}
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  cursor: "pointer",
+                  marginTop: "20px",
+                  marginLeft: "90px",
+                  marginBottom: "20px",
+                }}
+              />
+              <span>팀명 </span>
               <input
+                title="imgupload"
+                id="imageUpload"
                 type="file"
                 accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: "none" }}
-                id="imageInput"
+                onChange={handleFileInputChange}
+                style={{ display: "none", width: "100%" }}
               />
-              <label htmlFor="imageInput">
-                <img
-                  src={selectedImage || profileImg}
-                  alt="Team Logo"
-                  style={{ width: "100px", height: "100px", cursor: "pointer" }}
-                />
-              </label>
-            </div>
-
-            <div>
-              <span title="teamNameChange">
-                {editingTeamName ? (
-                  <input
-                    title="text"
-                    type="text"
-                    value={newTeamName}
-                    onChange={(e) => setNewTeamName(e.target.value)}
-                  />
-                ) : (
-                  teamName
-                )}
-              </span>
-              {editingTeamName ? (
-                <>
-                  <button onClick={confirmEditTeamName}>확인</button>
-                  <button onClick={cancelEditTeamName}>취소</button>
-                </>
-              ) : (
-                <button onClick={handleEditTeamName}>변경하기</button>
-              )}
-              <br />
-              {editingTeamLeader ? (
-                <div>
-                  <select
-                    title="select"
-                    value={newLeaderSelect || ""}
-                    onChange={(e) => setNewLeaderSelect(e.target.value)}
-                  >
-                    <option value="" disabled>
-                      선택하세요
-                    </option>
-                    {teamMembers.map((member, index) => (
-                      <option key={index} value={member}>
-                        {member}
-                      </option>
-                    ))}
-                  </select>
-                  <button onClick={confirmEditTeamLeader}>확인</button>
-                  <button onClick={cancelEditTeamLeader}>취소</button>
-                </div>
-              ) : (
-                <div>
-                  <span>{teamLeader}</span>
-                  <button onClick={handleEditTeamLeader}>변경하기</button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <p style={{ fontWeight: "bold", marginBottom: "5px" }}>팀원</p>
-            <input
-              type="text"
-              placeholder="검색"
-              value={searchTeam}
-              onChange={(e) => setSearchTeam(e.target.value)}
-            />
-            <div
-              style={{
-                maxHeight: "200px", // Set your desired max height
-                overflowY: "auto",
-              }}
-            >
-              {filteredTeamMembers.map((member, index) => (
-                <div
-                  key={index}
-                  style={{ display: "flex", marginBottom: "10px" }}
-                >
-                  <input
-                    title="disband"
-                    type="text"
-                    value={member}
-                    onChange={(e) => handleTeamMemberChange(index, e)}
-                  />
-                  <button onClick={() => handleRemoveMember(index)}>
-                    강퇴
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          {showConfirmation && (
-            <div
-              style={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                padding: "20px",
-                background: "white",
-                zIndex: 999,
-              }}
-            >
-              <p>강퇴하시겠습니까?</p>
-              {memberIndexToRemove !== null && (
-                <>
-                  <p>강퇴 사유를 입력하세요:</p>
-                  <input
-                    title="reason"
-                    type="text"
-                    value={kickReason}
-                    onChange={(e) => setKickReason(e.target.value)}
-                  />
-                </>
-              )}
-              <button onClick={confirmRemoveMember}>확인</button>
-              <button onClick={cancelRemoveMember}>취소</button>
-            </div>
-          )}
-
-<div style={{ textAlign: "center", marginTop: "20px" }}>
-            <button onClick={openPasswordModal}>팀 계정 삭제하기</button>
-          </div>
-          {/* TeamLeaderModal 대신 StyledModal로 변경 */}
-          <StyledModal isOpen={isPasswordModalOpen} onClose={closePasswordModal}>
-            <div className="modal-content">
-              <div>팀 계정을 삭제하시겠습니까?</div>
-              <p>비밀번호를 입력하세요:</p>
+            </label>
+            <span title="teamNameChange">
               <input
-                title="password"
-                type="password"
-                value={password}
-                onChange={handlePasswordChange}
+                style={{
+                  width: "150px",
+                  height: "40px",
+                  marginRight: "10px",
+                  padding: "5px",
+                }}
+                id="teamName"
+                placeholder=" 팀 이름"
+                title="text"
+                type="text"
+                value={newTeamName || team?.name || ""}
+                onChange={(e) => setNewTeamName(e.target.value)}
               />
-              <button onClick={handleConfirmDelete}>확인</button>
-              <button onClick={closePasswordModal}>취소</button>
+            </span>
+            <StyledButton onClick={handleCreateTeam}>변경하기</StyledButton>
+            <br />
+          </TeamImageContainer>
+          <div>
+            <span>팀장 </span>
+            <select
+              style={{ width: "150px", height: "40px", marginRight: "10px" }}
+              title="select"
+              value={newLeaderSelect || ""}
+              onChange={(e) => setNewLeaderSelect(e.target.value)}
+            >
+              <option
+                value={
+                  teamParticipants.find(
+                    (participant) => participant.teamRole === "READER",
+                  )?.teamNickName
+                }
+              >
+                {
+                  teamParticipants.find(
+                    (participant) => participant.teamRole === "READER",
+                  )?.teamNickName
+                }
+              </option>
+              {teamParticipants
+                .filter((participant) => participant.teamRole !== "READER")
+                .map((participant, index) => (
+                  <option key={index} value={participant.teamNickName}>
+                    {participant.teamNickName}
+                  </option>
+                ))}
+            </select>
+            <StyledButton onClick={confirmEditTeamLeader}>
+              변경하기
+            </StyledButton>
+          </div>
+        </TeamInfoContainer>
+      </div>
+      <br />
+      <div>
+        <span style={{ display: "flex", alignItems: "center" }}>
+          <span>초대코드 URL</span>
+          <img
+            style={{
+              width: "30px",
+              cursor: "pointer",
+            }}
+            src={linkImg}
+            alt="복사"
+            onClick={() => handleCopyClick(codeUrl)}
+          />
+        </span>
+      </div>
+      <TeamMembersContainer>
+        <StyledInput
+          style={{
+            width: "300px",
+          }}
+          type="text"
+          placeholder="팀원을 검색하세요"
+          value={searchTeam}
+          onChange={(e) => setSearchTeam(e.target.value)}
+        />
+        <div
+          style={{
+            marginTop: "10px",
+            maxHeight: "250px",
+            overflowY: "auto",
+          }}
+        >
+          {filteredTeamMembers.map((participant, index) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                marginBottom: "10px",
+              }}
+            >
+              <StyledInput
+                title="disband"
+                type="text"
+                value={participant.teamNickName}
+                onChange={(e) => handleTeamMemberChange(index, e)}
+              />
+              <StyledButton onClick={() => handleRemoveMember(index)}>
+                강퇴
+              </StyledButton>
             </div>
-          </StyledModal>
+          ))}
         </div>
-      </CenteredContainer>
-    </>
+      </TeamMembersContainer>
+
+      {showConfirmation && (
+        <ConfirmationModal>
+          <p>강퇴하시겠습니까?</p>
+          {memberIndexToRemove !== null && (
+            <>
+              <p>강퇴 사유를 입력하세요:</p>
+              <StyledInput
+                title="reason"
+                type="text"
+                value={kickReason}
+                onChange={(e) => setKickReason(e.target.value)}
+              />
+            </>
+          )}
+          <StyledButton onClick={confirmRemoveMember}>확인</StyledButton>
+          <StyledButton onClick={cancelRemoveMember}>취소</StyledButton>
+        </ConfirmationModal>
+      )}
+
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <StyledButton onClick={openPasswordModal}>
+          팀 계정 삭제하기
+        </StyledButton>
+      </div>
+      <StyledModal isOpen={isPasswordModalOpen} onClose={closePasswordModal}>
+        <div className="modal-content">
+          <div>팀 계정을 삭제하시겠습니까?</div>
+          <p>비밀번호를 입력하세요:</p>
+          <input
+            title="password"
+            type="password"
+            value={password}
+            onChange={handlePasswordChange}
+          />
+          <StyledButton onClick={handleConfirmDelete}>확인</StyledButton>
+          <StyledButton onClick={closePasswordModal}>취소</StyledButton>
+        </div>
+      </StyledModal>
+    </TeamLeaderContainer>
   );
 }

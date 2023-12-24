@@ -1,23 +1,24 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
+
+import Index from "../views/Index";
+import SignUp from "../components/Join/SignUp";
+import SignInView from "../views/SignInView";
+import KakaoLogin from "../components/Login/KakaoLogin";
+import HomeView from "../views/HomeView";
 
 import Calender from "../views/Calender";
-import TextEditorView from "../views/TextEditorView";
-import SignInView from "../views/SignInView";
-import SignUp from "../components/Join/SignUp";
-import Index from "../views/Index";
-import KakaoLogin from "../components/Login/KakaoLogin";
-import Home from "../components/Home/HomeContent";
-import HomeView from "../views/HomeView";
-import { v4 as uuidV4 } from "uuid";
-import React, { useEffect } from "react";
 import CreateTextView from "../views/CreateTextView";
+import TextEditorView from "../views/TextEditorView";
 import DocumentListView from "../views/DocumentListView";
 import CommentView from "../views/CommentView";
-import TeamDetail from "../components/TeamPage/TeamDetail";
+
+import MyPage from "../components/MyInfoPage/MyPage";
+import TeamInfo from "../components/TeamCreate/TeamInfo";
 import TeamLeader from "../components/ProfilePage/TeamLeader";
 import TeamMembers from "../components/ProfilePage/TeamMembers";
-import TeamInfo from "../components/TeamCreate/TeamInfo";
-import Mypage from "../components/Mypage/Mypage";
+// import TeamDetail from "../components/TeamPage/TeamDetail";
+// import { v4 as uuidV4 } from "uuid";
 
 const Router = () => {
   const navigate = useNavigate();
@@ -29,33 +30,21 @@ const Router = () => {
 
   return (
     <Routes>
-      <Route path="/캘린더" element={<Calender />} />
-      <Route path="/create-text/" element={<CreateTextView />} />
-      <Route
-        path="/team/:teamId/documents/:documentsId"
-        element={<TextEditorView />}
-      />
-      <Route
-        path="/team/:teamId/documents/:documentsId/comment"
-        element={<CommentView />}
-      />
-      <Route
-        path="/team/:teamId/documentsList/"
-        element={<DocumentListView />}
-      />
       <Route path="/" element={<Index />} />
-      <Route path="/schedules" element={<Calender />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/signin" element={<SignInView />} />
+      <Route path="/signUp" element={<SignUp />} />
+      <Route path="/signIn" element={<SignInView />} />
       <Route path="/kakaoLogin" element={<KakaoLogin />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/homeview" element={<HomeView />} />
-      <Route path="/team/:teamId" element={<TeamDetail />} />
-      <Route path="/teamleader" element={<TeamLeader />} />
-      <Route path="/team/:teamid/teammembers" element={<TeamMembers />} />
+      <Route path="/homeView" element={<HomeView />} />
+      <Route path="/team/:teamId/schedules" element={<Calender />} />
+      <Route path="/team/:teamId/documents" element={<CreateTextView />} />
+      <Route path="/team/:teamId/documents/:documentsId" element={<TextEditorView />} />
+      <Route path="/team/:teamId/documentsList/" element={<DocumentListView />} />
+      <Route path="/team/:teamId/documents/:documentsId/comment" element={<CommentView />} />
+      <Route path="/myPage" element={<MyPage />} />
       <Route path="/TeamInfo" element={<TeamInfo />} />
-      <Route path="/mypage" element={<Mypage />} />
-      <Route />
+      <Route path="/team/:teamId/teamLeader" element={<TeamLeader />} />
+      <Route path="/team/:teamId/teamMembers" element={<TeamMembers />} />
+      {/* <Route path="/team/:teamId" element={<TeamDetail />} /> */}
     </Routes>
   );
 };

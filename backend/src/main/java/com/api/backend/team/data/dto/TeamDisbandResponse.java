@@ -1,10 +1,12 @@
 package com.api.backend.team.data.dto;
 
+import static com.api.backend.notification.data.NotificationMessage.getDisbandTeamName;
 import static com.api.backend.team.data.ResponseMessage.DISBANDING_TEAM;
 
+import com.api.backend.notification.data.type.AlarmType;
+import com.api.backend.notification.transfers.MembersNotifyByDto;
 import com.api.backend.team.data.entity.Team;
 import java.time.LocalDate;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,22 +18,32 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class TeamDisbandResponse {
-  @NotNull(message = "teamId는 비어있는 값입니다.")
+public class TeamDisbandResponse implements MembersNotifyByDto {
   private Long teamId;
-  private Long memberId;
   private String teamName;
   private LocalDate reservationDt;
-  @NotNull(message = "비밀번호를 입력해주세요")
   private String message;
 
+  // 알람
+  private Long excludeMemberId;
 
   public static TeamDisbandResponse from(Team team, Long memberId) {
     return TeamDisbandResponse.builder()
         .teamId(team.getTeamId())
-        .memberId(memberId)
+        .excludeMemberId(memberId)
         .teamName(team.getName())
         .reservationDt(team.getRestorationDt())
         .message(DISBANDING_TEAM).build();
+  }
+
+
+  @Override
+  public AlarmType getAlarmType() {
+    return AlarmType.TEAM_DISBAND;
+  }
+
+  @Override
+  public String getSendMessage() {
+    return getDisbandTeamName(teamName);
   }
 }

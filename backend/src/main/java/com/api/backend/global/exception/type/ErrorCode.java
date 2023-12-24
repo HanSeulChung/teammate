@@ -39,6 +39,11 @@ public enum ErrorCode {
   TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀원입니다."),
   TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION(500, "해당 팀의 팀원이 아닙니다."),
 
+  // notification
+  NOTIFICATION_NOT_FOUND_EXCEPTION(500, "존재하지 않는 알람입니다."),
+  NOTIFICATION_IS_READ_TRUE_EXCEPTION(500, "이미 읽은 알람입니다."),
+  NOTIFICATION_NOT_VALID_EXCEPTION(500, "읽을 권한이 없는 사용자입니다."),
+
   MEMBER_NOT_FOUND_EXCEPTION(500, "존재하지 않는 회원입니다."),
   MEMBER_NOT_EQUALS_EXCEPTION(500, "회원 정보가 일치하지 않습니다."),
   TOKEN_EXPIRED_EXCEPTION(500, "토큰이 만료 되었습니다."),

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import axiosInstance from "../../axios";
 
 interface MyTeamUpdateProps {
   selectedTeam: {
@@ -14,7 +15,6 @@ interface MyTeamUpdateProps {
 }
 
 const MyTeamUpdate: React.FC<MyTeamUpdateProps> = ({
-  accessToken,
   selectedTeam,
   selectedImage,
   nickname,
@@ -34,20 +34,11 @@ const MyTeamUpdate: React.FC<MyTeamUpdateProps> = ({
         // 선택된 팀이 없는 경우 아무 작업도 수행하지 않음
         return;
       }
-      const response = await axios.patch(
-        "http://localhost:8080/member/participants",
-        {
-          teamParticipantsId: selectedTeam.teamParticipantsId,
-          teamNickName: updatedNickname,
-          participantsProfileUrl: updatedImage,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
+      const response = await axiosInstance.patch("/member/participants", {
+        teamParticipantsId: selectedTeam.teamParticipantsId,
+        teamNickName: updatedNickname,
+        participantsProfileUrl: updatedImage,
+      });
 
       onUpdateProfile();
       // 업데이트 성공 메시지를 표시하기 위해 상태 변경

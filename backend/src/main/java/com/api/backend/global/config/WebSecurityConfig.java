@@ -1,4 +1,4 @@
-package com.api.backend.global.security.config;
+package com.api.backend.global.config;
 
 import com.api.backend.global.oauth2.handler.OAuth2LoginFailureHandler;
 import com.api.backend.global.oauth2.handler.OAuth2LoginSuccessHandler;

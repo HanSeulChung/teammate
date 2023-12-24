@@ -1,4 +1,4 @@
-package com.api.backend.global.security;
+package com.api.backend.global.security.jwt.service;
 
 import com.api.backend.global.redis.RedisService;
 import com.api.backend.global.security.data.dto.TokenDto;

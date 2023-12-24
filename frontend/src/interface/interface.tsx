@@ -9,19 +9,15 @@ export interface TeamInfoData {
 
 // 팀 생성 후 정보 인터페이스
 export interface Team {
-  id: string;
-  teamId: number;
   name: string;
-  size: string;
+  teamId: number;
   profileUrl: string | null;
-  leaderId: string | null;
+  leaderId: number | null;
   nickname?: string | null;
   members?: User[];
-  teamName: string;
   code: string;
   memberLimit: number;
   inviteLink: string;
-  teamImg: string;
 }
 
 // 사용자 정보 인터페이스
@@ -54,4 +50,12 @@ export interface UserProfileProps {
   teamList: Team[];
   selectedTeam: string | null;
   handleTeamSelect: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+//멤버
+export interface TeamParticipant {
+  teamParticipantsId: number;
+  teamRole: string;
+  participantsProfileUrl: string;
+  teamNickName: string;
 }

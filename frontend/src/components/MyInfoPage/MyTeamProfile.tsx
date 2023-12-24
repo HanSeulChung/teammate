@@ -23,11 +23,15 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
   teamId,
   accessToken,
 }) => {
-  const teamInfo = teamList.find((team) => team.id === selectedTeam);
-  const teamIdFromSelectedTeam = teamInfo?.id || "";
-  const teamName = teamInfo?.name || "";
-  // const teamImage = teamInfo?.profileUrl || null;
-  // const teamNickname = teamInfo?.nickname || "";
+  const [selectedTeamInfo, setSelectedTeamInfo] = useState<Team | undefined>(
+    undefined,
+  );
+  // selectedTeam이 변경되면 해당 팀의 정보 찾기
+  React.useEffect(() => {
+    const foundTeam = teamList.find((team) => team.name === selectedTeam);
+    setSelectedTeamInfo(foundTeam);
+  }, [selectedTeam, teamList]);
+
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +53,7 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
     <TeamProfileContainer>
       {selectedTeam && (
         <div>
-          <TeamProfileTitle>{teamName} 프로필</TeamProfileTitle>
+          <TeamProfileTitle>{selectedTeamInfo?.name} 프로필</TeamProfileTitle>
           <ContainerWrapper>
             <ImageUploadContainer>
               <img
@@ -89,11 +93,11 @@ const TeamProfile: React.FC<TeamProfileProps> = ({
                 console.log("프로필이 업데이트되었습니다!");
               }}
             />
-            <MyTeamDelete
+            {/* <MyTeamDelete
               onDeleteTeam={handleDeleteTeam}
               teamId={teamIdFromSelectedTeam}
               accessToken={accessToken}
-            />
+            /> */}
           </ButtonContainer>
         </div>
       )}

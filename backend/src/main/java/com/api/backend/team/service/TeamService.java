@@ -133,7 +133,7 @@ public class TeamService {
     );
 
     return TeamParticipantsUpdateResponse
-        .builder().teamName(team.getName())
+        .builder()
         .teamId(teamId)
         .updateTeamParticipantId(teamParticipants.getTeamParticipantsId())
         .updateTeamParticipantNickName(teamParticipants.getTeamNickName())
@@ -169,7 +169,8 @@ public class TeamService {
     return TeamKickOutResponse.builder()
         .teamId(request.getTeamId())
         .kickOutMemberId(teamParticipants.getMember().getMemberId())
-        .nickName(teamParticipants.getTeamNickName())
+        .teamName(teamParticipants.getTeamNickName())
+        .alarmMessage(request.getKickOutReason())
         .message(KICK_OUT_TEAM_PARTICIPANTS)
         .build();
   }

@@ -35,6 +35,7 @@ export const StyledFormItem = styled.div`
     border-radius: 0;
     flex-direction: column; /* 수직으로 배치 */
     align-items: flex-start;
+    background: white;
   }
 
   input {
