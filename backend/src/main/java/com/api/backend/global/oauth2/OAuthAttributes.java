@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
-import java.util.UUID;
 
 import static com.api.backend.member.data.type.LoginType.*;
 
