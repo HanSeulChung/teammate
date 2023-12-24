@@ -4,76 +4,6 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import axios from "axios";
 
-const CommentSection = styled.div`
-  align-items: center;
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
-  min-height: 800px;
-`;
-
-const CommentInputContainer = styled.form`
-  margin-bottom: 12px;
-  display: flex;
-`;
-
-const CommentList = styled.ul`
-  list-style-type: none;
-  padding: 0;
-`;
-
-const CommentListItem = styled.li`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
-`;
-
-const CommentContent = styled.span`
-  flex-grow: 1;
-`;
-
-const CommentActions = styled.div`
-  display: flex;
-  gap: 4px;
-`;
-
-const CommentInput = styled.input`
-  width: 520px;
-  padding: 8px;
-  border: 1px solid black;
-  border-radius: 8px;
-  background-color: white;
-  color: black;
-  font-size: 16px;
-`;
-
-const CommentUpdateInput = styled.input`
-  width: 470px;
-  padding: 8px;
-  border: 1px solid black;
-  border-radius: 8px;
-  background-color: white;
-  color: black;
-  font-size: 16px;
-  height: 24px;
-`;
-
-const CommentButton = styled.button`
-  float: right;
-  width: 80px;
-  margin-left: 5px;
-  background-color: #a3cca3;
-`;
-
-const UDbutton = styled.button`
-  width: 40px;
-  padding: 0;
-  background-color: #a3cca3;
-`;
-
 interface CommentType {
   content: string;
   id: number;
@@ -318,3 +248,73 @@ const Comment: React.FC = () => {
 };
 
 export default Comment;
+
+const CommentSection = styled.div`
+  align-items: center;
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+  min-height: 800px;
+`;
+
+const CommentInputContainer = styled.form`
+  margin-bottom: 12px;
+  display: flex;
+`;
+
+const CommentList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+`;
+
+const CommentListItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+`;
+
+const CommentContent = styled.span`
+  flex-grow: 1;
+`;
+
+const CommentActions = styled.div`
+  display: flex;
+  gap: 4px;
+`;
+
+const CommentInput = styled.input`
+  width: 520px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  font-size: 16px;
+`;
+
+const CommentUpdateInput = styled.input`
+  width: 470px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  font-size: 16px;
+  height: 24px;
+`;
+
+const CommentButton = styled.button`
+  float: right;
+  width: 80px;
+  margin-left: 5px;
+  background-color: #a3cca3;
+`;
+
+const UDbutton = styled.button`
+  width: 40px;
+  padding: 0;
+  background-color: #a3cca3;
+`;

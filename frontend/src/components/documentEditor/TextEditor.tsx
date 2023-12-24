@@ -9,47 +9,6 @@ import "react-quill/dist/quill.snow.css";
 import axiosInstance from "../../axios";
 import "./ReactQuill.css";
 
-const StyledTexteditor = styled.div`
-  width: 41rem;
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  height: 300px;
-  border: 1px solid gray;
-  padding: 4px;
-  font-size: 16px;
-  background-color: white;
-`;
-
-const TitleInput = styled.input`
-  border: 1px solid black;
-  background-color: white;
-  color: black;
-  width: 100%;
-  font-size: 16px;
-  margin-bottom: 4px;
-  border: 1px solid gray;
-  padding: 4px;
-  ::placeholder {
-    color: gray;
-  }
-`;
-
-const StyledButton = styled.button`
-  background-color: rgb(163, 204, 163);
-  color: #333333;
-  border-radius: 0.5rem;
-  margin: 4px;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 41rem;
-  margin-top: 10px;
-`;
-
 interface TextEditorProps {
   teamId: string;
   documentsId: string;
@@ -209,3 +168,44 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 };
 
 export default TextEditor;
+
+const StyledTexteditor = styled.div`
+  width: 41rem;
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  height: 300px;
+  border: 1px solid gray;
+  padding: 4px;
+  font-size: 16px;
+  background-color: white;
+`;
+
+const TitleInput = styled.input`
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  width: 100%;
+  font-size: 16px;
+  margin-bottom: 4px;
+  border: 1px solid gray;
+  padding: 4px;
+  ::placeholder {
+    color: gray;
+  }
+`;
+
+const StyledButton = styled.button`
+  background-color: rgb(163, 204, 163);
+  color: #333333;
+  border-radius: 0.5rem;
+  margin: 4px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 41rem;
+  margin-top: 10px;
+`;

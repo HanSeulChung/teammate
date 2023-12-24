@@ -6,147 +6,6 @@ import "flatpickr/dist/flatpickr.min.css";
 import flatpickr from "flatpickr";
 import { Instance } from "flatpickr/dist/types/instance";
 
-const DocumentContainer = styled.div`
-  box-sizing: border-box;
-  width: 800px;
-  height: auto;
-  display: flex;
-  align-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-`;
-
-const DocumentItem = styled.div`
-  width: 800px;
-  border: 1px solid black;
-  display: flex;
-  justify-content: space-between;
-  margin: 8px 0;
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 8px 8px 12px 0px rgb(163, 204, 163);
-`;
-
-const TitleContentContainer = styled.div`
-  flex-grow: 1;
-`;
-
-const StyledButton = styled.button`
-  background-color: rgb(163, 204, 163);
-  color: #333333;
-  border-radius: 0.5rem;
-  margin: 4px;
-`;
-
-const TitleDaytime = styled.p`
-  margin: 4px;
-  align-self: end;
-`;
-
-const DatesContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  min-width: 150px;
-`;
-
-const Container = styled.section`
-  width: 800px;
-  min-height: 800px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-`;
-
-const InputAndButton = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const ButtonContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const SearchInput = styled.input`
-  background-color: white;
-  width: 100%;
-  height: 45px;
-  color: black;
-  font-size: 16px;
-  border: 1px solid black;
-  border-radius: 8px;
-  padding: 12px;
-  margin-right: 4px;
-`;
-
-const TitleDomStyled = styled.h1`
-  font-size: 24px;
-  margin-bottom: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 600px;
-  position: relative;
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 10%;
-    height: 100%;
-    box-sizing: border-box;
-    backdrop-filter: blur(1px) grayscale(0);
-  }
-`;
-interface BlurLayerProps {
-  blur: number;
-  width: string;
-}
-
-const ContentDomStyled = styled.p`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 600px;
-  position: relative;
-`;
-
-const BlurLayer = styled.div<BlurLayerProps>`
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  box-sizing: border-box;
-  width: ${(props) => props.width};
-  backdrop-filter: blur(${(props) => props.blur}px) grayscale(0);
-`;
-
-const PagenationButton = styled.button`
-  background-color: rgb(163, 204, 163);
-  margin-right: 4px;
-`;
-
-const PagenationButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 24px;
-`;
-
-const DayTimeInput = styled.input`
-  background-color: white;
-  width: 100%;
-  height: 45px;
-  color: black;
-  font-size: 16px;
-  border: 1px solid black;
-  border-radius: 8px;
-  padding: 12px;
-`;
-
 type Document = {
   id: string;
   title: string;
@@ -365,3 +224,144 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
 };
 
 export default DocumentList;
+
+const DocumentContainer = styled.div`
+  box-sizing: border-box;
+  width: 800px;
+  height: auto;
+  display: flex;
+  align-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+`;
+
+const DocumentItem = styled.div`
+  width: 800px;
+  border: 1px solid black;
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 8px 8px 12px 0px rgb(163, 204, 163);
+`;
+
+const TitleContentContainer = styled.div`
+  flex-grow: 1;
+`;
+
+const StyledButton = styled.button`
+  background-color: rgb(163, 204, 163);
+  color: #333333;
+  border-radius: 0.5rem;
+  margin: 4px;
+`;
+
+const TitleDaytime = styled.p`
+  margin: 4px;
+  align-self: end;
+`;
+
+const DatesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 150px;
+`;
+
+const Container = styled.section`
+  width: 800px;
+  min-height: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+`;
+
+const InputAndButton = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const SearchInput = styled.input`
+  background-color: white;
+  width: 100%;
+  height: 45px;
+  color: black;
+  font-size: 16px;
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 12px;
+  margin-right: 4px;
+`;
+
+const TitleDomStyled = styled.h1`
+  font-size: 24px;
+  margin-bottom: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 600px;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10%;
+    height: 100%;
+    box-sizing: border-box;
+    backdrop-filter: blur(1px) grayscale(0);
+  }
+`;
+interface BlurLayerProps {
+  blur: number;
+  width: string;
+}
+
+const ContentDomStyled = styled.p`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 600px;
+  position: relative;
+`;
+
+const BlurLayer = styled.div<BlurLayerProps>`
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  box-sizing: border-box;
+  width: ${(props) => props.width};
+  backdrop-filter: blur(${(props) => props.blur}px) grayscale(0);
+`;
+
+const PagenationButton = styled.button`
+  background-color: rgb(163, 204, 163);
+  margin-right: 4px;
+`;
+
+const PagenationButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+`;
+
+const DayTimeInput = styled.input`
+  background-color: white;
+  width: 100%;
+  height: 45px;
+  color: black;
+  font-size: 16px;
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 12px;
+`;
