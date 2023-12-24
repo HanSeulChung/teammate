@@ -223,11 +223,8 @@ public class TeamService {
     return teamRepository.existsById(teamId);
   }
 
-  public Page<Team> getTeams(Long userId, Pageable pageable) {
-    return teamRepository
-        .findAllByTeamParticipants_Member_MemberIdAndIsDelete(
-            userId, DELETE_FALSE_FLAG, pageable
-        );
+  public List<TeamParticipants> getTeams(Long memberId) {
+    return getTeamParticipantsById(memberId);
   }
 
   @Transactional

@@ -3,8 +3,6 @@ package com.api.backend.team.data.repository;
 import com.api.backend.team.data.entity.TeamParticipants;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +14,7 @@ public interface TeamParticipantsRepository extends JpaRepository<TeamParticipan
   boolean existsByTeam_TeamIdAndMember_MemberId(Long teamId,Long userId);
   boolean existsByMember_MemberId(Long userId);
 
-  Page<TeamParticipants> findAllByMember_MemberIdAndTeam_IsDelete(Long memberId, boolean flag, Pageable pageable);
+  List<TeamParticipants> findAllByMember_MemberIdAndTeam_IsDelete(Long memberId, boolean flag);
 
   Optional<TeamParticipants> findByMember_Email(String email);
   Optional<TeamParticipants> findByMember_MemberId(Long memberId);
