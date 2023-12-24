@@ -37,7 +37,7 @@ const CommentContent = styled.span`
 
 const CommentActions = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 4px;
 `;
 
 const CommentInput = styled.input`
@@ -50,10 +50,27 @@ const CommentInput = styled.input`
   font-size: 16px;
 `;
 
+const CommentUpdateInput = styled.input`
+  width: 470px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  font-size: 16px;
+  height: 24px;
+`;
+
 const CommentButton = styled.button`
   float: right;
   width: 80px;
   margin-left: 5px;
+  background-color: #a3cca3;
+`;
+
+const UDbutton = styled.button`
+  width: 40px;
+  padding: 0;
   background-color: #a3cca3;
 `;
 
@@ -261,18 +278,14 @@ const Comment: React.FC = () => {
               <CommentListItem key={comment.id}>
                 {editingIndex === index ? (
                   <>
-                    <CommentInput
+                    <CommentUpdateInput
                       type="text"
                       value={editingComment}
                       onChange={handleCommentChange}
                     />
                     <CommentActions>
-                      <CommentButton onClick={handleUpdateComment}>
-                        확인
-                      </CommentButton>
-                      <CommentButton onClick={handleCancelEdit}>
-                        취소
-                      </CommentButton>
+                      <UDbutton onClick={handleUpdateComment}>확인</UDbutton>
+                      <UDbutton onClick={handleCancelEdit}>취소</UDbutton>
                     </CommentActions>
                   </>
                 ) : (
@@ -283,12 +296,12 @@ const Comment: React.FC = () => {
                     </CommentContent>
                     {isAuthor && (
                       <CommentActions>
-                        <CommentButton onClick={() => handleEdit(index)}>
+                        <UDbutton onClick={() => handleEdit(index)}>
                           수정
-                        </CommentButton>
-                        <CommentButton onClick={() => handleDelete(comment.id)}>
+                        </UDbutton>
+                        <UDbutton onClick={() => handleDelete(comment.id)}>
                           삭제
-                        </CommentButton>
+                        </UDbutton>
                       </CommentActions>
                     )}
                   </>
