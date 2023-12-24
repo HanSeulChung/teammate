@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { Link } from "react-router-dom";
 import axiosInstance from "../../axios";
 import {
   TeamProfileContainer,
@@ -9,6 +9,10 @@ import {
   ContainerWrapper,
   ButtonContainer,
   UserProfileInfo,
+  UserProfileTitle,
+  TeamProfileBox,
+  Button,
+  LinkContainer,
 } from "./MyTeamProfileStyled";
 import profileImg from "../../assets/profileImg.png";
 import { Team, TeamProfileUpdate } from "../../interface/interface.ts";
@@ -159,7 +163,10 @@ const MyTeamProfile: React.FC = () => {
   return (
     <TeamProfileContainer>
       <UserProfileInfo>
-        <h2>내 팀 프로필</h2>
+        <UserProfileTitle>내 팀 프로필</UserProfileTitle>
+        <LinkContainer>
+          <Link to="/myUserProfile">내 프로필로 이동</Link>
+        </LinkContainer>
         <select
           title="profile"
           onChange={(e) =>
@@ -177,7 +184,7 @@ const MyTeamProfile: React.FC = () => {
         </select>
       </UserProfileInfo>
       {selectedTeam && (
-        <div>
+        <TeamProfileBox>
           <TeamProfileTitle>{selectedTeam.name} 프로필</TeamProfileTitle>
           <ContainerWrapper>
             <ImageUploadContainer>
@@ -212,9 +219,9 @@ const MyTeamProfile: React.FC = () => {
             </NicknameContainer>
           </ContainerWrapper>
           <ButtonContainer>
-            <button onClick={handleCreateTeam}>변경하기</button>
+            <Button onClick={handleCreateTeam}>변경하기</Button>
           </ButtonContainer>
-        </div>
+        </TeamProfileBox>
       )}
     </TeamProfileContainer>
   );
