@@ -150,7 +150,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   };
 
   const handleCalendarClick = () => {
-    navigate(`/team/${teamId}/schedule`);
+    navigate(`/team/${teamId}`);
   };
 
   const formatDate = (dateString: string | number | Date) => {
@@ -170,7 +170,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         <DayTimeInput ref={datepickerRef} type="text" placeholder="날짜 검색" />
         <ButtonContainer>
           <StyledButton onClick={handleDocumentCreate}>문서 작성</StyledButton>
-          <StyledButton onClick={handleCalendarClick}>캘린더</StyledButton>
+          <StyledButton onClick={handleCalendarClick}>팀 홈</StyledButton>
         </ButtonContainer>
       </InputAndButton>
       <DocumentContainer>
