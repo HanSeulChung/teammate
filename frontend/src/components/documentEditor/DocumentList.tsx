@@ -251,7 +251,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   };
 
   const handleCalendarClick = () => {
-    navigate(`/team/${teamId}/schedules`);
+    navigate(`/team/${teamId}/schedule`);
   };
 
   const formatDate = (dateString: string | number | Date) => {
@@ -291,9 +291,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
                 </p>
               </TitleContentContainer>
               <DatesContainer>
-                <TitleDaytime>
-                  Created: {formatDate(doc.createdDt)}
-                </TitleDaytime>
+                <TitleDaytime>Created: {doc.createdDt}</TitleDaytime>
                 <TitleDaytime>
                   Updated: {formatDate(doc.updatedDt)}
                 </TitleDaytime>
