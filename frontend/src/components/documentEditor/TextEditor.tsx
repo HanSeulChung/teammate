@@ -18,7 +18,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const docsId = documentsId;
-  const client = useRef<StompJs.Client | null>(null);
+  const client = useRef<StompJs.Client | null>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     source: any,
     editor: any,
   ) => {
-    const newText = content;
+    const newText = content || "";
 
     setContent(newText); // 상태 업데이트
 
@@ -105,7 +105,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = event.target.value;
+    const newTitle = event.target.value || "";
     setTitle(newTitle);
 
     setContent(content.replace(/<p>/g, "").replace(/<\/p>/g, "\n"));
