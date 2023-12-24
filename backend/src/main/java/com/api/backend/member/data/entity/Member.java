@@ -41,6 +41,7 @@ public class Member extends BaseEntity {
 
   @Enumerated(EnumType.STRING)
   private LoginType loginType;
+  private String socialId;
 
   @Enumerated(EnumType.STRING)
   private Authority authority;

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useParams, useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { teamListState, userState } from "../../state/authState";
-import { Team } from "../../interface/interface";
+import { Team } from "../../interface/interface.ts";
 
 const TeamDetail = () => {
   const { teamId } = useParams<{ teamId: string }>();

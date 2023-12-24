@@ -13,11 +13,11 @@ import TextEditorView from "../views/TextEditorView";
 import DocumentListView from "../views/DocumentListView";
 import CommentView from "../views/CommentView";
 
-import MyPage from "../components/MyInfoPage/MyPage";
 import TeamInfo from "../components/TeamCreate/TeamInfo";
 import TeamLeader from "../components/ProfilePage/TeamLeader";
 import TeamMembers from "../components/ProfilePage/TeamMembers";
-// import TeamDetail from "../components/TeamPage/TeamDetail";
+import MyTeamProfile from "../components/MyInfoPage/MyTeamProfile";
+import MyUserProfile from "../components/MyInfoPage/MyUserProfile";
 // import { v4 as uuidV4 } from "uuid";
 
 const Router = () => {
@@ -49,11 +49,11 @@ const Router = () => {
         path="/team/:teamId/documents/:documentsId/comment"
         element={<CommentView />}
       />
-      <Route path="/myPage" element={<MyPage />} />
       <Route path="/TeamInfo" element={<TeamInfo />} />
       <Route path="/team/:teamId/teamLeader" element={<TeamLeader />} />
       <Route path="/team/:teamId/teamMembers" element={<TeamMembers />} />
-      {/* <Route path="/team/:teamId" element={<TeamDetail />} /> */}
+      <Route path="/myTeamProfile" element={<MyTeamProfile />} />
+      <Route path="/myUserProfile" element={<MyUserProfile />} />
     </Routes>
   );
 };

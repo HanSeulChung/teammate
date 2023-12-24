@@ -93,3 +93,30 @@ export const DeleteButton = styled.button`
     background-color: #cccccc;
   }
 `;
+
+export const UserProfileInfo = styled.div`
+  p {
+    margin: 0;
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  span {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+
+  select {
+    padding: 5px;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #333333;
+    border-radius: 0;
+    background: white;
+  }
+`;
