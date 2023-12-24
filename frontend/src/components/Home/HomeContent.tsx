@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   useSearchState,
@@ -17,9 +17,6 @@ const HomeContent = () => {
   const [error, setError] = useState<string | null>(null);
   const accessToken = useRecoilValue(accessTokenState);
   const navigate = useNavigate();
-  const location = useLocation();
-  const [team, setTeam] = useState<Team | null>(location.state?.team || null);
-  const [inviteCode, setInviteCode] = useState<string | null>(null);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   useEffect(() => {

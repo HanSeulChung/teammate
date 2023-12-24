@@ -1,4 +1,4 @@
-import { atom, useRecoilState, selector } from "recoil";
+import { atom, useRecoilState } from "recoil";
 import { recoilPersist } from "recoil-persist";
 import { useEffect } from "react";
 import { Team, User, TokenState } from "../interface/interface.ts";
@@ -17,22 +17,6 @@ export const loggedInUserState = atom<string | null>({
   key: "loggedInUserState",
   default: null,
 });
-
-// //리더인 팀 상태 선택기 (위에 string 을 User로 바꾸면됨)
-// export const teamsByLeaderState = selector({
-//   key: "teamsByLeaderState",
-//   get: ({ get }) => {
-//     const userTeams = get(userTeamsState);
-//     const loggedInUser = get(loggedInUserState);
-
-//     if (!loggedInUser) {
-//       return [];
-//     }
-
-//     // 로그인한 사용자가 리더인 팀만 반환
-//     return userTeams.filter((team) => team.leaderId === loggedInUser.id);
-//   },
-// });
 
 // 인증 상태
 export const isAuthenticatedState = atom({
