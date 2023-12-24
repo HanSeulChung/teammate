@@ -7,19 +7,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import "./ReactQuill.css";
 
-const StyledTexteditor = styled.div`
-  displey: flex;
-  width: 41rem;
-  text-align: center;
-`;
-
-const SaveButton = styled.button`
-  background-color: rgb(163, 204, 163);
-  color: #333333;
-  border-radius: 0.5rem;
-  margin: 12px;
-`;
-
 interface QuillEditorProps {}
 
 const CreateText: React.FC<QuillEditorProps> = () => {
@@ -77,3 +64,16 @@ const CreateText: React.FC<QuillEditorProps> = () => {
   );
 };
 export default CreateText;
+
+const StyledTexteditor = styled.div`
+  displey: flex;
+  width: 41rem;
+  text-align: center;
+`;
+
+const SaveButton = styled.button`
+  background-color: rgb(163, 204, 163);
+  color: #333333;
+  border-radius: 0.5rem;
+  margin: 12px;
+`;
