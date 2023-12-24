@@ -4,30 +4,30 @@ import styled from "styled-components";
 import searchImg from "../../assets/search.png";
 
 export default function HomeSearchBar() {
-  const { search, setSearch, handleSearch } = useSearchState();
-  const [isPlaceholderHidden, setPlaceholderHidden] = useState(false);
+    const { search, setSearch, handleSearch } = useSearchState();
+    const [isPlaceholderHidden, setPlaceholderHidden] = useState(false);
 
-  const handleSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    const handleSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-    await handleSearch(search);
-  };
+        await handleSearch(search);
+    };
 
-  const handleClick = () => {
-    if (search === "") {
-      setPlaceholderHidden(true);
-      setSearch("");
-    }
-  };
-  const handleFocus = () => {
-    setPlaceholderHidden(true);
-  };
+    const handleClick = () => {
+        if (search === "") {
+            setPlaceholderHidden(true);
+            setSearch("");
+        }
+    };
+    const handleFocus = () => {
+        setPlaceholderHidden(true);
+    };
 
-  const handleBlur = () => {
-    if (!search) {
-      setPlaceholderHidden(false);
-    }
-  };
+    const handleBlur = () => {
+        if (!search) {
+            setPlaceholderHidden(false);
+        }
+    };
 
   return (
     <>

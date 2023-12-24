@@ -68,7 +68,7 @@ const HomeContent = () => {
         <TeamItem key={index}>
           <TeamCard
             onClick={() =>
-              navigate(`/team/${team.teamId}/schedule`, {
+              navigate(`/team/${team.teamId}`, {
                 state: { team },
               })
             }
