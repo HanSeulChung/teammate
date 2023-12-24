@@ -6,6 +6,7 @@ import SignUp from "../components/Join/SignUp";
 import SignInView from "../views/SignInView";
 import KakaoLogin from "../components/Login/KakaoLogin";
 import HomeView from "../views/HomeView";
+import TeamContent from "../components/TeamPage/TeamContent";
 
 import Calender from "../views/Calender";
 import CreateTextView from "../views/CreateTextView";
@@ -35,6 +36,7 @@ const Router = () => {
       <Route path="/signIn" element={<SignInView />} />
       <Route path="/kakaoLogin" element={<KakaoLogin />} />
       <Route path="/homeView" element={<HomeView />} />
+      <Route path="/team/:teamId" element={<TeamContent />} />
       <Route path="/team/:teamId/schedule" element={<Calender />} />
       <Route path="/team/:teamId/documents" element={<CreateTextView />} />
       <Route

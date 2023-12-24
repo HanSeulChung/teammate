@@ -64,7 +64,7 @@ const TeamCalender = () => {
         try {
             const res = await axiosInstance({
                 method: "get",
-                url: `/team/${teamId}/calender`,
+                url: `/team/${teamId}/schedules/calendar`,
             });
             if (res.status === 200) {
                 console.log(res.data);
