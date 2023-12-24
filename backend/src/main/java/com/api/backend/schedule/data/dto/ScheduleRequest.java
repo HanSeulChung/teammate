@@ -32,4 +32,7 @@ public class ScheduleRequest {
   private RepeatCycle repeatCycle;
   private String color;
   private List<Long> teamParticipantsIds;
+
+  // 알람
+  private Long createParticipantId;
 }

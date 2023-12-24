@@ -1,19 +1,15 @@
 package com.api.backend.schedule.data.dto;
 
-import com.api.backend.schedule.data.entity.RepeatSchedule;
-import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.entity.TeamParticipantsSchedule;
 import com.api.backend.schedule.data.type.RepeatCycle;
 import com.api.backend.team.data.type.TeamRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import org.springframework.data.domain.Page;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @Builder
@@ -76,14 +72,6 @@ public class ScheduleResponse {
         .build();
   }
 
-
-  public static Page<RepeatScheduleResponse> fromRepeatSchedule(Page<RepeatSchedule> schedules) {
-    return schedules.map(RepeatScheduleResponse::from);
-  }
-
-  public static Page<SimpleScheduleResponse> fromSimpleSchedule(Page<SimpleSchedule> schedules) {
-    return schedules.map(SimpleScheduleResponse::from);
-  }
 
   public static List<Long> getTeamParticipantsIdsFromSchedules(
       List<TeamParticipantsSchedule> teamParticipantsSchedules) {

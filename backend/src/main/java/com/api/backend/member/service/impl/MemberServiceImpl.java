@@ -185,7 +185,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         String encodePassword = passwordEncoder.encode(updateMemberPasswordRequest.getNewPassword());
-        updateMemberPasswordRequest.setNewPassword(encodePassword);
+        member.setPassword(encodePassword);
         memberRepository.save(member);
     }
 

@@ -12,7 +12,9 @@ public enum AlarmType {
   KICKOUT("강퇴"),
   TEAM_DISBAND("강퇴"),
   MENTION("멘션"),
-  INVITE("초대");
+  INVITE("초대"),
+  SCHEDULE_CREATE("스케쥴 생성"),
+  SCHEDULE_DELETE("스케쥴 삭제");
 
   private final String description;
 

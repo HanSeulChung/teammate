@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentEditRequest {
-  @NotBlank
+  @NotNull
   @Schema(description = "editor id", example = "12L")
   private Long editorId;
 
-  @NotNull
+  @NotBlank
   @Schema(description = "comment title", example = "해당 사안 수정했습니다. 확인 부탁 드려요.")
   private String content;
 }

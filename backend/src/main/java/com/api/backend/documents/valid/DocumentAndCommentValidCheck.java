@@ -8,7 +8,6 @@ import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_IN_TE
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.PRINCIPAL_IS_NULL;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
 
 import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.comment.data.repository.CommentRepository;
@@ -57,13 +56,13 @@ public class DocumentAndCommentValidCheck {
         .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
   }
 
-  public void validDocumentByTeamId(Long teamId, Documents documents) {
-    if (documents.getTeamId() != teamId) {
+  public void validDocumentByTeamId(Long teamId, Long documentsTeamId) {
+    if (documentsTeamId != teamId) {
       throw new CustomException(DOCUMENT_NOT_IN_TEAM_EXCEPTION);
     }
   }
-  public void validDocumentByWriterId(TeamParticipants teamParticipant, Documents documents) {
-    if (documents.getWriterId() != teamParticipant.getTeamParticipantsId()) {
+  public void validDocumentByWriterId(Long documentWriterId, Long teamParticipantId) {
+    if (documentWriterId != teamParticipantId) {
       throw new CustomException(DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION);
     }
   }
@@ -73,8 +72,8 @@ public class DocumentAndCommentValidCheck {
         .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND_EXCEPTION));
   }
 
-  public void validCommentByWrterId(Comment comment, Long accessId) {
-    if (comment.getWriterId() != accessId) {
+  public void validCommentByWriterId(Long commentWriterId, Long teamParticipantsId) {
+    if (commentWriterId != teamParticipantsId) {
       throw new CustomException(COMMENT_UNMATCH_WRITER_ID_EXCEPTION);
     }
   }
