@@ -28,7 +28,7 @@ public class TeamParticipantsService {
 
   private final TeamService teamService;
   private final TeamParticipantsRepository teamParticipantsRepository;
-  private final boolean DELETE_FALSE_FLAG = false;
+  private static final boolean DELETE_FALSE_FLAG = false;
 
   private final FileProcessService fileProcessService;
 
@@ -86,11 +86,10 @@ public class TeamParticipantsService {
     return teamParticipants;
   }
 
-  public Page<TeamParticipants> getTeamParticipantsByUserId(Principal principal,
-      Pageable pageable) {
+  public List<TeamParticipants> getTeamParticipantsByUserId(Long memberId) {
     return teamParticipantsRepository
         .findAllByMember_MemberIdAndTeam_IsDelete(
-            Long.valueOf(principal.getName()), DELETE_FALSE_FLAG, pageable
+            memberId, DELETE_FALSE_FLAG
         );
   }
 
