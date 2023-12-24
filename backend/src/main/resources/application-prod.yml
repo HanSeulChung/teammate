@@ -55,6 +55,40 @@ cloud:
       static:
     stack:
       auto: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id:
+            client-secret:
+            scope:
+          naver:
+            client-id:
+            client-secret:
+            redirect-uri:
+            authorization-grant-type:
+            scope:
+            client-name:
+          kakao:
+            client-id:
+            client-secret:
+            redirect-uri:
+            client-authentication-method:
+            authorization-grant-type:
+            scope:
+            client-name:
+        provider:
+          naver:
+            authorization_uri:
+            token_uri:
+            user-info-uri:
+            user_name_attribute:
+          kakao:
+            authorization-uri:
+            token-uri:
+            user-info-uri:
+            user-name-attribute:
 jwt:
   secret:
   token:
