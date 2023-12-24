@@ -1,12 +1,12 @@
 import styled from "styled-components";
-// import Modal from "react-modal";
 
 export const CenteredContainer = styled.div`
+  margin-top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh; // 높이를 화면 높이 전체로 설정
+  height: 100vh;
   .modal-content {
     padding: 20px;
     background: #cccccc;
@@ -47,7 +47,7 @@ export const TeamLeaderContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 70vh;
 `;
 
 export const TeamProfileSection = styled.div`
@@ -88,12 +88,19 @@ export const TeamMembersContainer = styled.div`
 
 export const ConfirmationModal = styled.div`
   position: absolute;
-  top: 80%;
+  top: 65%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 20px;
   background: white;
   z-index: 999;
   border: 1px solid #cccccc;
-  width: 15%;
+  width: 30%;
+  height: 17%;
+
+  input {
+    background: white;
+    border: 1px solid #cccccc;
+    margin-right: 10px;
+  }
 `;
