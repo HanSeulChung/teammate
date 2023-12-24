@@ -40,7 +40,10 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
     const requestData = {
       title: title,
-      content: content.replace(/<p>/g, "").replace(/<\/p>/g, "\n"),
+      content: content
+        .replace(/<p>/g, "")
+        .replace(/<\/p>/g, "\n")
+        .replace(/<br>/g, ""),
       writerEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
     };
 
