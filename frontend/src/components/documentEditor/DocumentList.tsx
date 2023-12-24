@@ -107,6 +107,14 @@ interface BlurLayerProps {
   width: string;
 }
 
+const ContentDomStyled = styled.p`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 600px;
+  position: relative;
+`;
+
 const BlurLayer = styled.div<BlurLayerProps>`
   position: absolute;
   top: 0;
@@ -325,12 +333,17 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
                   <BlurLayer blur={0.8} width="35px" />
                   <BlurLayer blur={0.4} width="40px" />
                 </TitleDomStyled>
-                <p>
-                  내용 :{" "}
-                  {doc.content.length < 20
-                    ? doc.content
-                    : doc.content.slice(0, 20) + "..."}
-                </p>
+                <ContentDomStyled>
+                  내용 : {doc.content}
+                  <BlurLayer blur={3.6} width="5px" />
+                  <BlurLayer blur={3.2} width="10px" />
+                  <BlurLayer blur={2.8} width="15px" />
+                  <BlurLayer blur={2.4} width="20px" />
+                  <BlurLayer blur={2.0} width="25px" />
+                  <BlurLayer blur={1.6} width="30px" />
+                  <BlurLayer blur={0.8} width="35px" />
+                  <BlurLayer blur={0.4} width="40px" />
+                </ContentDomStyled>
               </TitleContentContainer>
               <DatesContainer>
                 <TitleDaytime>
