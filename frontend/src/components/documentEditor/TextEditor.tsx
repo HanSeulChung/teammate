@@ -64,7 +64,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   useEffect(() => {
     client.current = new StompJs.Client({
-      brokerURL: "ws://118.67.128.124:8080/ws",
+      brokerURL: "ws://localhost:8080/ws",
       // connectHeaders: {
       //   Authorization: `Bearer ${accessTokenState}`,
       // },
