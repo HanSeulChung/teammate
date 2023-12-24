@@ -244,6 +244,14 @@ const DocumentItem = styled.div`
   padding: 10px;
   border-radius: 12px;
   box-shadow: 8px 8px 12px 0px rgb(163, 204, 163);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: scale(1.03);
+    box-shadow: 10px 10px 15px 0px rgb(163, 204, 163);
+  }
 `;
 
 const TitleContentContainer = styled.div`
