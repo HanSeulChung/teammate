@@ -6,6 +6,7 @@ import com.api.backend.documents.data.dto.DeltaMessage;
 import com.api.backend.documents.data.dto.RequestedDocument;
 import com.api.backend.documents.data.dto.DocumentResponse;
 import com.api.backend.documents.data.dto.SelectionChangeMessage;
+import com.api.backend.documents.data.dto.TotalMessage;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.global.exception.CustomException;
@@ -62,12 +63,20 @@ public class DocumentsWebSocketController {
     messagingTemplate.convertAndSend("/topic/broadcastBySelectionChange", selectionChangeMessage);
   }
 
+//  @MessageMapping("/doc.updateDocsByTextChange")
+//  public void handleBroadCastByTextChange(@Payload DeltaMessage deltaMessage) {
+//
+//    System.out.println(deltaMessage);
+//
+//    messagingTemplate.convertAndSend("/topic/broadcastByTextChange", deltaMessage);
+//  }
+
   @MessageMapping("/doc.updateDocsByTextChange")
-  public void handleBroadCastByTextChange(@Payload DeltaMessage deltaMessage) {
+  public void handleTotalBroadCastByTextChange(@Payload TotalMessage totalMessage) {
 
-    System.out.println(deltaMessage);
-
-    messagingTemplate.convertAndSend("/topic/broadcastByTextChange", deltaMessage);
+//    System.out.println(totalMessage);
+    System.out.println(totalMessage.getContent());
+    messagingTemplate.convertAndSend("/topic/broadcastByTextChange", totalMessage);
   }
 
 }
