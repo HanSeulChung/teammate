@@ -3,6 +3,7 @@ import axios from "axios";
 import { StyledContainer, StyledFormItem, Button } from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../axios.tsx";
 
 interface SignUpProps {}
 
@@ -12,15 +13,15 @@ const TEST = "EMAIL_ALREADY_EXIST_EXCEPTION";
 const SignUp: React.FC<SignUpProps> = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [repassword, setRepassword] = useState<string>("");
+  const [rePassword, setRePassword] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [sexType, setSexType] = useState<string>("");
   const [isIdAvailable, setIsIdAvailable] = useState<boolean | null>(null);
   const [isEmailFormatValid, setIsEmailFormatValid] = useState<boolean | null>(
     null,
   );
-  const [isRepasswordValid, setIsRepasswordValid] = useState<boolean>(true);
-  const [signupMessage, setSignupMessage] = useState<string | null>(null);
+  const [isRePasswordValid, setIsRePasswordValid] = useState<boolean>(true);
+  const [signUpMessage, setSignUpMessage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -29,39 +30,39 @@ const SignUp: React.FC<SignUpProps> = () => {
 
   const handleSignUp = () => {
     if (
-      [email, password, repassword, name].some((value) => value.trim() === "")
+      [email, password, rePassword, name].some((value) => value.trim() === "")
     ) {
-      setSignupMessage("입력되지 않은 항목이 있습니다.");
+      setSignUpMessage("입력되지 않은 항목이 있습니다.");
       return;
     }
-    if (password !== repassword) {
-      setSignupMessage("비밀번호가 일치하지 않습니다.");
-      setIsRepasswordValid(false);
+    if (password !== rePassword) {
+      setSignUpMessage("비밀번호가 일치하지 않습니다.");
+      setIsRePasswordValid(false);
       return;
     }
     if (password.length < 8) {
-      setSignupMessage("비밀번호는 8자리 이상이어야 합니다.");
+      setSignUpMessage("비밀번호는 8자리 이상이어야 합니다.");
       return;
     }
     if (!sexType) {
-      setSignupMessage("성별을 선택하세요.");
+      setSignUpMessage("성별을 선택하세요.");
       return;
     }
     if (isIdAvailable === null) {
-      setSignupMessage("아이디 중복 확인이 필요합니다.");
+      setSignUpMessage("아이디 중복 확인이 필요합니다.");
       return;
     } else if (!isIdAvailable) {
-      setSignupMessage("이미 가입된 이메일입니다.");
+      setSignUpMessage("이미 가입된 이메일입니다.");
       return;
     }
-    axios
+    axiosInstance
       .post(
-        "http://118.67.128.124:8080/sign-up",
+        "/sign-up",
         {
           email: email,
           password: password,
           name: name,
-          repassword: repassword,
+          rePassword: rePassword,
           sexType: sexType,
         },
         {
@@ -70,12 +71,12 @@ const SignUp: React.FC<SignUpProps> = () => {
       )
       .then((res) => {
         console.log(res.data);
-        setSignupMessage("회원가입 성공");
+        setSignUpMessage("회원가입 성공");
         openModal();
       })
       .catch((error) => {
         if (error.response && error.response.data.errorCode === TEST) {
-          setSignupMessage("이미 가입된 이메일입니다.");
+          setSignUpMessage("이미 가입된 이메일입니다.");
         } else {
           console.error("회원가입 실패:", error);
           if (error.response) {
@@ -92,7 +93,7 @@ const SignUp: React.FC<SignUpProps> = () => {
             console.error("에러 메세지:", error.message);
           }
 
-          setSignupMessage("회원가입 실패");
+          setSignUpMessage("회원가입 실패");
         }
       });
   };
@@ -107,11 +108,11 @@ const SignUp: React.FC<SignUpProps> = () => {
         break;
       case "password":
         setPassword(value);
-        setIsRepasswordValid(true);
+        setIsRePasswordValid(true);
         break;
-      case "repassword":
-        setRepassword(value);
-        setIsRepasswordValid(true);
+      case "rePassword":
+        setRePassword(value);
+        setIsRePasswordValid(true);
         break;
       case "name":
         setName(value);
@@ -125,8 +126,8 @@ const SignUp: React.FC<SignUpProps> = () => {
     // if (isEmailFormatValid === null || !isEmailFormatValid) {
     //   return;
     // }
-    axios
-      .post(`http://118.67.128.124:8080/sign-up/email-check`, { email })
+    axiosInstance
+      .post(`/sign-up/email-check`, { email })
       .then((response) => {
         const isEmailAvailable = response.data.errorCode;
         console.log(isEmailAvailable);
@@ -214,23 +215,23 @@ const SignUp: React.FC<SignUpProps> = () => {
       <StyledFormItem>
         <input
           type="password"
-          id="repassword"
-          name="repassword"
+          id="rePassword"
+          name="rePassword"
           placeholder="비밀번호 확인"
-          value={repassword}
+          value={rePassword}
           onChange={handleInputChange}
           onBlur={() => {
-            if (repassword && repassword !== password) {
-              setIsRepasswordValid(false);
+            if (rePassword && rePassword !== password) {
+              setIsRePasswordValid(false);
             } else {
-              setIsRepasswordValid(true);
+              setIsRePasswordValid(true);
             }
           }}
         />
       </StyledFormItem>
-      {isRepasswordValid !== null && (
-        <span style={{ color: isRepasswordValid ? "green" : "red" }}>
-          {!isRepasswordValid && "비밀번호가 일치하지 않습니다."}
+      {isRePasswordValid !== null && (
+        <span style={{ color: isRePasswordValid ? "green" : "red" }}>
+          {!isRePasswordValid && "비밀번호가 일치하지 않습니다."}
         </span>
       )}
       <br />
@@ -273,7 +274,7 @@ const SignUp: React.FC<SignUpProps> = () => {
         <button onClick={handleSignUp}>회원 가입</button>
       </StyledFormItem>
 
-      {signupMessage && <p style={{ color: "red" }}>{signupMessage}</p>}
+      {signUpMessage && <p style={{ color: "red" }}>{signUpMessage}</p>}
       {isModalOpen && (
         <div className="modal">
           <p>아이디로 이메일 인증을 보냈습니다. 확인해주세요.</p>

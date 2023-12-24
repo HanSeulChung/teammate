@@ -30,7 +30,7 @@ const MyTeamDelete: React.FC<MyTeamDeleteProps> = ({ onDeleteTeam }) => {
       const response = await axios.delete(`/team/${selectedTeam}/participant`, {
         withCredentials: true,
         headers: {
-          accesstoken: accessToken,
+          accessToken: accessToken,
         },
       });
 

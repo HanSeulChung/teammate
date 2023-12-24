@@ -1,7 +1,7 @@
 import { atom, useRecoilState, selector } from "recoil";
 import { recoilPersist } from "recoil-persist";
 import { useEffect } from "react";
-import { Team, User, TokenState } from "../interface/interface";
+import { Team, User, TokenState } from "../interface/interface.ts";
 
 const { persistAtom } = recoilPersist();
 
