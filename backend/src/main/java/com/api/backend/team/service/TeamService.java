@@ -5,6 +5,7 @@ import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_LIMIT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EQUALS_EXCEPTION;
@@ -113,6 +114,10 @@ public class TeamService {
 
     if (team.isDelete()) {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
+    }
+
+    if (team.getTeamParticipants().size() + 1 > team.getMemberLimit()) {
+      throw new CustomException(TEAM_LIMIT_VALID_EXCEPTION);
     }
 
     existTeamParticipantsTrueThrows(teamId, userId);
