@@ -1,4 +1,3 @@
-// AlarmModal.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
 import PersonalAlarm from "./PersonalAlarm";
@@ -24,10 +23,8 @@ const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
   };
 
   const handleModalClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 모달 내부를 클릭해도 닫히지 않도록
+    e.stopPropagation();
   };
-
-  // const StyledTabButton = TabButton.withComponent("div");
 
   return (
     <ModalOverlay onClick={closeModal}>
@@ -61,27 +58,24 @@ export default AlarmModal;
 
 const ModalOverlay = styled.div`
   position: fixed;
-  top: 0px;
-  right: 50px;
-  margin: 50px;
-  width: 20%;
-  height: 60%;
-
-  z-index: 1000;
+  top: 8%;
+  right: 15%;
+  width: 25%;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding: 20px;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ModalContent = styled.div`
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 100%;
+  width: 80%;
+  max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
+  border: 1px solid #cccccc;
 `;
 
 const TabButtons = styled.div`
@@ -107,6 +101,7 @@ const TabButton = styled.button<{ active: string }>`
 const CloseButton = styled.button`
   position: absolute;
   top: 15px;
-  right: 15px;
+  right: 30px;
   cursor: pointer;
+  background: #cccccc;
 `;
