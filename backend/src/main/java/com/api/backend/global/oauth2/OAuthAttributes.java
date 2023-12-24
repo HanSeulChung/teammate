@@ -9,14 +9,15 @@ import com.api.backend.member.data.type.Authority;
 import com.api.backend.member.data.type.LoginType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.UUID;
 
-import static com.api.backend.member.data.type.LoginType.KAKAO;
-import static com.api.backend.member.data.type.LoginType.NAVER;
+import static com.api.backend.member.data.type.LoginType.*;
 
 @Getter
+@Slf4j
 public class OAuthAttributes {
 
     private String nameAttributeKey; // OAuth2 로그인 진행 시 키가 되는 필드 값, PK와 같은 의미
@@ -32,12 +33,20 @@ public class OAuthAttributes {
                                      String userNameAttributeName, Map<String, Object> attributes) {
 
         if (loginType == NAVER) {
+            log.info("네이버 로그인");
             return ofNaver(userNameAttributeName, attributes);
-        }
-        if (loginType == KAKAO) {
+        }else if (loginType == KAKAO) {
+            log.info("카카오 로그인");
             return ofKakao(userNameAttributeName, attributes);
         }
-        return ofGoogle(userNameAttributeName, attributes);
+        else if (loginType == GOOGLE) {
+            log.info("구글 로그인");
+            return ofGoogle(userNameAttributeName, attributes);
+        }
+        else{
+            log.info("로그인 타입이 문제 발생");
+            return null;
+        }
     }
 
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
