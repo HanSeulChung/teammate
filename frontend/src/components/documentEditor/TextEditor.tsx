@@ -66,7 +66,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     client.current = new StompJs.Client({
       brokerURL: "ws://localhost:8080/ws",
       // connectHeaders: {
-      //   Authorization: `Bearer ${accessTokenState}`,
+      //   Authorization: `Bearer ${accessToken}`,
       // },
     });
 
@@ -98,10 +98,13 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
       client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
         const docsbody = JSON.parse(docs.body);
-        if (docsbody.memberId !== currentUserId) {
+        console.log("broadCast를 이렇게 받았다!", docsbody);
+        if (docsbody.memberId !== currentUserId) { 
           // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
+          console.log("broadCast 받았다.");
           setTitle(docsbody.title);
-          setContent(docsbody.text);
+          setContent(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" ")); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
+          console.log(docsbody);
         }
       });
     };
@@ -128,18 +131,17 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     const newText = content;
 
     setContent(newText); // 상태 업데이트
-
     if (client.current) {
       const message = {
         memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
-        // title: title,
-        text: newText,
+        title: title,
+        content: newText,
         documentId: documentsId,
       };
-      //console.log("message : ", message);
+      console.log("message : ", message);
 
       client.current.publish({
-        destination: "/topic/broadcastByTextChange",
+        destination: "/app/doc.updateDocsByTextChange",
         body: JSON.stringify(message),
       });
     }
@@ -149,18 +151,18 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     const newTitle = event.target.value;
     setTitle(newTitle);
 
-    setContent(content.replace(/<p>/g, "").replace(/<\/p>/g, "\n"));
+    setContent(content);
 
     if (client.current) {
       const message = {
         memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
         title: newTitle,
-        text: content,
+        content: content,
         documentId: documentsId,
       };
 
       client.current.publish({
-        destination: "/topic/broadcastByTextChange",
+        destination: "/app/doc.updateDocsByTextChange",
         body: JSON.stringify(message),
       });
     }
