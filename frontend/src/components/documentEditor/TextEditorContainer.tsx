@@ -5,12 +5,6 @@ import styled from "styled-components";
 
 interface TextEditorViewProps {}
 
-const StyledTextEditorView = styled.section`
-  display: flex;
-  justify-content: center;
-  height: auto;
-`;
-
 const TextEditorContainer: React.FC<TextEditorViewProps> = () => {
   const { teamId } = useParams<{ teamId: string }>();
   const { documentsId } = useParams<{ documentsId: string }>();
@@ -31,3 +25,9 @@ const TextEditorContainer: React.FC<TextEditorViewProps> = () => {
 };
 
 export default TextEditorContainer;
+
+const StyledTextEditorView = styled.section`
+  display: flex;
+  justify-content: center;
+  height: auto;
+`;

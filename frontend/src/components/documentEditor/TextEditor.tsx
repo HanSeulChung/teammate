@@ -9,47 +9,6 @@ import "react-quill/dist/quill.snow.css";
 import axiosInstance from "../../axios";
 import "./ReactQuill.css";
 
-const StyledTexteditor = styled.div`
-  width: 41rem;
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  height: 300px;
-  border: 1px solid gray;
-  padding: 4px;
-  font-size: 16px;
-  background-color: white;
-`;
-
-const TitleInput = styled.input`
-  border: 1px solid black;
-  background-color: white;
-  color: black;
-  width: 100%;
-  font-size: 16px;
-  margin-bottom: 4px;
-  border: 1px solid gray;
-  padding: 4px;
-  ::placeholder {
-    color: gray;
-  }
-`;
-
-const StyledButton = styled.button`
-  background-color: rgb(163, 204, 163);
-  color: #333333;
-  border-radius: 0.5rem;
-  margin: 4px;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 41rem;
-  margin-top: 10px;
-`;
-
 interface TextEditorProps {
   teamId: string;
   documentsId: string;
@@ -59,7 +18,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const docsId = documentsId;
-  const client = useRef<StompJs.Client | null>(null);
+  const client = useRef<StompJs.Client | null>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -125,7 +84,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     source: any,
     editor: any,
   ) => {
-    const newText = content;
+    const newText = content || "";
 
     setContent(newText); // 상태 업데이트
 
@@ -146,7 +105,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = event.target.value;
+    const newTitle = event.target.value || "";
     setTitle(newTitle);
 
     setContent(content.replace(/<p>/g, "").replace(/<\/p>/g, "\n"));
@@ -183,6 +142,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     navigate(`${currentPath}/comment`);
   };
 
+  const handleSaveAndExit = async () => {
+    navigate(`/team/${teamId}/documentsList`);
+  };
+
   return (
     <StyledTexteditor>
       <TitleInput
@@ -197,6 +160,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       />
       <ButtonContainer>
         <StyledButton onClick={handleCommentClick}>댓글</StyledButton>
+        <StyledButton onClick={handleSaveAndExit}>저장 후 나가기</StyledButton>
         <StyledButton onClick={handleDelete}>삭제하기</StyledButton>
       </ButtonContainer>
     </StyledTexteditor>
@@ -204,3 +168,44 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 };
 
 export default TextEditor;
+
+const StyledTexteditor = styled.div`
+  width: 41rem;
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  height: 300px;
+  border: 1px solid gray;
+  padding: 4px;
+  font-size: 16px;
+  background-color: white;
+`;
+
+const TitleInput = styled.input`
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  width: 100%;
+  font-size: 16px;
+  margin-bottom: 4px;
+  border: 1px solid gray;
+  padding: 4px;
+  ::placeholder {
+    color: gray;
+  }
+`;
+
+const StyledButton = styled.button`
+  background-color: rgb(163, 204, 163);
+  color: #333333;
+  border-radius: 0.5rem;
+  margin: 4px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 41rem;
+  margin-top: 10px;
+`;

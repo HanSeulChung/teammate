@@ -1,20 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
-const TitleInput = styled.input`
-  border: 1px solid black;
-  background-color: white;
-  color: black;
-  width: 100%;
-  font-size: 16px;
-  margin-bottom: 4px;
-  border: 1px solid gray;
-  padding: 4px;
-  ::placeholder {
-    color: gray;
-  }
-`;
-
 interface TextTitleProps {
   titleProps: string;
   onTitleChange: (newTitle: string) => void;
@@ -47,3 +33,17 @@ const TextTitle: React.FC<TextTitleProps> = ({ titleProps, onTitleChange }) => {
 };
 
 export default TextTitle;
+
+const TitleInput = styled.input`
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  width: 100%;
+  font-size: 16px;
+  margin-bottom: 4px;
+  border: 1px solid gray;
+  padding: 4px;
+  ::placeholder {
+    color: gray;
+  }
+`;
