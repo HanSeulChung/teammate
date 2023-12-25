@@ -558,7 +558,7 @@ class TeamServiceTest {
         .team(team)
         .build();
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
-        anyLong(), any()
+        teamId, userId
     )).thenReturn(Optional.of(teamParticipants));
 
     //when
@@ -665,31 +665,33 @@ class TeamServiceTest {
   @Test
   @DisplayName("자신이 속한 팀 조회시 팀 해체여부가 false 인 것만 받아온다.")
   void getTimes() {
-    // todo pull 받고 다시 수정
     //given
-    Long userId = 1L;
-    Pageable pageable = PageRequest.of(0, 10);
-    List<Team> teams = new ArrayList<>();
+    Long memberId = 1L;
+    List<TeamParticipants> teamParticipants = new ArrayList<>();
     for (int i = 0; i < 3; i++) {
-      teams.add(
-          Team.builder()
-              .teamId((long) i)
+      teamParticipants.add(
+          TeamParticipants.builder()
+              .team(
+                  Team.builder()
+                      .teamId((long) i)
+                      .build()
+              )
+              .teamNickName("test" + i)
               .build()
       );
     }
-    Page<Team> teamPage = new PageImpl<>(teams);
-    when(teamRepository.findAllByTeamParticipants_Member_MemberIdAndIsDelete(
-        anyLong(), anyBoolean(), any()
-    )).thenReturn(teamPage);
+    when(teamParticipantsRepository.findAllByMember_MemberIdAndTeam_IsDelete(
+        memberId, false
+    )).thenReturn(teamParticipants);
 
-//    //when
-//    Page<Team> result = teamService.getTeams(userId, pageable);
-//
-//    //then
-//    List<Team> resultTeam = result.getContent();
-//    for (int i = 0; i < 3; i++) {
-//      assertEquals(resultTeam.get(i).getTeamId(), i);
-//    }
+    //when
+    List<TeamParticipants> result = teamService.getTeams(memberId);
+
+    //then
+    for (int i = 0; i < 3; i++) {
+      assertEquals(result.get(i).getTeam().getTeamId(), i);
+      assertEquals(result.get(i).getTeamNickName(),"test" + i);
+    }
   }
 
   @Test
