@@ -9,6 +9,7 @@ import static com.api.backend.global.exception.type.ErrorCode.TEAM_LIMIT_VALID_E
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EQUALS_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EXIST_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION;
@@ -291,7 +292,7 @@ public class TeamService {
 
   private void existTeamParticipantsTrueThrows(Long teamId, Long userId) {
     if (teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
-      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+      throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
   }
 
