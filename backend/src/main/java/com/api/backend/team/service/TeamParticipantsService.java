@@ -31,7 +31,7 @@ public class TeamParticipantsService {
 
   private final TeamService teamService;
   private final TeamParticipantsRepository teamParticipantsRepository;
-  private final boolean DELETE_FALSE_FLAG = false;
+  private static final boolean DELETE_FALSE_FLAG = false;
 
   private final FileProcessService fileProcessService;
 
@@ -82,7 +82,7 @@ public class TeamParticipantsService {
 
     Team team = teamParticipants.getTeam();
 
-    teamService.isDeletedCheck(team);
+    teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     return team.getTeamParticipants();
   }
@@ -92,7 +92,9 @@ public class TeamParticipantsService {
         .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
-    teamService.isDeletedCheck(teamParticipants.getTeam());
+    Team team = teamParticipants.getTeam();
+
+    teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     return teamParticipants;
   }
@@ -113,7 +115,9 @@ public class TeamParticipantsService {
         teamParticipantUpdateRequest.getTeamParticipantsId()
     ).orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
-    teamService.isDeletedCheck(teamParticipant.getTeam());
+    Team team = teamParticipant.getTeam();
+
+    teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     if (!teamParticipant.getMember().getMemberId()
         .equals(Long.valueOf(userId))) {
