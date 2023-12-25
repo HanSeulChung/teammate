@@ -26,16 +26,13 @@ const HomeContent = () => {
           navigate("/signIn");
           return;
         }
-        const teamListResponse = await axiosInstance.get("/team/list", {
-          params: { page: 0, size: 10, sort: "createDt-asc" },
-        });
+        const teamListResponse = await axiosInstance.get("/team/list");
         // Recoil 상태 업데이트
-        setUserTeams(teamListResponse.data.content);
-        console.log(accessToken);
+        setUserTeams(teamListResponse.data);
         // localStorage에 저장
         window.sessionStorage.setItem(
           `teamList_${accessToken}`,
-          JSON.stringify(teamListResponse.data.content),
+          JSON.stringify(teamListResponse.data),
         );
       } catch (error: any) {
         console.error("Error fetching team list:", error);
