@@ -26,6 +26,7 @@ public enum ErrorCode {
   TEAM_IS_DELETE_TRUE_EXCEPTION(500, "해당 팀 이미 해체된 팀입니다."),
   TEAM_IS_DELETEING_EXCEPTION(500, "해당 팀 이미 해체 중에 있습니다."),
   TEAM_NOT_DELETEING_EXCEPTION(500, "해당 팀은 해체 중이 아닙니다."),
+  TEAM_LIMIT_VALID_EXCEPTION(500, "해당 팀의 인원제한 허용치를 넘었습니다."),
   TEAM_RESTORE_EXPIRED_EXCEPTION(500, "해당 팀은 해체 기한이 지났습니다."),
 
   // teamParticipant

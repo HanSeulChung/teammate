@@ -5,6 +5,7 @@ import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_LIMIT_VALID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_EQUALS_EXCEPTION;
@@ -34,11 +35,10 @@ import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
 import com.api.backend.team.data.type.TeamRole;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +49,7 @@ public class TeamService {
   private final TeamRepository teamRepository;
   private final MemberRepository memberRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
+
   private final boolean DELETE_FALSE_FLAG = false;
 
   private final FileProcessService fileProcessService;
@@ -97,9 +98,8 @@ public class TeamService {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
 
-    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
-      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
-    }
+    existTeamParticipantsFalseThrows(teamId, userId);
+
     return team.getInviteLink();
   }
 
@@ -116,14 +116,16 @@ public class TeamService {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
     }
 
-    if (teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
-      throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
+    if (team.getTeamParticipants().size() + 1 > team.getMemberLimit()) {
+      throw new CustomException(TEAM_LIMIT_VALID_EXCEPTION);
     }
+
+    existTeamParticipantsTrueThrows(teamId, userId);
 
     Member member = memberRepository.findById(userId)
         .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
-    TeamParticipants teamParticipants = teamParticipantsRepository.save(
+    TeamParticipants teamParticipants = createTeamParticipant(
         TeamParticipants.builder()
             .member(member)
             .teamNickName(getRandomNickName(member.getName()))
@@ -147,24 +149,26 @@ public class TeamService {
       throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
     }
 
-    TeamParticipants leaderParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), userId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    TeamParticipants leaderParticipants = getTeamParticipantByTeamIdAndMemberId
+            (
+                request.getTeamId(), userId
+            );
 
     if (!leaderParticipants.getTeamRole().equals(TeamRole.READER)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
     }
 
-    TeamParticipants teamParticipants = teamParticipantsRepository
-        .findById(request.getParticipantId())
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    TeamParticipants teamParticipants = getTeamParticipantById
+        (
+        request.getParticipantId()
+    );
 
     if (teamParticipants.getTeamParticipantsId()
         .equals(leaderParticipants.getTeamParticipantsId())) {
       throw new CustomException(TEAM_PARTICIPANTS_EQUALS_EXCEPTION);
     }
 
-    teamParticipantsRepository.delete(teamParticipants);
+    deleteTeamParticipantById(teamParticipants);
 
     return TeamKickOutResponse.builder()
         .teamId(request.getTeamId())
@@ -178,9 +182,10 @@ public class TeamService {
   @Transactional
   public Team disbandTeam(Long userId, TeamDisbandRequest request) {
 
-    TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(request.getTeamId(), userId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId
+        (
+            request.getTeamId(), userId
+        );
 
     disbandCheckPermission(request.getTeamName(), teamParticipants);
 
@@ -194,9 +199,11 @@ public class TeamService {
 
   @Transactional
   public Team restoreTeam(Long userId, LocalDate restoreDt, Long teamId) {
-    TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId
+            (
+                teamId,
+                userId
+            );
 
     if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION);
@@ -223,18 +230,16 @@ public class TeamService {
     return teamRepository.existsById(teamId);
   }
 
-  public Page<Team> getTeams(Long userId, Pageable pageable) {
-    return teamRepository
-        .findAllByTeamParticipants_Member_MemberIdAndIsDelete(
-            userId, DELETE_FALSE_FLAG, pageable
-        );
+  public List<TeamParticipants> getTeams(Long memberId) {
+    return getTeamParticipantsById(memberId);
   }
 
   @Transactional
   public Team updateTeam(TeamUpdateRequest teamUpdateRequest, Long userId) {
-    TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamUpdateRequest.getTeamId(), userId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId
+        (
+            teamUpdateRequest.getTeamId(), userId
+        );
 
     if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
@@ -269,15 +274,50 @@ public class TeamService {
     }
   }
 
+  @Transactional
+  public void deleteTeamParticipantById(TeamParticipants teamParticipants) {
+    teamParticipantsRepository.delete(teamParticipants);
+  }
+
   public Team getTeamByTeamIdAndMemberId(Long teamId, Long memberId) {
     Team team = getTeam(teamId);
 
     isDeletedCheck(team);
 
-    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, memberId)) {
-      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
-    }
+    existTeamParticipantsFalseThrows(teamId, memberId);
 
     return team;
+  }
+
+  private void existTeamParticipantsFalseThrows(Long teamId, Long userId) {
+    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+    }
+  }
+
+  private void existTeamParticipantsTrueThrows(Long teamId, Long userId) {
+    if (teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
+      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
+    }
+  }
+  private TeamParticipants createTeamParticipant(TeamParticipants teamParticipants) {
+    return teamParticipantsRepository.save(teamParticipants);
+  }
+
+  private TeamParticipants getTeamParticipantById(Long teamParticipantId) {
+    return teamParticipantsRepository
+        .findById(teamParticipantId)
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+  }
+  private List<TeamParticipants> getTeamParticipantsById(Long memberId) {
+    return teamParticipantsRepository.findAllByMember_MemberIdAndTeam_IsDelete(
+        memberId, DELETE_FALSE_FLAG
+    );
+  }
+
+  private TeamParticipants getTeamParticipantByTeamIdAndMemberId(Long teamId, Long userId) {
+    return teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
   }
 }

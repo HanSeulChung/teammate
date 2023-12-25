@@ -54,7 +54,7 @@ public class TeamParticipantController {
       @PathVariable(value = "teamId") Long teamId
   ) {
     TeamParticipants teamParticipants = teamParticipantsService
-        .deleteTeamParticipant(Long.valueOf(principal.getName()), teamId);
+        .deleteTeamParticipantById(Long.valueOf(principal.getName()), teamId);
 
     return ResponseEntity.ok(
         TeamParticipantsDeleteResponse

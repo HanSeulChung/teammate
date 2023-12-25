@@ -16,12 +16,9 @@ import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.type.TeamRole;
-import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,15 +28,13 @@ public class TeamParticipantsService {
 
   private final TeamService teamService;
   private final TeamParticipantsRepository teamParticipantsRepository;
-  private final boolean DELETE_FALSE_FLAG = false;
+  private static final boolean DELETE_FALSE_FLAG = false;
 
   private final FileProcessService fileProcessService;
 
   @Transactional
-  public TeamParticipants deleteTeamParticipant(Long userId, Long teamId) {
-    TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+  public TeamParticipants deleteTeamParticipantById(Long userId, Long teamId) {
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
     if (teamParticipants.getTeamRole().equals(TeamRole.READER)) {
       throw new CustomException(TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION);
@@ -51,9 +46,7 @@ public class TeamParticipantsService {
 
   @Transactional
   public String updateRoleTeamParticipant(Long userId, Long participantId, Long teamId) {
-    TeamParticipants readerParticipant = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    TeamParticipants readerParticipant = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
     if (!readerParticipant.getTeamRole().equals(TeamRole.READER)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
@@ -76,9 +69,7 @@ public class TeamParticipantsService {
   }
 
   public List<TeamParticipants> getTeamParticipants(Long teamId, Long userId) {
-    TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
     Team team = teamParticipants.getTeam();
 
@@ -88,20 +79,17 @@ public class TeamParticipantsService {
   }
 
   public TeamParticipants getTeamParticipant(Long teamId, Long userId) {
-    TeamParticipants teamParticipants = teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
-        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
     teamService.isDeletedCheck(teamParticipants.getTeam());
 
     return teamParticipants;
   }
 
-  public Page<TeamParticipants> getTeamParticipantsByUserId(Principal principal,
-      Pageable pageable) {
+  public List<TeamParticipants> getTeamParticipantsByUserId(Long memberId) {
     return teamParticipantsRepository
         .findAllByMember_MemberIdAndTeam_IsDelete(
-            Long.valueOf(principal.getName()), DELETE_FALSE_FLAG, pageable
+            memberId, DELETE_FALSE_FLAG
         );
   }
 
@@ -147,5 +135,11 @@ public class TeamParticipantsService {
 
   public List<TeamParticipants> getTeamParticipantsByIds(List<Long> teamParticipantIds) {
     return teamParticipantsRepository.findAllById(teamParticipantIds);
+  }
+
+  private TeamParticipants getTeamParticipantByTeamIdAndMemberId(Long teamId, Long userId) {
+    return teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
   }
 }

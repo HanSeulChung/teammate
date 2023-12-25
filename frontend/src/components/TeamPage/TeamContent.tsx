@@ -9,6 +9,7 @@ import axiosInstance from "../../axios";
 const TeamContent = () => {
   // 팀 아이디
   const { teamId } = useParams();
+  
   const [teamName, setTeamName] = useState("");
 
   useEffect(() => {
