@@ -94,7 +94,7 @@ export default function MyUserProfile() {
           //로그아웃 처리
           setIsAuthenticated(false);
           setUser(null);
-          localStorage.clear();
+          window.sessionStorage.clear();
 
           // SignIn 페이지로 이동
           navigate("/signIn");

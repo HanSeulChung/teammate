@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useSearchState } from "../../state/authState";
 import styled from "styled-components";
-import searchImg from "../../assets/search.png";
 
 export default function HomeSearchBar() {
   const { search, setSearch, handleSearch } = useSearchState();

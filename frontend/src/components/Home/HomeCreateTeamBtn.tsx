@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
+export default function HomeCreateTeamBtn() {
+  return (
+    <CenteredContainer>
+      <Link to="/teamInfo">
+        <CreateTeamButton>+ 팀 생성하기</CreateTeamButton>
+      </Link>
+    </CenteredContainer>
+  );
+}
+
 const CenteredContainer = styled.div`
   position: absolute;
   width: 1000px;
@@ -24,13 +34,3 @@ const CreateTeamButton = styled.button`
     background-color: #cccccc;
   }
 `;
-
-export default function HomeCreateTeamBtn() {
-  return (
-    <CenteredContainer>
-      <Link to="/teamInfo">
-        <CreateTeamButton>+ 팀 생성하기</CreateTeamButton>
-      </Link>
-    </CenteredContainer>
-  );
-}

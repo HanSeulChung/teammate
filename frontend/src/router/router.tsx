@@ -25,7 +25,7 @@ const Router = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem("accessToken")) return;
+    if (window.sessionStorage.getItem("accessToken")) return;
     else navigate("/");
   }, []);
 

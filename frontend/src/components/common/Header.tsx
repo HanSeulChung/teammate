@@ -74,7 +74,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await axiosInstance.post("/logout");
-      localStorage.clear();
+      window.sessionStorage.clear();
       console.log("로컬 스토리지가 비워졌습니다.");
       console.log("로그아웃 되었습니다.");
       setIsAuthenticated(false);
