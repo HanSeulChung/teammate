@@ -8,6 +8,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axiosInstance from "../../axios";
 import "./ReactQuill.css";
+import { useRecoilValue } from "recoil";
 
 interface TextEditorProps {
   teamId: string;
@@ -21,14 +22,38 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const client = useRef<StompJs.Client | null>(null);
   const quillRef = useRef<ReactQuill>(null);
   const navigate = useNavigate();
+  // const accessToken = useRecoilValue(accessTokenState);
+  const accessToken = "";
 
   useEffect(() => {
     client.current = new StompJs.Client({
       brokerURL: "ws://localhost:8080/ws",
-      // connectHeaders: {
-      //   Authorization: `Bearer ${accessToken}`,
-      // },
+      connectHeaders: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
+
+    client.current.onStompError = (frame) => {
+      console.error("WebSocket Error:", frame);
+
+      // 에러 메시지가 특정 문자열을 포함하는지 확인하여 처리
+      if (frame.headers?.message?.includes("Invalid access token")) {
+        // accessToken이 만료되었을 때, accessToken이 올바르지 않은 형태일때
+        console.log("Invalid access token detected.");
+        // 토큰 재발급 요청으로 accessToken을 저장을 다시 해놓고 문서 목록으로 redirect .. 
+
+      } else if (frame.headers?.message?.includes("No or invalid Authorization header")){
+        // Bearer "accessToken"과 같은 규격이 아닐때
+        console.log("No or invalid Authorization header detected");
+
+      } else if (frame.headers?.message?.includes("Authentication failed")){
+        // 토큰 값으로 인증이 실패 했을 경우
+        console.log("Authentication failed detected");
+        // 문서 목록으로 redirect
+      } else {
+        // 다른 에러 처리
+      }
+    };
 
     const onConnect = (trimmedDocsId: string) => {
       //console.log("Connected to WebSocket with", trimmedDocsId);
