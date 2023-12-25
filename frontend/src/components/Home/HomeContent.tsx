@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
   useSearchState,
@@ -17,9 +17,6 @@ const HomeContent = () => {
   const [error, setError] = useState<string | null>(null);
   const accessToken = useRecoilValue(accessTokenState);
   const navigate = useNavigate();
-  const location = useLocation();
-  const [team, setTeam] = useState<Team | null>(location.state?.team || null);
-  const [inviteCode, setInviteCode] = useState<string | null>(null);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   useEffect(() => {
@@ -29,16 +26,13 @@ const HomeContent = () => {
           navigate("/signIn");
           return;
         }
-        const teamListResponse = await axiosInstance.get("/team/list", {
-          params: { page: 0, size: 10, sort: "createDt-asc" },
-        });
+        const teamListResponse = await axiosInstance.get("/team/list");
         // Recoil 상태 업데이트
-        setUserTeams(teamListResponse.data.content);
-
+        setUserTeams(teamListResponse.data);
         // localStorage에 저장
-        localStorage.setItem(
+        window.sessionStorage.setItem(
           `teamList_${accessToken}`,
-          JSON.stringify(teamListResponse.data.content),
+          JSON.stringify(teamListResponse.data),
         );
       } catch (error: any) {
         console.error("Error fetching team list:", error);

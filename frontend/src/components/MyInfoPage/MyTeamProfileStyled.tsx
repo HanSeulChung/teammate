@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const TeamProfileContainer = styled.div`
   position: absolute;
   top: 130px;
-  left: 32.5%;
+  left: 27%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,7 +11,7 @@ export const TeamProfileContainer = styled.div`
   padding: 10px 20px 20px 20px;
   border-radius: 8px;
   margin: auto;
-  width: 35%;
+  width: 45%;
 `;
 
 export const TeamProfileTitle = styled.div`
@@ -78,6 +78,7 @@ export const ButtonContainer = styled.div`
 `;
 
 export const UserProfileInfo = styled.div`
+  width: 100%;
   margin-bottom: 30px;
   p {
     margin: 0;
@@ -93,16 +94,18 @@ export const UserProfileInfo = styled.div`
   label {
     margin-right: 10px;
     font-weight: bold;
+    margin: auto;
   }
 
   select {
-    width: 100%;
+    width: 30%;
     padding: 10px;
     outline: none;
     border: none;
     border-bottom: 1px solid #333333;
     border-radius: 0;
     background: white;
+    margin-left: 35%;
   }
 `;
 

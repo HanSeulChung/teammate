@@ -21,7 +21,6 @@ import {
   StyledButton,
 } from "./TeamInfoStyled";
 import profileImg from "../../assets/profileImg.png";
-import { TeamInfoData } from "../../interface/interface.ts";
 
 export default function TeamInfo() {
   const [teamName, setTeamName] = useRecoilState(teamNameState);
@@ -32,7 +31,6 @@ export default function TeamInfo() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [teamList, setTeamList] = useRecoilState(teamListState);
   const [error, setError] = useState<string | null>(null);
-  const user = useRecoilValue(userState);
   const navigate = useNavigate();
   const accessToken = useRecoilValue(accessTokenState);
 
