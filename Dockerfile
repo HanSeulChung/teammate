@@ -1,5 +1,7 @@
 FROM openjdk:17-alpine
 
+ENV TZ=Asia/Seoul
+
 WORKDIR /usr/src/app
 
 ARG JAR_PATH=./backend/build/libs

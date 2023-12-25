@@ -5,18 +5,18 @@ import Header from './components/common/Header'
 import Footer from './components/common/Footer'
 
 function App() {
-    return (
-        <BrowserRouter>
-            <div className='wrapper'>
-                <Header />
-                <section >
-                    <Router />
-                </section>
-                <Footer />
-            </div>
-        </BrowserRouter>
-        
-    )
+  return (
+    <BrowserRouter>
+      <div className='wrapper'>
+        <Header />
+        <section >
+          <Router />
+        </section>
+        <Footer />
+      </div>
+    </BrowserRouter>
+
+  )
 }
 
 export default App;

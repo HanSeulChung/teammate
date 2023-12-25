@@ -26,6 +26,7 @@ public enum ErrorCode {
   TEAM_IS_DELETE_TRUE_EXCEPTION(500, "해당 팀 이미 해체된 팀입니다."),
   TEAM_IS_DELETEING_EXCEPTION(500, "해당 팀 이미 해체 중에 있습니다."),
   TEAM_NOT_DELETEING_EXCEPTION(500, "해당 팀은 해체 중이 아닙니다."),
+  TEAM_LIMIT_VALID_EXCEPTION(500, "해당 팀의 인원제한 허용치를 넘었습니다."),
   TEAM_RESTORE_EXPIRED_EXCEPTION(500, "해당 팀은 해체 기한이 지났습니다."),
 
   // teamParticipant
@@ -56,6 +57,8 @@ public enum ErrorCode {
   INCORRECT_FORM_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호 형식이 잘못되었습니다."),
   NOT_MATCH_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호가 재확인 비밀번호와 일치하지 않습니다."),
 
+
+  TARGET_URL_EMPTY_EXCEPTION(400, "비어 있는 반환 url이 있습니다."),
 
   //email
   EMAIL_NOT_TRANSFER_EXCEPTION(400,"이메일 전송에 실패했습니다."),

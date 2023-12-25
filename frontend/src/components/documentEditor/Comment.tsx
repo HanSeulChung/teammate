@@ -4,59 +4,6 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import axios from "axios";
 
-const CommentSection = styled.div`
-  align-items: center;
-  padding: 20px;
-  max-width: 600px;
-  margin: auto;
-  min-height: 800px;
-`;
-
-const CommentInputContainer = styled.form`
-  margin-bottom: 12px;
-  display: flex;
-`;
-
-const CommentList = styled.ul`
-  list-style-type: none;
-  padding: 0;
-`;
-
-const CommentListItem = styled.li`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
-`;
-
-const CommentContent = styled.span`
-  flex-grow: 1;
-`;
-
-const CommentActions = styled.div`
-  display: flex;
-  gap: 10px;
-`;
-
-const CommentInput = styled.input`
-  width: 520px;
-  padding: 8px;
-  border: 1px solid black;
-  border-radius: 8px;
-  background-color: white;
-  color: black;
-  font-size: 16px;
-`;
-
-const CommentButton = styled.button`
-  float: right;
-  width: 80px;
-  margin-left: 5px;
-  background-color: #a3cca3;
-`;
-
 interface CommentType {
   content: string;
   id: number;
@@ -86,7 +33,6 @@ const Comment: React.FC = () => {
   const [nicknames, setNicknames] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
-    // userTeamId 가져오기
     const fetchParticipants = async () => {
       try {
         const response = await axiosInstance.get("/member/participants", {});
@@ -226,7 +172,7 @@ const Comment: React.FC = () => {
           comment.writerId,
           Number(teamId),
         );
-        newNicknames[comment.writerId.toString()] = nickname; // writerId를 문자열로 변환하여 사용
+        newNicknames[comment.writerId.toString()] = nickname;
       }
       setNicknames(newNicknames);
     };
@@ -262,18 +208,14 @@ const Comment: React.FC = () => {
               <CommentListItem key={comment.id}>
                 {editingIndex === index ? (
                   <>
-                    <CommentInput
+                    <CommentUpdateInput
                       type="text"
                       value={editingComment}
                       onChange={handleCommentChange}
                     />
                     <CommentActions>
-                      <CommentButton onClick={handleUpdateComment}>
-                        확인
-                      </CommentButton>
-                      <CommentButton onClick={handleCancelEdit}>
-                        취소
-                      </CommentButton>
+                      <UDbutton onClick={handleUpdateComment}>확인</UDbutton>
+                      <UDbutton onClick={handleCancelEdit}>취소</UDbutton>
                     </CommentActions>
                   </>
                 ) : (
@@ -284,12 +226,12 @@ const Comment: React.FC = () => {
                     </CommentContent>
                     {isAuthor && (
                       <CommentActions>
-                        <CommentButton onClick={() => handleEdit(index)}>
+                        <UDbutton onClick={() => handleEdit(index)}>
                           수정
-                        </CommentButton>
-                        <CommentButton onClick={() => handleDelete(comment.id)}>
+                        </UDbutton>
+                        <UDbutton onClick={() => handleDelete(comment.id)}>
                           삭제
-                        </CommentButton>
+                        </UDbutton>
                       </CommentActions>
                     )}
                   </>
@@ -306,3 +248,73 @@ const Comment: React.FC = () => {
 };
 
 export default Comment;
+
+const CommentSection = styled.div`
+  align-items: center;
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+  min-height: 800px;
+`;
+
+const CommentInputContainer = styled.form`
+  margin-bottom: 12px;
+  display: flex;
+`;
+
+const CommentList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+`;
+
+const CommentListItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+`;
+
+const CommentContent = styled.span`
+  flex-grow: 1;
+`;
+
+const CommentActions = styled.div`
+  display: flex;
+  gap: 4px;
+`;
+
+const CommentInput = styled.input`
+  width: 520px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  font-size: 16px;
+`;
+
+const CommentUpdateInput = styled.input`
+  width: 470px;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 8px;
+  background-color: white;
+  color: black;
+  font-size: 16px;
+  height: 24px;
+`;
+
+const CommentButton = styled.button`
+  float: right;
+  width: 80px;
+  margin-left: 5px;
+  background-color: #a3cca3;
+`;
+
+const UDbutton = styled.button`
+  width: 40px;
+  padding: 0;
+  background-color: #a3cca3;
+`;

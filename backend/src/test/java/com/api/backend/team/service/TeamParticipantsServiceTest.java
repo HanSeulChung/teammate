@@ -47,7 +47,7 @@ class TeamParticipantsServiceTest {
     )).thenReturn(Optional.of(teamParticipants));
     doNothing().when(teamParticipantsRepository).delete(any());
     //when
-    TeamParticipants result = teamParticipantsService.deleteTeamParticipant(userId, teamId);
+    TeamParticipants result = teamParticipantsService.deleteTeamParticipantById(userId, teamId);
 
     //then
     assertEquals(result.getTeamRole() , TeamRole.MATE);

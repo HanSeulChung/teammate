@@ -11,11 +11,11 @@ import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
 import com.api.backend.team.data.dto.TeamDisbandResponse;
-import com.api.backend.team.data.dto.TeamsDtoResponse;
 import com.api.backend.team.data.dto.TeamKickOutRequest;
 import com.api.backend.team.data.dto.TeamRestoreResponse;
 import com.api.backend.team.data.dto.TeamUpdateRequest;
 import com.api.backend.team.data.dto.TeamUpdateResponse;
+import com.api.backend.team.data.dto.TeamsDtoResponse;
 import com.api.backend.team.service.TeamService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -25,10 +25,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -108,7 +108,7 @@ public class TeamController {
           )
       })
   @TeamParticipantsSendNotify
-  @PostMapping("/{teamId}/{code}")
+  @GetMapping("/{teamId}/{code}")
   public ResponseEntity<TeamParticipantsNotifyByDto> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,
       @PathVariable("code") String code,
@@ -192,14 +192,14 @@ public class TeamController {
       @ApiResponse(code = 500, message = "팀장이 아닌 경우, 팀이 이미 해체된 경우")
   })
   @GetMapping("/list")
-  public ResponseEntity<Page<TeamsDtoResponse>> getTeamsRequest(
-      @ApiIgnore Principal principal,
-      Pageable pageable
+  public ResponseEntity<List<TeamsDtoResponse>> getTeamsRequest(
+      @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
-        TeamsDtoResponse.fromDtos(
-            teamService.getTeams(Long.valueOf(principal.getName()), pageable)
-        )
+        teamService.getTeams(Long.valueOf(principal.getName()))
+            .stream()
+            .map(TeamsDtoResponse::fromByTeamParticipant)
+            .collect(Collectors.toList())
     );
   }
 
