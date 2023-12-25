@@ -30,9 +30,9 @@ public class StompHandler implements ChannelInterceptor {
   public Message<?> preSend(Message<?> message, MessageChannel channel) {
     StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
     if (accessor.getCommand() == StompCommand.CONNECT) {
-      String authorizationHeader = String.valueOf(accessor.getNativeHeader("Authorization"));
+      String authorizationHeader = accessor.getNativeHeader("Authorization").get(0);
       if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
-        String token = authorizationHeader.substring(BEARER_PREFIX.length(), authorizationHeader.length() - 1);
+        String token = authorizationHeader.substring(BEARER_PREFIX.length());
         if (jwtTokenProvider.validateAccessToken(token)) {
           Authentication authentication = jwtTokenProvider.getAuthentication(token);
           if (authentication != null) {
