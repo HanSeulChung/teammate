@@ -279,8 +279,6 @@ public class TeamService {
     Team team = teamParticipants.getTeam();
 
     isDeletedCheck(team.getRestorationDt(), team.isDelete());
-    existTeamParticipantsFalseThrows(teamId, memberId);
-
     return team;
   }
 
@@ -296,9 +294,6 @@ public class TeamService {
     }
   }
 
-  private TeamParticipants createTeamParticipant(TeamParticipants teamParticipants) {
-    return teamParticipantsRepository.save(teamParticipants);
-  }
   private TeamParticipants getTeamParticipantById(Long teamParticipantId) {
     return teamParticipantsRepository
         .findById(teamParticipantId)
