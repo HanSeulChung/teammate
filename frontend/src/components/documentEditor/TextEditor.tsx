@@ -51,7 +51,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       });
     };
 
-    const textChange = (trimmedDocsId: string) => {
+    const textChange = (_trimmedDocsId: string) => {
       const currentUserId = JSON.parse(sessionStorage.getItem("user") ?? "").id;
 
       client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
@@ -79,9 +79,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTextChange = (
     content: any,
-    delta: any,
-    source: any,
-    editor: any,
+    _delta: any,
+    _source: any,
+    _editor: any,
   ) => {
     const newText = content || "";
 
@@ -170,15 +170,6 @@ export default TextEditor;
 
 const StyledTexteditor = styled.div`
   width: 41rem;
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  height: 300px;
-  border: 1px solid gray;
-  padding: 4px;
-  font-size: 16px;
-  background-color: white;
 `;
 
 const TitleInput = styled.input`
