@@ -6,7 +6,6 @@ import com.api.backend.schedule.data.entity.SimpleSchedule;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
@@ -30,9 +30,12 @@ public class Team extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long teamId;
   private String name;
+  @Setter
   private LocalDate restorationDt;
+  @Setter
   private boolean isDelete;
   private int memberLimit;
+  @Setter
   private String inviteLink;
   private String profileUrl;
 
@@ -52,23 +55,6 @@ public class Team extends BaseEntity {
 //  @OneToMany(mappedBy = "team")
 //  private List<Documents> documents = new ArrayList<>();
 
-
-  public void setInviteLink() {
-    this.inviteLink = this.teamId +
-        "/" + UUID.randomUUID();
-  }
-
-  public void updateReservationTime() {
-    this.restorationDt = LocalDate.now().plusDays(30);
-  }
-
-  public void updateIsDelete() {
-    this.isDelete = true;
-  }
-
-  public void deleteReservationTime() {
-    this.restorationDt = null;
-  }
 
   public void updateNameAndProfileUrl(String nickName, String url) {
     if (!name.equals(nickName)) {
