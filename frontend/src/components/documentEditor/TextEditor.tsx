@@ -72,7 +72,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
           const initValue = quill.clipboard.convert(docs.content);
           quill.setContents(initValue);
         }
-        // setTitle(docs.title);
+        setTitle(docs.title);
         // setContent(docs.content);
       };
 
@@ -100,7 +100,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
     client.current!.onConnect = () => {
       onConnect(docsId);
-      // textChange(docsId);
+      textChange(docsId);
     };
 
     client.current!.activate();
