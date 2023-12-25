@@ -1,8 +1,5 @@
-// Logout 컴포넌트 내부
 import React from "react";
 import axios, { AxiosError } from "axios";
-import { useRecoilState } from "recoil";
-import { accessTokenState } from "../../state/authState";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios";
 
@@ -11,7 +8,6 @@ interface LogoutProps {
 }
 
 const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
-  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -19,7 +15,7 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
       // 로그아웃 API 호출
       await axiosInstance.post("/logout");
 
-      localStorage.clear();
+      window.sessionStorage.clear();
       console.log("로그아웃 되었습니다.");
       onLogoutSuccess();
 
