@@ -50,10 +50,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 
 @ExtendWith(MockitoExtension.class)
@@ -182,7 +178,19 @@ class TeamServiceTest {
         .teamId(1L)
         .name("test")
         .inviteLink("2/dsfefsefnklsd")
+        .memberLimit(3)
+        .teamParticipants(new ArrayList<>())
         .build();
+    Member member = Member.builder().build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .teamParticipantsId(1L)
+        .member(member)
+        .team(team)
+        .teamRole(TeamRole.MATE)
+        .teamNickName("testNickName")
+        .build();
+
     when(teamRepository.findById(anyLong()))
         .thenReturn(Optional.of(team));
     when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(
@@ -190,11 +198,15 @@ class TeamServiceTest {
     )).thenReturn(false);
     when(memberRepository.findById(anyLong()))
         .thenReturn(Optional.of(Member.builder().build()));
+    when(teamParticipantsRepository.save(any()))
+        .thenReturn(teamParticipants);
     //when
     TeamParticipantsUpdateResponse result = teamService.updateTeamParticipants(id, code, userId);
 
     //then
     assertEquals(result.getTeamId(), team.getTeamId());
+    assertEquals(result.getUpdateTeamParticipantId(), teamParticipants.getTeamParticipantsId());
+    assertEquals(result.getUpdateTeamParticipantNickName(), teamParticipants.getTeamNickName());
   }
 
   @Test
