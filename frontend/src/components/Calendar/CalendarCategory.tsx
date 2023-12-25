@@ -4,118 +4,118 @@ import { CategoryUl, CategoryForm } from '../../styles/CalendarCategoryStyled.ts
 import { CommonSubmitBtn } from '../../styles/CommonStyled.tsx';
 
 const CalendarCategory = () => {
-    // 모달팝업 유무
-    const [schdlCtgryModal, setSchdlCtgryModal] = useState(false);
+  // 모달팝업 유무
+  const [schdlCtgryModal, setSchdlCtgryModal] = useState(false);
 
-    const toggleCat = () => {
-        setSchdlCtgryModal(!schdlCtgryModal);
-    };
+  const toggleCat = () => {
+    setSchdlCtgryModal(!schdlCtgryModal);
+  };
 
-    // 더미 카테고리
-    const [dummyCatList, setDummyCatList] = useState([
-        {
-            id: 1,
-            category: "카테고리1",
-            color: "yellow",
-        },
-        {
-            id: 2,
-            category: "카테고리2",
-            color: "yellow",
-        },
-        {
-            id: 3,
-            category: "카테고리3",
-            color: "yellow",
-        },
-    ]);
+  // 더미 카테고리
+  const [dummyCatList, setDummyCatList] = useState([
+    {
+      id: 1,
+      category: "카테고리1",
+      color: "yellow",
+    },
+    {
+      id: 2,
+      category: "카테고리2",
+      color: "yellow",
+    },
+    {
+      id: 3,
+      category: "카테고리3",
+      color: "yellow",
+    },
+  ]);
 
-    // 카테고리 입력 값
-    const [catOption, setCatOption] = useState({
-        category: "",
-        color: "",
-    });
+  // 카테고리 입력 값
+  const [catOption, setCatOption] = useState({
+    category: "",
+    color: "",
+  });
 
-    // 바뀌는값
-    const handleChangeOption = (e: any) => {
-        console.log(e.target.value);
-        setCatOption({
-            ...catOption,
-            [e.target.name]: e.target.value,
-        })
-    };
+  // 바뀌는값
+  const handleChangeOption = (e: any) => {
+    console.log(e.target.value);
+    setCatOption({
+      ...catOption,
+      [e.target.name]: e.target.value,
+    })
+  };
 
-    const AddOption = () => {
-        let optId = 4;
-        const newCatOpt = {
-            id: optId,
-            category: catOption.category,
-            color: catOption.color,
-        }
-        optId += 1;
-        setDummyCatList([...dummyCatList, newCatOpt]);
-        window.localStorage.setItem("dummyList", JSON.stringify(dummyCatList));
+  const AddOption = () => {
+    let optId = 4;
+    const newCatOpt = {
+      id: optId,
+      category: catOption.category,
+      color: catOption.color,
     }
+    optId += 1;
+    setDummyCatList([...dummyCatList, newCatOpt]);
+    window.localStorage.setItem("dummyList", JSON.stringify(dummyCatList));
+  }
 
-    return (
-        <>
-            <div className="p-3 bg-white rounded-lg shadow w-60">
-                <div className="relative flex justify-between items-center px-2">
-                    <h2 className=''>카테고리</h2>
-                    <button onClick={toggleCat} className="p-3 text-sm font-medium text-gray-600 border-t border-gray-200 rounded-b-lg bg-gray-50 hover:bg-gray-100">
-                        추가
-                    </button>
-                </div>
-                <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
-                    {dummyCatList.map((opt) => (
-                        <li key={opt.id} className="flex items-center p-2 rounded hover:bg-gray-100">
-                            <input type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-50" />
-                            <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.category}</label>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            {/* 날짜클릭 모달 */}
-            {schdlCtgryModal && (
-                <Modal>
-                    <Overlay
-                        onClick={toggleCat}
-                    ></Overlay>
-                    <ModalContent>
-                        <h2 >카테고리 추가</h2>
-                        <CategoryForm>
-                            <label>카테고리 이름</label>
-                            <input
-                                placeholder='카테고리명'
-                                name="category"
-                                value={catOption.category}
-                                onChange={handleChangeOption}
-                            ></input>
-                            <label>색상</label>
-                            <select
-                                name="color"
-                                value={catOption.color}
-                                onChange={handleChangeOption}
-                            >
-                                <option value="red">red</option>
-                                <option value="yellow">yellow</option>
-                                <option value="blue">blue</option>
-                            </select>
-                            <CommonSubmitBtn
-                                onClick={AddOption}
-                            >등록</CommonSubmitBtn>
-                        </CategoryForm>
-                        <CloseModal
-                            onClick={toggleCat}
-                        >
-                            CLOSE
-                        </CloseModal>
-                    </ModalContent>
-                </Modal>
-            )}
-            {/* </div> */}
-        </>
-    );
+  return (
+    <>
+      <div className="p-3 bg-white rounded-lg shadow w-60">
+        <div className="relative flex justify-between items-center px-2">
+          <h2 className=''>카테고리</h2>
+          <button onClick={toggleCat} className="p-3 text-sm font-medium text-gray-600 border-t border-gray-200 rounded-b-lg bg-gray-50 hover:bg-gray-100">
+            추가
+          </button>
+        </div>
+        <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
+          {dummyCatList.map((opt) => (
+            <li key={opt.id} className="flex items-center p-2 rounded hover:bg-gray-100">
+              <input type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-50" />
+              <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.category}</label>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {/* 날짜클릭 모달 */}
+      {schdlCtgryModal && (
+        <Modal>
+          <Overlay
+            onClick={toggleCat}
+          ></Overlay>
+          <ModalContent>
+            <h2 >카테고리 추가</h2>
+            <CategoryForm>
+              <label>카테고리 이름</label>
+              <input
+                placeholder='카테고리명'
+                name="category"
+                value={catOption.category}
+                onChange={handleChangeOption}
+              ></input>
+              <label>색상</label>
+              <select
+                name="color"
+                value={catOption.color}
+                onChange={handleChangeOption}
+              >
+                <option value="red">red</option>
+                <option value="yellow">yellow</option>
+                <option value="blue">blue</option>
+              </select>
+              <CommonSubmitBtn
+                onClick={AddOption}
+              >등록</CommonSubmitBtn>
+            </CategoryForm>
+            <CloseModal
+              onClick={toggleCat}
+            >
+              CLOSE
+            </CloseModal>
+          </ModalContent>
+        </Modal>
+      )}
+      {/* </div> */}
+    </>
+  );
 };
 
 export default CalendarCategory;

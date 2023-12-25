@@ -101,7 +101,7 @@ const Header = () => {
   //   const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
   //     if (isLogoutTriggered) {
   //       // 사용자가 로그아웃을 클릭한 경우의 로직
-  //       sessionStorage.clear();
+  //       localStorage.clear();
   //       setIsAuthenticated(false);
   //       setUser(null);
   //       onLogoutSuccess();
