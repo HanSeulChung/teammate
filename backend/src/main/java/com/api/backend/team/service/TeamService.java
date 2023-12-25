@@ -35,6 +35,7 @@ import com.api.backend.team.data.repository.TeamRepository;
 import com.api.backend.team.data.type.TeamRole;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
@@ -67,7 +68,9 @@ public class TeamService {
             .profileUrl(imgUrl)
             .build()
     );
-    team.setInviteLink();
+    team.setInviteLink(
+        getInviteLink(team.getTeamId())
+    );
 
     teamParticipantsRepository.save(
         TeamParticipants.builder()
@@ -81,10 +84,6 @@ public class TeamService {
     return TeamCreateResponse.from(team,userId);
   }
 
-  private String getRandomNickName(String name){
-    return RandomStringUtils.randomAlphanumeric(4) + "_" + name;
-  }
-
   private Team getTeam(Long id) {
     return teamRepository.findById(id)
         .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
@@ -93,9 +92,7 @@ public class TeamService {
   public String getTeamUrl(Long teamId,Long userId) {
     Team team = getTeam(teamId);
 
-    if (team.isDelete()) {
-      throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
-    }
+    isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
@@ -112,9 +109,7 @@ public class TeamService {
       throw new CustomException(TEAM_CODE_NOT_VALID_EXCEPTION);
     }
 
-    if (team.isDelete()) {
-      throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
-    }
+    isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     if (teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId)) {
       throw new CustomException(TEAM_PARTICIPANTS_EXIST_EXCEPTION);
@@ -186,9 +181,9 @@ public class TeamService {
 
     Team team = teamParticipants.getTeam();
 
-    isDeletedCheck(team);
+    isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
-    team.updateReservationTime();
+    team.setRestorationDt(LocalDate.now().plusDays(30));
     return team;
   }
 
@@ -211,11 +206,11 @@ public class TeamService {
     if (team.getRestorationDt() == null) {
       throw new CustomException(TEAM_NOT_DELETEING_EXCEPTION);
     } else if (!team.getRestorationDt().isAfter(restoreDt)) {
-      team.updateIsDelete();
+      team.setDelete(true);
       return team;
     }
 
-    team.deleteReservationTime();
+    team.setRestorationDt(null);
     return team;
   }
 
@@ -242,18 +237,19 @@ public class TeamService {
 
     Team team = teamParticipants.getTeam();
 
-    isDeletedCheck(team);
+    isDeletedCheck(team.getRestorationDt(), team.isDelete());
+
     String imgUrl = fileProcessService.uploadImage(teamUpdateRequest.getProfileImg(), FileFolder.TEAM);
     team.updateNameAndProfileUrl(teamUpdateRequest.getTeamName(), imgUrl);
     return team;
   }
 
-  public void isDeletedCheck(Team team) {
-    if (!Objects.isNull(team.getRestorationDt())) {
+  public void isDeletedCheck(LocalDate restoreDt, boolean isDelete) {
+    if (!Objects.isNull(restoreDt)) {
       throw new CustomException(TEAM_IS_DELETEING_EXCEPTION);
     }
 
-    if (team.isDelete()) {
+    if (isDelete) {
       throw new CustomException(TEAM_IS_DELETE_TRUE_EXCEPTION);
     }
   }
@@ -279,5 +275,18 @@ public class TeamService {
     }
 
     return team;
+  }
+
+  private static String getInviteLink(Long teamId) {
+    if (Objects.isNull(teamId)) {
+      throw new NullPointerException("teamId is null");
+    }
+
+    return teamId +
+        "/" + UUID.randomUUID();
+  }
+
+  private String getRandomNickName(String name){
+    return RandomStringUtils.randomAlphanumeric(4) + "_" + name;
   }
 }
