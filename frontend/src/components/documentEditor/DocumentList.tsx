@@ -65,7 +65,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     const fetchDocuments = async () => {
       try {
         const response = await axiosInstance.get(
-          `${API_BASE_URL}/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
+          `/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
         );
 
         setTotlaPages(response.data.totalPages);

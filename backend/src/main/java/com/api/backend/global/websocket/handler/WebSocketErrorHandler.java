@@ -1,4 +1,4 @@
-package com.api.backend.global.component;
+package com.api.backend.global.websocket;
 
 import com.api.backend.global.exception.type.ErrorCode;
 import java.nio.charset.StandardCharsets;
