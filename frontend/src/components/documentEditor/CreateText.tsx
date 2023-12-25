@@ -31,7 +31,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
         .replace(/<p>/g, "")
         .replace(/<\/p>/g, "\n")
         .replace(/<br>/g, ""),
-      writerEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
+      writerEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
     };
 
     //console.log(requestData);

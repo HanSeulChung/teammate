@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import * as StompJs from "@stomp/stompjs";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { accessTokenState } from "../../state/authState";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axiosInstance from "../../axios";
@@ -20,13 +18,14 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const docsId = documentsId;
   const client = useRef<StompJs.Client | null>();
   const navigate = useNavigate();
+  const accessToken = window.sessionStorage.getItem("accessToken");
 
   useEffect(() => {
     client.current = new StompJs.Client({
       brokerURL: "ws://118.67.128.124:8080/ws",
-      // connectHeaders: {
-      //   Authorization: `Bearer ${accessTokenState}`,
-      // },
+      connectHeaders: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
 
     const onConnect = (trimmedDocsId: string) => {
@@ -53,7 +52,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     const textChange = (trimmedDocsId: string) => {
-      const currentUserId = JSON.parse(localStorage.getItem("user") ?? "").id;
+      const currentUserId = JSON.parse(sessionStorage.getItem("user") ?? "").id;
 
       client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
         const docsbody = JSON.parse(docs.body);
@@ -90,7 +89,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
     if (client.current) {
       const message = {
-        memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
+        memberId: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         // title: title,
         text: newText,
         documentId: documentsId,
@@ -112,7 +111,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
     if (client.current) {
       const message = {
-        memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
+        memberId: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: newTitle,
         text: content,
         documentId: documentsId,
