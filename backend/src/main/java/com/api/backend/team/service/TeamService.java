@@ -266,13 +266,15 @@ public class TeamService {
   }
 
   public Team getTeamByTeamIdAndMemberId(Long teamId, Long memberId) {
-    Team team = getTeam(teamId);
+    TeamParticipants teamParticipants = teamParticipantsRepository
+        .findByTeam_TeamIdAndMember_MemberId(
+            teamId,
+            memberId
+        ).orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
-    isDeletedCheck(team);
+    Team team = teamParticipants.getTeam();
 
-    if (!teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, memberId)) {
-      throw new CustomException(TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
-    }
+    isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     return team;
   }
