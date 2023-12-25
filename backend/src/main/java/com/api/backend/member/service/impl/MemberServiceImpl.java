@@ -24,10 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.api.backend.global.exception.type.ErrorCode.*;
@@ -219,5 +217,13 @@ public class MemberServiceImpl implements MemberService {
                 .email(member.getEmail())
                 .name(member.getName())
                 .build();
+    }
+
+    public List<Member> getMembersIsAuthenticatedEmailFalse(Boolean b, LocalDateTime now){
+        return memberRepository.findAllByIsAuthenticatedEmailAndCreateDtBefore(b, LocalDateTime.now().minusYears(1));
+    }
+
+    public void deleteMember(Member member){
+        memberRepository.delete(member);
     }
 }

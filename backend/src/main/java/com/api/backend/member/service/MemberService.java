@@ -1,8 +1,11 @@
 package com.api.backend.member.service;
 
 import com.api.backend.member.data.dto.*;
+import com.api.backend.member.data.entity.Member;
 import org.springframework.validation.BindingResult;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 public interface MemberService {
@@ -24,4 +27,7 @@ public interface MemberService {
 
     void checkEamilDuplicate(String email);
 
+    List<Member> getMembersIsAuthenticatedEmailFalse(Boolean b, LocalDateTime now);
+
+    void deleteMember(Member member);
 }
