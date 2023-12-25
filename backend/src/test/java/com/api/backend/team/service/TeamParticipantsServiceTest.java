@@ -111,7 +111,7 @@ class TeamParticipantsServiceTest {
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
         anyLong(),anyLong()
     )).thenReturn(Optional.of(teamParticipants));
-    doNothing().when(teamService).isDeletedCheck(team);
+    doNothing().when(teamService).isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     //when
     List<TeamParticipants> result = teamParticipantsService.getTeamParticipants(teamId, userId);
@@ -140,7 +140,7 @@ class TeamParticipantsServiceTest {
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(
         anyLong(),anyLong()
     )).thenReturn(Optional.of(teamParticipants));
-    doNothing().when(teamService).isDeletedCheck(team);
+    doNothing().when(teamService).isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     //when
     TeamParticipants result = teamParticipantsService.getTeamParticipant(teamId, userId);
