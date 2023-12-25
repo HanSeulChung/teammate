@@ -22,8 +22,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const client = useRef<StompJs.Client | null>(null);
   const quillRef = useRef<ReactQuill>(null);
   const navigate = useNavigate();
-  // const accessToken = useRecoilValue(accessTokenState);
-  const accessToken = "";
+  const accessToken = window.sessionStorage.getItem("accessToken");
 
   useEffect(() => {
     client.current = new StompJs.Client({
@@ -84,7 +83,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     const textChange = (trimmedDocsId: string) => {
-      const currentUserId = JSON.parse(localStorage.getItem("user") ?? "").id;
+      const currentUserId = JSON.parse(sessionStorage.getItem("user") ?? "").id;
 
       client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
         const docsbody = JSON.parse(docs.body);
@@ -123,7 +122,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     setContent(newText); // 상태 업데이트
     if (client.current) {
       const message = {
-        memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
+        memberId: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: title,
         content: newText,
         documentId: documentsId,
