@@ -74,17 +74,18 @@ const ModalOverlay = styled.div`
   position: fixed;
   top: 8%;
   right: 15%;
-  width: 25%;
+  width: 30%;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 999;
 `;
 
 const ModalContent = styled.div`
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 80%;
+  width: 100%;
   max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
