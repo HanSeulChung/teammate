@@ -25,7 +25,7 @@ public class DocumentsWebSocketController {
   private final SimpMessagingTemplate messagingTemplate;
 
   @MessageMapping("/doc.showDocs")
-  @SendTo("/topic/public")
+  @SendTo("/topic/display")
   public DocumentResponse getDocs(
       @Payload RequestedDocument requestedDocument
   ) {
@@ -35,13 +35,17 @@ public class DocumentsWebSocketController {
   }
 
   @MessageMapping("/doc.saveDocs")
-  @SendTo("/topic/public")
+  @SendTo("/topic/save")
   public DocumentResponse saveDocs(
-      @Payload RequestedDocument requestedDocument
+      @Payload TotalMessage totalMessage
   ) {
-    Documents documents = documentsRepository.findById(requestedDocument.getDocumentId())
+    Documents documents = documentsRepository.findById(totalMessage.getDocumentId())
         .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
-    return DocumentResponse.from(documents);
+
+    documents.setDifference(totalMessage);
+    System.out.println(totalMessage.getParticipantsId());
+
+    return DocumentResponse.from(documentsRepository.save(documents));
   }
 
 

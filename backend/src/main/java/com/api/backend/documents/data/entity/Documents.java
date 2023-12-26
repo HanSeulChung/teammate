@@ -1,6 +1,7 @@
 package com.api.backend.documents.data.entity;
 
 import com.api.backend.comment.data.entity.Comment;
+import com.api.backend.documents.data.dto.TotalMessage;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,4 +53,19 @@ public class Documents {
   @Field(name = "updated_dt")
   private LocalDateTime updatedDt;
 
+  public void setDifference(TotalMessage totalMessage) {
+
+    if (totalMessage.getTitle() == this.title && totalMessage.getContent() == this.content) {
+      return;
+    }
+
+    if (totalMessage.getTitle() != this.title) {
+      this.title = totalMessage.getTitle();
+    }
+
+    if (totalMessage.getContent() != this.content) {
+      this.content = totalMessage.getContent();
+    }
+    this.modifierId = totalMessage.getParticipantsId();
+  }
 }
