@@ -17,5 +17,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByLoginTypeAndSocialId(LoginType loginType, String socialId);
 
-    List<Member> findAllByIsAuthenticatedEmailAndCreateDtBefore(Boolean bool, LocalDateTime localDateTime);
+    List<Member> findAllByIsAuthenticatedEmailAndCreateDtBefore(Boolean emailAuthenticationYN, LocalDateTime nowMinusOneYear);
 }
