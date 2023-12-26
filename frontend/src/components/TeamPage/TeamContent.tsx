@@ -1,10 +1,8 @@
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import axiosInstance from "../../axios";
 import documentImg from "../../assets/document-icon.png";
 import calendarImg from "../../assets/calendar-icon.png";
-import { useEffect, useState } from "react";
-// import axios from "axios";
-import axiosInstance from "../../axios";
 
 const TeamContent = () => {
   // 팀 아이디

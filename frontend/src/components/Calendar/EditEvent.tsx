@@ -1,5 +1,3 @@
-// import { EventInput, EventForm } from '../../styles/CreateEventStyled'
-import { CommonSubmitBtn } from '../../styles/CommonStyled';
 import { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
@@ -63,31 +61,31 @@ const EditEvent = ({ isEdit, originEvent, setEventList, toggleIsEdit }: EditEven
   };
 
   // 일정 수정 요청
-  const handleScheduleModify = async (e: any) => {
-    e.preventDefault();
-    try {
-      const res = await axiosInstance.put("/schedules", newEvent, {
-        headers: {
-          "Content-Type": "application/json"
-        },
-      });
-      if (res.status === 201) {
-        setEventChange({
-          id: res.data.id,
-          title: res.data.title,
-          start: res.data.start,
-          end: res.data.end,
-          contents: res.data.contents,
-          place: res.data.place,
-          groupId: res.data.groupId,
-        });
-        // setNewEvent()
-        console.log(res.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleScheduleModify = async (e: any) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await axiosInstance.put("/schedules", newEvent, {
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //     });
+  //     if (res.status === 201) {
+  //       setEventChange({
+  //         id: res.data.id,
+  //         title: res.data.title,
+  //         start: res.data.start,
+  //         end: res.data.end,
+  //         contents: res.data.contents,
+  //         place: res.data.place,
+  //         groupId: res.data.groupId,
+  //       });
+  //       // setNewEvent()
+  //       console.log(res.data);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     // <EventForm>
@@ -181,7 +179,7 @@ const EditEvent = ({ isEdit, originEvent, setEventList, toggleIsEdit }: EditEven
       </div>
       {isEdit ? (
         <>
-          <button onClick={handleScheduleModify} className="bg-white border-1 border-gray-300 mr-2">수정완료</button>
+          <button onClick={handleScheduleSubmit} className="bg-white border-1 border-gray-300 mr-2">수정완료</button>
           <button onClick={toggleIsEdit} className="bg-white border-1 border-gray-300">취소</button>
         </>
       ) : (
@@ -205,4 +203,7 @@ export const EventForm = styled.form`
 
 export const EventInput = styled.input`
   padding: 3px 0px 3px 0px;
+`
+export const CommonSubmitBtn = styled.button`
+  background-color: #A3CCA3;
 `

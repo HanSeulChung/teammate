@@ -1,15 +1,13 @@
-import { useState, useEffect } from "react";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import '../../styles/teamCalender.css'
-// import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalenderStyled.tsx'
-import EditEvent from "./EditEvent.tsx";
-// import axios from "axios";
-import axiosInstance from "../../axios";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import '../../styles/teamCalender.css'
 import styled from "styled-components";
+import EditEvent from "./EditEvent.tsx";
+import axiosInstance from "../../axios";
 
 // import { Team } from "../../interface/interface";
 

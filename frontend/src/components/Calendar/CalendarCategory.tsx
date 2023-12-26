@@ -1,7 +1,4 @@
 import { useState } from 'react';
-// import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalenderStyled.tsx'
-import { CategoryUl, CategoryForm } from '../../styles/CalendarCategoryStyled.tsx'
-import { CommonSubmitBtn } from '../../styles/CommonStyled.tsx';
 import styled from "styled-components";
 
 const CalendarCategory = () => {
@@ -171,4 +168,13 @@ export const CloseModal = styled.button`
   right: 10px;
   padding: 5px 7px;
   background-color: rgb(17 24 39 / var(--tw-text-opacity)); 
+`
+
+export const CategoryForm = styled.form`
+  display: flex;
+  flex-flow: column; 
+`
+
+export const CommonSubmitBtn = styled.button`
+  background-color: #A3CCA3;
 `
