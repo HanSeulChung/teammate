@@ -27,13 +27,12 @@ public class DocumentsWebSocketController {
   private final SimpMessagingTemplate messagingTemplate;
 
   @MessageMapping("/doc.showDocs")
-  @SendTo("/topic/display")
-  public DocumentResponse getDocs(
+  public void getDocs(
       @Payload RequestedDocument requestedDocument
   ) {
     Documents documents = documentsRepository.findById(requestedDocument.getDocumentId())
         .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
-    return DocumentResponse.from(documents);
+    messagingTemplate.convertAndSend("/topic/display/" + requestedDocument.getDocumentId(), DocumentResponse.from(documents));
   }
 
   @MessageMapping("/doc.saveDocs")
