@@ -219,8 +219,8 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
-    public List<Member> getMembersIsAuthenticatedEmailFalse(Boolean b, LocalDateTime now){
-        return memberRepository.findAllByIsAuthenticatedEmailAndCreateDtBefore(b, LocalDateTime.now().minusYears(1));
+    public List<Member> getMembersIsAuthenticatedEmailFalse(Boolean emailAuthenticationYN, LocalDateTime now){
+        return memberRepository.findAllByIsAuthenticatedEmailAndCreateDtBefore(emailAuthenticationYN, LocalDateTime.now().minusYears(1));
     }
 
     public void deleteMember(Member member){
