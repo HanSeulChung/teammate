@@ -89,11 +89,15 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       const currentUserId = JSON.parse(sessionStorage.getItem("user") ?? "").id;
 
       client.current!.subscribe(
-        `/topic/broadcastByTextChange${documentsId}`,
+        `/topic/broadcastByTextChange/${documentsId}`,
         (docs) => {
           const docsbody = JSON.parse(docs.body);
 
-          if (docsbody.memberId !== currentUserId) {
+          if (
+            docsbody.memberEmail !== currentUserId ||
+            docsbody.documentId !== documentsId
+          ) {
+            console.warn(docsbody.memberEmail, currentUserId);
             // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
             console.log("broadCast를 이렇게 받았다!", docsbody);
             // console.log(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" "));
