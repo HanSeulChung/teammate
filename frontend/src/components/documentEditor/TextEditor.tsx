@@ -79,7 +79,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         setContent(docs.content);
       };
 
-      client.current!.subscribe("/topic/display", (docs) => {
+      client.current!.subscribe(`/topic/display/${documentsId}`, (docs) => {
         displayDocs(JSON.parse(docs.body));
         //console.log("docs.body : ", docs.body);
       });
