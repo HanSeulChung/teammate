@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
-import axios from "axios";
 
 interface CommentType {
   content: string;
@@ -51,7 +50,7 @@ const Comment: React.FC = () => {
     const fetchComments = async () => {
       try {
         const response = await axiosInstance.get<{ content: CommentType[] }>(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+          `/team/${teamId}/documents/${documentsId}/comments`,
         );
         setCommentsPage(response.data);
       } catch (error) {
@@ -76,7 +75,7 @@ const Comment: React.FC = () => {
       try {
         console.warn(editingComment, commentToUpdate.writerId + "");
         const response = await axiosInstance.put(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
+          `/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
           { content: editingComment, editorId: commentToUpdate.writerId + "" },
         );
 
@@ -103,7 +102,7 @@ const Comment: React.FC = () => {
     if (confirmDelete) {
       try {
         await axiosInstance.delete(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
+          `/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
         );
         const updatedComments = commentsPage.content.filter(
           (comment) => comment.id !== commentId,
@@ -118,7 +117,7 @@ const Comment: React.FC = () => {
     if (!newComment.trim()) return;
     try {
       const response = await axiosInstance.post(
-        `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+        `/team/${teamId}/documents/${documentsId}/comments`,
         {
           content: newComment,
           writerId: participantIds,
@@ -139,15 +138,13 @@ const Comment: React.FC = () => {
   };
 
   const getTeamParticipantNickname = async (
-    teamParticipantsId: number,
+    _teamParticipantsId: number,
     teamId: number,
   ) => {
     try {
       const response = await axiosInstance.get(
-        "http://118.67.128.124:8080/member/participants",
+        "/member/participants",
       );
-
-      const participants = response.data.content;
 
       const nicknames = response.data.content
         .filter((data: { teamId: number }) => data.teamId === teamId)

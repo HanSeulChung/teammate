@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import "quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
@@ -40,7 +40,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
     try {
       const response = await axiosInstance.post(
-        `http://118.67.128.124:8080/team/${teamId}/documents`,
+        `/team/${teamId}/documents`,
         requestData,
       );
 
