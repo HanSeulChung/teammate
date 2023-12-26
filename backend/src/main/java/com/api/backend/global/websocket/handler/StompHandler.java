@@ -31,23 +31,21 @@ public class StompHandler implements ChannelInterceptor {
     StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
     if (accessor.getCommand() == StompCommand.CONNECT) {
       String authorizationHeader = accessor.getNativeHeader("Authorization").get(0);
-      if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
-        String token = authorizationHeader.substring(BEARER_PREFIX.length());
-        if (jwtTokenProvider.validateAccessToken(token)) {
-          Authentication authentication = jwtTokenProvider.getAuthentication(token);
-          if (authentication != null) {
-            accessor.setUser(authentication);
-          } else {
-            throw new InsufficientAuthenticationException("Authentication failed");
-          }
-        } else {
-          throw new InsufficientAuthenticationException("Invalid access token");
-        }
-      } else {
+      if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)) {
         throw new InsufficientAuthenticationException("No or invalid Authorization header");
       }
+
+      String token = authorizationHeader.substring(BEARER_PREFIX.length());
+      if (!jwtTokenProvider.validateAccessToken(token)) {
+        throw new InsufficientAuthenticationException("Invalid access token");
+      }
+
+      Authentication authentication = jwtTokenProvider.getAuthentication(token);
+      if (authentication == null) {
+        throw new InsufficientAuthenticationException("Authentication failed");
+      }
+      accessor.setUser(authentication);
     }
     return message;
-
   }
 }
