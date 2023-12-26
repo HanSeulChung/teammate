@@ -53,7 +53,7 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(EMAIL_ALREADY_EXIST_EXCEPTION);
         }
 
-        if (!request.getPassword().equals(request.getRepassword())) {
+        if (!request.getPassword().equals(request.getRePassword())) {
             throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
         }
 
