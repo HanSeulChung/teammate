@@ -139,8 +139,8 @@ const TeamInfoContainer = styled.div`
 `;
 
 const TeamImage = styled.img`
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 150px;
+  max-height: 150px;
   border-radius: 50%;
 `;
 
