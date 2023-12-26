@@ -27,7 +27,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const navigate = useNavigate();
-  const API_BASE_URL = "http://118.67.128.124:8080";
   const [totalPages, setTotlaPages] = useState<number>(0);
   const datepickerRef = useRef<HTMLInputElement>(null);
   const [startDt, setStartDt] = useState<string>("");
