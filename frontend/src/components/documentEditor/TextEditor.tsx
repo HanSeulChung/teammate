@@ -40,13 +40,13 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       if (frame.headers?.message?.includes("Invalid access token")) {
         // accessToken이 만료되었을 때, accessToken이 올바르지 않은 형태일때
         console.log("Invalid access token detected.");
-        // 토큰 재발급 요청으로 accessToken을 저장을 다시 해놓고 문서 목록으로 redirect .. 
-
-      } else if (frame.headers?.message?.includes("No or invalid Authorization header")){
+        // 토큰 재발급 요청으로 accessToken을 저장을 다시 해놓고 문서 목록으로 redirect ..
+      } else if (
+        frame.headers?.message?.includes("No or invalid Authorization header")
+      ) {
         // Bearer "accessToken"과 같은 규격이 아닐때
         console.log("No or invalid Authorization header detected");
-
-      } else if (frame.headers?.message?.includes("Authentication failed")){
+      } else if (frame.headers?.message?.includes("Authentication failed")) {
         // 토큰 값으로 인증이 실패 했을 경우
         console.log("Authentication failed detected");
         // 문서 목록으로 redirect
@@ -88,18 +88,21 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     const textChange = (_trimmedDocsId: string) => {
       const currentUserId = JSON.parse(sessionStorage.getItem("user") ?? "").id;
 
-      client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
-        const docsbody = JSON.parse(docs.body);
-        
-        if (docsbody.memberId !== currentUserId) { 
-          // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
-          console.log("broadCast를 이렇게 받았다!", docsbody);
-          // console.log(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" "));
-          setTitle(docsbody.title);
-          // setContent(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" ")); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
-          setContent(docsbody.content); 
-        }
-      });
+      client.current!.subscribe(
+        `/topic/broadcastByTextChange${documentsId}`,
+        (docs) => {
+          const docsbody = JSON.parse(docs.body);
+
+          if (docsbody.memberId !== currentUserId) {
+            // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
+            console.log("broadCast를 이렇게 받았다!", docsbody);
+            // console.log(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" "));
+            setTitle(docsbody.title);
+            // setContent(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" ")); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
+            setContent(docsbody.content);
+          }
+        },
+      );
     };
 
     const fetchParticipants = async () => {
@@ -112,7 +115,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         );
 
         setParticipantIds(participant ? participant.teamParticipantsId : null);
-
       } catch (error) {
         console.error("Error fetching participants:", error);
       }
@@ -200,18 +202,19 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       const message = {
         memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: title,
-        content: contentCopy.replace(/<p>/g, "").replace(/<\/p>/g, "").replace(/<br>/g, "\n"),
+        content: contentCopy
+          .replace(/<p>/g, "")
+          .replace(/<\/p>/g, "")
+          .replace(/<br>/g, "\n"),
         documentId: documentsId,
-        participantsId : participantIds
+        participantsId: participantIds,
       };
 
       client.current.publish({
         destination: "/app/doc.saveDocs",
         body: JSON.stringify(message),
       });
-
     }
-
 
     navigate(`/team/${teamId}/documentsList`);
   };
