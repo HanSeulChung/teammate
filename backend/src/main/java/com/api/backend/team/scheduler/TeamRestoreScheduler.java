@@ -20,7 +20,7 @@ public class TeamRestoreScheduler {
   @Scheduled(cron = "0 0 0 * * ?")
   @Transactional
   public void teamRestoreCheckAndUpdate() {
-    List<Team> teams = teamRepository.findByRestorationDtIsNotNull();
+    List<Team> teams = teamRepository.findAllByRestorationDtIsNotNull();
 
     for (Team team : teams) {
       if (!team.getRestorationDt().isAfter(LocalDate.now())) {

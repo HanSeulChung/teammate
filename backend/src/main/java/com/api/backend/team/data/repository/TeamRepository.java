@@ -10,5 +10,5 @@ public interface TeamRepository extends JpaRepository<Team,Long> {
 
   boolean existsByTeamIdAndIsDelete(Long teamId, boolean isDelete);
 
-  List<Team> findByRestorationDtIsNotNull();
+  List<Team> findAllByRestorationDtIsNotNull();
 }

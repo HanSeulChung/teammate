@@ -43,12 +43,12 @@ class TeamRestoreSchedulerTest {
     List<Team> teams = Arrays.asList(teamWithPastDate, teamWithFutureDate);
 
     // given
-    when(teamRepository.findByRestorationDtIsNotNull()).thenReturn(teams);
+    when(teamRepository.findAllByRestorationDtIsNotNull()).thenReturn(teams);
 
     // when
     teamRestoreScheduler.teamRestoreCheckAndUpdate();
 
     // then
-    verify(teamRepository, times(1)).findByRestorationDtIsNotNull();
+    verify(teamRepository, times(1)).findAllByRestorationDtIsNotNull();
   }
 }
