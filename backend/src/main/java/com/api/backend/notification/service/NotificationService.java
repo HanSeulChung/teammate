@@ -9,13 +9,13 @@ import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.notification.data.entity.Notification;
 import com.api.backend.notification.data.repository.NotificationRepository;
+import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.service.TeamParticipantsService;
 import com.api.backend.team.service.TeamService;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -90,7 +90,9 @@ public class NotificationService {
   public Page<Notification> getTeamNotificationList(Long teamId, Long memberId, Pageable pageable) {
     TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(teamId, memberId);
 
-    teamService.isDeletedCheck(teamParticipants.getTeam());
+    Team team = teamParticipants.getTeam();
+
+    teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     return notificationRepository.findAllByTeamParticipantsAndIsReadFalse(teamParticipants, pageable);
   }
