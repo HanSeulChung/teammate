@@ -79,8 +79,8 @@ public class DocumentsWebSocketController {
   @MessageMapping("/doc.updateDocsByTextChange")
   public void handleTotalBroadCastByTextChange(@Payload TotalMessage totalMessage) {
 
-    log.info("TotalMessage From text-change {}", totalMessage);
-    messagingTemplate.convertAndSend("/topic/broadcastByTextChange", totalMessage);
+    log.info("TotalMessage From text-change: {} in documentId : {}", totalMessage, totalMessage.getDocumentId());
+    messagingTemplate.convertAndSend("/topic/broadcastByTextChange/" + totalMessage.getDocumentId() , totalMessage);
   }
 
 }
