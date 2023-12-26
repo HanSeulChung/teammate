@@ -23,6 +23,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const quillRef = useRef<ReactQuill>(null);
   const navigate = useNavigate();
   const accessToken = window.sessionStorage.getItem("accessToken");
+  const [participantIds, setParticipantIds] = useState<number>();
 
   useEffect(() => {
     client.current = new StompJs.Client({
@@ -67,16 +68,18 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       //console.log("'/app/doc.showDocs'에 publish");
 
       const displayDocs = (docs: any) => {
-        const quill = quillRef.current?.getEditor();
-        if (quill) {
-          const initValue = quill.clipboard.convert(docs.content);
-          quill.setContents(initValue);
-        }
+        // const quill = quillRef.current?.getEditor();
+        // if (quill) {
+        //   const initContent = quill.clipboard.convert(docs.content);
+        //   const initTitle = docs.title;
+        //   quill.setContents(initContent);
+        //   setTitle(initTitle);
+        // }
         setTitle(docs.title);
-        // setContent(docs.content);
+        setContent(docs.content);
       };
 
-      client.current!.subscribe("/topic/public", (docs) => {
+      client.current!.subscribe("/topic/display", (docs) => {
         displayDocs(JSON.parse(docs.body));
         //console.log("docs.body : ", docs.body);
       });
@@ -87,20 +90,38 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
       client.current!.subscribe("/topic/broadcastByTextChange", (docs) => {
         const docsbody = JSON.parse(docs.body);
-        console.log("broadCast를 이렇게 받았다!", docsbody);
+        
         if (docsbody.memberId !== currentUserId) { 
           // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
-          console.log("broadCast 받았다.");
+          console.log("broadCast를 이렇게 받았다!", docsbody);
+          // console.log(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" "));
           setTitle(docsbody.title);
-          setContent(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" ")); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
-          console.log(docsbody);
+          // setContent(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" ")); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
+          setContent(docsbody.content); 
         }
       });
+    };
+
+    const fetchParticipants = async () => {
+      try {
+        const response = await axiosInstance.get("/member/participants", {});
+        // URL에서 가져온 teamId를 number 타입으로 변환
+        const currentTeamId = Number(teamId);
+        const participant = response.data.find(
+          (item: { teamId: number }) => item.teamId === currentTeamId,
+        );
+
+        setParticipantIds(participant ? participant.teamParticipantsId : null);
+
+      } catch (error) {
+        console.error("Error fetching participants:", error);
+      }
     };
 
     client.current!.onConnect = () => {
       onConnect(docsId);
       textChange(docsId);
+      fetchParticipants();
     };
 
     client.current!.activate();
@@ -122,7 +143,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     setContent(newText); // 상태 업데이트
     if (client.current) {
       const message = {
-        memberId: JSON.parse(sessionStorage.getItem("user") ?? "").id,
+        memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: title,
         content: newText,
         documentId: documentsId,
@@ -139,12 +160,11 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
     setTitle(newTitle);
-
     setContent(content);
 
     if (client.current) {
       const message = {
-        memberId: JSON.parse(localStorage.getItem("user") ?? "").id,
+        memberEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
         title: newTitle,
         content: content,
         documentId: documentsId,
@@ -175,6 +195,24 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   };
 
   const handleSaveAndExit = async () => {
+    if (client.current) {
+      const contentCopy = content.slice(); // content의 복사본을 만듦
+      const message = {
+        memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
+        title: title,
+        content: contentCopy.replace(/<p>/g, "").replace(/<\/p>/g, "").replace(/<br>/g, "\n"),
+        documentId: documentsId,
+        participantsId : participantIds
+      };
+
+      client.current.publish({
+        destination: "/app/doc.saveDocs",
+        body: JSON.stringify(message),
+      });
+
+    }
+
+
     navigate(`/team/${teamId}/documentsList`);
   };
 
@@ -186,7 +224,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         placeholder="제목을 입력하세요"
       />
       <ReactQuill
-        ref={quillRef}
         value={content}
         onChange={handleTextChange}
         preserveWhitespace={true}
