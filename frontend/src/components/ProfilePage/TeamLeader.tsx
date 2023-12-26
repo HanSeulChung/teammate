@@ -216,7 +216,9 @@ export default function TeamLeader() {
           teamId: team?.teamId,
           teamName: team?.name,
         });
-        alert("팀이 삭제되었습니다.");
+        alert(
+          "팀이 삭제되었습니다. 복구는 30일 이내로 가능하며 30일 뒤에는 자동으로 팀이 해체됩니다.",
+        );
         console.log("팀 삭제 응답:", response.data);
         navigate("/homeView");
       } else {
@@ -235,8 +237,7 @@ export default function TeamLeader() {
       try {
         const response = await axiosInstance.get(`/team/${teamId}/code`);
         const teamCode = response.data;
-        // console.log("초대코드", teamCode);
-        const codeUrl = `http://118.67.128.124:8080/team/${teamCode}`;
+        const codeUrl = `${teamCode}`;
         setCodeUrl(codeUrl);
         // await axiosInstance.post(codeUrl);
       } catch (error) {
