@@ -137,18 +137,18 @@ const Comment: React.FC = () => {
   };
 
   const getTeamParticipantNickname = async (
-    _teamParticipantsId: number,
+    teamParticipantsId: number,
     teamId: number,
   ) => {
     try {
       const response = await axiosInstance.get(
-        "http://118.67.128.124:8080/member/participants",
+        `http://118.67.128.124:8080/team/${teamId}/participant/list`,
       );
       const nicknames = response.data
         .filter((data: { teamId: number }) => data.teamId === teamId)
         .filter(
           (data: { teamParticipantsId: number | undefined }) =>
-            data.teamParticipantsId === participantIds,
+            data.teamParticipantsId === teamParticipantsId,
         )
         .map((data: { teamNickName: any }) => data.teamNickName);
 
