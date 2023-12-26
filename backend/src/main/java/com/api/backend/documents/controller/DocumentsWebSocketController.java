@@ -12,12 +12,14 @@ import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.global.exception.CustomException;
 import java.util.LinkedHashMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class DocumentsWebSocketController {
@@ -43,8 +45,7 @@ public class DocumentsWebSocketController {
         .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
 
     documents.setDifference(totalMessage);
-    System.out.println(totalMessage.getParticipantsId());
-
+    log.info("document가 수정되서 저장되었습니다. document is {}", documents);
     return DocumentResponse.from(documentsRepository.save(documents));
   }
 
@@ -54,7 +55,7 @@ public class DocumentsWebSocketController {
   public void handleBroadCastBySelectionChange(@Payload DeltaMessage deltaMessage) {
     LinkedHashMap<String, Integer> deltaValue = (LinkedHashMap<String, Integer>) deltaMessage.getDeltaValue();
 
-    System.out.println(deltaMessage);
+    log.info("deltaMessage From selection-change {}", deltaMessage);
 
     Integer index = deltaValue.get("index");
     Integer length = deltaValue.get("length");
@@ -78,8 +79,7 @@ public class DocumentsWebSocketController {
   @MessageMapping("/doc.updateDocsByTextChange")
   public void handleTotalBroadCastByTextChange(@Payload TotalMessage totalMessage) {
 
-//    System.out.println(totalMessage);
-    System.out.println(totalMessage.getContent());
+    log.info("TotalMessage From text-change {}", totalMessage);
     messagingTemplate.convertAndSend("/topic/broadcastByTextChange", totalMessage);
   }
 
