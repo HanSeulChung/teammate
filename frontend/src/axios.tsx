@@ -2,8 +2,8 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 import { saveAccessToken, saveRefreshToken } from "./state/authState"; // 필요에 따라 import 경로를 업데이트하세요.
 
 const axiosInstance: AxiosInstance = axios.create({
-  // baseURL: "http://118.67.128.124:8080", // 기본 URL을 업데이트하세요.
-  baseURL: "http://localhost:8080", // 기본 URL을 업데이트하세요.
+  baseURL: "http://118.67.128.124:8080", // 기본 URL을 업데이트하세요.
+  // baseURL: "http://localhost:8080", // 기본 URL을 업데이트하세요.
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
