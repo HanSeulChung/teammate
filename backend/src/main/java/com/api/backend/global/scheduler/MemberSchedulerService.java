@@ -18,7 +18,7 @@ public class MemberSchedulerService {
     private final MemberService memberService;
     @Scheduled(cron = "0 0 5 1 * *", zone = "Asia/Seoul")
     public void checkEmailValidation() {
-        log.info("장기간 이메일 안된 회원 삭제");
+        log.info("장기간 이메일 인증 안된 회원 삭제");
         List<Member> membersIsAuthenticatedEmailFalse = memberService.getMembersIsAuthenticatedEmailFalse(false, LocalDateTime.now());
 
         for(Member member: membersIsAuthenticatedEmailFalse){
