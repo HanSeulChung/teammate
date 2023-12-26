@@ -40,7 +40,7 @@ const CreateText: React.FC<QuillEditorProps> = () => {
 
     try {
       const response = await axiosInstance.post(
-        `http://118.67.128.124:8080/team/${teamId}/documents`,
+        `/team/${teamId}/documents`,
         requestData,
       );
 

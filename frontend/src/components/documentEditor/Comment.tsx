@@ -51,7 +51,7 @@ const Comment: React.FC = () => {
     const fetchComments = async () => {
       try {
         const response = await axiosInstance.get<{ content: CommentType[] }>(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+          `/team/${teamId}/documents/${documentsId}/comments`,
         );
         setCommentsPage(response.data);
       } catch (error) {
@@ -76,7 +76,7 @@ const Comment: React.FC = () => {
       try {
         console.warn(editingComment, commentToUpdate.writerId + "");
         const response = await axiosInstance.put(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
+          `/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
           { content: editingComment, editorId: commentToUpdate.writerId + "" },
         );
 
@@ -103,7 +103,7 @@ const Comment: React.FC = () => {
     if (confirmDelete) {
       try {
         await axiosInstance.delete(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
+          `/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
         );
         const updatedComments = commentsPage.content.filter(
           (comment) => comment.id !== commentId,
@@ -118,7 +118,7 @@ const Comment: React.FC = () => {
     if (!newComment.trim()) return;
     try {
       const response = await axiosInstance.post(
-        `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+        `/team/${teamId}/documents/${documentsId}/comments`,
         {
           content: newComment,
           writerId: participantIds,
@@ -144,7 +144,7 @@ const Comment: React.FC = () => {
   ) => {
     try {
       const response = await axiosInstance.get(
-        "http://118.67.128.124:8080/member/participants",
+        "/member/participants",
       );
 
       const participants = response.data.content;

@@ -27,7 +27,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const navigate = useNavigate();
-  const API_BASE_URL = "http://118.67.128.124:8080";
   const [totalPages, setTotlaPages] = useState<number>(0);
   const datepickerRef = useRef<HTMLInputElement>(null);
   const [startDt, setStartDt] = useState<string>("");
@@ -37,7 +36,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     const fetchDocuments = async () => {
       try {
         const response = await axiosInstance.get(
-          `${API_BASE_URL}/team/${teamId}/documents?page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
+          `/team/${teamId}/documents?page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
         );
 
         setTotlaPages(response.data.totalPages);
@@ -65,7 +64,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     const fetchDocuments = async () => {
       try {
         const response = await axiosInstance.get(
-          `${API_BASE_URL}/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
+          `/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
         );
 
         setTotlaPages(response.data.totalPages);
