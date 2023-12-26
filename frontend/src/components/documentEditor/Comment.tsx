@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
-import axios from "axios";
 
 interface CommentType {
   content: string;
@@ -139,15 +138,13 @@ const Comment: React.FC = () => {
   };
 
   const getTeamParticipantNickname = async (
-    teamParticipantsId: number,
+    _teamParticipantsId: number,
     teamId: number,
   ) => {
     try {
       const response = await axiosInstance.get(
         "/member/participants",
       );
-
-      const participants = response.data.content;
 
       const nicknames = response.data.content
         .filter((data: { teamId: number }) => data.teamId === teamId)

@@ -182,25 +182,25 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
               <TitleContentContainer>
                 <TitleDomStyled>
                   제목 : {doc.title}
-                  <BlurLayer blur={3.6} width="5px" />
-                  <BlurLayer blur={3.2} width="10px" />
-                  <BlurLayer blur={2.8} width="15px" />
-                  <BlurLayer blur={2.4} width="20px" />
-                  <BlurLayer blur={2.0} width="25px" />
-                  <BlurLayer blur={1.6} width="30px" />
-                  <BlurLayer blur={0.8} width="35px" />
-                  <BlurLayer blur={0.4} width="40px" />
+                  <BlurLayer $blur={3.6} $width="5px" />
+                  <BlurLayer $blur={3.2} $width="10px" />
+                  <BlurLayer $blur={2.8} $width="15px" />
+                  <BlurLayer $blur={2.4} $width="20px" />
+                  <BlurLayer $blur={2.0} $width="25px" />
+                  <BlurLayer $blur={1.6} $width="30px" />
+                  <BlurLayer $blur={0.8} $width="35px" />
+                  <BlurLayer $blur={0.4} $width="40px" />
                 </TitleDomStyled>
                 <ContentDomStyled>
                   내용 : {doc.content}
-                  <BlurLayer blur={3.6} width="5px" />
-                  <BlurLayer blur={3.2} width="10px" />
-                  <BlurLayer blur={2.8} width="15px" />
-                  <BlurLayer blur={2.4} width="20px" />
-                  <BlurLayer blur={2.0} width="25px" />
-                  <BlurLayer blur={1.6} width="30px" />
-                  <BlurLayer blur={0.8} width="35px" />
-                  <BlurLayer blur={0.4} width="40px" />
+                  <BlurLayer $blur={3.6} $width="5px" />
+                  <BlurLayer $blur={3.2} $width="10px" />
+                  <BlurLayer $blur={2.8} $width="15px" />
+                  <BlurLayer $blur={2.4} $width="20px" />
+                  <BlurLayer $blur={2.0} $width="25px" />
+                  <BlurLayer $blur={1.6} $width="30px" />
+                  <BlurLayer $blur={0.8} $width="35px" />
+                  <BlurLayer $blur={0.4} $width="40px" />
                 </ContentDomStyled>
               </TitleContentContainer>
               <DatesContainer>
@@ -329,8 +329,8 @@ const TitleDomStyled = styled.h1`
   }
 `;
 interface BlurLayerProps {
-  blur: number;
-  width: string;
+  $blur: number;
+  $width: string;
 }
 
 const ContentDomStyled = styled.div`
@@ -347,13 +347,18 @@ const BlurLayer = styled.div<BlurLayerProps>`
   right: 0;
   height: 100%;
   box-sizing: border-box;
-  width: ${(props) => props.width};
-  backdrop-filter: blur(${(props) => props.blur}px) grayscale(0);
+  width: ${(props) => props.$width};
+  backdrop-filter: blur(${(props) => props.$blur}px) grayscale(0);
 `;
 
 const PagenationButton = styled.button`
   background-color: rgb(163, 204, 163);
   margin-right: 4px;
+  height: 45px;
+  width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const PagenationButtonContainer = styled.div`
