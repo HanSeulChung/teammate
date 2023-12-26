@@ -4,11 +4,12 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import '../../styles/teamCalender.css'
-import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalenderStyled.tsx'
+// import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalenderStyled.tsx'
 import EditEvent from "./EditEvent.tsx";
 // import axios from "axios";
 import axiosInstance from "../../axios";
 import { useNavigate, useParams } from "react-router-dom";
+import styled from "styled-components";
 
 // import { Team } from "../../interface/interface";
 
@@ -184,37 +185,46 @@ const TeamCalender = () => {
       />
       {/* 일정클릭 모달 */}
       {eventDetailModal && (
-        <Modal>
+        <Modal >
           <Overlay
           // onClick={toggleModal}
           ></Overlay>
-          <ModalContent>
+          <ModalContent className="rounded-lg shadow">
             {isEdit ? (
               <>
                 {/* 에디터컴포넌트 */}
                 <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
               </>
             ) : (
-              <>
-                <h2>일정상세</h2>
+              <div className="p-4 md:p-5">
+                {/* <img src={calendarImg} className="w-5 inline-block" /> */}
+                <h2 className="text-xl mt-4 mb-4 font-semibold text-gray-900">{event.title}</h2>
                 <p>
                   {/* 일정 번호: {event.id} */}
-                  이름: {event.title}<br />
-                  일시: {event.start.toJSON()}<br />
-                  내용: {event.contents}<br />
-                  장소: {event.place}<br />
-                  카테고리: {event.groupId}
+                  {/* 이름: {event.title}<br /> */}
+                  <div className="mb-3">
+                    <span className="mr-10 text-gray-500">일시</span><span className="">{event.start.toJSON()}</span>
+                  </div>
+                  <div className="mb-3">
+                    <span className="mr-10 text-gray-500">내용</span>{event.contents}
+                  </div>
+                  <div className="mb-3">
+                    <span className="mr-10 text-gray-500">장소</span>{event.place}
+                  </div>
+                  <div className="mb-5">
+                    <span className="text-gray-500">카테고리</span>{event.groupId}
+                  </div>
                 </p>
-                <button onClick={toggleIsEdit}>수정</button>
-                <button onClick={handleEventDelete}>삭제</button>
-              </>
+                <button onClick={toggleIsEdit} className="bg-white border-1 border-gray-300 mr-2">수정</button>
+                <button onClick={handleEventDelete} className="bg-white border-1 border-gray-300">삭제</button>
+              </div>
             )}
             {/* 수정중이 아닐때 close버튼 렌더링 */}
             {!isEdit &&
               <CloseModal
                 onClick={toggleModal}
               >
-                CLOSE
+                닫기
               </CloseModal>
             }
           </ModalContent>
@@ -231,7 +241,7 @@ const TeamCalender = () => {
             <CloseModal
               onClick={toggleFormModal}
             >
-              CLOSE
+              닫기
             </CloseModal>
           </ModalContent>
         </Modal>
@@ -241,3 +251,48 @@ const TeamCalender = () => {
 };
 
 export default TeamCalender;
+
+// 스타일드 컴포넌트
+export const Modal = styled.div`
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  z-index: 99999999;
+`
+
+export const Overlay = styled.div`
+  background: rgba(49,49,49,0.5);
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+`
+
+export const ModalContent = styled.div`
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1.4;
+  background: white;
+  padding: 14px 28px;
+  border-radius: 0.5rem;
+  max-width: 600px;
+  min-width: 300px;
+  z-index: 6;
+`
+
+export const CloseModal = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 7px;
+  background-color: rgb(17 24 39 / var(--tw-text-opacity)); 
+`

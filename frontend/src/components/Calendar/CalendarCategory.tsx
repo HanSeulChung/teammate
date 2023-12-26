@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalenderStyled.tsx'
+// import { Modal, Overlay, ModalContent, CloseModal } from '../../styles/TeamCalenderStyled.tsx'
 import { CategoryUl, CategoryForm } from '../../styles/CalendarCategoryStyled.tsx'
 import { CommonSubmitBtn } from '../../styles/CommonStyled.tsx';
+import styled from "styled-components";
 
 const CalendarCategory = () => {
   // 모달팝업 유무
@@ -82,34 +83,41 @@ const CalendarCategory = () => {
             onClick={toggleCat}
           ></Overlay>
           <ModalContent>
-            <h2 >카테고리 추가</h2>
-            <CategoryForm>
-              <label>카테고리 이름</label>
-              <input
-                placeholder='카테고리명'
-                name="category"
-                value={catOption.category}
-                onChange={handleChangeOption}
-              ></input>
-              <label>색상</label>
-              <select
-                name="color"
-                value={catOption.color}
-                onChange={handleChangeOption}
+            <div className='p-4 md:p-5'>
+              <h2 className="text-lg font-semibold text-gray-900">카테고리 추가</h2>
+              <CategoryForm>
+                <div className="col-span-2">
+
+                </div>
+                <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리 이름</label>
+                <input
+                  placeholder='카테고리명'
+                  name="category"
+                  value={catOption.category}
+                  onChange={handleChangeOption}
+                  className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                ></input>
+                <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
+                <select
+                  name="color"
+                  value={catOption.color}
+                  onChange={handleChangeOption}
+                  className='block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                >
+                  <option value="red">red</option>
+                  <option value="yellow">yellow</option>
+                  <option value="blue">blue</option>
+                </select>
+                <CommonSubmitBtn
+                  onClick={AddOption}
+                >등록</CommonSubmitBtn>
+              </CategoryForm>
+              <CloseModal
+                onClick={toggleCat}
               >
-                <option value="red">red</option>
-                <option value="yellow">yellow</option>
-                <option value="blue">blue</option>
-              </select>
-              <CommonSubmitBtn
-                onClick={AddOption}
-              >등록</CommonSubmitBtn>
-            </CategoryForm>
-            <CloseModal
-              onClick={toggleCat}
-            >
-              CLOSE
-            </CloseModal>
+                닫기
+              </CloseModal>
+            </div>
           </ModalContent>
         </Modal>
       )}
@@ -119,3 +127,48 @@ const CalendarCategory = () => {
 };
 
 export default CalendarCategory;
+
+// 스타일드 컴포넌트
+export const Modal = styled.div`
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  z-index: 99999999;
+`
+
+export const Overlay = styled.div`
+  background: rgba(49,49,49,0.5);
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+`
+
+export const ModalContent = styled.div`
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1.4;
+  background: white;
+  padding: 14px 28px;
+  border-radius: 0.5rem;
+  max-width: 600px;
+  min-width: 300px;
+  z-index: 6;
+`
+
+export const CloseModal = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 7px;
+  background-color: rgb(17 24 39 / var(--tw-text-opacity)); 
+`
