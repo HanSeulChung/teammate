@@ -61,6 +61,43 @@ const TeamCalender = () => {
   const [isEdit, setIsEdit] = useState(false);
   const toggleIsEdit = () => setIsEdit(!isEdit);
 
+  // 일정목록 렌더링을 위한 변환
+  // const result = todos.map((todo=>{
+  //   return todo.id === toggleId ? {...todo, didIt: !todo.didIt} : todo
+  // }))
+  interface ConvertedEvent {
+    id: number;
+    start: string;
+    end: string;
+    title: string;
+    backgroundColor: null;
+    extendedProps: {
+      content: string;
+      place: string;
+      scheduleType: string;
+      category: string;
+      categoryName: string;
+    };
+  }
+  
+  const convertEvents = (events: any[]): ConvertedEvent[] => {
+    return events.map(event => ({
+      id: event.scheduleId,
+      start: event.startDt,
+      end: event.endDt,
+      title: event.title,
+      backgroundColor: null,
+      extendedProps: {
+        content: event.content,
+        place: event.place,
+        scheduleType: event.scheduleType,
+        category: event.category,
+        categoryName: event.categoryName,
+      }
+    }));
+  };
+  
+
   // 일정목록 불러오기
   const getAllEvents = async () => {
     try {
@@ -69,8 +106,11 @@ const TeamCalender = () => {
         url: `/team/${teamId}/schedules/calendar`,
       });
       if (res.status === 200) {
-        console.log(res.data);
-        setEventList(res.data);
+        console.log(res.data.content);
+        // 데이터 변환
+        const convertedEvents = convertEvents(res.data.content);
+        console.log(convertedEvents);
+        setEventList(convertedEvents);
         return;
       }
     } catch (error) {
