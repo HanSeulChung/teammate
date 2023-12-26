@@ -27,7 +27,7 @@ public interface MemberService {
 
     void checkEamilDuplicate(String email);
 
-    List<Member> getMembersIsAuthenticatedEmailFalse(Boolean b, LocalDateTime now);
+    List<Member> getMembersIsAuthenticatedEmailFalse(Boolean emailAuthenticationYN, LocalDateTime now);
 
     void deleteMember(Member member);
 }
