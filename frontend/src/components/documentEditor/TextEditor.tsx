@@ -52,7 +52,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     const onConnect = (trimmedDocsId: string) => {
-      //console.log("Connected to WebSocket with", trimmedDocsId);
+      console.log("Connected to WebSocket with", trimmedDocsId);
       const docsMessage = {
         documentId: trimmedDocsId,
       };
@@ -166,7 +166,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
     if (client.current) {
       const message = {
-        memberEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
+        memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: newTitle,
         content: content,
         documentId: documentsId,
