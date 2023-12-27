@@ -1,14 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import * as StompJs from "@stomp/stompjs";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { accessTokenState } from "../../state/authState";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axiosInstance from "../../axios";
 import "./ReactQuill.css";
-import { useRecoilValue } from "recoil";
 
 interface TextEditorProps {
   teamId: string;
@@ -20,7 +17,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [content, setContent] = useState<string>("");
   const docsId = documentsId;
   const client = useRef<StompJs.Client | null>(null);
-  const quillRef = useRef<ReactQuill>(null);
   const navigate = useNavigate();
   const accessToken = window.sessionStorage.getItem("accessToken");
   const [participantIds, setParticipantIds] = useState<number>();
@@ -56,7 +52,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     const onConnect = (trimmedDocsId: string) => {
-      //console.log("Connected to WebSocket with", trimmedDocsId);
+      console.log("Connected to WebSocket with", trimmedDocsId);
       const docsMessage = {
         documentId: trimmedDocsId,
       };
@@ -79,7 +75,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         setContent(docs.content);
       };
 
-      client.current!.subscribe("/topic/display", (docs) => {
+      client.current!.subscribe(`/topic/display/${documentsId}`, (docs) => {
         displayDocs(JSON.parse(docs.body));
         //console.log("docs.body : ", docs.body);
       });
@@ -170,7 +166,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
     if (client.current) {
       const message = {
-        memberEmail: JSON.parse(localStorage.getItem("user") ?? "").id,
+        memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: newTitle,
         content: content,
         documentId: documentsId,
