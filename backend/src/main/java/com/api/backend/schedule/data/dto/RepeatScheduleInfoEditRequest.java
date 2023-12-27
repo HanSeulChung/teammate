@@ -31,4 +31,5 @@ public class RepeatScheduleInfoEditRequest {
   private RepeatCycle repeatCycle;
   private List<Long> teamParticipantsIds;
   private EditOption editOption;
+  private Long updateParticipantId;
 }

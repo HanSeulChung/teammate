@@ -62,7 +62,7 @@ class TeamParticipantsServiceTest {
     Long teamId = 1L;
     Team team = Team.builder().teamId(1L).build();
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .team(team)
         .build();
     TeamParticipants teamParticipants2 = TeamParticipants.builder()

@@ -37,6 +37,7 @@ public class NotificationMessage {
 
     return "해당 팀원'" + name + "' 탈퇴했습니다.";
   }
+
   public static String getCreateSchedule(String title) {
     if (Objects.isNull(title)) {
       throw new NullPointerException();
@@ -45,12 +46,12 @@ public class NotificationMessage {
     return "팀원이 '" + title + "' 일정을 만들었습니다.";
   }
 
-  public static String getKickOutMessage(String reason) {
-    if (Objects.isNull(reason)) {
+  public static String getKickOutMessage(String teamName, String reason) {
+    if (Objects.isNull(reason) || Objects.isNull(teamName)) {
       throw new NullPointerException();
     }
 
-    return "팀장이 해당 사유로 '" + reason + "' 강퇴 됐습니다.";
+    return teamName + "팀 팀장이 해당 사유로 '" + reason + "' 강퇴 됐습니다.";
   }
 
   public static String getDeleteScheduleMessage(String title) {

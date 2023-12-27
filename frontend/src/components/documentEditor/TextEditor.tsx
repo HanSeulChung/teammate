@@ -52,7 +52,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     };
 
     const onConnect = (trimmedDocsId: string) => {
-      console.log("Connected to WebSocket with", trimmedDocsId);
+      // console.log("Connected to WebSocket with", trimmedDocsId);
       const docsMessage = {
         documentId: trimmedDocsId,
       };
@@ -93,13 +93,18 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
             docsbody.memberEmail !== currentUserId ||
             docsbody.documentId !== documentsId
           ) {
-            console.warn(docsbody.memberEmail, currentUserId);
+            // console.warn(docsbody.memberEmail, currentUserId);
+            // console.warn(docsbody.documentId, documentsId);
             // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
-            console.log("broadCast를 이렇게 받았다!", docsbody);
+            // console.log("broadCast를 이렇게 받았다!", docsbody);
             // console.log(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" "));
             setTitle(docsbody.title);
-            // setContent(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" ")); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
-            setContent(docsbody.content);
+            setContent(
+              docsbody.content
+                .replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "")
+                .trim(" "),
+            ); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
+            // setContent(docsbody.content);
           }
         },
       );
@@ -137,20 +142,19 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const handleTextChange = (
     content: any,
     _delta: any,
-    _source: any,
+    _ource: any,
     _editor: any,
   ) => {
     const newText = content;
-
     setContent(newText); // 상태 업데이트
-    if (client.current) {
+    if (client.current && title !== "") {
       const message = {
         memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: title,
         content: newText,
         documentId: documentsId,
       };
-      console.log("message : ", message);
+      // console.log("message : ", message);
 
       client.current.publish({
         destination: "/app/doc.updateDocsByTextChange",
@@ -161,9 +165,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
+
     setTitle(newTitle);
     setContent(content);
-
     if (client.current) {
       const message = {
         memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
@@ -196,16 +200,37 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     navigate(`${currentPath}/comment`);
   };
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (client.current) {
+        const contentCopy = content.slice(); // content의 복사본을 만듦
+        const message = {
+          memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
+          title: title,
+          content: contentCopy,
+          documentId: documentsId,
+          participantsId: participantIds,
+        };
+        client.current.publish({
+          destination: "/app/doc.saveDocs",
+          body: JSON.stringify(message),
+        });
+      }
+    }, 2000);
+
+    // 컴포넌트가 언마운트되거나 의존성이 변경될 때 실행될 정리 함수
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [content, title]);
+
   const handleSaveAndExit = async () => {
     if (client.current) {
       const contentCopy = content.slice(); // content의 복사본을 만듦
       const message = {
         memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: title,
-        content: contentCopy
-          .replace(/<p>/g, "")
-          .replace(/<\/p>/g, "")
-          .replace(/<br>/g, "\n"),
+        content: contentCopy,
         documentId: documentsId,
         participantsId: participantIds,
       };

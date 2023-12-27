@@ -1,13 +1,12 @@
 import { useState } from "react";
-import logo from "../../assets/logo.png";
-import { Link, useLocation } from "react-router-dom";
-import { HeaderImg, LogoContainer, Div, Span } from "../../styles/HeaderStyled";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { isAuthenticatedState, userState } from "../../state/authState";
-import { useNavigate } from "react-router-dom";
-import AlarmModal from "../alarm/AlarmModal";
-import axiosInstance from "../../axios";
 import axios, { AxiosError } from "axios";
+import axiosInstance from "../../axios";
+import styled from "styled-components";
+import AlarmModal from "../alarm/AlarmModal";
+import logo from "../../assets/logo.png";
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] =
@@ -163,3 +162,26 @@ const Header = () => {
 };
 
 export default Header;
+
+// 스타일드 컴포넌트
+
+export const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+// 헤더 로고 이미지
+export const HeaderImg = styled.img`
+  width: 50px;
+  height: 50px;
+  margin: 15px 10px 10px 10px;
+`;
+
+export const Div = styled.div`
+  margin-left: 10px;
+`;
+export const Span = styled.span`
+  cursor: pointer;
+  color: #333333;
+`;

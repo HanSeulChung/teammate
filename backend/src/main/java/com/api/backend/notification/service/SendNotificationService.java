@@ -40,12 +40,12 @@ public class SendNotificationService {
 
     List<SseEmitter> sseEmitters = new ArrayList<>();
     for (TeamParticipants teamParticipant : teamParticipants) {
-      String emitterId = EmitterService.createEmitterIdByTeamIdAndTeamParticipantId(
+
+
+      SseEmitter sseEmitter = emitterService.getTeamParticipantEmitters(
           teamId,
           teamParticipant.getTeamParticipantsId()
       );
-
-      SseEmitter sseEmitter = emitterService.getTeamParticipantEmitters(teamId, emitterId);
       if (sseEmitter == null) {
         continue;
       }

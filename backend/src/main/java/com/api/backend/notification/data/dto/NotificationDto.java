@@ -13,16 +13,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NotificationDto{
   private AlarmType alarmType;
-  private String teamName;
   private String nickName;
   private String message;
-  private String targetUrl;
 
   public static NotificationDto from(Notification notification) {
     return NotificationDto.builder()
         .message(notification.getMessage())
-        .teamName(notification.getTeamName() == null ? null : notification.getTeamName())
-        .targetUrl(notification.getTargetUrl() == null ? null : notification.getTargetUrl())
+        .nickName(notification.getNickName() == null ? null : notification.getNickName())
         .alarmType(notification.getAlarmType())
         .build();
   }

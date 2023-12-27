@@ -17,10 +17,15 @@ const TeamAlarm: React.FC<TeamAlarmProps> = ({ content, date, onDelete }) => {
   const accessToken = useRecoilValue(accessTokenState);
 
   useEffect(() => {
-    fetchPersonalAlarms(accessToken).then((data) => {
-      setAlarms(data);
-      setLoading(false);
-    });
+    fetchPersonalAlarms(accessToken)
+      .then((data) => {
+        setAlarms(data);
+        setLoading(false);
+      })
+      .catch((_error) => {
+        setError("Failed to fetch team alarms");
+        setLoading(false);
+      });
   }, []);
 
   if (loading) {

@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TeamRole {
-  READER("리더"),
+  LEADER("리더"),
   MATE("메이트");
 
   private final String description;
