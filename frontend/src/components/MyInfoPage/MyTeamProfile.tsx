@@ -80,6 +80,7 @@ const MyTeamProfile: React.FC = () => {
         "Content-Type": "multipart/form-data",
       },
     });
+    window.alert("프로필이 수정되었습니다.");
     console.log("내 프로필 수정 성공 :", response.data);
   };
 
@@ -94,7 +95,7 @@ const MyTeamProfile: React.FC = () => {
 
       reader.onload = () => {
         const result = reader.result as string;
-        setNewSelectedImage(file); // 파일 경로(string)를 저장
+        setNewSelectedImage(file);
         setPreviewImage(result);
         setSelectedImage(result);
         console.log("Selected Image:", result);
@@ -114,7 +115,6 @@ const MyTeamProfile: React.FC = () => {
       const teamParticipantsResponse = await axiosInstance.get(
         `/member/participants?teamId=${team.teamId}`,
       );
-      console.log("선택한 팀 정보:", team);
       console.log("팀 참가자 정보:", teamParticipantsResponse.data);
       const teamParticipant = team;
       setUserTeamData({
