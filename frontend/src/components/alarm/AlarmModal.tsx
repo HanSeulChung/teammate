@@ -57,10 +57,10 @@ const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
 export default AlarmModal;
 
 const ModalOverlay = styled.div`
-  position: fixed;
-  top: 8%;
-  right: 15%;
-  width: 30%;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
