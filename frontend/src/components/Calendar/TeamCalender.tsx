@@ -275,7 +275,7 @@ export const Overlay = styled.div`
 
 export const ModalContent = styled.div`
   position: absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   line-height: 1.4;
