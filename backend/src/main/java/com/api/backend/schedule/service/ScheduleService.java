@@ -315,7 +315,7 @@ public class ScheduleService {
         throw new CustomException(SCHEDULE_CREATOR_EXISTS_EXCEPTION);
       }
     }else {
-      if (deleteRequest.getTeamParticipantsId() != teamParticipants.getTeamParticipantsId()) {
+      if (deleteRequest.getTeamParticipantId() != teamParticipants.getTeamParticipantsId()) {
         throw new CustomException(SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
       }
     }
@@ -349,7 +349,7 @@ public class ScheduleService {
         throw new CustomException(SCHEDULE_CREATOR_EXISTS_EXCEPTION);
       }
     }else {
-      if (deleteRequest.getTeamParticipantsId() != teamParticipants.getTeamParticipantsId()) {
+      if (deleteRequest.getTeamParticipantId() != teamParticipants.getTeamParticipantsId()) {
         throw new CustomException(SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
       }
     }
