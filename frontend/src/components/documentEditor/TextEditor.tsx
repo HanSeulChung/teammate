@@ -100,7 +100,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
             // console.warn(docsbody.memberEmail, currentUserId);
             // console.warn(docsbody.documentId, documentsId);
             // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
-            console.log("broadCast를 이렇게 받았다!", docsbody);
+            // console.log("broadCast를 이렇게 받았다!", docsbody);
             // console.log(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" "));
             setTitle(docsbody.title);
             setContent(
@@ -145,11 +145,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTextChange = (
     content: any,
-    delta: any,
-    source: any,
-    editor: any,
+    _delta: any,
+    _ource: any,
+    _editor: any,
   ) => {
-    console.log("what : ", content, " ", delta, " ", source, " ", editor);
     const newText = content;
     setContent(newText); // 상태 업데이트
     if (client.current && title !== "") {
@@ -159,7 +158,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         content: newText,
         documentId: documentsId,
       };
-      console.log("message : ", message);
+      // console.log("message : ", message);
 
       client.current.publish({
         destination: "/app/doc.updateDocsByTextChange",
@@ -170,11 +169,9 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
-    console.log("title change : ", newTitle);
 
     setTitle(newTitle);
     setContent(content);
-    console.log(client.current ? true : false);
     if (client.current) {
       const message = {
         memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
@@ -206,6 +203,33 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
     const currentPath = window.location.pathname;
     navigate(`${currentPath}/comment`);
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (client.current) {
+        const contentCopy = content.slice(); // content의 복사본을 만듦
+        const message = {
+          memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
+          title: title,
+          content: contentCopy
+            .replace(/<p>/g, "")
+            .replace(/<\/p>/g, "")
+            .replace(/<br>/g, "\n"),
+          documentId: documentsId,
+          participantsId: participantIds,
+        };
+        client.current.publish({
+          destination: "/app/doc.saveDocs",
+          body: JSON.stringify(message),
+        });
+      }
+    }, 2000);
+
+    // 컴포넌트가 언마운트되거나 의존성이 변경될 때 실행될 정리 함수
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [content, title]);
 
   const handleSaveAndExit = async () => {
     if (client.current) {
