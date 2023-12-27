@@ -270,10 +270,27 @@ const SignUp: React.FC<SignUpProps> = () => {
         <button onClick={handleSignUp}>회원 가입</button>
       </StyledFormItem>
 
-      {signUpMessage && <p style={{ color: "red" }}>{signUpMessage}</p>}
+      {signUpMessage && (
+        <p
+          style={{
+            color: "red",
+            textAlign: "center",
+            marginTop: "10px",
+          }}
+        >
+          {signUpMessage}
+        </p>
+      )}
       {isModalOpen && (
-        <div className="modal">
-          <p>아이디로 이메일 인증을 보냈습니다. 확인해주세요.</p>
+        <div>
+          <p
+            style={{
+              textAlign: "center",
+              marginTop: "10px",
+            }}
+          >
+            아이디로 이메일 인증을 보냈습니다.{" "}
+          </p>
           <Button onClick={handleModalConfirm}>확인</Button>
         </div>
       )}
