@@ -413,6 +413,7 @@ public class ScheduleService {
         .content(request.getContent())
         .startDt(request.getStartDt())
         .endDt(request.getEndDt())
+        .color(request.getColor())
         .teamParticipantsSchedules(new ArrayList<>())
         .place(request.getPlace())
         .build();
