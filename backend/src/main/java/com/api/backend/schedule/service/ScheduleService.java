@@ -139,6 +139,8 @@ public class ScheduleService {
     RepeatSchedule repeatSchedule = findRepeatScheduleOrElseThrow(
         editRequest.getRepeatScheduleId());
 
+    Long originCreateParticipantId = repeatSchedule.getCreateParticipantId();
+
     SimpleSchedule simpleSchedule = SimpleSchedule.builder()
         .team(team)
         .scheduleCategory(category)
@@ -148,6 +150,7 @@ public class ScheduleService {
         .endDt(editRequest.getEndDt())
         .place(editRequest.getPlace())
         .color(editRequest.getColor())
+        .createParticipantId(originCreateParticipantId)
         .build();
 
     List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesBySimpleSchedule(
@@ -175,6 +178,8 @@ public class ScheduleService {
     SimpleSchedule simpleSchedule = findSimpleScheduleOrElseThrow(
         editRequest.getSimpleScheduleId());
 
+    Long originCreateParticipantId = simpleSchedule.getCreateParticipantId();
+
     RepeatSchedule repeatSchedule = RepeatSchedule.builder()
         .scheduleCategory(category)
         .team(team)
@@ -185,6 +190,7 @@ public class ScheduleService {
         .endDt(editRequest.getEndDt())
         .repeatCycle(editRequest.getRepeatCycle())
         .color(editRequest.getColor())
+        .createParticipantId(originCreateParticipantId)
         .build();
 
     setRepeatScheduleFieldsByCycle(repeatSchedule, month, day, dayOfWeek,
@@ -212,14 +218,16 @@ public class ScheduleService {
     String month = editRequest.getStartDt().getMonth().name();
     int day = editRequest.getStartDt().getDayOfMonth();
     String dayOfWeek = String.valueOf(editRequest.getStartDt().getDayOfWeek());
-    RepeatSchedule scheduleByOriginRepeatScheduleId = repeatScheduleRepository.findByOriginRepeatScheduleId(
+    RepeatSchedule originRepeatSchedule = repeatScheduleRepository.findByOriginRepeatScheduleId(
         editRequest.getRepeatScheduleId());
+
+    Long originCreateParticipantId = originRepeatSchedule.getCreateParticipantId();
 
     //모든 일정 선택시 update
     if (editRequest.getEditOption().equals(EditOption.ALL_SCHEDULES)) {
 
-      if (scheduleByOriginRepeatScheduleId != null) {
-        repeatScheduleRepository.delete(scheduleByOriginRepeatScheduleId);
+      if (originRepeatSchedule != null) {
+        repeatScheduleRepository.delete(originRepeatSchedule);
       }
 
       RepeatSchedule updateRepeatSchedule = findRepeatScheduleOrElseThrow(
@@ -252,7 +260,7 @@ public class ScheduleService {
 
       //이 일정/이 일정 및 향후 일정 선택시 originRepeatId를 갖고 newRepeatSchedule Insert
     } else {
-      RepeatSchedule updateRepeatSchedule = buildRepeatScheduleForEdit(editRequest, team, category);
+      RepeatSchedule updateRepeatSchedule = buildRepeatScheduleForEdit(editRequest, team, category, originCreateParticipantId);
 
       List<TeamParticipantsSchedule> originTeamParticipantsSchedules =
           teamParticipantsScheduleRepository.findAllByRepeatSchedule_RepeatScheduleId(
@@ -266,7 +274,7 @@ public class ScheduleService {
 
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
       updateRepeatSchedule.setOriginRepeatScheduleId(
-          scheduleByOriginRepeatScheduleId.getOriginRepeatScheduleId());
+          originRepeatSchedule.getOriginRepeatScheduleId());
       return repeatScheduleRepository.save(updateRepeatSchedule);
     }
   }
@@ -416,6 +424,7 @@ public class ScheduleService {
         .color(request.getColor())
         .teamParticipantsSchedules(new ArrayList<>())
         .place(request.getPlace())
+        .createParticipantId(request.getCreateParticipantId())
         .build();
   }
 
@@ -435,6 +444,7 @@ public class ScheduleService {
         .endDt(request.getEndDt())
         .repeatCycle(request.getRepeatCycle())
         .color(request.getColor())
+        .createParticipantId(request.getCreateParticipantId())
         .build();
 
     setRepeatScheduleFieldsByCycle(newRepeatSchedule, month, day, dayOfWeek,
@@ -445,7 +455,8 @@ public class ScheduleService {
 
   private RepeatSchedule buildRepeatScheduleForEdit(RepeatScheduleInfoEditRequest editRequest,
       Team team,
-      ScheduleCategory category) {
+      ScheduleCategory category,
+      Long originCreateParticipantId) {
     String month = editRequest.getStartDt().getMonth().name();
     int day = editRequest.getStartDt().getDayOfMonth();
     String dayOfWeek = String.valueOf(editRequest.getStartDt().getDayOfWeek());
@@ -460,6 +471,7 @@ public class ScheduleService {
         .endDt(editRequest.getEndDt())
         .repeatCycle(editRequest.getRepeatCycle())
         .color(editRequest.getColor())
+        .createParticipantId(originCreateParticipantId)
         .build();
 
     setRepeatScheduleFieldsByCycle(newRepeatSchedule, month, day, dayOfWeek,
