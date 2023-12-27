@@ -21,7 +21,7 @@ export const FooterTag = styled.footer`
   color: #999999;
   width:100vw;
   margin-left: calc(-50vw + 50%);   
-  height:150px;
+  height: 10rem;
 
   & > p {
     margin: 0 auto;
