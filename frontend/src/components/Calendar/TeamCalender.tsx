@@ -43,9 +43,9 @@ const TeamCalender = () => {
       id: e.event.id,
       title: e.event.title,
       start: e.event.start,
-      contents: e.event.extendedProps.contents,
+      contents: e.event.extendedProps.content,
       place: e.event.extendedProps.place,
-      groupId: e.event.extendedProps.groupId,
+      groupId: e.event.extendedProps.categoryName,
     });
     toggleModal();
   }
@@ -210,7 +210,7 @@ const TeamCalender = () => {
                     <span className="mr-10 text-gray-500">장소</span>{event.place}
                   </div>
                   <div className="mb-5">
-                    <span className="text-gray-500">카테고리</span>{event.groupId}
+                    <span className="text-gray-500 mr-3">카테고리</span>{event.groupId}
                   </div>
                 </p>
                 <button onClick={toggleIsEdit} className="bg-white border-1 border-gray-300 mr-2">수정</button>

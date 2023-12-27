@@ -40,7 +40,7 @@ const EditEvent = ({ isEdit, originEvent, setEventList, toggleIsEdit }: EditEven
   }, [isEdit])
 
   // 새 일정 등록 요청
-  const handleScheduleSubmit = async (e: any) => {
+  const handleScheduleSubmit = async () => {
     // e.preventDefault();
     // console.log("입력제목값000000000000 => "+eventChange.title);
     // console.log("0000000000000000"+JSON.stringify(newEvent));
