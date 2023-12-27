@@ -45,6 +45,8 @@ public class SimpleSchedule extends BaseEntity {
   @Setter
   private String color;
 
+  private Long createParticipantId;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
   private Team team;
