@@ -3,7 +3,7 @@ package com.api.backend.schedule.service;
 import static com.api.backend.global.exception.type.ErrorCode.NON_REPEATING_SCHEDULE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CREATOR_EXISTS_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_DELETE_PERMISSION_DENIED_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION;
@@ -286,13 +286,13 @@ public class ScheduleService {
 
   @Transactional
   public AlarmScheduleDeleteResponse deleteSimpleSchedule(
-      ScheduleDeleteRequest deleteRequest, Long userId
+      ScheduleDeleteRequest deleteRequest, Long memberId
   ) {
     SimpleSchedule simpleSchedule = simpleScheduleRepository.findById(deleteRequest.getScheduleId())
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
 
     TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(
-        deleteRequest.getTeamId(), userId);
+        deleteRequest.getTeamId(), memberId);
 
     List<Long> teamParticipantsIds = simpleSchedule.getTeamParticipantsSchedules()
         .stream().map(TeamParticipantsSchedule::getTeamParticipants)
@@ -305,7 +305,7 @@ public class ScheduleService {
       }
     }else {
       if (deleteRequest.getTeamParticipantsId() != teamParticipants.getTeamParticipantsId()) {
-        throw new CustomException(SCHEDULE_DELETE_PERMISSION_DENIED_EXCEPTION);
+        throw new CustomException(SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
       }
     }
 
@@ -321,12 +321,12 @@ public class ScheduleService {
 
   @Transactional
   public AlarmScheduleDeleteResponse deleteRepeatSchedule(
-      ScheduleDeleteRequest deleteRequest, Long userId) {
+      ScheduleDeleteRequest deleteRequest, Long memberId) {
     RepeatSchedule repeatSchedule = repeatScheduleRepository.findById(deleteRequest.getScheduleId())
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
 
     TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(
-        deleteRequest.getTeamId(), userId);
+        deleteRequest.getTeamId(), memberId);
 
     List<Long> teamParticipantsIds = repeatSchedule.getTeamParticipantsSchedules()
         .stream().map(TeamParticipantsSchedule::getTeamParticipants)
@@ -339,7 +339,7 @@ public class ScheduleService {
       }
     }else {
       if (deleteRequest.getTeamParticipantsId() != teamParticipants.getTeamParticipantsId()) {
-        throw new CustomException(SCHEDULE_DELETE_PERMISSION_DENIED_EXCEPTION);
+        throw new CustomException(SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
       }
     }
 
