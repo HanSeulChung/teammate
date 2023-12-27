@@ -12,24 +12,24 @@ const calendarSchedules = [
 ]
 
 export const handlers = [
-  rest.get("/people", async (req, res, ctx) => {
+  rest.get("/people", async (_req, res, ctx) => {
     await sleep(200);
     return res(ctx.status(200), ctx.json(people));
   }),
 
   //회원가입
-  rest.get('/signup', (req, res, ctx) => {
+  rest.get('/signup', (_req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json({ message: 'GET /signup 요청에 대한 응답' })
     );
   }),
-  rest.post("/sign-up", (req, res, ctx) => {
+  rest.post("/sign-up", (_req, res, ctx) => {
     return res(ctx.status(200), ctx.json({ message: "가입 성공" }));
   }),
 
   // 달력 일정 불러오기
-  rest.get("/schedules", (req, res, ctx) => {
+  rest.get("/schedules", (_req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json(calendarSchedules)
