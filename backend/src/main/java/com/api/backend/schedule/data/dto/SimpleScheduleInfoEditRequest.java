@@ -27,4 +27,5 @@ public class SimpleScheduleInfoEditRequest {
   private String place;
   private List<Long> teamParticipantsIds;
   private String color;
+  private Long updateParticipantId;
 }
