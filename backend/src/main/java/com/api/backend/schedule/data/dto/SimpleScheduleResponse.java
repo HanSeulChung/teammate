@@ -45,6 +45,7 @@ public class SimpleScheduleResponse {
         .title(simpleSchedule.getTitle())
         .content(simpleSchedule.getContent())
         .place(simpleSchedule.getPlace())
+        .color(simpleSchedule.getColor())
         .teamParticipantsIds(
             getTeamParticipantsIdsFromSchedules(simpleSchedule.getTeamParticipantsSchedules()))
         .teamParticipantsNames(
