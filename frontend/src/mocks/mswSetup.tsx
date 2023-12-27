@@ -11,7 +11,8 @@ interface TeamRequestBody {
 export const server = setupServer(
   // 팀 생성을 위한 Mock API 엔드포인트
   rest.post('/team', (req, res, ctx) => {
-    const { teamName, size, image, leaderId }: TeamRequestBody = req.body as TeamRequestBody;
+    // const { teamName, size, image, leaderId }: TeamRequestBody = req.body as TeamRequestBody;
+    const { teamName }: TeamRequestBody = req.body as TeamRequestBody;
 
     // 가짜로 생성된 데이터
     const teamId = Math.floor(Math.random() * 1000) + 1;
