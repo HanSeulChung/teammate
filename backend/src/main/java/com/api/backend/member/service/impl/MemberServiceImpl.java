@@ -57,25 +57,26 @@ public class MemberServiceImpl implements MemberService {
 
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         Member member = Member.builder()
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .name(request.getName())
-                .sexType(request.getSexType())
-                .loginType(LoginType.TEAMMATE)
-                .authority(Authority.USER)
-                .isAuthenticatedEmail(false)
-                .build();
+            .email(request.getEmail())
+            .password(request.getPassword())
+            .name(request.getName())
+            .sexType(request.getSexType())
+            .loginType(LoginType.TEAMMATE)
+            .authority(Authority.USER)
+            .isAuthenticatedEmail(false)
+            .build();
 
         memberRepository.save(member);
 
         sendVerificationMail(member.getEmail());
 
         return SignUpResponse.builder()
-                .email(member.getEmail())
-                .name(member.getName())
-                .message("이메일 인증후 로그인 가능합니다.")
-                .build();
+            .email(member.getEmail())
+            .name(member.getName())
+            .message("이메일 인증후 로그인 가능합니다.")
+            .build();
     }
+
     @Override
     @Transactional
     public boolean verifyEmail(String key, String email) {
@@ -88,7 +89,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
+            .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
         member.setIsAuthenticatedEmail(true);
 
@@ -102,29 +103,32 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public SignInResponse login(SignInRequest signInRequest) {
         Member member = memberRepository.findByEmail(signInRequest.getEmail())
-                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
+            .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
         if (!member.getIsAuthenticatedEmail()) {
             sendVerificationMail(member.getEmail());
             throw new CustomException(EMAIL_NOT_VERIFICATION_EXCEPTION);
         }
 
-        if(!passwordEncoder.matches(signInRequest.getPassword(), member.getPassword())){
+        if (!passwordEncoder.matches(signInRequest.getPassword(), member.getPassword())) {
             throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(member.getMemberId().toString(), signInRequest.getPassword());
+            new UsernamePasswordAuthenticationToken(member.getMemberId().toString(),
+                signInRequest.getPassword());
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        Authentication authentication = authenticationManagerBuilder.getObject()
+            .authenticate(authenticationToken);
 
-        TokenDto tokenDto = authService.generateToken(authentication.getName(), authService.getAuthorities(authentication));
+        TokenDto tokenDto = authService.generateToken(authentication.getName(),
+            authService.getAuthorities(authentication));
 
         return SignInResponse.builder()
-                .grantType("Bearer")
-                .accessToken(tokenDto.getAccessToken())
-                .refreshToken(tokenDto.getRefreshToken())
-                .build();
+            .grantType("Bearer")
+            .accessToken(tokenDto.getAccessToken())
+            .refreshToken(tokenDto.getRefreshToken())
+            .build();
     }
 
     public LogoutResponse logout(String requestAccessTokenInHeader) {
@@ -136,37 +140,42 @@ public class MemberServiceImpl implements MemberService {
             redisService.deleteValues("RT:" + principal);
         }
 
-        long expiration = jwtTokenProvider.getTokenExpirationTime(requestAccessToken) - new Date().getTime();
+        long expiration =
+            jwtTokenProvider.getTokenExpirationTime(requestAccessToken) - new Date().getTime();
         redisService.setValues(requestAccessToken,
-                "logout",
-                expiration,
-                TimeUnit.MILLISECONDS);
+            "logout",
+            expiration,
+            TimeUnit.MILLISECONDS);
 
         return LogoutResponse.builder()
-                .message("로그아웃되었습니다.")
-                .build();
+            .message("로그아웃되었습니다.")
+            .build();
     }
 
 
     @Transactional
     @Override
-    public void updateMemberPassword(String requestAccessTokenInHeader, UpdateMemberPasswordRequest updateMemberPasswordRequest) {
+    public void updateMemberPassword(String requestAccessTokenInHeader,
+        UpdateMemberPasswordRequest updateMemberPasswordRequest) {
 
         String accessToken = authService.resolveToken(requestAccessTokenInHeader);
         String principal = authService.getPrincipal(accessToken);
 
         Member member = memberRepository.findById(Long.valueOf(principal))
-                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
-        if (!passwordEncoder.matches(updateMemberPasswordRequest.getOldPassword(), member.getPassword())) {
+        if (!passwordEncoder.matches(updateMemberPasswordRequest.getOldPassword(),
+            member.getPassword())) {
             throw new CustomException(MEMBER_NOT_MATCH_PASSWORD_EXCEPTION);
         }
 
-        if (!updateMemberPasswordRequest.getNewPassword().equals(updateMemberPasswordRequest.getReNewPassword())) {
+        if (!updateMemberPasswordRequest.getNewPassword()
+            .equals(updateMemberPasswordRequest.getReNewPassword())) {
             throw new CustomException(NOT_MATCH_NEW_PASSWORD_EXCEPTION);
         }
 
-        String encodePassword = passwordEncoder.encode(updateMemberPasswordRequest.getNewPassword());
+        String encodePassword = passwordEncoder.encode(
+            updateMemberPasswordRequest.getNewPassword());
         member.setPassword(encodePassword);
         memberRepository.save(member);
     }
@@ -195,30 +204,33 @@ public class MemberServiceImpl implements MemberService {
         String accessToken = authService.resolveToken(requestAccessTokenInHeader);
         String principal = authService.getPrincipal(accessToken);
         Member member = memberRepository.findById(Long.valueOf(principal))
-                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
+            .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
         return MemberInfoResponse.builder()
-                .email(member.getEmail())
-                .name(member.getName())
-                .build();
+            .email(member.getEmail())
+            .name(member.getName())
+            .build();
     }
 
 
-    public List<Member> getMembersIsAuthenticatedEmailFalse(Boolean emailAuthenticationYN, LocalDateTime now){
-        return memberRepository.findAllByIsAuthenticatedEmailAndCreateDtBefore(emailAuthenticationYN, LocalDateTime.now().minusYears(1));
+    public List<Member> getMembersIsAuthenticatedEmailFalse(Boolean emailAuthenticationYN,
+        LocalDateTime now) {
+        return memberRepository.findAllByIsAuthenticatedEmailAndCreateDtBefore(
+            emailAuthenticationYN, LocalDateTime.now().minusYears(1));
     }
 
-    public void deleteMember(Member member){
+    public void deleteMember(Member member) {
         memberRepository.delete(member);
-
-    private void sendVerificationMail(String email) {
+    }
+    private void sendVerificationMail (String email){
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
+            .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
         UUID uuid = UUID.randomUUID();
         String text = "가입을 축하합니다. 아래 링크를 클릭하여서 가입을 완료하세요.<br>"
-                + "<a href='http://118.67.128.124:8080//email-verify/" + uuid + "/" + email + "'> 이메일 인증 </a>";
+            + "<a href='http://118.67.128.124:8080//email-verify/" + uuid + "/" + email
+            + "'> 이메일 인증 </a>";
 
         redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
         mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", text);
