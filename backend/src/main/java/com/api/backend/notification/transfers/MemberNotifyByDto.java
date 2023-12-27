@@ -7,7 +7,5 @@ public interface MemberNotifyByDto {
 
   AlarmType getAlarmType();
 
-  String getTeamName();
-
   Long getMemberId();
 }

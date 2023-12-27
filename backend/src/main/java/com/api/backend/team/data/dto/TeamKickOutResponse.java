@@ -35,7 +35,7 @@ public class TeamKickOutResponse implements MemberNotifyByDto {
 
   @Override
   public String getSendMessage() {
-    return NotificationMessage.getKickOutMessage(alarmMessage);
+    return NotificationMessage.getKickOutMessage(teamName, alarmMessage);
   }
 
 }

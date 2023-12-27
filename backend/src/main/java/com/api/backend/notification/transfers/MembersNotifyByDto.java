@@ -8,8 +8,6 @@ public interface MembersNotifyByDto {
 
   AlarmType getAlarmType();
 
-  String getTeamName();
-
   Long getExcludeMemberId();
 
   Long getTeamId();
