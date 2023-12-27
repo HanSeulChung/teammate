@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import '../../styles/teamCalender.css'
 import styled from "styled-components";
+import AddEvent from "./AddEvent.tsx";
 import EditEvent from "./EditEvent.tsx";
 import axiosInstance from "../../axios";
 
@@ -235,7 +236,7 @@ const TeamCalender = () => {
             onClick={toggleFormModal}
           ></Overlay>
           <ModalContent>
-            <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
+            <AddEvent  originEvent={event} setEventList={setEventList} />
             <CloseModal
               onClick={toggleFormModal}
             >
