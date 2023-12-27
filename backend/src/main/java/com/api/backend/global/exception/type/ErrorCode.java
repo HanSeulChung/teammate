@@ -18,6 +18,7 @@ public enum ErrorCode {
   INVALID_REPEAT_CYCLE_EXCEPTION(400, "잘못된 반복 주기입니다."),
   NON_REPEATING_SCHEDULE_EXCEPTION(500, "반복일정이 아닙니다."),
   TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION(400, "일정 팀참가자번호는 중복될 수 없습니다."),
+  SCHEDULE_DELETE_PERMISSION_DENIED_EXCEPTION(400, "일정을 삭제할 권한이 없습니다."),
 
   // team
   TEAM_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀입니다."),

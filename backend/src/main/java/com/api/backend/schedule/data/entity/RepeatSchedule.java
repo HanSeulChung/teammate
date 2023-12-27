@@ -59,6 +59,8 @@ public class RepeatSchedule extends BaseEntity {
   @Setter
   private Long originRepeatScheduleId;
 
+  private Long createParticipantId;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
   private Team team;
