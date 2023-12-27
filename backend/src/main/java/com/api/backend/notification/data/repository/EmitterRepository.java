@@ -8,17 +8,17 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Repository
 public class EmitterRepository {
 
-  private final Map<Long, Map<String, SseEmitter>> teamEmitterMap = new ConcurrentHashMap<>();
+  private final Map<Long, Map<Long, SseEmitter>> teamEmitterMap = new ConcurrentHashMap<>();
   private final Map<Long, SseEmitter> memberEmitterMap = new ConcurrentHashMap<>();
 
-  public void saveTeamParticipantsEmitter(Long teamId, String emitterId, SseEmitter sseEmitter) {
+  public void saveTeamParticipantsEmitter(Long teamId, Long emitterId, SseEmitter sseEmitter) {
     if (!teamEmitterMap.containsKey(teamId)) {
-      Map<String, SseEmitter> teamParticipantMap = new ConcurrentHashMap<>();
+      Map<Long, SseEmitter> teamParticipantMap = new ConcurrentHashMap<>();
       teamParticipantMap.put(emitterId, sseEmitter);
 
       teamEmitterMap.put(teamId, teamParticipantMap);
     } else {
-      Map<String, SseEmitter> teamParticipantMap = teamEmitterMap.get(teamId);
+      Map<Long, SseEmitter> teamParticipantMap = teamEmitterMap.get(teamId);
       teamParticipantMap.put(emitterId, sseEmitter);
 
       teamEmitterMap.put(teamId, teamParticipantMap);
@@ -29,12 +29,12 @@ public class EmitterRepository {
     memberEmitterMap.put(memberId, sseEmitter);
   }
 
-  public void deleteTeamParticipantEmitter(Long teamId, String emitterId) {
+  public void deleteTeamParticipantEmitter(Long teamId, Long emitterId) {
     if (!teamEmitterMap.containsKey(teamId)) {
       return;
     }
 
-    Map<String, SseEmitter> teamParticipantMap = teamEmitterMap.get(teamId);
+    Map<Long, SseEmitter> teamParticipantMap = teamEmitterMap.get(teamId);
     teamParticipantMap.remove(emitterId);
 
     if (teamParticipantMap.isEmpty()) {
@@ -47,12 +47,12 @@ public class EmitterRepository {
   public void deleteMemberEmitter(Long memberId) {
     memberEmitterMap.remove(memberId);
   }
-  public SseEmitter getTeamParticipantEmitter(Long teamId, String emitterId) {
+  public SseEmitter getTeamParticipantEmitter(Long teamId, Long emitterId) {
     if (teamEmitterMap.isEmpty() || !teamEmitterMap.containsKey(teamId)) {
       return null;
     }
 
-    Map<String, SseEmitter> emitterHashMap = teamEmitterMap.get(teamId);
+    Map<Long, SseEmitter> emitterHashMap = teamEmitterMap.get(teamId);
 
     if (emitterHashMap.isEmpty()) {
       return null;

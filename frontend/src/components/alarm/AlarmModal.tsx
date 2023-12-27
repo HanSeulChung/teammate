@@ -9,14 +9,15 @@ interface AlarmModalProps {
 // 가짜 데이터
 const fakePersonalAlarmProps = {
   content: "알람 내용",
-  date: "2023-12-17", // 적절한 날짜로 대체
+  date: "2023-12-17",
   onDelete: () => {
-    // 삭제 로직 구현
+    console.log("개인 알람이 삭제되었습니다.");
   },
 };
 
 const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
   const [activeTab, setActiveTab] = useState<"personal" | "team">("personal");
+  const [alarmList, setAlarmList] = useState([fakePersonalAlarmProps]);
 
   const switchTab = (tab: "personal" | "team") => {
     setActiveTab(tab);
@@ -24,6 +25,16 @@ const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
 
   const handleModalClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const handleDeletePersonalAlarm = () => {
+    setAlarmList((prevList) => {
+      const updatedList = prevList.filter(
+        (alarm) => alarm !== fakePersonalAlarmProps,
+      );
+      console.log("개인 알람이 삭제되었습니다.");
+      return updatedList;
+    });
   };
 
   return (
@@ -45,7 +56,10 @@ const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
           </TabButton>
         </TabButtons>
         {activeTab === "personal" ? (
-          <PersonalAlarm {...fakePersonalAlarmProps} />
+          <PersonalAlarm
+            {...fakePersonalAlarmProps}
+            onDelete={handleDeletePersonalAlarm}
+          />
         ) : (
           <TeamAlarm {...fakePersonalAlarmProps} />
         )}
@@ -60,17 +74,18 @@ const ModalOverlay = styled.div`
   position: fixed;
   top: 8%;
   right: 15%;
-  width: 25%;
+  width: 30%;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 999;
 `;
 
 const ModalContent = styled.div`
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 80%;
+  width: 100%;
   max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;

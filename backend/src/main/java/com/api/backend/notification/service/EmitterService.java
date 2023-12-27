@@ -37,13 +37,14 @@ public class EmitterService {
 
     TeamParticipants teamParticipant = teamParticipantsService.getTeamParticipant(teamId, memberId);
 
-    String emitterId = createEmitterIdByTeamIdAndTeamParticipantId(teamId , teamParticipant.getTeamParticipantsId());
-
     SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-    emitterRepository.saveTeamParticipantsEmitter(teamId, emitterId, new SseEmitter(DEFAULT_TIMEOUT));
+    Long teamParticipantsId = teamParticipant.getTeamParticipantsId();
+    emitterRepository.saveTeamParticipantsEmitter(
+        teamId, teamParticipantsId, emitter
+    );
 
-    emitter.onCompletion(() -> emitterRepository.deleteTeamParticipantEmitter(teamId, emitterId));
-    emitter.onTimeout(() -> emitterRepository.deleteTeamParticipantEmitter(teamId, emitterId));
+    emitter.onCompletion(() -> emitterRepository.deleteTeamParticipantEmitter(teamId, teamParticipantsId));
+    emitter.onTimeout(() -> emitterRepository.deleteTeamParticipantEmitter(teamId, teamParticipantsId));
 
 
     sendNotification(emitter, DUMMY_DATA);
@@ -73,7 +74,7 @@ public class EmitterService {
     return emitterRepository.getEmitter(memberId);
   }
 
-  public SseEmitter getTeamParticipantEmitters(Long teamId, String customId) {
+  public SseEmitter getTeamParticipantEmitters(Long teamId, Long customId) {
     SseEmitter sseEmitter = emitterRepository.getTeamParticipantEmitter(teamId, customId);
 
     if (sseEmitter == null) {

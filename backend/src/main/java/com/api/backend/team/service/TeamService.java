@@ -77,7 +77,7 @@ public class TeamService {
             .team(team)
             .member(member)
             .teamNickName(getRandomNickName(member.getName()))
-            .teamRole(TeamRole.READER)
+            .teamRole(TeamRole.LEADER)
             .build()
     );
 
@@ -143,7 +143,7 @@ public class TeamService {
                 request.getTeamId(), userId
             );
 
-    if (!leaderParticipants.getTeamRole().equals(TeamRole.READER)) {
+    if (!leaderParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
     }
 
@@ -194,7 +194,7 @@ public class TeamService {
                 userId
             );
 
-    if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+    if (!teamParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION);
     }
 
@@ -230,7 +230,7 @@ public class TeamService {
             teamUpdateRequest.getTeamId(), userId
         );
 
-    if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+    if (!teamParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
     }
 
@@ -254,7 +254,7 @@ public class TeamService {
   }
 
   public void disbandCheckPermission(String teamName, TeamParticipants teamParticipants) {
-    if (!teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+    if (!teamParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANTS_NOT_LEADER_EXCEPTION);
     }
 

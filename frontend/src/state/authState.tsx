@@ -102,10 +102,6 @@ export const logout = () => {
 // 홈 화면 검색 상태
 export const searchState = atom({
   key: "searchState",
-  // default: (() => {
-  //   const storedSearch = window.sessionStorage.getItem("search");
-  //   return storedSearch || "";
-  // })() as string,
   default: window.sessionStorage.getItem("search") || "",
 });
 
