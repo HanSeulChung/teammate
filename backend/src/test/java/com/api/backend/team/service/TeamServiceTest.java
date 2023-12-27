@@ -95,7 +95,7 @@ class TeamServiceTest {
     TeamParticipants teamParticipants = TeamParticipants.builder()
         .member(member)
         .team(team)
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .teamNickName("testNickName")
         .build();
 
@@ -301,14 +301,14 @@ class TeamServiceTest {
     TeamParticipants teamParticipants = TeamParticipants
         .builder()
         .teamParticipantsId(1L)
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(
             Member.builder().memberId(1L).build()
         ).build();
     TeamParticipants kickOutTeamParticipants = TeamParticipants
         .builder()
         .teamParticipantsId(2L)
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .teamNickName("강퇴 사용자 닉네임")
         .member(
             Member.builder().memberId(1L).name("testUser").build()
@@ -379,7 +379,7 @@ class TeamServiceTest {
         .name("test")
         .build();
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -462,7 +462,7 @@ class TeamServiceTest {
         .name("test")
         .build();
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -496,7 +496,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -529,7 +529,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -565,7 +565,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -619,7 +619,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -653,7 +653,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -722,7 +722,7 @@ class TeamServiceTest {
     String testUrl = "teamUrl";
     TeamParticipants teamParticipants = TeamParticipants.builder()
         .team(team)
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .build();
 
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))

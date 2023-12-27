@@ -16,7 +16,7 @@ public interface TeamParticipantsRepository extends JpaRepository<TeamParticipan
 
   List<TeamParticipants> findAllByMember_MemberIdAndTeam_IsDelete(Long memberId, boolean flag);
 
-  Optional<TeamParticipants> findByMember_Email(String email);
+  boolean existsByTeamParticipantsId(Long teamParticipantsId);
   Optional<TeamParticipants> findByMember_MemberId(Long memberId);
   Optional<TeamParticipants> findByMember_MemberIdAndTeam_TeamId(Long memberId, Long teamId);
 
