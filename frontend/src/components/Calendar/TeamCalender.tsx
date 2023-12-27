@@ -70,7 +70,8 @@ const TeamCalender = () => {
     start: string;
     end: string;
     title: string;
-    backgroundColor: null;
+    borderColor: string;
+    backgroundColor: string;
     extendedProps: {
       content: string;
       place: string;
@@ -86,7 +87,8 @@ const TeamCalender = () => {
       start: event.startDt,
       end: event.endDt,
       title: event.title,
-      backgroundColor: null,
+      borderColor: event.color,
+      backgroundColor: event.color,
       extendedProps: {
         content: event.content,
         place: event.place,
