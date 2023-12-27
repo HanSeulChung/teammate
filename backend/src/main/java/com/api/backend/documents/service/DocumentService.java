@@ -9,6 +9,7 @@ import com.api.backend.documents.valid.DocumentAndCommentValidCheck;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
+import com.api.backend.team.data.type.TeamRole;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -86,7 +87,12 @@ public class DocumentService {
 
     Documents validDocument = validCheck.findValidDocument(documentId);
     validCheck.validDocumentByTeamId(teamId, validDocument.getTeamId());
-    validCheck.validDocumentByWriterId(validDocument.getWriterId(), teamParticipant.getTeamParticipantsId());
+
+    if (teamParticipant.getTeamRole() == TeamRole.READER) {
+      validCheck.validWriterStatus(validDocument.getWriterId());
+    } else {
+      validCheck.validDocumentByWriterId(validDocument.getWriterId(), teamParticipant.getTeamParticipantsId());
+    }
     documentsRepository.deleteById(documentId);
 
     return DeleteDocsResponse.builder()
