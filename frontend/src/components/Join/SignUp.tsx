@@ -1,11 +1,10 @@
 import React, { useState, ChangeEvent } from "react";
-import axios from "axios";
 import { StyledContainer, StyledFormItem, Button } from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios.tsx";
 
-interface SignUpProps { }
+interface SignUpProps {}
 
 const TEST = "EMAIL_ALREADY_EXIST_EXCEPTION";
 //이메일 사용자가 있다고 암시하는 변수명
@@ -123,9 +122,6 @@ const SignUp: React.FC<SignUpProps> = () => {
   };
 
   const handleCheckIdAvailability = () => {
-    // if (isEmailFormatValid === null || !isEmailFormatValid) {
-    //   return;
-    // }
     axiosInstance
       .post(`/sign-up/email-check`, { email })
       .then((response) => {
@@ -274,10 +270,27 @@ const SignUp: React.FC<SignUpProps> = () => {
         <button onClick={handleSignUp}>회원 가입</button>
       </StyledFormItem>
 
-      {signUpMessage && <p style={{ color: "red" }}>{signUpMessage}</p>}
+      {signUpMessage && (
+        <p
+          style={{
+            color: "red",
+            textAlign: "center",
+            marginTop: "10px",
+          }}
+        >
+          {signUpMessage}
+        </p>
+      )}
       {isModalOpen && (
-        <div className="modal">
-          <p>아이디로 이메일 인증을 보냈습니다. 확인해주세요.</p>
+        <div>
+          <p
+            style={{
+              textAlign: "center",
+              marginTop: "10px",
+            }}
+          >
+            아이디로 이메일 인증을 보냈습니다.{" "}
+          </p>
           <Button onClick={handleModalConfirm}>확인</Button>
         </div>
       )}

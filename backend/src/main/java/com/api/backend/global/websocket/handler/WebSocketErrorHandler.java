@@ -1,4 +1,4 @@
-package com.api.backend.global.component;
+package com.api.backend.global.websocket.handler;
 
 import com.api.backend.global.exception.type.ErrorCode;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +18,7 @@ public class WebSocketErrorHandler extends StompSubProtocolErrorHandler {
 
   @Override
   public Message<byte[]> handleClientMessageProcessingError(Message<byte[]> clientMessage, Throwable ex) {
-    if(ex.getCause().getMessage().equals("jwt")) {
+    if(ex.getCause().getMessage().contains("Invalid access token")) {
       return jwtException(clientMessage, ex);
     }
 

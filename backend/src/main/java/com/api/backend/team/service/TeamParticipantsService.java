@@ -36,7 +36,7 @@ public class TeamParticipantsService {
   public TeamParticipants deleteTeamParticipantById(Long userId, Long teamId) {
     TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
-    if (teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+    if (teamParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION);
     }
     teamParticipantsRepository.delete(teamParticipants);
@@ -48,7 +48,7 @@ public class TeamParticipantsService {
   public String updateRoleTeamParticipant(Long userId, Long participantId, Long teamId) {
     TeamParticipants readerParticipant = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
-    if (!readerParticipant.getTeamRole().equals(TeamRole.READER)) {
+    if (!readerParticipant.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
     }
 
@@ -64,7 +64,7 @@ public class TeamParticipantsService {
     }
 
     readerParticipant.updateRole(TeamRole.MATE);
-    mateParticipant.updateRole(TeamRole.READER);
+    mateParticipant.updateRole(TeamRole.LEADER);
     return UPDATE_ROLE_TEAM_PARTICIPANT;
   }
 
@@ -73,7 +73,7 @@ public class TeamParticipantsService {
 
     Team team = teamParticipants.getTeam();
 
-    teamService.isDeletedCheck(team);
+    teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     return team.getTeamParticipants();
   }
@@ -81,14 +81,16 @@ public class TeamParticipantsService {
   public TeamParticipants getTeamParticipant(Long teamId, Long userId) {
     TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
-    teamService.isDeletedCheck(teamParticipants.getTeam());
+    Team team = teamParticipants.getTeam();
+
+    teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     return teamParticipants;
   }
 
   public List<TeamParticipants> getTeamParticipantsByUserId(Long memberId) {
     return teamParticipantsRepository
-        .findAllByMember_MemberIdAndTeam_IsDelete(
+        .findAllByMember_MemberIdAndTeam_IsDeleteAndTeam_RestorationDtIsNull(
             memberId, DELETE_FALSE_FLAG
         );
   }
@@ -101,7 +103,9 @@ public class TeamParticipantsService {
         teamParticipantUpdateRequest.getTeamParticipantsId()
     ).orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
-    teamService.isDeletedCheck(teamParticipant.getTeam());
+    Team team = teamParticipant.getTeam();
+
+    teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     if (!teamParticipant.getMember().getMemberId()
         .equals(Long.valueOf(userId))) {

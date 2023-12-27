@@ -5,6 +5,7 @@ import static com.api.backend.global.exception.type.ErrorCode.COMMENT_NOT_FOUND_
 import static com.api.backend.global.exception.type.ErrorCode.COMMENT_UNMATCH_WRITER_ID_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_IN_TEAM_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_WRITER_EXISTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.PRINCIPAL_IS_NULL;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
@@ -61,6 +62,14 @@ public class DocumentAndCommentValidCheck {
       throw new CustomException(DOCUMENT_NOT_IN_TEAM_EXCEPTION);
     }
   }
+
+  public void validWriterStatus(Long documentWriterId) {
+    boolean writerExists = teamParticipantsRepository.existsByTeamParticipantsId(documentWriterId);
+    if (writerExists) {
+      throw new CustomException(DOCUMENT_WRITER_EXISTS_EXCEPTION);
+    }
+  }
+
   public void validDocumentByWriterId(Long documentWriterId, Long teamParticipantId) {
     if (documentWriterId != teamParticipantId) {
       throw new CustomException(DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION);

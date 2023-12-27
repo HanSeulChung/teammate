@@ -37,10 +37,8 @@ public class Notification extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private AlarmType alarmType;
 
-  private String teamName;
   private String nickName;
   private String message;
-  private String targetUrl;
   @Column(columnDefinition = "boolean default false")
   @Setter
   private boolean isRead;
@@ -53,25 +51,28 @@ public class Notification extends BaseEntity {
   @JoinColumn(name = "team_participants_id")
   private TeamParticipants teamParticipants;
 
-  public static Notification convertToMemberNotify(Long memberId, String teamName, String message, AlarmType alarmType) {
+  public static Notification convertToMemberNotify(Long memberId, String message, AlarmType alarmType) {
     return Notification.builder()
         .member(Member.builder().memberId(memberId).build())
-        .teamName(teamName)
         .message(message)
         .alarmType(alarmType)
         .build();
   }
 
-  public static Notification convertToMemberNotify(Member member, String teamName, String message, AlarmType alarmType) {
+  public static Notification convertToMemberNotify(Member member, String message, AlarmType alarmType) {
     return Notification.builder()
         .member(member)
-        .teamName(teamName)
         .message(message)
         .alarmType(alarmType)
         .build();
   }
 
-  public static Notification convertNickNameToTeamParticipantsNotify(TeamParticipants teamParticipants,String updateParticipantNickName, String message, AlarmType alarmType) {
+  public static Notification convertNickNameToTeamParticipantsNotify(
+      TeamParticipants teamParticipants,
+      String updateParticipantNickName,
+      String message,
+      AlarmType alarmType
+  ) {
     return Notification.builder()
         .teamParticipants(teamParticipants)
         .nickName(updateParticipantNickName)

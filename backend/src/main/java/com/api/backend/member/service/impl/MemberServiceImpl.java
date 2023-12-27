@@ -51,7 +51,7 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(EMAIL_ALREADY_EXIST_EXCEPTION);
         }
 
-        if (!request.getPassword().equals(request.getRepassword())) {
+        if (!request.getPassword().equals(request.getRePassword())) {
             throw new CustomException(PASSWORD_NOT_MATCH_EXCEPTION);
         }
 
@@ -76,22 +76,6 @@ public class MemberServiceImpl implements MemberService {
                 .message("이메일 인증후 로그인 가능합니다.")
                 .build();
     }
-
-
-    private void sendVerificationMail(String email) {
-
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
-
-        UUID uuid = UUID.randomUUID();
-        String text = "가입을 축하합니다. 아래 링크를 클릭하여서 가입을 완료하세요.<br>"
-                + "<a href='http://localhost:8080/email-verify/" + uuid + "/" + email + "'> 이메일 인증 </a>";
-
-        redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
-        mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", text);
-
-    }
-
     @Override
     @Transactional
     public boolean verifyEmail(String key, String email) {
@@ -219,11 +203,25 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+
     public List<Member> getMembersIsAuthenticatedEmailFalse(Boolean emailAuthenticationYN, LocalDateTime now){
         return memberRepository.findAllByIsAuthenticatedEmailAndCreateDtBefore(emailAuthenticationYN, LocalDateTime.now().minusYears(1));
     }
 
     public void deleteMember(Member member){
         memberRepository.delete(member);
+
+    private void sendVerificationMail(String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
+
+        UUID uuid = UUID.randomUUID();
+        String text = "가입을 축하합니다. 아래 링크를 클릭하여서 가입을 완료하세요.<br>"
+                + "<a href='http://118.67.128.124:8080//email-verify/" + uuid + "/" + email + "'> 이메일 인증 </a>";
+
+        redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
+        mailService.sendEmail(member.getEmail(), "[teamMate] 회원가입 인증 이메일입니다.", text);
+
     }
 }

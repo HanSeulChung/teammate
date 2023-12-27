@@ -17,10 +17,8 @@ public class NotificationsResponse {
 
   private Long notificationId;
   private AlarmType alarmType;
-  private String teamName;
   private String nickName;
   private String message;
-  private String targetUrl;
   private LocalDateTime createDt;
 
   public static NotificationsResponse from(Notification notification) {
@@ -29,7 +27,6 @@ public class NotificationsResponse {
         .message(notification.getMessage())
         .alarmType(notification.getAlarmType())
         .createDt(notification.getCreateDt())
-        .teamName(notification.getTeamName())
         .nickName(notification.getNickName())
         .build();
   }

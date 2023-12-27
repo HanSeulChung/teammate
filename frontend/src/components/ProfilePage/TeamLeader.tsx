@@ -28,29 +28,15 @@ export default function TeamLeader() {
   const [memberIndexToRemove, setMemberIndexToRemove] = useState<number | null>(
     null,
   );
-  const [isDeleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
-  const [editingTeamName, setEditingTeamName] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
   const [editingTeamLeader, setEditingTeamLeader] = useState(false);
   const [newLeaderSelect, setNewLeaderSelect] = useState<string | null>(null);
   const [kickReason, setKickReason] = useState("");
-  // const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [password, setPassword] = useState("");
-  const [passwordInput, setPasswordInput] = useState("");
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [newSelectedImage, setNewSelectedImage] = useState<File | null>(null);
-
-  const [teamMembers, setTeamMembers] = useState<string[]>([
-    "Member 1",
-    "Member 2",
-    "Member 3",
-    "Member 4",
-    "Member 5",
-    "Member 6",
-    "Member 7",
-  ]);
+  const [teamMembers, setTeamMembers] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchTeamInfo = async () => {
@@ -81,6 +67,7 @@ export default function TeamLeader() {
         "Content-Type": "multipart/form-data",
       },
     });
+    alert("팀 정보가 성공적으로 변경되었습니다.");
     console.log("팀 수정 성공 :", response.data);
   };
   //이미지업로드
@@ -94,9 +81,8 @@ export default function TeamLeader() {
 
       reader.onload = () => {
         const result = reader.result as string;
-        setNewSelectedImage(file); // 파일 경로(string)를 저장
+        setNewSelectedImage(file);
         setPreviewImage(result);
-        console.log("Selected Image:", result);
       };
 
       reader.onerror = (error) => {
@@ -191,7 +177,7 @@ export default function TeamLeader() {
         const response = await axiosInstance.patch(
           `/team/${teamId}/participant/${selectedParticipant.teamParticipantsId}`,
           {
-            teamRole: "READER",
+            teamRole: "LEADER",
           },
         );
         alert("팀장이 변경되었습니다.");
@@ -230,10 +216,10 @@ export default function TeamLeader() {
           teamId: team?.teamId,
           teamName: team?.name,
         });
-        alert("팀이 삭제되었습니다.");
+        alert(
+          "팀이 삭제되었습니다. 복구는 30일 이내로 가능하며 30일 뒤에는 자동으로 팀이 해체됩니다.",
+        );
         console.log("팀 삭제 응답:", response.data);
-
-        // 성공적으로 삭제되었을 때 홈 화면으로 이동하거나 다른 처리를 수행할 수 있습니다.
         navigate("/homeView");
       } else {
         setTeamNameError("팀 명이 올바르지 않습니다.");
@@ -251,8 +237,7 @@ export default function TeamLeader() {
       try {
         const response = await axiosInstance.get(`/team/${teamId}/code`);
         const teamCode = response.data;
-        // console.log("초대코드", teamCode);
-        const codeUrl = `http://118.67.128.124:8080/team/${teamCode}`;
+        const codeUrl = `${teamCode}`;
         setCodeUrl(codeUrl);
         // await axiosInstance.post(codeUrl);
       } catch (error) {
@@ -290,13 +275,12 @@ export default function TeamLeader() {
                     : previewImage || team?.profileUrl || profileImg
                 }
                 alt="Team Logo"
-                // onClick={() => document.getElementById("imageUpload")?.click()}
                 style={{
-                  width: "100px",
-                  height: "100px",
+                  width: "170px",
+                  height: "170px",
                   cursor: "pointer",
                   marginTop: "20px",
-                  marginLeft: "90px",
+                  marginLeft: "50px",
                   marginBottom: "20px",
                 }}
               />
@@ -340,18 +324,18 @@ export default function TeamLeader() {
               <option
                 value={
                   teamParticipants.find(
-                    (participant) => participant.teamRole === "READER",
+                    (participant) => participant.teamRole === "LEADER",
                   )?.teamNickName
                 }
               >
                 {
                   teamParticipants.find(
-                    (participant) => participant.teamRole === "READER",
+                    (participant) => participant.teamRole === "LEADER",
                   )?.teamNickName
                 }
               </option>
               {teamParticipants
-                .filter((participant) => participant.teamRole !== "READER")
+                .filter((participant) => participant.teamRole !== "LEADER")
                 .map((participant, index) => (
                   <option key={index} value={participant.teamNickName}>
                     {participant.teamNickName}
@@ -424,7 +408,7 @@ export default function TeamLeader() {
           {memberIndexToRemove !== null && (
             <>
               <p>강퇴 사유를 입력하세요:</p>
-              <StyledInput
+              <input
                 title="reason"
                 type="text"
                 value={kickReason}
@@ -432,7 +416,7 @@ export default function TeamLeader() {
               />
             </>
           )}
-          <StyledButton onClick={handleKickOutMember}>확인</StyledButton>
+          <StyledButton onClick={handleKickOutMember}>확인</StyledButton>&nbsp;
           <StyledButton onClick={cancelRemoveMember}>취소</StyledButton>
         </ConfirmationModal>
       )}
@@ -460,6 +444,7 @@ export default function TeamLeader() {
             <StyledButton onClick={handleTeamNameConfirmation}>
               확인
             </StyledButton>
+            &nbsp;
             <StyledButton onClick={closeTeamNameConfirmation}>
               취소
             </StyledButton>

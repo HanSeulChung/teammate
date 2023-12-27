@@ -1,31 +1,22 @@
-import { atom, useRecoilState, selector } from "recoil";
+import { atom, useRecoilState } from "recoil";
 import { recoilPersist } from "recoil-persist";
 import { useEffect } from "react";
 import { Team, User, TokenState } from "../interface/interface.ts";
 
-const { persistAtom } = recoilPersist();
+// window.sessionStorage 선언
+const sessionStorage =
+  typeof window !== "undefined" ? window.sessionStorage : undefined;
+
+const { persistAtom } = recoilPersist({
+  key: "persistAtom",
+  storage: sessionStorage,
+});
 
 //로그인된 사용자 상태
 export const loggedInUserState = atom<string | null>({
   key: "loggedInUserState",
   default: null,
 });
-
-// //리더인 팀 상태 선택기 (위에 string 을 User로 바꾸면됨)
-// export const teamsByLeaderState = selector({
-//   key: "teamsByLeaderState",
-//   get: ({ get }) => {
-//     const userTeams = get(userTeamsState);
-//     const loggedInUser = get(loggedInUserState);
-
-//     if (!loggedInUser) {
-//       return [];
-//     }
-
-//     // 로그인한 사용자가 리더인 팀만 반환
-//     return userTeams.filter((team) => team.leaderId === loggedInUser.id);
-//   },
-// });
 
 // 인증 상태
 export const isAuthenticatedState = atom({
@@ -58,25 +49,25 @@ export const userState = atom({
 // 리프레시 토큰 저장 함수
 export const saveRefreshToken = (token: string | null) => {
   if (token) {
-    localStorage.setItem("refreshToken", token);
+    window.sessionStorage.setItem("refreshToken", token);
   } else {
-    localStorage.removeItem("refreshToken");
+    window.sessionStorage.removeItem("refreshToken");
   }
 };
 
 // 액세스 토큰 저장 함수
 export const saveAccessToken = (token: string | null) => {
   if (token) {
-    localStorage.setItem("accessToken", token);
+    window.sessionStorage.setItem("accessToken", token);
   } else {
-    localStorage.removeItem("accessToken");
+    window.sessionStorage.removeItem("accessToken");
   }
 };
 
 // 토큰 저장 함수
 export const saveToken = ({ accessToken, refreshToken }: TokenState) => {
-  localStorage.setItem("accessToken", accessToken);
-  localStorage.setItem("refreshToken", refreshToken);
+  window.sessionStorage.setItem("accessToken", accessToken);
+  window.sessionStorage.setItem("refreshToken", refreshToken);
 };
 
 //사용자 저장 함수
@@ -85,18 +76,18 @@ export const useUser = () => {
 
   const saveUser = (loggedInUser: User) => {
     setUser(loggedInUser);
-    localStorage.setItem("user", JSON.stringify(loggedInUser));
+    window.sessionStorage.setItem("user", JSON.stringify(loggedInUser));
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = window.sessionStorage.getItem("user");
 
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       } catch (error) {
-        console.error("Error parsing user from localStorage:", error);
+        console.error("Error parsing user from window.sessionStorage:", error);
       }
     }
   }, [setUser]);
@@ -111,11 +102,7 @@ export const logout = () => {
 // 홈 화면 검색 상태
 export const searchState = atom({
   key: "searchState",
-  // default: (() => {
-  //   const storedSearch = localStorage.getItem("search");
-  //   return storedSearch || "";
-  // })() as string,
-  default: localStorage.getItem("search") || "",
+  default: window.sessionStorage.getItem("search") || "",
 });
 
 // 검색 관련 상태 및 함수
@@ -153,7 +140,7 @@ export const userTeamsState = atom<Team[]>({
 export const selectedTeamSizeState = atom({
   key: "selectedTeamSizeState",
   default: (() => {
-    const storedTeamSize = localStorage.getItem("selectedTeamSize");
+    const storedTeamSize = window.sessionStorage.getItem("selectedTeamSize");
     return storedTeamSize || "1-9";
   })(),
 });
@@ -178,7 +165,7 @@ export const useSelectedTeamState = () => useRecoilState(selectedTeamState);
 //   effects_UNSTABLE: [
 //     ({ onSet }) => {
 //       onSet((newValue) => {
-//         localStorage.setItem("user", JSON.stringify(newValue));
+//         window.sessionStorage.setItem("user", JSON.stringify(newValue));
 //       });
 //     },
 //   ],
@@ -206,7 +193,7 @@ export const teamListState = atom<Team[]>({
 export const teamNameState = atom({
   key: "teamNameState",
   default: (() => {
-    const storedTeamName = localStorage.getItem("teamName");
+    const storedTeamName = window.sessionStorage.getItem("teamName");
     return storedTeamName || "";
   })(),
 });

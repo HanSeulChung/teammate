@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
-import axios from "axios";
 
 interface CommentType {
   content: string;
@@ -36,7 +35,7 @@ const Comment: React.FC = () => {
     const fetchParticipants = async () => {
       try {
         const response = await axiosInstance.get("/member/participants", {});
-        const participant = response.data.content.find(
+        const participant = response.data.find(
           (item: { teamId: number }) => item.teamId === Number(teamId),
         );
         setParticipantIds(participant ? participant.teamParticipantsId : null);
@@ -74,7 +73,6 @@ const Comment: React.FC = () => {
     if (editingComment.trim() && editingIndex !== null) {
       const commentToUpdate = commentsPage.content[editingIndex];
       try {
-        console.warn(editingComment, commentToUpdate.writerId + "");
         const response = await axiosInstance.put(
           `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
           { content: editingComment, editorId: commentToUpdate.writerId + "" },
@@ -144,16 +142,13 @@ const Comment: React.FC = () => {
   ) => {
     try {
       const response = await axiosInstance.get(
-        "http://118.67.128.124:8080/member/participants",
+        `http://118.67.128.124:8080/team/${teamId}/participant/list`,
       );
-
-      const participants = response.data.content;
-
-      const nicknames = response.data.content
+      const nicknames = response.data
         .filter((data: { teamId: number }) => data.teamId === teamId)
         .filter(
           (data: { teamParticipantsId: number | undefined }) =>
-            data.teamParticipantsId === participantIds,
+            data.teamParticipantsId === teamParticipantsId,
         )
         .map((data: { teamNickName: any }) => data.teamNickName);
 

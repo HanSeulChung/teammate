@@ -1,4 +1,3 @@
-// AlarmModal.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
 import PersonalAlarm from "./PersonalAlarm";
@@ -10,24 +9,33 @@ interface AlarmModalProps {
 // 가짜 데이터
 const fakePersonalAlarmProps = {
   content: "알람 내용",
-  date: "2023-12-17", // 적절한 날짜로 대체
+  date: "2023-12-17",
   onDelete: () => {
-    // 삭제 로직 구현
+    console.log("개인 알람이 삭제되었습니다.");
   },
 };
 
 const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
   const [activeTab, setActiveTab] = useState<"personal" | "team">("personal");
+  const [alarmList, setAlarmList] = useState([fakePersonalAlarmProps]);
 
   const switchTab = (tab: "personal" | "team") => {
     setActiveTab(tab);
   };
 
   const handleModalClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 모달 내부를 클릭해도 닫히지 않도록
+    e.stopPropagation();
   };
 
-  // const StyledTabButton = TabButton.withComponent("div");
+  const handleDeletePersonalAlarm = () => {
+    setAlarmList((prevList) => {
+      const updatedList = prevList.filter(
+        (alarm) => alarm !== fakePersonalAlarmProps,
+      );
+      console.log("개인 알람이 삭제되었습니다.");
+      return updatedList;
+    });
+  };
 
   return (
     <ModalOverlay onClick={closeModal}>
@@ -48,7 +56,10 @@ const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
           </TabButton>
         </TabButtons>
         {activeTab === "personal" ? (
-          <PersonalAlarm {...fakePersonalAlarmProps} />
+          <PersonalAlarm
+            {...fakePersonalAlarmProps}
+            onDelete={handleDeletePersonalAlarm}
+          />
         ) : (
           <TeamAlarm {...fakePersonalAlarmProps} />
         )}
@@ -60,18 +71,14 @@ const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
 export default AlarmModal;
 
 const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0px;
-  right: 50px;
-  margin: 50px;
-  width: 20%;
-  height: 60%;
-
-  z-index: 1000;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 500px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 `;
 
 const ModalContent = styled.div`
@@ -79,9 +86,11 @@ const ModalContent = styled.div`
   padding: 20px;
   border-radius: 8px;
   width: 100%;
+  max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
   position: relative;
+  border: 1px solid #cccccc;
 `;
 
 const TabButtons = styled.div`
@@ -107,6 +116,7 @@ const TabButton = styled.button<{ active: string }>`
 const CloseButton = styled.button`
   position: absolute;
   top: 15px;
-  right: 15px;
+  right: 30px;
   cursor: pointer;
+  background: #cccccc;
 `;

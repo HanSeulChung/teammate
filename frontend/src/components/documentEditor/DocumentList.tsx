@@ -27,7 +27,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const navigate = useNavigate();
-  const API_BASE_URL = "http://118.67.128.124:8080";
   const [totalPages, setTotlaPages] = useState<number>(0);
   const datepickerRef = useRef<HTMLInputElement>(null);
   const [startDt, setStartDt] = useState<string>("");
@@ -37,7 +36,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     const fetchDocuments = async () => {
       try {
         const response = await axiosInstance.get(
-          `${API_BASE_URL}/team/${teamId}/documents?page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
+          `/team/${teamId}/documents?page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
         );
 
         setTotlaPages(response.data.totalPages);
@@ -65,7 +64,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     const fetchDocuments = async () => {
       try {
         const response = await axiosInstance.get(
-          `${API_BASE_URL}/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
+          `/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
         );
 
         setTotlaPages(response.data.totalPages);
@@ -183,25 +182,29 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
               <TitleContentContainer>
                 <TitleDomStyled>
                   제목 : {doc.title}
-                  <BlurLayer blur={3.6} width="5px" />
-                  <BlurLayer blur={3.2} width="10px" />
-                  <BlurLayer blur={2.8} width="15px" />
-                  <BlurLayer blur={2.4} width="20px" />
-                  <BlurLayer blur={2.0} width="25px" />
-                  <BlurLayer blur={1.6} width="30px" />
-                  <BlurLayer blur={0.8} width="35px" />
-                  <BlurLayer blur={0.4} width="40px" />
+                  <BlurLayer $blur={3.6} $width="5px" />
+                  <BlurLayer $blur={3.2} $width="10px" />
+                  <BlurLayer $blur={2.8} $width="15px" />
+                  <BlurLayer $blur={2.4} $width="20px" />
+                  <BlurLayer $blur={2.0} $width="25px" />
+                  <BlurLayer $blur={1.6} $width="30px" />
+                  <BlurLayer $blur={0.8} $width="35px" />
+                  <BlurLayer $blur={0.4} $width="40px" />
                 </TitleDomStyled>
                 <ContentDomStyled>
-                  내용 : {doc.content}
-                  <BlurLayer blur={3.6} width="5px" />
-                  <BlurLayer blur={3.2} width="10px" />
-                  <BlurLayer blur={2.8} width="15px" />
-                  <BlurLayer blur={2.4} width="20px" />
-                  <BlurLayer blur={2.0} width="25px" />
-                  <BlurLayer blur={1.6} width="30px" />
-                  <BlurLayer blur={0.8} width="35px" />
-                  <BlurLayer blur={0.4} width="40px" />
+                  내용 :{" "}
+                  {doc.content
+                    .replace(/<p>/g, "")
+                    .replace(/<\/p>/g, "")
+                    .replace(/<br>/g, "\n")}
+                  <BlurLayer $blur={3.6} $width="5px" />
+                  <BlurLayer $blur={3.2} $width="10px" />
+                  <BlurLayer $blur={2.8} $width="15px" />
+                  <BlurLayer $blur={2.4} $width="20px" />
+                  <BlurLayer $blur={2.0} $width="25px" />
+                  <BlurLayer $blur={1.6} $width="30px" />
+                  <BlurLayer $blur={0.8} $width="35px" />
+                  <BlurLayer $blur={0.4} $width="40px" />
                 </ContentDomStyled>
               </TitleContentContainer>
               <DatesContainer>
@@ -244,6 +247,14 @@ const DocumentItem = styled.div`
   padding: 10px;
   border-radius: 12px;
   box-shadow: 8px 8px 12px 0px rgb(163, 204, 163);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: scale(1.03);
+    box-shadow: 10px 10px 15px 0px rgb(163, 204, 163);
+  }
 `;
 
 const TitleContentContainer = styled.div`
@@ -271,7 +282,7 @@ const DatesContainer = styled.div`
 
 const Container = styled.section`
   width: 800px;
-  min-height: 800px;
+  min-height: 700px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -322,8 +333,8 @@ const TitleDomStyled = styled.h1`
   }
 `;
 interface BlurLayerProps {
-  blur: number;
-  width: string;
+  $blur: number;
+  $width: string;
 }
 
 const ContentDomStyled = styled.div`
@@ -340,13 +351,18 @@ const BlurLayer = styled.div<BlurLayerProps>`
   right: 0;
   height: 100%;
   box-sizing: border-box;
-  width: ${(props) => props.width};
-  backdrop-filter: blur(${(props) => props.blur}px) grayscale(0);
+  width: ${(props) => props.$width};
+  backdrop-filter: blur(${(props) => props.$blur}px) grayscale(0);
 `;
 
 const PagenationButton = styled.button`
   background-color: rgb(163, 204, 163);
   margin-right: 4px;
+  height: 45px;
+  width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const PagenationButtonContainer = styled.div`
