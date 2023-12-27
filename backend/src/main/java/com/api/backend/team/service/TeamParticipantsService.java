@@ -36,7 +36,7 @@ public class TeamParticipantsService {
   public TeamParticipants deleteTeamParticipantById(Long userId, Long teamId) {
     TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
-    if (teamParticipants.getTeamRole().equals(TeamRole.READER)) {
+    if (teamParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION);
     }
     teamParticipantsRepository.delete(teamParticipants);
@@ -48,7 +48,7 @@ public class TeamParticipantsService {
   public String updateRoleTeamParticipant(Long userId, Long participantId, Long teamId) {
     TeamParticipants readerParticipant = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
 
-    if (!readerParticipant.getTeamRole().equals(TeamRole.READER)) {
+    if (!readerParticipant.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
     }
 
@@ -64,7 +64,7 @@ public class TeamParticipantsService {
     }
 
     readerParticipant.updateRole(TeamRole.MATE);
-    mateParticipant.updateRole(TeamRole.READER);
+    mateParticipant.updateRole(TeamRole.LEADER);
     return UPDATE_ROLE_TEAM_PARTICIPANT;
   }
 

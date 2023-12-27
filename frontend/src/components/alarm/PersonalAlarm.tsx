@@ -7,11 +7,7 @@ interface PersonalAlarmProps {
   onDelete: () => void;
 }
 
-const PersonalAlarm: React.FC<PersonalAlarmProps> = ({
-  content,
-  date,
-  onDelete,
-}) => {
+const PersonalAlarm: React.FC<PersonalAlarmProps> = ({ content, onDelete }) => {
   const today = new Date();
   const formattedDate = `${today.getFullYear()}-${
     today.getMonth() + 1
