@@ -18,6 +18,9 @@ export interface Team {
   code: string;
   memberLimit: number;
   inviteLink: string;
+  teamName:string;
+  restorationDt:null;
+  teamRole: string;
 }
 
 // 사용자 정보 인터페이스
