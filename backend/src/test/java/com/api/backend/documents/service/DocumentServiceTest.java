@@ -216,115 +216,136 @@ class DocumentServiceTest {
 //    assertEquals(exception.getErrorCode(), TEAM_PARTICIPANTS_NOT_VALID_EXCEPTION);
 //  }
 //
-//  @Test
-//  @DisplayName("문서 삭제 성공")
-//  void deleteDocs_Success() {
-//    //given
-//    Principal principal = Mockito.mock(Principal.class);
-//    Documents documents = createtestDocuments();
-//    TeamParticipants teamParticipants = createTestSetting();
-//
-//
-//    when(validCheck.getMemberId(principal)).thenReturn(1L);
-//    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(teamParticipants);
-//    when(validCheck.findValidDocument("testId")).thenReturn(documents);
-//    //when
-//    DeleteDocsResponse deleteDocsResponse = documentService.deleteDocs(2L, "testId", principal);
-//
-//    //then
-//    assertNotNull(deleteDocsResponse);
-//    assertEquals(deleteDocsResponse.getId(), documents.getId());
-//    assertEquals(deleteDocsResponse.getTitle(), documents.getTitle());
-//  }
-//
-//  @Test
-//  @DisplayName("문서 삭제 실패_생성자가 아닐때")
-//  void deleteDocs_Fail_By_Not_WriterId() {
-//    //given
-//    Principal principal = Mockito.mock(Principal.class);
-//    Documents documents = createtestDocuments();
-//    TeamParticipants failTeamParticipants = createTestSetting_Fail();
-//
-//    when(validCheck.getMemberId(principal)).thenReturn(1L);
-////    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(failTeamParticipants);
-//
-//    doThrow(new CustomException(DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION)).when(validCheck).
-//        validDocumentByWriterId(failTeamParticipants, documents);
-//    //when
-//    CustomException exception = assertThrows(CustomException.class, () -> documentService.deleteDocs(2L, "testId", principal));
-//
-//    //then
-//    assertEquals(exception.getErrorCode(), DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION);
-//  }
-//
-//  private Documents createtestDocuments() {
-//    return Documents.builder()
-//        .id("testId")
-//        .title("testTitle")
-//        .content("testContent")
-//        .writerId(1L)
-//        .teamId(2L)
-//        .createdDt(LocalDateTime.now())
-//        .updatedDt(LocalDateTime.now())
-//        .build();
-//  }
-//  private TeamParticipants createTestSetting() {
-//    Team team = Team.builder()
-//        .teamId(2L)
-//        .build();
-//
-//    Member member  = Member.builder()
-//        .memberId(1L)
-//        .email("test@Email.com")
-//        .build();
-//
-//    TeamParticipants teamParticipants = TeamParticipants.builder()
-//        .team(team)
-//        .member(member)
-//        .teamParticipantsId(1L)
-//        .build();
-//
-//    return teamParticipants;
-//  }
-//
-//  private TeamParticipants createTestSetting_Fail() {
-//    Team team = Team.builder()
-//        .teamId(23L)
-//        .build();
-//
-//    Member member  = Member.builder()
-//        .memberId(1L)
-//        .email("test@Email.com")
-//        .build();
-//
-//    TeamParticipants teamParticipants = TeamParticipants.builder()
-//        .team(team)
-//        .member(member)
-//        .teamParticipantsId(123L)
-//        .build();
-//
-//    return teamParticipants;
-//  }
-//
-//  private DocumentInitRequest createTestDocumentsRequest() {
-//    return DocumentInitRequest.builder()
-//        .title("testTitle")
-//        .content("testContent")
-//        .writerEmail("test@Email.com")
-//        .build();
-//  }
-//
-//  private Documents createDocumentWithSpecificDate(LocalDateTime specificDate) {
-//
-//    return Documents.builder()
-//        .id("testId")
-//        .title("testTitle")
-//        .content("testContent")
-//        .writerId(1L)
-//        .teamId(2L)
-//        .createdDt(specificDate)
-//        .updatedDt(LocalDateTime.now())
-//        .build();
-//
-//  }
-}
+  @Test
+  @DisplayName("문서 삭제 성공: 문서 작성자 본인일 때")
+  void deleteDocs_Success() {
+    //given
+    Principal principal = Mockito.mock(Principal.class);
+    Documents documents = createtestDocuments();
+    TeamParticipants teamParticipants = createTestSetting();
+
+
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    when(validCheck.findValidTeamParticipantByMemberIdAndTeamId(1L, 2L)).thenReturn(teamParticipants);
+    when(validCheck.findValidDocument("testId")).thenReturn(documents);
+    //when
+    DeleteDocsResponse deleteDocsResponse = documentService.deleteDocs(2L, "testId", principal);
+
+    //then
+    assertNotNull(deleteDocsResponse);
+    assertEquals(deleteDocsResponse.getId(), documents.getId());
+    assertEquals(deleteDocsResponse.getTitle(), documents.getTitle());
+  }
+
+  @Test
+  @DisplayName("문서 삭제 성공: 문서 작성자가 팀내에 없는 경우 팀장이 삭제")
+  void deleteDocs_Success_By_Rea() {
+    //given
+    Principal principal = Mockito.mock(Principal.class);
+    Documents documents = createtestDocuments();
+    TeamParticipants teamParticipants = createTestSetting();
+
+
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+    when(validCheck.findValidTeamParticipantByMemberIdAndTeamId(1L, 2L)).thenReturn(teamParticipants);
+    when(validCheck.findValidDocument("testId")).thenReturn(documents);
+    //when
+    DeleteDocsResponse deleteDocsResponse = documentService.deleteDocs(2L, "testId", principal);
+
+    //then
+    assertNotNull(deleteDocsResponse);
+    assertEquals(deleteDocsResponse.getId(), documents.getId());
+    assertEquals(deleteDocsResponse.getTitle(), documents.getTitle());
+  }
+
+  @Test
+  @DisplayName("문서 삭제 실패_생성자가 아닐때")
+  void deleteDocs_Fail_By_Not_WriterId() {
+    //given
+    Principal principal = Mockito.mock(Principal.class);
+    Documents documents = createtestDocuments();
+    TeamParticipants failTeamParticipants = createTestSetting_Fail();
+
+    when(validCheck.getMemberId(principal)).thenReturn(1L);
+//    when(validCheck.findValidTeamParticipantByMemberId(1L)).thenReturn(failTeamParticipants);
+
+    doThrow(new CustomException(DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION)).when(validCheck).
+        validDocumentByWriterId(failTeamParticipants, documents);
+    //when
+    CustomException exception = assertThrows(CustomException.class, () -> documentService.deleteDocs(2L, "testId", principal));
+
+    //then
+    assertEquals(exception.getErrorCode(), DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION);
+  }
+
+  private Documents createtestDocuments() {
+    return Documents.builder()
+        .id("testId")
+        .title("testTitle")
+        .content("testContent")
+        .writerId(1L)
+        .teamId(2L)
+        .createdDt(LocalDateTime.now())
+        .updatedDt(LocalDateTime.now())
+        .build();
+  }
+  private TeamParticipants createTestSetting() {
+    Team team = Team.builder()
+        .teamId(2L)
+        .build();
+
+    Member member  = Member.builder()
+        .memberId(1L)
+        .email("test@Email.com")
+        .build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .team(team)
+        .member(member)
+        .teamParticipantsId(1L)
+        .build();
+
+    return teamParticipants;
+  }
+
+  private TeamParticipants createTestSetting_Fail() {
+    Team team = Team.builder()
+        .teamId(23L)
+        .build();
+
+    Member member  = Member.builder()
+        .memberId(1L)
+        .email("test@Email.com")
+        .build();
+
+    TeamParticipants teamParticipants = TeamParticipants.builder()
+        .team(team)
+        .member(member)
+        .teamParticipantsId(123L)
+        .build();
+
+    return teamParticipants;
+  }
+
+  private DocumentInitRequest createTestDocumentsRequest() {
+    return DocumentInitRequest.builder()
+        .title("testTitle")
+        .content("testContent")
+        .writerEmail("test@Email.com")
+        .build();
+  }
+
+  private Documents createDocumentWithSpecificDate(LocalDateTime specificDate) {
+
+    return Documents.builder()
+        .id("testId")
+        .title("testTitle")
+        .content("testContent")
+        .writerId(1L)
+        .teamId(2L)
+        .createdDt(specificDate)
+        .updatedDt(LocalDateTime.now())
+        .build();
+
+  }
+
