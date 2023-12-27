@@ -21,6 +21,9 @@ export interface Team {
   teamName:string;
   restorationDt:null;
   teamRole: string;
+  teamParticipantsId:number;
+  participantsProfileUrl:string|undefined;
+  teamNickName:string;
 }
 
 // 사용자 정보 인터페이스
