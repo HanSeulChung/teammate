@@ -39,6 +39,7 @@ public class TeamParticipantsService {
     if (teamParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION);
     }
+    fileProcessService.deleteImage(teamParticipants.getParticipantsProfileUrl());
     teamParticipantsRepository.delete(teamParticipants);
 
     return teamParticipants;
