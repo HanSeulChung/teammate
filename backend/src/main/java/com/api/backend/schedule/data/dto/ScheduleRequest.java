@@ -10,11 +10,12 @@ import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
 @Builder
-
+@ToString
 @StartAndEndDtCheck(scheduleStart = "startDt", scheduleEnd = "endDt")
 public class ScheduleRequest {
 

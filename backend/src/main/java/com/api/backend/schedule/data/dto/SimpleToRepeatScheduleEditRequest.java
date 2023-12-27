@@ -9,11 +9,13 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 //단순 일정 -> 반복 일정
 @Getter
 @AllArgsConstructor
 @Builder
+@ToString
 @StartAndEndDtCheck(scheduleStart = "startDt", scheduleEnd = "endDt")
 public class SimpleToRepeatScheduleEditRequest {
 

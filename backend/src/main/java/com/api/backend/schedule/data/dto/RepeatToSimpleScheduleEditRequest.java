@@ -7,10 +7,12 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
 @Builder
+@ToString
 @StartAndEndDtCheck(scheduleStart = "startDt", scheduleEnd = "endDt")
 //반복일정  -> 단순일정
 public class RepeatToSimpleScheduleEditRequest {
