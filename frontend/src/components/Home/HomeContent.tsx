@@ -76,9 +76,10 @@ const HomeContent = () => {
 
   const handleRestoration = async (teamId: number) => {
     try {
-      await axiosInstance.patch(`/team/{teamId}/restore?restoreDt=2023-01-01`);
+      await axiosInstance.patch(`/team/${teamId}/restore?restoreDt=2023-01-01`);
       const updatedTeamList = await axiosInstance.get("/team/list");
       setUserTeams(updatedTeamList.data);
+      alert("복구가 완료되었습니다.");
     } catch (error: any) {
       console.error("팀 복구 중 에러 발생:", error);
     }
