@@ -177,7 +177,7 @@ export default function TeamLeader() {
         const response = await axiosInstance.patch(
           `/team/${teamId}/participant/${selectedParticipant.teamParticipantsId}`,
           {
-            teamRole: "READER",
+            teamRole: "LEADER",
           },
         );
         alert("팀장이 변경되었습니다.");
@@ -324,18 +324,18 @@ export default function TeamLeader() {
               <option
                 value={
                   teamParticipants.find(
-                    (participant) => participant.teamRole === "READER",
+                    (participant) => participant.teamRole === "LEADER",
                   )?.teamNickName
                 }
               >
                 {
                   teamParticipants.find(
-                    (participant) => participant.teamRole === "READER",
+                    (participant) => participant.teamRole === "LEADER",
                   )?.teamNickName
                 }
               </option>
               {teamParticipants
-                .filter((participant) => participant.teamRole !== "READER")
+                .filter((participant) => participant.teamRole !== "LEADER")
                 .map((participant, index) => (
                   <option key={index} value={participant.teamNickName}>
                     {participant.teamNickName}

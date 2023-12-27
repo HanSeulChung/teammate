@@ -58,7 +58,7 @@ const HomeContent = () => {
     .filter((team) => {
       return (
         team.restorationDt === null ||
-        team.teamRole === "READER" ||
+        team.teamRole === "LEADER" ||
         (team.teamRole === "MATE" && team.restorationDt === null)
       );
     });

@@ -54,9 +54,9 @@ const TeamMembers = () => {
           member.name.toLowerCase().includes(searchTeam.toLowerCase()),
         )
         .sort((a, b) => {
-          if (a.role === "READER" && b.role !== "READER") {
+          if (a.role === "LEADER" && b.role !== "LEADER") {
             return -1;
-          } else if (a.role !== "READER" && b.role === "READER") {
+          } else if (a.role !== "LEADER" && b.role === "LEADER") {
             return 1;
           } else {
             return a.name.localeCompare(b.name);
@@ -102,9 +102,9 @@ const TeamMembers = () => {
                   key={member.id}
                   type="text"
                   value={`${member.name} ${
-                    member.role === "READER" ? "(팀장)" : ""
+                    member.role === "LEADER" ? "(팀장)" : ""
                   }`}
-                  style={getMemberStyle(member.role === "READER")}
+                  style={getMemberStyle(member.role === "LEADER")}
                 />
               ))}
             </MemberContainer>
