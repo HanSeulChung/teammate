@@ -90,7 +90,7 @@ public class TeamParticipantsService {
 
   public List<TeamParticipants> getTeamParticipantsByUserId(Long memberId) {
     return teamParticipantsRepository
-        .findAllByMember_MemberIdAndTeam_IsDelete(
+        .findAllByMember_MemberIdAndTeam_IsDeleteAndTeam_RestorationDtIsNull(
             memberId, DELETE_FALSE_FLAG
         );
   }

@@ -62,7 +62,6 @@ public class NotifyAop {
     Notification notification = Notification
         .convertToMemberNotify(
             info.getMemberId()
-            , info.getTeamName()
             , info.getSendMessage()
             , info.getAlarmType()
         );
@@ -99,7 +98,6 @@ public class NotifyAop {
         .stream().map(i ->
             Notification.convertToMemberNotify(
                 i,
-                info.getTeamName(),
                 info.getSendMessage(),
                 info.getAlarmType()
             )
