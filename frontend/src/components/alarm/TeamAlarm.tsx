@@ -13,7 +13,7 @@ interface TeamAlarmProps {
 const TeamAlarm: React.FC<TeamAlarmProps> = ({ content, date, onDelete }) => {
   const [alarms, setAlarms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const accessToken = useRecoilValue(accessTokenState);
 
   useEffect(() => {
