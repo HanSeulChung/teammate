@@ -22,6 +22,10 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [participantIds, setParticipantIds] = useState<number>();
 
   useEffect(() => {
+    console.warn(title);
+  }, [title]);
+
+  useEffect(() => {
     client.current = new StompJs.Client({
       brokerURL: "ws://118.67.128.124:8080/ws",
       connectHeaders: {
@@ -93,13 +97,18 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
             docsbody.memberEmail !== currentUserId ||
             docsbody.documentId !== documentsId
           ) {
-            console.warn(docsbody.memberEmail, currentUserId);
+            // console.warn(docsbody.memberEmail, currentUserId);
+            // console.warn(docsbody.documentId, documentsId);
             // 다른 사용자가 보낸 메시지일 때만 상태 업데이트
             console.log("broadCast를 이렇게 받았다!", docsbody);
             // console.log(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" "));
             setTitle(docsbody.title);
-            // setContent(docsbody.content.replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "").trim(" ")); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
-            setContent(docsbody.content);
+            setContent(
+              docsbody.content
+                .replace(/(^([ ]*<p><br><\/p>)*)|((<p><br><\/p>)*[ ]*$)/gi, "")
+                .trim(" "),
+            ); // 엔터만 (연속적으로) 했을 때 생기는 에러 해결
+            // setContent(docsbody.content);
           }
         },
       );
@@ -136,14 +145,14 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTextChange = (
     content: any,
-    _delta: any,
-    _source: any,
-    _editor: any,
+    delta: any,
+    source: any,
+    editor: any,
   ) => {
+    console.log("what : ", content, " ", delta, " ", source, " ", editor);
     const newText = content;
-
     setContent(newText); // 상태 업데이트
-    if (client.current) {
+    if (client.current && title !== "") {
       const message = {
         memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: title,
@@ -161,9 +170,11 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
+    console.log("title change : ", newTitle);
+
     setTitle(newTitle);
     setContent(content);
-
+    console.log(client.current ? true : false);
     if (client.current) {
       const message = {
         memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
