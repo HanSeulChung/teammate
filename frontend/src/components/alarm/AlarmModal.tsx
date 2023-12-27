@@ -17,7 +17,7 @@ const fakePersonalAlarmProps = {
 
 const AlarmModal: React.FC<AlarmModalProps> = ({ closeModal }) => {
   const [activeTab, setActiveTab] = useState<"personal" | "team">("personal");
-  const [alarmList, setAlarmList] = useState([fakePersonalAlarmProps]);
+  const [, setAlarmList] = useState([fakePersonalAlarmProps]);
 
   const switchTab = (tab: "personal" | "team") => {
     setActiveTab(tab);
