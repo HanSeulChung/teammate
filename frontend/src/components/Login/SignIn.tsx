@@ -2,7 +2,12 @@ import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import axiosInstance from "../../axios";
 import { useNavigate } from "react-router-dom";
-import { StyledContainer, StyledFormItem } from "./SignInStyled";
+import {
+  StyledContainer,
+  StyledFormItem,
+  RedText,
+  StyledText,
+} from "./SignInStyled";
 import { useRecoilState } from "recoil";
 import {
   isAuthenticatedState,
@@ -19,8 +24,8 @@ const SignIn = () => {
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] =
     useRecoilState(isAuthenticatedState);
-  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-  const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+  const [, setAccessToken] = useRecoilState(accessTokenState);
+  const [, setRefreshToken] = useRecoilState(refreshTokenState);
   const { saveUser } = useUser();
   const navigate = useNavigate();
 
@@ -62,7 +67,7 @@ const SignIn = () => {
         setRefreshToken(newRefreshToken);
       }
       setIsAuthenticated(true);
-      saveUser({ id: email, name: response.data.name });
+      saveUser({ id: email, name: response.data.name, email: email });
       navigate("/homeView");
       console.log("login successful");
     } catch (error) {
@@ -137,14 +142,9 @@ const SignIn = () => {
         </StyledFormItem>
         <p>
           계정이 없으신가요?{" "}
-          <span
-            style={{ cursor: "pointer", color: "#333333" }}
-            onClick={handleSignUp}
-          >
-            회원가입
-          </span>
+          <StyledText onClick={handleSignUp}>회원가입</StyledText>
         </p>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <RedText>{error}</RedText>}
       </StyledContainer>
     </>
   );

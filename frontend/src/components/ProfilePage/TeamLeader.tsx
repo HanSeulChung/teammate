@@ -16,6 +16,17 @@ import {
   TeamMembersContainer,
   ConfirmationModal,
   MoveTeamPage,
+  TeamName,
+  Img,
+  InputTwo,
+  InputOne,
+  SelectLeader,
+  InviteCode,
+  ImgTwo,
+  SearchMember,
+  MemberList,
+  DeleteTeam,
+  RedText,
 } from "./TeamLeaderStyled";
 
 export default function TeamLeader() {
@@ -30,7 +41,7 @@ export default function TeamLeader() {
     null,
   );
   const [newTeamName, setNewTeamName] = useState("");
-  const [editingTeamLeader, setEditingTeamLeader] = useState(false);
+  const [, setEditingTeamLeader] = useState(false);
   const [newLeaderSelect, setNewLeaderSelect] = useState<string | null>(null);
   const [kickReason, setKickReason] = useState("");
   const navigate = useNavigate();
@@ -181,6 +192,7 @@ export default function TeamLeader() {
             teamRole: "LEADER",
           },
         );
+        console.log(response);
         alert("팀장이 변경되었습니다.");
         navigate("/homeView");
       } catch (error) {
@@ -270,54 +282,31 @@ export default function TeamLeader() {
       </MoveTeamPage>
       <TeamLeaderContainer>
         <div>
-          <h3
-            style={{
-              textAlign: "center",
-              fontSize: "30px",
-              fontWeight: "bold",
-            }}
-          >
-            {team?.name} 프로필
-          </h3>
+          <TeamName>{team?.name} 프로필</TeamName>
 
           <TeamInfoContainer>
             <TeamImageContainer>
               <label>
-                <img
+                <Img
                   src={
                     typeof selectedImage === "string"
                       ? selectedImage
                       : previewImage || team?.profileUrl || profileImg
                   }
                   alt="Team Logo"
-                  style={{
-                    width: "170px",
-                    height: "170px",
-                    cursor: "pointer",
-                    marginTop: "20px",
-                    marginLeft: "50px",
-                    marginBottom: "20px",
-                  }}
                 />
-
                 <span>팀명 </span>
-                <input
+
+                <InputOne
                   title="imgUpload"
                   id="imageUpload"
                   type="file"
                   accept="image/*"
                   onChange={handleFileInputChange}
-                  style={{ display: "none", width: "100%" }}
                 />
               </label>
               <span title="teamNameChange">
-                <input
-                  style={{
-                    width: "150px",
-                    height: "40px",
-                    marginRight: "10px",
-                    padding: "5px",
-                  }}
+                <InputTwo
                   id="teamName"
                   placeholder=" 팀 이름"
                   title="text"
@@ -331,8 +320,7 @@ export default function TeamLeader() {
             </TeamImageContainer>
             <div>
               <span>팀장 </span>
-              <select
-                style={{ width: "150px", height: "40px", marginRight: "10px" }}
+              <SelectLeader
                 title="select"
                 value={newLeaderSelect || ""}
                 onChange={(e) => setNewLeaderSelect(e.target.value)}
@@ -357,7 +345,7 @@ export default function TeamLeader() {
                       {participant.teamNickName}
                     </option>
                   ))}
-              </select>
+              </SelectLeader>
               <StyledButton onClick={confirmEditTeamLeader}>
                 변경하기
               </StyledButton>
@@ -366,18 +354,14 @@ export default function TeamLeader() {
         </div>
         <br />
         <div>
-          <span style={{ display: "flex", alignItems: "center" }}>
+          <InviteCode>
             <span>초대코드 URL</span>
-            <img
-              style={{
-                width: "30px",
-                cursor: "pointer",
-              }}
+            <ImgTwo
               src={linkImg}
               alt="복사"
               onClick={() => handleCopyClick(codeUrl)}
             />
-          </span>
+          </InviteCode>
         </div>
         <TeamMembersContainer>
           <StyledInput
@@ -389,21 +373,9 @@ export default function TeamLeader() {
             value={searchTeam}
             onChange={(e) => setSearchTeam(e.target.value)}
           />
-          <div
-            style={{
-              marginTop: "10px",
-              maxHeight: "250px",
-              overflowY: "auto",
-            }}
-          >
+          <SearchMember>
             {filteredTeamMembers.map((participant, index) => (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  marginBottom: "10px",
-                }}
-              >
+              <MemberList key={index}>
                 <StyledInput
                   title="disband"
                   type="text"
@@ -413,9 +385,9 @@ export default function TeamLeader() {
                 <StyledButton onClick={() => handleRemoveMember(index)}>
                   강퇴
                 </StyledButton>
-              </div>
+              </MemberList>
             ))}
-          </div>
+          </SearchMember>
         </TeamMembersContainer>
 
         {showConfirmation && (
@@ -438,11 +410,11 @@ export default function TeamLeader() {
           </ConfirmationModal>
         )}
 
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <DeleteTeam>
           <StyledButton onClick={openTeamNameConfirmation}>
             팀 계정 삭제하기
           </StyledButton>
-        </div>
+        </DeleteTeam>
         <StyledModal
           isOpen={teamNameConfirmationOpen}
           onClose={closeTeamNameConfirmation}
@@ -456,7 +428,7 @@ export default function TeamLeader() {
               value={inputTeamName}
               onChange={(e) => setInputTeamName(e.target.value)}
             />
-            {teamNameError && <p style={{ color: "red" }}>{teamNameError}</p>}
+            {teamNameError && <RedText>{teamNameError}</RedText>}
             <div>
               <StyledButton onClick={handleTeamNameConfirmation}>
                 확인

@@ -28,7 +28,7 @@ export interface Team {
 
 // 사용자 정보 인터페이스
 export interface User {
-  // userId: string;
+  email: string;
   id: string;
   name: string;
 }

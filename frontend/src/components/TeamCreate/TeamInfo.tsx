@@ -6,7 +6,6 @@ import {
   teamNameState,
   selectedTeamSizeState,
   teamListState,
-  userState,
   accessTokenState,
 } from "../../state/authState";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +28,7 @@ export default function TeamInfo() {
   );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [teamList, setTeamList] = useRecoilState(teamListState);
+  const [teamList] = useRecoilState(teamListState);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const accessToken = useRecoilValue(accessTokenState);

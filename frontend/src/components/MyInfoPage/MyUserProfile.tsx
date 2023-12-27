@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { userState, isAuthenticatedState } from "../../state/authState";
-import { User, Team } from "../../interface/interface.ts";
+import { Team } from "../../interface/interface.ts";
 import axios from "axios";
 import {
   UserProfileContainer,
@@ -16,11 +16,16 @@ import axiosInstance from "../../axios";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function MyUserProfile() {
-  const [isAuthenticated, setIsAuthenticated] =
-    useRecoilState(isAuthenticatedState);
+  const [, setIsAuthenticated] = useRecoilState(isAuthenticatedState);
   const [user, setUser] = useRecoilState(userState);
-  const [error, setError] = useState<string>("");
-  const [myTeamList, setMyTeamList] = useState<Team[]>([]);
+  const [, setError] = useState<string>("");
+  const [, setMyTeamList] = useState<Team[]>([]);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordChangeError, setPasswordChangeError] = useState<string | null>(
+    null,
+  );
   const navigate = useNavigate();
 
   //api 연결 부분
@@ -58,12 +63,6 @@ export default function MyUserProfile() {
     fetchProfileData();
   }, []);
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordChangeError, setPasswordChangeError] = useState<string | null>(
-    null,
-  );
   const handleUpdatePassword = async () => {
     try {
       if (!currentPassword || !newPassword || !confirmPassword) {

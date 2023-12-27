@@ -41,3 +41,12 @@ export const StyledFormItem = styled.div`
     }
   }
 `;
+
+export const RedText = styled.p`
+  color: red;
+`;
+
+export const StyledText = styled.span`
+  cursor: pointer;
+  color: #333333;
+`;

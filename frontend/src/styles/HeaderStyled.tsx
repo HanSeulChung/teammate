@@ -40,3 +40,11 @@ export const HeaderLink = styled(Link)`
   padding: 2px 10px;
   border-radius: 5px;
 `;
+
+export const Div = styled.div`
+  margin-left: 10px;
+`;
+export const Span = styled.span`
+  cursor: pointer;
+  color: #333333;
+`;

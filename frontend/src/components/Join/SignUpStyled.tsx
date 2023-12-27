@@ -59,3 +59,22 @@ export const Button = styled.button`
     }
   }
 `;
+
+export const GreenText = styled.span`
+  color: green;
+`;
+
+export const RedText = styled.span`
+  color: red;
+`;
+
+export const StyledSignUp = styled.p`
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+`;
+
+export const StyledText = styled.p`
+  text-align: center;
+  margin-top: 10px;
+`;

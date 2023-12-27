@@ -109,3 +109,63 @@ export const MoveTeamPage = styled.div`
   text-align: right;
   margin-right: 200px;
 `;
+
+export const TeamName = styled.h3`
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+`;
+
+export const Img = styled.img`
+  width: 170px;
+  height: 170px;
+  cursor: pointer;
+  margin: 20px 0 20px 50px;
+`;
+
+export const InputOne = styled.input`
+display:none;
+width:100%:`;
+
+export const InputTwo = styled.input`
+  width: 150px;
+  height: 40px;
+  margin-right: 10px;
+  padding: 5px;
+`;
+
+export const SelectLeader = styled.select`
+  width: 150px;
+  height: 40px;
+  margin-right: 10px;
+`;
+
+export const InviteCode = styled.span`
+  display: flex;
+  align-items: center;
+`;
+
+export const ImgTwo = styled.img`
+  width: 30px;
+  cursor: pointer;
+`;
+
+export const SearchMember = styled.div`
+  margin-top: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+`;
+
+export const MemberList = styled.div`
+  display: flex;
+  margin-bottom: 10px;
+`;
+
+export const DeleteTeam = styled.div`
+  text-align: center;
+  margin-top: 20px;
+`;
+
+export const RedText = styled.p`
+  color: red;
+`;

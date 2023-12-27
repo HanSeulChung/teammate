@@ -1,7 +1,7 @@
 const Naver = () => {
-  const clientID = "yd0R9uz74I8IUUb7kOQ2";
-  const callbackUrl = "http://localhost:3000/naverLogin";
-  const stateString = "Ydqk2Xb9Dj";
+  const clientID = import.meta.env.VITE_REST_API;
+  const callbackUrl = import.meta.env.VITE_REDIRECT_KEY;
+  const stateString = import.meta.env.VITE_STATE;
   const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${clientID}&response_type=code&redirect_uri=${callbackUrl}&state=${stateString}`;
 
   const loginHandler = () => {

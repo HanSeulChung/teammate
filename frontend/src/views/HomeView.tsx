@@ -4,7 +4,7 @@ import HomeCreateTeamBtn from "../components/Home/HomeCreateTeamBtn";
 import HomeSearchBar from "../components/Home/HomeSearchBar";
 
 const homeView = () => {
-  const [search, setSearch] = useState("");
+  const [, setSearch] = useState("");
   const handleSearch = (value: any) => {
     setSearch(value);
   };

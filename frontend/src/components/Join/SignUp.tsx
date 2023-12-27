@@ -1,5 +1,13 @@
 import React, { useState, ChangeEvent } from "react";
-import { StyledContainer, StyledFormItem, Button } from "./SignUpStyled.tsx";
+import {
+  StyledContainer,
+  StyledFormItem,
+  Button,
+  GreenText,
+  StyledText,
+  StyledSignUp,
+  RedText,
+} from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios.tsx";
@@ -7,7 +15,6 @@ import axiosInstance from "../../axios.tsx";
 interface SignUpProps {}
 
 const TEST = "EMAIL_ALREADY_EXIST_EXCEPTION";
-//이메일 사용자가 있다고 암시하는 변수명
 
 const SignUp: React.FC<SignUpProps> = () => {
   const [email, setEmail] = useState<string>("");
@@ -180,14 +187,16 @@ const SignUp: React.FC<SignUpProps> = () => {
         <button onClick={handleCheckIdAvailability}>중복 확인</button>
       </StyledFormItem>
       {isIdAvailable !== null && (
-        <span style={{ color: isIdAvailable ? "green" : "red" }}>
-          {isIdAvailable
-            ? "사용 가능한 아이디입니다."
-            : "이미 사용 중인 아이디입니다."}
-        </span>
+        <>
+          {isIdAvailable ? (
+            <GreenText>사용 가능한 아이디입니다.</GreenText>
+          ) : (
+            <RedText>이미 사용 중인 아이디입니다.</RedText>
+          )}
+        </>
       )}
       {isEmailFormatValid !== null && !isEmailFormatValid && (
-        <span style={{ color: "red" }}>{"올바른 이메일 형식이 아닙니다."}</span>
+        <RedText>올바른 이메일 형식이 아닙니다.</RedText>
       )}
       <br />
 
@@ -202,9 +211,7 @@ const SignUp: React.FC<SignUpProps> = () => {
         />
       </StyledFormItem>
       {password.length < 8 && password.length > 0 && (
-        <span style={{ color: "red" }}>
-          비밀번호는 8자리 이상이어야 합니다.
-        </span>
+        <RedText>비밀번호는 8자리 이상이어야 합니다.</RedText>
       )}
       <br />
 
@@ -226,9 +233,9 @@ const SignUp: React.FC<SignUpProps> = () => {
         />
       </StyledFormItem>
       {isRePasswordValid !== null && (
-        <span style={{ color: isRePasswordValid ? "green" : "red" }}>
+        <RedText>
           {!isRePasswordValid && "비밀번호가 일치하지 않습니다."}
-        </span>
+        </RedText>
       )}
       <br />
 
@@ -270,27 +277,17 @@ const SignUp: React.FC<SignUpProps> = () => {
         <button onClick={handleSignUp}>회원 가입</button>
       </StyledFormItem>
 
-      {signUpMessage && (
-        <p
-          style={{
-            color: "red",
-            textAlign: "center",
-            marginTop: "10px",
-          }}
-        >
-          {signUpMessage}
-        </p>
-      )}
+      {signUpMessage && <StyledSignUp>{signUpMessage}</StyledSignUp>}
       {isModalOpen && (
         <div>
-          <p
+          <StyledText
             style={{
               textAlign: "center",
               marginTop: "10px",
             }}
           >
             아이디로 이메일 인증을 보냈습니다.{" "}
-          </p>
+          </StyledText>
           <Button onClick={handleModalConfirm}>확인</Button>
         </div>
       )}
