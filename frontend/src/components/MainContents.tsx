@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
+import styled from "styled-components";
 import mainImage from '../assets/main_image.png'
-import { MainContentsSpan } from '../styles/MainContentsStyled'
 
 const MainContents = () => {
   return (
@@ -22,3 +22,26 @@ const MainContents = () => {
 };
 
 export default MainContents;
+
+// 스타일드 컴포넌트
+export const MainContentsSpan = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  & > div {
+    max-width: 60%;
+  }
+
+  & > div > h2 {
+    font-size: 3rem;
+  }
+  
+  & > div > p {
+    font-size: 1.5rem;
+  }
+  
+  & > img {
+    max-with: 40%;
+  }
+`
