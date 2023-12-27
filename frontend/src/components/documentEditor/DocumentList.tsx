@@ -192,7 +192,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
                   <BlurLayer $blur={0.4} $width="40px" />
                 </TitleDomStyled>
                 <ContentDomStyled>
-                  내용 : {doc.content}
+                  내용 :{" "}
+                  {doc.content
+                    .replace(/<p>/g, "")
+                    .replace(/<\/p>/g, "")
+                    .replace(/<br>/g, "\n")}
                   <BlurLayer $blur={3.6} $width="5px" />
                   <BlurLayer $blur={3.2} $width="10px" />
                   <BlurLayer $blur={2.8} $width="15px" />
@@ -278,7 +282,7 @@ const DatesContainer = styled.div`
 
 const Container = styled.section`
   width: 800px;
-  min-height: 800px;
+  min-height: 700px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
