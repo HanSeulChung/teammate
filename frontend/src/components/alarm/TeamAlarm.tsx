@@ -22,7 +22,7 @@ const TeamAlarm: React.FC<TeamAlarmProps> = ({ content, date, onDelete }) => {
         setAlarms(data);
         setLoading(false);
       })
-      .catch((error) => {
+      .catch((_error) => {
         setError("Failed to fetch team alarms");
         setLoading(false);
       });

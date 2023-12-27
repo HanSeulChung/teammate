@@ -22,10 +22,6 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   const [participantIds, setParticipantIds] = useState<number>();
 
   useEffect(() => {
-    console.warn(title);
-  }, [title]);
-
-  useEffect(() => {
     client.current = new StompJs.Client({
       brokerURL: "ws://118.67.128.124:8080/ws",
       connectHeaders: {
@@ -211,10 +207,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
         const message = {
           memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
           title: title,
-          content: contentCopy
-            .replace(/<p>/g, "")
-            .replace(/<\/p>/g, "")
-            .replace(/<br>/g, "\n"),
+          content: contentCopy,
           documentId: documentsId,
           participantsId: participantIds,
         };
@@ -237,10 +230,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
       const message = {
         memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
         title: title,
-        content: contentCopy
-          .replace(/<p>/g, "")
-          .replace(/<\/p>/g, "")
-          .replace(/<br>/g, "\n"),
+        content: contentCopy,
         documentId: documentsId,
         participantsId: participantIds,
       };
