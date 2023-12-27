@@ -104,3 +104,8 @@ export const ConfirmationModal = styled.div`
     margin-right: 10px;
   }
 `;
+
+export const MoveTeamPage = styled.div`
+  text-align: right;
+  margin-right: 200px;
+`;
