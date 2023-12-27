@@ -238,13 +238,10 @@ public class ScheduleService {
           editRequest.getRepeatScheduleId()
       );
 
-      updateRepeatSchedule.setScheduleCategory(category);
-      updateRepeatSchedule.setTitle(editRequest.getTitle());
-      updateRepeatSchedule.setContent(editRequest.getContent());
-      updateRepeatSchedule.setStartDt(editRequest.getStartDt());
-      updateRepeatSchedule.setEndDt(editRequest.getEndDt());
-      updateRepeatSchedule.setPlace(editRequest.getPlace());
-      updateRepeatSchedule.setColor(editRequest.getColor());
+      updateRepeatSchedule.setRepeatScheduleInfo(category, editRequest.getTitle(),
+          editRequest.getContent(), editRequest.getStartDt(), editRequest.getEndDt(),
+          editRequest.getPlace(), editRequest.getColor()
+      );
 
       setRepeatScheduleFieldsByCycle(updateRepeatSchedule, month, day, dayOfWeek,
           editRequest.getRepeatCycle());
