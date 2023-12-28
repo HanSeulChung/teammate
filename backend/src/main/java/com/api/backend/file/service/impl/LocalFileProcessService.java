@@ -11,11 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Profile("dev")
 @Service
 @RequiredArgsConstructor
@@ -37,8 +39,9 @@ public class LocalFileProcessService implements FileProcessService {
     try (InputStream inputStream = file.getInputStream()) {
       amazonS3.putObject(new PutObjectRequest(mockBucket, fileName, inputStream, objectMetadata).withCannedAcl(
           CannedAccessControlList.PublicReadWrite));
-
+      log.info("Embedded S3서버에 파일을 업로드 하였습니다.");
     } catch (IOException ioe) {
+      log.error("파일 변환 중 에러가 발생했습니다 {}", file.getOriginalFilename());
       throw new IllegalArgumentException(String.format("파일 변환 중 에러가 발생했습니다 (%s)", file.getOriginalFilename()));
     }
 
