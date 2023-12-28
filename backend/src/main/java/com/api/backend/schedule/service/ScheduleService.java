@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -51,6 +52,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ScheduleService {
 
   private final SimpleScheduleRepository simpleScheduleRepository;
@@ -76,6 +78,7 @@ public class ScheduleService {
     );
     simpleSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
     simpleScheduleRepository.save(simpleSchedule);
+    log.info("단순 일정이 성공적으로 저장되었습니다.");
     return simpleSchedule;
   }
 
@@ -95,6 +98,7 @@ public class ScheduleService {
 
     repeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
     repeatScheduleRepository.save(repeatSchedule);
+    log.info("반복 일정이 성공적으로 저장되었습니다.");
     return repeatSchedule;
   }
 
@@ -128,7 +132,9 @@ public class ScheduleService {
         updatedSimpleSchedule, teamParticipantsIds);
 
     updatedSimpleSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
-    return simpleScheduleRepository.save(updatedSimpleSchedule);
+    simpleScheduleRepository.save(updatedSimpleSchedule);
+    log.info("단순 일정 정보가 성공적으로 수정되었습니다.");
+    return updatedSimpleSchedule;
   }
 
 
@@ -163,7 +169,9 @@ public class ScheduleService {
 
     simpleSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
     repeatScheduleRepository.delete(repeatSchedule);
-    return simpleScheduleRepository.save(simpleSchedule);
+    simpleScheduleRepository.save(simpleSchedule);
+    log.info("일정 타입이 성공적으로 변경되었습니다. (반복 일정 -> 단순 일정)");
+    return simpleSchedule;
   }
 
   @Transactional
@@ -207,7 +215,9 @@ public class ScheduleService {
     repeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
 
     simpleScheduleRepository.delete(simpleSchedule);
-    return repeatScheduleRepository.save(repeatSchedule);
+    log.info("일정 타입이 성공적으로 변경되었습니다. (단순 일정 -> 반복 일정)");
+    repeatScheduleRepository.save(repeatSchedule);
+    return repeatSchedule;
   }
 
   @Transactional
@@ -257,7 +267,9 @@ public class ScheduleService {
           updateRepeatSchedule, teamParticipantsIds);
 
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
-      return repeatScheduleRepository.save(updateRepeatSchedule);
+      repeatScheduleRepository.save(updateRepeatSchedule);
+      log.info("반복 일정의 모든 일정이 성공적으로 수정되었습니다.");
+      return updateRepeatSchedule;
 
       //이 일정/이 일정 및 향후 일정 선택시 originRepeatId를 갖고 newRepeatSchedule Insert
     } else {
@@ -276,7 +288,9 @@ public class ScheduleService {
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
       updateRepeatSchedule.setOriginRepeatScheduleId(
           originRepeatSchedule.getOriginRepeatScheduleId());
-      return repeatScheduleRepository.save(updateRepeatSchedule);
+      repeatScheduleRepository.save(updateRepeatSchedule);
+      log.info("반복 일정의 이 일정 혹은 이 일정 및 향후 일정이 성공적으로 수정되었습니다.");
+      return updateRepeatSchedule;
     }
   }
 
@@ -301,13 +315,13 @@ public class ScheduleService {
         throw new CustomException(SCHEDULE_CREATOR_EXISTS_EXCEPTION);
       }
     }else {
-      if (deleteRequest.getTeamParticipantsId() != teamParticipants.getTeamParticipantsId()) {
+      if (deleteRequest.getTeamParticipantId() != teamParticipants.getTeamParticipantsId()) {
         throw new CustomException(SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
       }
     }
 
     simpleScheduleRepository.delete(simpleSchedule);
-
+    log.info("단순 일정이 성공적으로 삭제되었습니다.");
     return AlarmScheduleDeleteResponse.builder()
         .teamParticipantsId(teamParticipants.getTeamParticipantsId())
         .teamParticipantIds(teamParticipantsIds)
@@ -335,13 +349,13 @@ public class ScheduleService {
         throw new CustomException(SCHEDULE_CREATOR_EXISTS_EXCEPTION);
       }
     }else {
-      if (deleteRequest.getTeamParticipantsId() != teamParticipants.getTeamParticipantsId()) {
+      if (deleteRequest.getTeamParticipantId() != teamParticipants.getTeamParticipantsId()) {
         throw new CustomException(SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
       }
     }
 
     repeatScheduleRepository.delete(repeatSchedule);
-
+    log.info("반복 일정이 성공적으로 삭제되었습니다.");
     return AlarmScheduleDeleteResponse.builder()
         .teamParticipantsId(teamParticipants.getTeamParticipantsId())
         .teamParticipantIds(teamParticipantsIds)
@@ -354,16 +368,22 @@ public class ScheduleService {
       Long teamParticipantsId) {
     findTeamOrElseThrow(teamId);
     teamParticipantsService.getTeamParticipant(teamId, teamParticipantsId);
-    return simpleScheduleRepository.findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(scheduleId,
+    SimpleSchedule simpleSchedule = simpleScheduleRepository.findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(
+        scheduleId,
         teamId);
+    log.info("단순 일정 상세 조회에 성공하였습니다.");
+    return simpleSchedule;
   }
 
   public RepeatSchedule getRepeatScheduleDetailInfo(Long scheduleId, Long teamId,
       Long teamParticipantsId) {
     findTeamOrElseThrow(teamId);
     teamParticipantsService.getTeamParticipant(teamId, teamParticipantsId);
-    return repeatScheduleRepository.findRepeatScheduleByRepeatScheduleIdAndTeam_TeamId(scheduleId,
+    RepeatSchedule repeatSchedule = repeatScheduleRepository.findRepeatScheduleByRepeatScheduleIdAndTeam_TeamId(
+        scheduleId,
         teamId);
+    log.info("반복 일정 상세 조회에 성공하였습니다.");
+    return repeatSchedule;
   }
 
 
@@ -379,9 +399,13 @@ public class ScheduleService {
         simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from)
     ).collect(Collectors.toList());
 
-    return new PageImpl<>(allSchedulesList, pageable,
+    PageImpl<AllSchedulesMonthlyView> allSchedulesMonthlyViews = new PageImpl<>(allSchedulesList,
+        pageable,
         repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
     );
+
+    log.info("카테고리 유형별 월간 보기 조회에 성공하였습니다.");
+    return allSchedulesMonthlyViews;
   }
 
   public Page<AllSchedulesMonthlyView> getAllMonthlySchedules(Long teamId, Pageable pageable,
@@ -395,10 +419,12 @@ public class ScheduleService {
         repeatSchedules.getContent().stream().map(AllSchedulesMonthlyView::from),
         simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from)
     ).collect(Collectors.toList());
-
-    return new PageImpl<>(allSchedulesList, pageable,
+    PageImpl<AllSchedulesMonthlyView> allSchedulesMonthlyViews = new PageImpl<>(allSchedulesList,
+        pageable,
         repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
     );
+    log.info("월간 보기 조회에 성공하였습니다.");
+    return allSchedulesMonthlyViews;
   }
 
   private SimpleSchedule findSimpleScheduleOrElseThrow(Long simpleScheduleId) {
