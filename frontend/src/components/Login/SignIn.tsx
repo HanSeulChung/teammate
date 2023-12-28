@@ -140,10 +140,12 @@ const SignIn = () => {
             <button onClick={handleSignIn}>로그인</button>
           )}
         </StyledFormItem>
-        <p>
-          계정이 없으신가요?{" "}
-          <StyledText onClick={handleSignUp}>회원가입</StyledText>
-        </p>
+        <StyledFormItem>
+          <p>
+            계정이 없으신가요?&nbsp;
+            <StyledText onClick={handleSignUp}>회원가입</StyledText>
+          </p>
+        </StyledFormItem>
         {error && <RedText>{error}</RedText>}
       </StyledContainer>
     </>
