@@ -1,5 +1,6 @@
 package com.api.backend.category.controller;
 
+import com.api.backend.category.data.dto.ScheduleCategoryDeleteRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryDto;
 import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryEditResponse;
@@ -143,22 +144,14 @@ public class ScheduleCategoryController {
               , required = true
               , dataType = "String"
               , paramType = "header"
-              , defaultValue = "None"),
-          @ApiImplicitParam(
-              name = "categoryId"
-              , value = "카테고리 id"
-              , required = true
-              , dataType = "Long"
-              , paramType = "path"
-              , defaultValue = "None"
-              , example = "1")
+              , defaultValue = "None")
       })
   @DeleteMapping
   public ResponseEntity<String> deleteCategory(
-      @RequestParam Long categoryId,
+      @RequestBody ScheduleCategoryDeleteRequest deleteRequest,
       @ApiIgnore Principal principal
   ) {
-    scheduleCategoryService.delete(categoryId, Long.valueOf(principal.getName()));
+    scheduleCategoryService.delete(deleteRequest, Long.valueOf(principal.getName()));
     return ResponseEntity.ok("해당 일정 카테고리가 정상적으로 삭제되었습니다.");
   }
 }
