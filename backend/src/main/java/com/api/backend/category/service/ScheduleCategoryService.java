@@ -46,6 +46,7 @@ public class ScheduleCategoryService {
       Long memberId) {
     Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
 
+    teamParticipantsService.getTeamParticipants(scheduleCategoryRequest.getTeamId(), memberId);
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
         .team(team)
         .categoryName(scheduleCategoryRequest.getCategoryName())
@@ -59,6 +60,7 @@ public class ScheduleCategoryService {
 
   public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
       Pageable pageable, Long teamId, Long memberId) {
+    teamParticipantsService.getTeamParticipants(teamId, memberId);
     return scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable,
         teamId);
   }
@@ -67,6 +69,7 @@ public class ScheduleCategoryService {
   public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest,
       Long memberId) {
     findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
+    teamParticipantsService.getTeamParticipant(scheduleCategoryEditRequest.getTeamId(), memberId);
     ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
         scheduleCategoryEditRequest.getCategoryId());
     scheduleCategory.editScheduleCategory(scheduleCategoryEditRequest);
