@@ -51,11 +51,6 @@ public class Team extends BaseEntity {
   @Builder.Default
   private List<RepeatSchedule> repeatSchedules = new ArrayList<>();
 
-  // TODO: 추후 재셋팅 예정
-//  @OneToMany(mappedBy = "team")
-//  private List<Documents> documents = new ArrayList<>();
-
-
   public void updateNameAndProfileUrl(String nickName, String url) {
     if (!name.equals(nickName)) {
       name = nickName;
