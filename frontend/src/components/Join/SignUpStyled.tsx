@@ -31,24 +31,6 @@ export const StyledFormItem = styled.div`
 
   button {
     flex: 1;
-    margin-left: 10px;
-    padding: 8px;
-    background-color: #a3cca3;
-    color: #333333;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #cccccc;
-    }
-  }
-  span {
-    margin-left: 30px;
-  }
-`;
-
-export const Button = styled.button`
-  button {
-    flex: 1;
     padding: 8px;
     background-color: #a3cca3;
     color: #333333;
@@ -57,6 +39,13 @@ export const Button = styled.button`
     &:hover {
       background-color: #cccccc;
     }
+  }
+  span {
+    margin-left: 30px;
+  }
+
+  input[type="radio"] {
+    background-color: white;
   }
 `;
 

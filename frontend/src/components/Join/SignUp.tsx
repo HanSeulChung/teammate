@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent } from "react";
 import {
   StyledContainer,
   StyledFormItem,
-  Button,
   GreenText,
   StyledText,
   StyledSignUp,
@@ -85,20 +84,6 @@ const SignUp: React.FC<SignUpProps> = () => {
           setSignUpMessage("이미 가입된 이메일입니다.");
         } else {
           console.error("회원가입 실패:", error);
-          if (error.response) {
-            // 서버 응답이 있을 경우
-            console.error("서버 응답 데이터:", error.response.data);
-            console.error("서버 응답 상태 코드:", error.response.status);
-            console.error("서버 응답 헤더:", error.response.headers);
-          } else if (error.request) {
-            // 요청이 전송되었지만 응답을 받지 못한 경우
-            console.error("서버 응답이 없습니다.");
-            console.error("요청 데이터:", error.request);
-          } else {
-            // 오류가 발생한 경우
-            console.error("에러 메세지:", error.message);
-          }
-
           setSignUpMessage("회원가입 실패");
         }
       });
@@ -145,21 +130,8 @@ const SignUp: React.FC<SignUpProps> = () => {
       .catch((error) => {
         console.error("이메일 중복 확인 실패:", error);
         if (error.response && error.response.data.errorCode === TEST) {
-          // 중복된 이메일 에러 처리
           setIsIdAvailable(false);
           console.log("중복된 이메일입니다.");
-        } else if (error.response) {
-          // 서버 응답이 있을 경우
-          console.error("서버 응답 데이터:", error.response.data);
-          console.error("서버 응답 상태 코드:", error.response.status);
-          console.error("서버 응답 헤더:", error.response.headers);
-        } else if (error.request) {
-          // 요청이 전송되었지만 응답을 받지 못한 경우
-          console.error("서버 응답이 없습니다.");
-          console.error("요청 데이터:", error.request);
-        } else {
-          // 오류가 발생한 경우
-          console.error("에러 메세지:", error.message);
         }
       });
   };
@@ -280,15 +252,8 @@ const SignUp: React.FC<SignUpProps> = () => {
       {signUpMessage && <StyledSignUp>{signUpMessage}</StyledSignUp>}
       {isModalOpen && (
         <div>
-          <StyledText
-            style={{
-              textAlign: "center",
-              marginTop: "10px",
-            }}
-          >
-            아이디로 이메일 인증을 보냈습니다.{" "}
-          </StyledText>
-          <Button onClick={handleModalConfirm}>확인</Button>
+          <StyledText>아이디로 이메일 인증을 보냈습니다. </StyledText>
+          <button onClick={handleModalConfirm}>확인</button>
         </div>
       )}
     </StyledContainer>
