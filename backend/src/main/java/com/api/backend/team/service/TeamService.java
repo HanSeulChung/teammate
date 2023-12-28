@@ -157,6 +157,7 @@ public class TeamService {
       throw new CustomException(TEAM_PARTICIPANTS_EQUALS_EXCEPTION);
     }
 
+    fileProcessService.deleteImage(teamParticipants.getParticipantsProfileUrl());
     deleteTeamParticipantById(teamParticipants);
 
     return TeamKickOutResponse.builder()
