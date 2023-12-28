@@ -49,7 +49,7 @@ public class DocumentService {
     validCheck.validTeamParticipant(memberId);
 
     TeamParticipants teamParticipant = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
-
+    validCheck.validTeam(teamId);
     Page<Documents> allDocsInTeam = null ;
     if (startDt == null && endDt == null) {
       return findAllDocumentInTeam(teamId, pageable, allDocsInTeam);

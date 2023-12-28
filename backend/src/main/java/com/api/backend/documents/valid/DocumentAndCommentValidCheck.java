@@ -8,6 +8,7 @@ import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_IN_TE
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_WRITER_EXISTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.PRINCIPAL_IS_NULL;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
@@ -97,6 +98,16 @@ public class DocumentAndCommentValidCheck {
 
     if (team.isDelete() == false) {
       throw new CustomException(TEAM_NOT_DELETEING_EXCEPTION);
+    }
+    return team;
+  }
+
+  public Team validTeam(Long teamId) {
+    Team team = teamRepository.findById(teamId)
+        .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
+
+    if (team.isDelete() == true) {
+      throw new CustomException(TEAM_IS_DELETEING_EXCEPTION);
     }
     return team;
   }
