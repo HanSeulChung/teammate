@@ -59,7 +59,7 @@ public class ScheduleCategoryController {
       @ApiIgnore Principal principal
   ) {
     ScheduleCategoryDto dto = ScheduleCategoryDto.from(
-        scheduleCategoryService.add(request, principal));
+        scheduleCategoryService.add(request, Long.valueOf(principal.getName())));
     return ResponseEntity.ok(ScheduleCategoryResponse.to(dto));
   }
 
@@ -96,7 +96,7 @@ public class ScheduleCategoryController {
   ) {
     CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
     Page<ScheduleCategoryDto> scheduleCategories = ScheduleCategoryDto.from(
-        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable, teamId, principal)
+        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable, teamId, Long.valueOf(principal.getName()))
     );
     Page<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.to(scheduleCategories);
     return ResponseEntity.ok(responses);
@@ -124,7 +124,7 @@ public class ScheduleCategoryController {
       @ApiIgnore Principal principal
   ) {
     ScheduleCategoryDto scheduleCategoryDto = ScheduleCategoryDto.from(
-        scheduleCategoryService.edit(request, principal)
+        scheduleCategoryService.edit(request, Long.valueOf(principal.getName()))
     );
     return ResponseEntity.ok(ScheduleCategoryEditResponse.to(scheduleCategoryDto));
   }
@@ -158,7 +158,7 @@ public class ScheduleCategoryController {
       @RequestParam Long categoryId,
       @ApiIgnore Principal principal
   ) {
-    scheduleCategoryService.delete(categoryId, principal);
+    scheduleCategoryService.delete(categoryId, Long.valueOf(principal.getName()));
     return ResponseEntity.ok("해당 일정 카테고리가 정상적으로 삭제되었습니다.");
   }
 }
