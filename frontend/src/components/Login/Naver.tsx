@@ -1,3 +1,6 @@
+import naverImg from "../../assets/naverImg.jpg";
+import styled from "styled-components";
+
 const Naver = () => {
   const clientID = import.meta.env.VITE_REST_API;
   const callbackUrl = import.meta.env.VITE_REDIRECT_KEY;
@@ -13,20 +16,7 @@ const Naver = () => {
         className="btn btn-wide btn-ghost border-slate-300 no-animation"
         onClick={loginHandler}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-          />
-        </svg>
+        <Img src={naverImg} alt="naver" />
         네이버 계정으로 로그인
       </button>
     </div>
@@ -34,3 +24,8 @@ const Naver = () => {
 };
 
 export default Naver;
+
+const Img = styled.img`
+  width: 25px;
+  height: 25px;
+`;
