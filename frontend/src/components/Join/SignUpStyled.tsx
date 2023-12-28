@@ -31,24 +31,6 @@ export const StyledFormItem = styled.div`
 
   button {
     flex: 1;
-    margin-left: 10px;
-    padding: 8px;
-    background-color: #a3cca3;
-    color: #333333;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #cccccc;
-    }
-  }
-  span {
-    margin-left: 30px;
-  }
-`;
-
-export const Button = styled.button`
-  button {
-    flex: 1;
     padding: 8px;
     background-color: #a3cca3;
     color: #333333;
@@ -58,4 +40,30 @@ export const Button = styled.button`
       background-color: #cccccc;
     }
   }
+  span {
+    margin-left: 30px;
+  }
+
+  input[type="radio"] {
+    background-color: white;
+  }
+`;
+
+export const GreenText = styled.span`
+  color: green;
+`;
+
+export const RedText = styled.span`
+  color: red;
+`;
+
+export const StyledSignUp = styled.p`
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+`;
+
+export const StyledText = styled.p`
+  text-align: center;
+  margin-top: 10px;
 `;

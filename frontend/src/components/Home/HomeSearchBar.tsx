@@ -8,7 +8,7 @@ interface HomeSearchBarProps {
 
 export default function HomeSearchBar({ onSearch }: HomeSearchBarProps) {
   const { search, setSearch } = useSearchState();
-  const [isPlaceholderHidden, setPlaceholderHidden] = useState(false);
+  const [, setPlaceholderHidden] = useState(false);
 
   const handleSearchSubmit = async (e: any) => {
     e.preventDefault();
