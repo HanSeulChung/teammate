@@ -22,8 +22,8 @@ public class TeamDisbandScheduler {
     this.teamRepository = teamRepository;
     this.fileProcessService = fileProcessService;
   }
-
-  @Scheduled(cron = "0 0 0 * * ?")
+//0 0 0 * * ?
+  @Scheduled(cron = "0 0/5 * * * ?")
   @Transactional
   public void teamRestoreCheckAndUpdate() {
     List<Team> teams = teamRepository.findAllByRestorationDtIsNotNull();
@@ -36,4 +36,13 @@ public class TeamDisbandScheduler {
       }
     }
   }
+
+  @Scheduled(cron = "0 */2 * * * ?") // test cron
+  @Transactional
+  public void teamDisbandCheckAndDelete() {
+    List<Long> teamIds = teamRepository.findIdsByIsDeleteIsTrue();
+
+    teamRepository.deleteAllByIdIn(teamIds);
+  }
+
 }

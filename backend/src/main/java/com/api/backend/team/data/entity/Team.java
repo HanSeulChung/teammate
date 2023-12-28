@@ -6,6 +6,7 @@ import com.api.backend.schedule.data.entity.SimpleSchedule;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,15 +40,15 @@ public class Team extends BaseEntity {
   private String inviteLink;
   private String profileUrl;
 
-  @OneToMany(mappedBy = "team")
+  @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<TeamParticipants> teamParticipants = new ArrayList<>();
 
-  @OneToMany(mappedBy = "team")
+  @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<SimpleSchedule> simpleSchedules = new ArrayList<>();
 
-  @OneToMany(mappedBy = "team")
+  @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<RepeatSchedule> repeatSchedules = new ArrayList<>();
 
