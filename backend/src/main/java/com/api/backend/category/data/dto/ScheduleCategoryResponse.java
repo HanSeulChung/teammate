@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 public class ScheduleCategoryResponse {
 
   private Long categoryId;
+  private Long createParticipantId;
   private String categoryName;
   private CategoryType categoryType;
   private LocalDateTime createDt;
@@ -22,6 +23,7 @@ public class ScheduleCategoryResponse {
   public static ScheduleCategoryResponse to(ScheduleCategoryDto scheduleCategoryDto) {
     return ScheduleCategoryResponse.builder()
         .categoryId(scheduleCategoryDto.getCategoryId())
+        .createParticipantId(scheduleCategoryDto.getCreateParticipantId())
         .categoryName(scheduleCategoryDto.getCategoryName())
         .categoryType(scheduleCategoryDto.getCategoryType())
         .createDt(scheduleCategoryDto.getCreateDt())

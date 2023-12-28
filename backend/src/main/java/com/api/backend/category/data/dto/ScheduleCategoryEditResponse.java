@@ -12,6 +12,7 @@ import lombok.Getter;
 public class ScheduleCategoryEditResponse {
 
   private Long categoryId;
+  private Long updateTeamParticipantId;
   private String categoryName;
   private CategoryType categoryType;
   private LocalDateTime updateDt;
@@ -20,6 +21,7 @@ public class ScheduleCategoryEditResponse {
   public static ScheduleCategoryEditResponse to(ScheduleCategoryDto scheduleCategoryDto) {
     return ScheduleCategoryEditResponse.builder()
         .categoryId(scheduleCategoryDto.getCategoryId())
+        .updateTeamParticipantId(scheduleCategoryDto.getCreateParticipantId())
         .categoryName(scheduleCategoryDto.getCategoryName())
         .categoryType(scheduleCategoryDto.getCategoryType())
         .updateDt(LocalDateTime.now())
