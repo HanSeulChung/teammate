@@ -9,6 +9,8 @@ import com.api.backend.global.security.jwt.JwtTokenProvider;
 import com.api.backend.global.security.jwt.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -28,11 +30,13 @@ import static com.api.backend.global.oauth2.cookie.HttpCookieOauth2Authorization
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler  {
+public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
     private final HttpCookieOauth2AuthorizationRequestRepository cookieOauth2AuthorizationRequestRepository;
+    private final long COOKIE_EXPIRATION = 7776000;
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -54,8 +58,13 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
             authService.saveRefreshToken(oAuth2User.getMemberId().toString(), token.getRefreshToken());
 
-            response.setHeader("AccessToken", accessToken);
-            response.setHeader("RefreshToken", refreshToken);
+            response.setHeader("authorization", accessToken);
+            HttpCookie httpCookie = ResponseCookie.from("refresh-token", refreshToken)
+                    .maxAge(COOKIE_EXPIRATION)
+                    .httpOnly(true)
+                    .secure(true)
+                    .build();
+            response.setHeader("SET_COOKIE", httpCookie.toString());
 
             getRedirectStrategy().sendRedirect(request, response, result);
 
@@ -64,6 +73,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         }
 
     }
+
     private String setUrlAndToken(String targetUrl, HttpServletResponse response,
                                   CustomOAuth2User oAuth2User) {
 
@@ -81,6 +91,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         return targetUrl;
     }
+
     protected void clearAuthenticationAttributes(HttpServletRequest request,
                                                  HttpServletResponse response) {
         super.clearAuthenticationAttributes(request);

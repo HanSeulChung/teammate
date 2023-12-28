@@ -74,6 +74,7 @@ public class OAuthAttributes {
                 .loginType(loginType)
                 .socialId(oauth2UserInfo.getId())
                 .email(oauth2UserInfo.getEmail())
+                .name(oauth2UserInfo.getName())
                 .authority(Authority.USER)
                 .isAuthenticatedEmail(true)
                 .build();
