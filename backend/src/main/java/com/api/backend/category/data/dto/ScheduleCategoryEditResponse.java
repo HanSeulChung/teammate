@@ -1,14 +1,17 @@
 package com.api.backend.category.data.dto;
 
+import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.type.CategoryType;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
 @Builder
+@ToString
 public class ScheduleCategoryEditResponse {
 
   private Long categoryId;
@@ -18,14 +21,14 @@ public class ScheduleCategoryEditResponse {
   private LocalDateTime updateDt;
   private String color;
 
-  public static ScheduleCategoryEditResponse to(ScheduleCategoryDto scheduleCategoryDto) {
+  public static ScheduleCategoryEditResponse from(ScheduleCategory scheduleCategory) {
     return ScheduleCategoryEditResponse.builder()
-        .categoryId(scheduleCategoryDto.getCategoryId())
-        .updateTeamParticipantId(scheduleCategoryDto.getCreateParticipantId())
-        .categoryName(scheduleCategoryDto.getCategoryName())
-        .categoryType(scheduleCategoryDto.getCategoryType())
+        .categoryId(scheduleCategory.getScheduleCategoryId())
+        .updateTeamParticipantId(scheduleCategory.getCreateParticipantId())
+        .categoryName(scheduleCategory.getCategoryName())
+        .categoryType(scheduleCategory.getCategoryType())
         .updateDt(LocalDateTime.now())
-        .color(scheduleCategoryDto.getColor())
+        .color(scheduleCategory.getColor())
         .build();
   }
 }
