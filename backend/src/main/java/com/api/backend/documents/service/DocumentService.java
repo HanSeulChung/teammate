@@ -3,6 +3,7 @@ package com.api.backend.documents.service;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 
+import com.api.backend.comment.data.repository.CommentRepository;
 import com.api.backend.documents.data.dto.DeleteAllDocsInTeamResponse;
 import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentInitRequest;
@@ -40,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DocumentService {
   private final MongoTemplate mongoTemplate;
   private final DocumentsRepository documentsRepository;
+  private final CommentRepository commentRepository;
   private final DocumentAndCommentValidCheck validCheck;
 
   public Page<Documents> getDocsList(Long teamId, Principal principal, Pageable pageable, LocalDate startDt, LocalDate endDt) {
@@ -107,7 +109,9 @@ public class DocumentService {
     } else {
       validCheck.validDocumentByWriterId(validDocument.getWriterId(), teamParticipant.getTeamParticipantsId());
     }
-    documentsRepository.deleteById(documentId);
+
+    commentRepository.deleteAll(validDocument.getCommentIds());
+    documentsRepository.delete(validDocument);
 
     return DeleteDocsResponse.builder()
         .id(validDocument.getId())
