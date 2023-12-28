@@ -14,4 +14,5 @@ public class ScheduleCategoryDeleteRequest {
   private Long teamId;
   private Long participantId;
   private boolean isMoved;
+  private Long newCategoryId;
 }
