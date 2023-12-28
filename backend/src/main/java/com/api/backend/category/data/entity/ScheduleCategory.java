@@ -41,6 +41,8 @@ public class ScheduleCategory extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private CategoryType categoryType;
 
+  private Long createParticipantId;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
   private Team team;
