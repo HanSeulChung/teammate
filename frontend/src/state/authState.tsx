@@ -42,8 +42,7 @@ export const refreshTokenState = atom({
 // 사용자 정보 상태
 export const userState = atom({
   key: "userState",
-  default: null as { id: string; name: string } | null,
-  // effects_UNSTABLE: [persistAtom],
+  default: null as { id: string; name: string; email: string } | null,
 });
 
 // 리프레시 토큰 저장 함수
@@ -145,11 +144,6 @@ export const selectedTeamSizeState = atom({
   })(),
 });
 
-// 마이페이지 선택된 팀 상태
-// export const selectedTeamState = atom({
-//   key: "selectedTeam",
-//   default: "",
-// });
 export const selectedTeamState = atom<string | null>({
   key: "selectedTeamState",
   default: null,
@@ -157,19 +151,6 @@ export const selectedTeamState = atom<string | null>({
 
 // 선택된 팀 상태 관련 함수
 export const useSelectedTeamState = () => useRecoilState(selectedTeamState);
-
-// export const userState = atom<User | null>({
-//   key: "userState",
-//   default: null,
-
-//   effects_UNSTABLE: [
-//     ({ onSet }) => {
-//       onSet((newValue) => {
-//         window.sessionStorage.setItem("user", JSON.stringify(newValue));
-//       });
-//     },
-//   ],
-// });
 
 // 마이페이지 선택된 팀 정보 상태
 export const selectedTeamInfoState = atom({
