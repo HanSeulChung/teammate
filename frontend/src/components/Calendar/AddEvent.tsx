@@ -1,16 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import styled from "styled-components";
+import Select, { MultiValue } from 'react-select';
+// import SelectTeamMember from "./SelectTeamMember.tsx";
 
 type AddEventProps = {
   originEvent: any,
   setEventList: React.Dispatch<React.SetStateAction<any>>,
+  myTeamMemberId: number,
 }
 
-const AddEvent = ({ originEvent, setEventList }: AddEventProps) => {
+const AddEvent = ({ originEvent, setEventList, myTeamMemberId }: AddEventProps) => {
   // 현재 페이지의 팀 아이디
   const { teamId } = useParams();
+
+  // 팀원 목록 값
+  const  [teamParticipants, setTeamParticipants] = useState<any[]>([]);
+
+  interface ITeamMemberList {
+    value: number;
+    label: string;
+  }
+
+  // 팀원 닉네임과 아이디만 가져오기
+  const teamMemberList = (response: any[]): ITeamMemberList[] => {
+    return response.map(res => ({
+      value: res.teamParticipantsId,
+      label: res.teamNickName,
+    }))
+  }
+
+  // 해당 페이지의 팀원목록 가져오기
+  const fetchParticipants = async () => {
+    try {
+      const response = await axiosInstance.get(`/team/${teamId}/participant/list`, {});
+      console.log("임포트 셀렉트 컴포넌트 -> ", response);
+      
+      const memberList = teamMemberList(response.data);
+      setTeamParticipants(memberList);
+      console.log("임포트 셀렉트 컴포넌트 스테이트 -> ", teamParticipants);
+      
+    } catch (error) {
+      console.error("Error fetching participants:", error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchParticipants();
+  }, [teamId]);
 
   // input값 담아둘 state
   const [eventChange, setEventChange] = useState({
@@ -23,19 +61,27 @@ const AddEvent = ({ originEvent, setEventList }: AddEventProps) => {
     endDt: originEvent.end,
     repeatCycle: null,
     color: "#ff0000",
+    createParticipantId: myTeamMemberId,
     teamParticipantsIds: [],
   })
 
+  // 참여자 외의 정보 입력값 핸들링
   const handleEventChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setEventChange((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  // 수정중 토글 여부
-  // useEffect(() => {
-  //   if (isEdit) {
-  //     setEventChange(originEvent);
-  //   }
-  // }, [isEdit])
+  // 참여자 정보 입력값 핸들링
+  const handleEventMemberChange = (newValue: MultiValue<any>) => {
+    setEventChange((prev) => ({ ...prev, teamParticipantsIds: newValue as any }));
+  };
+
+  // 작성버튼 눌렀을때 참여자 아이디만 저장
+  const handleMemberIds = () => {
+    // teamParticipantsIds 배열에서 value 값만 추출하여 새로운 배열 생성
+    const valuesArray: number[] = teamParticipants.map((option) => option.value);
+    console.log('Values Array:', valuesArray);
+    handleEventMemberChange(valuesArray);
+  };
 
   // 새 일정 등록 요청
   const handleScheduleSubmit = async (e: any) => {
@@ -57,33 +103,6 @@ const AddEvent = ({ originEvent, setEventList }: AddEventProps) => {
       console.log(error);
     }
   };
-
-  // 일정 수정 요청
-  // const handleScheduleModify = async (e: any) => {
-  //   e.preventDefault();
-  //   try {
-  //     const res = await axiosInstance.put("/schedules", newEvent, {
-  //       headers: {
-  //         "Content-Type": "application/json"
-  //       },
-  //     });
-  //     if (res.status === 201) {
-  //       setEventChange({
-  //         id: res.data.id,
-  //         title: res.data.title,
-  //         start: res.data.start,
-  //         end: res.data.end,
-  //         contents: res.data.contents,
-  //         place: res.data.place,
-  //         groupId: res.data.groupId,
-  //       });
-  //       // setNewEvent()
-  //       console.log(res.data);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   return (
     // <EventForm>
@@ -157,7 +176,6 @@ const AddEvent = ({ originEvent, setEventList }: AddEventProps) => {
           <option value="3">미팅</option>
         </select>
       </div>
-      
       <div className='col-span-2'>
         <label htmlFor="color" className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
         <select id="color" name="color" value={eventChange.color} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'>
@@ -166,17 +184,35 @@ const AddEvent = ({ originEvent, setEventList }: AddEventProps) => {
           <option value="#7aac7a">초록</option>
         </select>
       </div>
-
       <div className='col-span-2'>
         <label htmlFor="teamParticipantsIds" className='block mt-2 mb-2 text-sm font-medium text-gray-900'>참여자</label>
-        <input id="teamParticipantsIds" value={eventChange.teamParticipantsIds} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-4'></input>
+        <Select
+          defaultValue={[teamParticipants[0]]}
+          isMulti
+          name="teamParticipantsIds"
+          classNamePrefix="select"
+          id="teamParticipantsIds" 
+          options={teamParticipants}
+          value={eventChange.teamParticipantsIds}
+          onChange={(newValue: MultiValue<any>) => {
+            handleEventMemberChange(newValue);
+            console.log("뉴 밸류 -> ",newValue);
+            console.log("뉴 밸류 에서 접근 -> ",newValue[0]);
+            console.log("뉴 밸류 에서 접근접근 -> ",newValue[0]['value']);
+            console.log("이벤트체인지 -> ",eventChange);
+          }}
+          className='basic-multi-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-4' 
+        />
+       {/* <input id="teamParticipantsIds" value={eventChange.teamParticipantsIds} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-4'></input> */}
       </div>
         <CommonSubmitBtn
-          onClick={handleScheduleSubmit}
+          onClick={(e: any) => {
+            handleMemberIds();
+            handleScheduleSubmit(e);
+          }}
           className='mt-2'
         >등록</CommonSubmitBtn>
     </form>
-    // </EventForm>
   );
 };
 

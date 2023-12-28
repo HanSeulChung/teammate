@@ -6,11 +6,11 @@ import styled from "styled-components";
 type EditEventProps = {
   isEdit: boolean,
   originEvent: any,
-  setEventList: React.Dispatch<React.SetStateAction<any>>,
+  // setEventList: React.Dispatch<React.SetStateAction<any>>,
   toggleIsEdit: () => void,
 }
 
-const EditEvent = ({ isEdit, originEvent, setEventList, toggleIsEdit }: EditEventProps) => {
+const EditEvent = ({ isEdit, originEvent, toggleIsEdit }: EditEventProps) => {
   // 현재 페이지의 팀 아이디
   const { teamId } = useParams();
 
