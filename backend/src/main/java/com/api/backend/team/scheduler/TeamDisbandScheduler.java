@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
-public class TeamRestoreScheduler {
+public class TeamDisbandScheduler {
 
   private final FileProcessService fileProcessService;
   private final TeamRepository teamRepository;
 
-  public TeamRestoreScheduler(TeamRepository teamRepository, FileProcessService fileProcessService) {
+  public TeamDisbandScheduler(TeamRepository teamRepository, FileProcessService fileProcessService) {
     this.teamRepository = teamRepository;
     this.fileProcessService = fileProcessService;
   }
