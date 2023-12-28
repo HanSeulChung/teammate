@@ -8,6 +8,8 @@ import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_IN_TE
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_WRITER_EXISTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.PRINCIPAL_IS_NULL;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 
 import com.api.backend.comment.data.entity.Comment;
@@ -16,8 +18,10 @@ import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
+import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.data.repository.TeamParticipantsRepository;
+import com.api.backend.team.data.repository.TeamRepository;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +33,8 @@ import org.springframework.stereotype.Component;
 public class DocumentAndCommentValidCheck {
   private final DocumentsRepository documentsRepository;
   private final CommentRepository commentRepository;
+  private final TeamRepository teamRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
-
 
   public Long getMemberId(Principal principal){
     if (principal == null) {
@@ -85,5 +89,15 @@ public class DocumentAndCommentValidCheck {
     if (commentWriterId != teamParticipantsId) {
       throw new CustomException(COMMENT_UNMATCH_WRITER_ID_EXCEPTION);
     }
+  }
+
+  public Team validTeamToDelete(Long teamId) {
+    Team team = teamRepository.findById(teamId)
+        .orElseThrow(() -> new CustomException(TEAM_NOT_FOUND_EXCEPTION));
+
+    if (team.isDelete() == false) {
+      throw new CustomException(TEAM_NOT_DELETEING_EXCEPTION);
+    }
+    return team;
   }
 }
