@@ -59,4 +59,9 @@ public class Team extends BaseEntity {
       profileUrl = url;
     }
   }
+
+  public void changeRestoreInfo() {
+    this.isDelete = true;
+    this.restorationDt = null;
+  }
 }

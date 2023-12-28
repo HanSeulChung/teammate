@@ -30,7 +30,7 @@ public class TeamDisbandScheduler {
 
     for (Team team : teams) {
       if (!team.getRestorationDt().isAfter(LocalDate.now())) {
-        team.setDelete(true);
+        team.changeRestoreInfo();
         fileProcessService.deleteImage(team.getProfileUrl());
         log.info("현재 날짜 {}에 해당 팀을 삭제(soft delete)한 뒤 팀 프로필 이미지를 삭제하였습니다.", LocalDateTime.now());
       }
