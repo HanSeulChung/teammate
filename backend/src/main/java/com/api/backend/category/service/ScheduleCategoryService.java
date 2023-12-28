@@ -54,6 +54,7 @@ public class ScheduleCategoryService {
         .categoryName(scheduleCategoryRequest.getCategoryName())
         .categoryType(scheduleCategoryRequest.getCategoryType())
         .color(scheduleCategoryRequest.getColor())
+        .createParticipantId(scheduleCategoryRequest.getCreateTeamParticipantId())
         .build();
     scheduleCategoryRepository.save(scheduleCategory);
     log.info("일정 카테고리가 성공적으로 추가되었습니다.");
