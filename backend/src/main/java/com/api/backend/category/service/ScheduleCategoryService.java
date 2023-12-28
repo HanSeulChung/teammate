@@ -43,7 +43,7 @@ public class ScheduleCategoryService {
 
   @Transactional
   public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest,
-      Long teamParticipantId) {
+      Long memberId) {
     Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
@@ -58,14 +58,14 @@ public class ScheduleCategoryService {
 
 
   public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
-      Pageable pageable, Long teamId, Long teamParticipantId) {
+      Pageable pageable, Long teamId, Long memberId) {
     return scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable,
         teamId);
   }
 
   @Transactional
   public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest,
-      Long teamParticipantId) {
+      Long memberId) {
     findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
     ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
         scheduleCategoryEditRequest.getCategoryId());
