@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import profileImg from "../../assets/profileImg.png";
 import { Team, TeamParticipant } from "../../interface/interface";
@@ -12,6 +12,7 @@ const TeamMembers = () => {
     [],
   );
   const { teamId } = useParams();
+  const navigate = useNavigate();
 
   //팀 정보 가져오기
   useEffect(() => {
@@ -70,8 +71,15 @@ const TeamMembers = () => {
     };
   };
 
+  const navigateToTeamPage = () => {
+    navigate(`/team/${teamId}`);
+  };
+
   return (
     <div>
+      <MoveTeamPage>
+        <div onClick={navigateToTeamPage}>팀 페이지로 이동</div>
+      </MoveTeamPage>
       <TeamProfileContainer>
         <TeamProfileTitle>{team?.name} 프로필</TeamProfileTitle>
         <TeamInfoContainer>
@@ -180,4 +188,14 @@ const MemberInput = styled.input`
   &:hover {
     background-color: #f0f0f0;
   }
+`;
+
+const MoveTeamPage = styled.div`
+  text-align: right;
+  margin-top: 20px;
+  position: absolute;
+  top: 100px;
+  right: 250px;
+  margin: 20px;
+  cursor: pointer;
 `;

@@ -111,7 +111,6 @@ export const UserProfileInfo = styled.div`
 
 export const UserProfileTitle = styled.h2`
   font-size: 1.5rem;
-  margin-bottom: 30px;
   text-align: center;
 `;
 
@@ -121,7 +120,7 @@ export const TeamProfileBox = styled.div`
 `;
 
 export const Button = styled.button`
-  margin-top: 10px;
+  margin-top: 20px;
   padding: 8px 16px;
   background-color: #a3cca3;
   color: white;

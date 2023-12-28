@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { isAuthenticatedState, teamListState, userState } from "../../state/authState";
+import { useRecoilState } from "recoil";
+import { isAuthenticatedState, userState } from "../../state/authState";
 import axios, { AxiosError } from "axios";
 import axiosInstance from "../../axios";
 import styled from "styled-components";
@@ -13,20 +13,10 @@ const Header = () => {
     useRecoilState(isAuthenticatedState);
   const navigate = useNavigate();
   const location = useLocation();
-  const teamList = useRecoilValue(teamListState);
-  const [teamName, setTeamName] = useState("");
+  const [teamName] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
-  const [user, setUser] = useRecoilState(userState);
-
+  const [, setUser] = useRecoilState(userState);
   const isTeamPage = location.pathname.startsWith("/team/");
-
-  // const handleTeamMembersClick = () => {
-  //   if (isTeamPage) {
-  //     const currentPath = window.location.pathname;
-  //     // navigate(`${currentPath}/teamMembers`);
-  //     navigate(`${currentPath}/teamLeader`);
-  //   }
-  // };
 
   const handleTeamProfileClick = async () => {
     if (isTeamPage) {
@@ -45,11 +35,9 @@ const Header = () => {
           } else if (userTeamRole === "MATE") {
             navigate(`/team/${teamId}/teamMembers`);
           } else {
-            // Handle other roles if needed
           }
         } catch (error) {
           console.error("Error fetching user team role:", error);
-          // Handle error if needed
         }
       }
     }
@@ -85,24 +73,6 @@ const Header = () => {
       }
     }
   };
-  //페이지 닫으면 자동 로그아웃
-  // useEffect(() => {
-  //   const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
-  //     if (isLogoutTriggered) {
-  //       // 사용자가 로그아웃을 클릭한 경우의 로직
-  //       localStorage.clear();
-  //       setIsAuthenticated(false);
-  //       setUser(null);
-  //       onLogoutSuccess();
-  //     }
-  //   };
-
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, [isLogoutTriggered, setIsAuthenticated, setUser]);
 
   const handleNotificationClick = () => {
     setModalOpen(true);
@@ -123,9 +93,7 @@ const Header = () => {
                   <HeaderImg src={logo} />
                 </Link>
               </div>
-              <div style={{ marginLeft: "10px" }}>
-                {isTeamPage && <h3>{teamName}</h3>}
-              </div>
+              <Div>{isTeamPage && <h3>{teamName}</h3>}</Div>
             </LogoContainer>
           </>
         ) : (
@@ -141,12 +109,7 @@ const Header = () => {
           {isAuthenticated ? (
             <>
               <li>
-                <span
-                  onClick={handleLogout}
-                  style={{ cursor: "pointer", color: "#333333" }}
-                >
-                  로그아웃
-                </span>
+                <Span onClick={handleLogout}>로그아웃</Span>
               </li>
               <li>
                 {isTeamPage ? (
@@ -213,4 +176,12 @@ export const HeaderImg = styled.img`
   width: 50px;
   height: 50px;
   margin: 15px 10px 10px 10px;
+`;
+
+export const Div = styled.div`
+  margin-left: 10px;
+`;
+export const Span = styled.span`
+  cursor: pointer;
+  color: #333333;
 `;
