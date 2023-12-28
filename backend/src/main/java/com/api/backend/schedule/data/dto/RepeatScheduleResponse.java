@@ -50,6 +50,7 @@ public class RepeatScheduleResponse {
         .place(repeatSchedule.getPlace())
         .repeatCycle(repeatSchedule.getRepeatCycle())
         .month(repeatSchedule.getMonth())
+        .color(repeatSchedule.getColor())
         .day(repeatSchedule.getDay())
         .dayOfWeek(repeatSchedule.getDayOfWeek())
         .teamParticipantsIds(

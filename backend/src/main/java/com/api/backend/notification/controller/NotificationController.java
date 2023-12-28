@@ -53,6 +53,18 @@ public class NotificationController {
     );
   }
 
+  @ApiOperation(value = "맴버 알림 구독 API",notes = "emitter를 반환한다.")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "업데이트된 팀 정보를 반환"),
+      @ApiResponse(code = 500, message = "맴버가 아닌 경우")
+  })
+  @GetMapping(value = "/subscribe/member", produces = "text/event-stream")
+  public SseEmitter subscribeMemberRequest(
+      @ApiIgnore Principal principal
+  ) {
+    return emitterService.setMemberEmitter(Long.valueOf(principal.getName()));
+  }
+
   @ApiOperation(value = "팀 알림 list API",notes = "팀에 관한 알람을 받을 수 있다.")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "page처리된 dto를 받을 수 있다."),

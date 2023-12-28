@@ -30,4 +30,5 @@ public class SimpleToRepeatScheduleEditRequest {
   private RepeatCycle repeatCycle;
   private List<Long> teamParticipantsIds;
   private String color;
+  private Long updateParticipantId;
 }

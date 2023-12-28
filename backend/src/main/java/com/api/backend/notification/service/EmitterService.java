@@ -2,6 +2,7 @@ package com.api.backend.notification.service;
 
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.exception.type.ErrorCode;
+import com.api.backend.member.data.repository.MemberRepository;
 import com.api.backend.notification.data.repository.EmitterRepository;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.api.backend.team.service.TeamParticipantsService;
@@ -21,6 +22,7 @@ public class EmitterService {
   private final EmitterRepository emitterRepository;
   private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
   private final TeamParticipantsService teamParticipantsService;
+  private final MemberRepository memberRepository;
   private final TeamService teamService;
   private static final String DUMMY_DATA = "dummy data";
 
@@ -44,7 +46,9 @@ public class EmitterService {
     );
 
     emitter.onCompletion(() -> emitterRepository.deleteTeamParticipantEmitter(teamId, teamParticipantsId));
-    emitter.onTimeout(() -> emitterRepository.deleteTeamParticipantEmitter(teamId, teamParticipantsId));
+    emitter.onTimeout(() ->
+        emitterRepository.deleteTeamParticipantEmitter(teamId, teamParticipantsId)
+    );
 
 
     sendNotification(emitter, DUMMY_DATA);
@@ -52,10 +56,29 @@ public class EmitterService {
     return emitter;
   }
 
-  public static String createEmitterIdByTeamIdAndTeamParticipantId(Long teamId, Long teamParticipantId) {
-    return teamId + "_" + teamParticipantId;
-  }
+  /**
+   * 회원은 구독을 수행한다.
+   **/
+  public SseEmitter setMemberEmitter(
+      Long memberId
+  ) {
+    if (!memberRepository.existsById(memberId)) {
+      throw new CustomException(ErrorCode.MEMBER_NOT_FOUND_EXCEPTION);
+    }
 
+    SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
+    emitterRepository.saveMemberEmitter(memberId,emitter);
+
+    emitter.onCompletion(() -> emitterRepository.deleteMemberEmitter(memberId));
+    emitter.onTimeout(() ->
+        emitterRepository.deleteMemberEmitter(memberId)
+    );
+
+
+    sendNotification(emitter, DUMMY_DATA);
+
+    return emitter;
+  }
 
   /**
    * 메시지 전송

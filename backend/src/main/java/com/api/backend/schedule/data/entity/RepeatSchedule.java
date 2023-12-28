@@ -59,6 +59,8 @@ public class RepeatSchedule extends BaseEntity {
   @Setter
   private Long originRepeatScheduleId;
 
+  private Long createParticipantId;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
   private Team team;
@@ -72,4 +74,28 @@ public class RepeatSchedule extends BaseEntity {
   @OneToMany(mappedBy = "repeatSchedule", cascade = CascadeType.ALL)
   private List<TeamParticipantsSchedule> teamParticipantsSchedules;
 
+  public void setRepeatScheduleInfo(ScheduleCategory scheduleCategory, String title, String content,
+      LocalDateTime startDt, LocalDateTime endDt, String place, String color) {
+    if (scheduleCategory != null) {
+      this.scheduleCategory = scheduleCategory;
+    }
+    if (title != null){
+      this.title = title;
+    }
+    if (content != null) {
+      this.content = content;
+    }
+    if (startDt != null) {
+      this.startDt = startDt;
+    }
+    if (endDt != null) {
+      this.endDt = endDt;
+    }
+    if (place != null) {
+      this.place = place;
+    }
+    if (color != null) {
+      this.color = color;
+    }
+  }
 }

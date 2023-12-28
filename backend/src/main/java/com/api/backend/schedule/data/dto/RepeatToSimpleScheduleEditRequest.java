@@ -27,5 +27,5 @@ public class RepeatToSimpleScheduleEditRequest {
   private String place;
   private List<Long> teamParticipantsIds;
   private String color;
-
+  private Long updateParticipantId;
 }
