@@ -1,5 +1,6 @@
 package com.api.backend.team.scheduler;
 
+import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.file.service.FileProcessService;
 import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.repository.TeamRepository;
@@ -40,9 +41,16 @@ public class TeamDisbandScheduler {
   @Scheduled(cron = "0 */2 * * * ?") // test cron
   @Transactional
   public void teamDisbandCheckAndDelete() {
-    List<Long> teamIds = teamRepository.findIdsByIsDeleteIsTrue();
+    List<Team> teams = teamRepository.findAllByIsDeleteIsTrue();
 
-    teamRepository.deleteAllByIdIn(teamIds);
+    for (Team team : teams) {
+      List<ScheduleCategory> scheduleCategories = team.getScheduleCategories();
+
+      if (!scheduleCategories.isEmpty()) {
+
+      }
+    }
+
   }
 
 }

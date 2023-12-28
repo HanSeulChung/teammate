@@ -1,12 +1,12 @@
 package com.api.backend.team.data.entity;
 
+import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.schedule.data.entity.RepeatSchedule;
 import com.api.backend.schedule.data.entity.SimpleSchedule;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,17 +40,21 @@ public class Team extends BaseEntity {
   private String inviteLink;
   private String profileUrl;
 
-  @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "team")
   @Builder.Default
   private List<TeamParticipants> teamParticipants = new ArrayList<>();
 
-  @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "team")
   @Builder.Default
   private List<SimpleSchedule> simpleSchedules = new ArrayList<>();
 
-  @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "team")
   @Builder.Default
   private List<RepeatSchedule> repeatSchedules = new ArrayList<>();
+
+  @OneToMany(mappedBy = "team")
+  @Builder.Default
+  private List<ScheduleCategory> scheduleCategories = new ArrayList<>();
 
   public void updateNameAndProfileUrl(String nickName, String url) {
     if (!name.equals(nickName)) {
