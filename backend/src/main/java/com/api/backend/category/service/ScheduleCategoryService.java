@@ -25,6 +25,7 @@ import com.api.backend.team.service.TeamParticipantsService;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ScheduleCategoryService {
 
   private final ScheduleCategoryRepository scheduleCategoryRepository;
@@ -54,6 +56,7 @@ public class ScheduleCategoryService {
         .color(scheduleCategoryRequest.getColor())
         .build();
     scheduleCategoryRepository.save(scheduleCategory);
+    log.info("일정 카테고리가 성공적으로 추가되었습니다.");
     return scheduleCategory;
   }
 
@@ -61,8 +64,11 @@ public class ScheduleCategoryService {
   public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
       Pageable pageable, Long teamId, Long memberId) {
     teamParticipantsService.getTeamParticipants(teamId, memberId);
-    return scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable,
+    Page<ScheduleCategory> categoryPagesByCategoryType = scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(
+        categoryType, pageable,
         teamId);
+    log.info("카테고리 유형별 조회에 성공하였습니다.");
+    return categoryPagesByCategoryType;
   }
 
   @Transactional
@@ -73,7 +79,9 @@ public class ScheduleCategoryService {
     ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
         scheduleCategoryEditRequest.getCategoryId());
     scheduleCategory.editScheduleCategory(scheduleCategoryEditRequest);
-    return scheduleCategoryRepository.save(scheduleCategory);
+    ScheduleCategory editCategory = scheduleCategoryRepository.save(scheduleCategory);
+    log.info("일정 카테고리 수정에 성공하였습니다.");
+    return editCategory;
   }
 
   @Transactional
@@ -95,6 +103,7 @@ public class ScheduleCategoryService {
 
     if (!deleteRequest.isMoved()) {
       scheduleCategoryRepository.delete(category);
+      log.info("일정 카테고리가 성공적으로 삭제되었습니다.");
     } else {
       if (deleteRequest.getNewCategoryId() != null ) {
 
@@ -106,13 +115,14 @@ public class ScheduleCategoryService {
           repeatSchedule.setScheduleCategory(newCategory);
           repeatScheduleRepository.save(repeatSchedule);
         }
-
+        log.info("해당 카테고리에 속한 반복 일정들의 카테고리가 성공적으로 변경되었습니다.");
         for (SimpleSchedule simpleSchedule : simpleSchedules) {
           simpleSchedule.setScheduleCategory(newCategory);
           simpleScheduleRepository.save(simpleSchedule);
         }
-
+        log.info("해당 카테고리에 속한 단순 일정들의 카테고리가 성공적으로 변경되었습니다.");
         scheduleCategoryRepository.delete(category);
+        log.info("일정 카테고리가 성공적으로 삭제되었습니다.");
       }
     }
 
