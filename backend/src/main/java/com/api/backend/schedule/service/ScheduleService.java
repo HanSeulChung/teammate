@@ -368,8 +368,11 @@ public class ScheduleService {
       Long teamParticipantsId) {
     findTeamOrElseThrow(teamId);
     teamParticipantsService.getTeamParticipant(teamId, teamParticipantsId);
-    return simpleScheduleRepository.findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(scheduleId,
+    SimpleSchedule simpleSchedule = simpleScheduleRepository.findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(
+        scheduleId,
         teamId);
+    log.info("단순 일정 상세 조회에 성공하였습니다.");
+    return simpleSchedule;
   }
 
   public RepeatSchedule getRepeatScheduleDetailInfo(Long scheduleId, Long teamId,
