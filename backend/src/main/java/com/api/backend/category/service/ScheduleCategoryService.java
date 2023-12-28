@@ -1,17 +1,28 @@
 package com.api.backend.category.service;
 
+import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_CREATOR_EXISTS_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
 
+import com.api.backend.category.data.dto.ScheduleCategoryDeleteRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryRequest;
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
+import com.api.backend.schedule.data.entity.RepeatSchedule;
+import com.api.backend.schedule.data.entity.SimpleSchedule;
+import com.api.backend.schedule.data.repository.RepeatScheduleRepository;
+import com.api.backend.schedule.data.repository.SimpleScheduleRepository;
 import com.api.backend.team.data.entity.Team;
+import com.api.backend.team.data.entity.TeamParticipants;
+import com.api.backend.team.data.repository.TeamParticipantsRepository;
 import com.api.backend.team.data.repository.TeamRepository;
-import java.security.Principal;
+import com.api.backend.team.data.type.TeamRole;
+import com.api.backend.team.service.TeamParticipantsService;
+import java.util.List;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,10 +36,14 @@ public class ScheduleCategoryService {
 
   private final ScheduleCategoryRepository scheduleCategoryRepository;
   private final TeamRepository teamRepository;
-
+  private final TeamParticipantsRepository teamParticipantsRepository;
+  private final TeamParticipantsService teamParticipantsService;
+  private final SimpleScheduleRepository simpleScheduleRepository;
+  private final RepeatScheduleRepository repeatScheduleRepository;
 
   @Transactional
-  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest, Long teamParticipantId) {
+  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest,
+      Long teamParticipantId) {
     Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
@@ -44,11 +59,13 @@ public class ScheduleCategoryService {
 
   public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
       Pageable pageable, Long teamId, Long teamParticipantId) {
-    return scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable, teamId);
+    return scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable,
+        teamId);
   }
 
   @Transactional
-  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest, Long teamParticipantId) {
+  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest,
+      Long teamParticipantId) {
     findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
     ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
         scheduleCategoryEditRequest.getCategoryId());
@@ -57,11 +74,46 @@ public class ScheduleCategoryService {
   }
 
   @Transactional
-  public void delete(Long categoryId, Long teamParticipantId) {
-    findCategoryOrElseThrow(categoryId);
-    scheduleCategoryRepository.deleteById(categoryId);
-  }
+  public void delete(ScheduleCategoryDeleteRequest deleteRequest, Long memberId) {
+    ScheduleCategory category = findCategoryOrElseThrow(deleteRequest.getCategoryId());
+    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(
+        deleteRequest.getTeamId(), memberId);
 
+    if (teamParticipants.getTeamRole() == TeamRole.LEADER) {
+      if (teamParticipantsRepository.existsByTeamParticipantsId(
+          category.getCreateParticipantId())) {
+        throw new CustomException(SCHEDULE_CATEGORY_CREATOR_EXISTS_EXCEPTION);
+      }
+    } else {
+      if (deleteRequest.getParticipantId() != teamParticipants.getTeamParticipantsId()) {
+        throw new CustomException(SCHEDULE_CATEGORY_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
+      }
+    }
+
+    if (!deleteRequest.isMoved()) {
+      scheduleCategoryRepository.delete(category);
+    } else {
+      if (deleteRequest.getNewCategoryId() != null ) {
+
+        ScheduleCategory newCategory = findCategoryOrElseThrow(deleteRequest.getNewCategoryId());
+        List<RepeatSchedule> repeatSchedules = category.getRepeatSchedules();
+        List<SimpleSchedule> simpleSchedules = category.getSimpleSchedule();
+
+        for (RepeatSchedule repeatSchedule : repeatSchedules) {
+          repeatSchedule.setScheduleCategory(newCategory);
+          repeatScheduleRepository.save(repeatSchedule);
+        }
+
+        for (SimpleSchedule simpleSchedule : simpleSchedules) {
+          simpleSchedule.setScheduleCategory(newCategory);
+          simpleScheduleRepository.save(simpleSchedule);
+        }
+
+        scheduleCategoryRepository.delete(category);
+      }
+    }
+
+  }
 
   private Team findTeamOrElseThrow(Long teamId) {
     return teamRepository.findById(teamId)
