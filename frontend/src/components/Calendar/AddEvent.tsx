@@ -2,17 +2,53 @@ import { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import styled from "styled-components";
+import Select, { MultiValue } from 'react-select';
+// import SelectTeamMember from "./SelectTeamMember.tsx";
 
-type EditEventProps = {
-  isEdit: boolean,
+type AddEventProps = {
   originEvent: any,
-  // setEventList: React.Dispatch<React.SetStateAction<any>>,
-  toggleIsEdit: () => void,
+  setEventList: React.Dispatch<React.SetStateAction<any>>,
+  myTeamMemberId: number,
 }
 
-const EditEvent = ({ isEdit, originEvent, toggleIsEdit }: EditEventProps) => {
+const AddEvent = ({ originEvent, setEventList, myTeamMemberId }: AddEventProps) => {
   // 현재 페이지의 팀 아이디
   const { teamId } = useParams();
+
+  // 팀원 목록 값
+  const  [teamParticipants, setTeamParticipants] = useState<any[]>([]);
+
+  interface ITeamMemberList {
+    value: number;
+    label: string;
+  }
+
+  // 팀원 닉네임과 아이디만 가져오기
+  const teamMemberList = (response: any[]): ITeamMemberList[] => {
+    return response.map(res => ({
+      value: res.teamParticipantsId,
+      label: res.teamNickName,
+    }))
+  }
+
+  // 해당 페이지의 팀원목록 가져오기
+  const fetchParticipants = async () => {
+    try {
+      const response = await axiosInstance.get(`/team/${teamId}/participant/list`, {});
+      console.log("임포트 셀렉트 컴포넌트 -> ", response);
+      
+      const memberList = teamMemberList(response.data);
+      setTeamParticipants(memberList);
+      console.log("임포트 셀렉트 컴포넌트 스테이트 -> ", teamParticipants);
+      
+    } catch (error) {
+      console.error("Error fetching participants:", error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchParticipants();
+  }, [teamId]);
 
   // input값 담아둘 state
   const [eventChange, setEventChange] = useState({
@@ -25,41 +61,43 @@ const EditEvent = ({ isEdit, originEvent, toggleIsEdit }: EditEventProps) => {
     endDt: originEvent.end,
     repeatCycle: null,
     color: "#ff0000",
+    createParticipantId: myTeamMemberId,
     teamParticipantsIds: [],
   })
 
+  // 참여자 외의 정보 입력값 핸들링
   const handleEventChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setEventChange((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  // 수정중 토글 여부
-  useEffect(() => {
-    if (isEdit) {
-      setEventChange(originEvent);
-    }
-  }, [isEdit])
+  // 참여자 정보 입력값 핸들링
+  const handleEventMemberChange = (newValue: MultiValue<any>) => {
+    setEventChange((prev) => ({ ...prev, teamParticipantsIds: newValue as any }));
+  };
 
-  // 일정 수정 요청
-  const handleScheduleModify = async (e: any) => {
+  // 작성버튼 눌렀을때 참여자 아이디만 저장
+  const handleMemberIds = () => {
+    // teamParticipantsIds 배열에서 value 값만 추출하여 새로운 배열 생성
+    const valuesArray: number[] = teamParticipants.map((option) => option.value);
+    console.log('Values Array:', valuesArray);
+    handleEventMemberChange(valuesArray);
+  };
+
+  // 새 일정 등록 요청
+  const handleScheduleSubmit = async (e: any) => {
     e.preventDefault();
+    // console.log("입력제목값000000000000 => "+eventChange.title);
+    // console.log("0000000000000000"+JSON.stringify(newEvent));
+    // console.log("111111111111111111111111111"+JSON.stringify(newEvent));
     try {
-      const res = await axiosInstance.put(`/team/${teamId}/schedules/simple`, eventChange, {
+      const res = await axiosInstance.post(`/team/${teamId}/schedules`, eventChange, {
         headers: {
           "Content-Type": "application/json"
         },
       });
       if (res.status === 201) {
-        // setEventChange({
-        //   id: res.data.id,
-        //   title: res.data.title,
-        //   start: res.data.start,
-        //   end: res.data.end,
-        //   contents: res.data.contents,
-        //   place: res.data.place,
-        //   groupId: res.data.groupId,
-        // });
-        // setNewEvent()
         console.log(res.data);
+        setEventList(res.data);
       }
     } catch (error) {
       console.log(error);
@@ -69,7 +107,7 @@ const EditEvent = ({ isEdit, originEvent, toggleIsEdit }: EditEventProps) => {
   return (
     // <EventForm>
     <form className="p-4 md:p-5">
-      <h2 className="text-lg font-semibold text-gray-900">일정 수정</h2>
+      <h2 className="text-lg font-semibold text-gray-900">새 일정 등록</h2>
       <div>
         <label htmlFor="startDt" className='block mt-2 mb-2 text-sm font-medium text-gray-900'>시작시간 - 끝시간</label>
         <input
@@ -132,35 +170,53 @@ const EditEvent = ({ isEdit, originEvent, toggleIsEdit }: EditEventProps) => {
       </div>
       <div className='col-span-2'>
         <label htmlFor="categoryId" className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리</label>
-        <select id="categoryId" value={eventChange.categoryId} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'>
+        <select id="categoryId" name='categoryId' value={eventChange.categoryId} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'>
           <option value="1">주간회의</option>
           <option value="2">회의</option>
           <option value="3">미팅</option>
         </select>
       </div>
-      
       <div className='col-span-2'>
         <label htmlFor="color" className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
-        <select id="color" value={eventChange.color} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'>
+        <select id="color" name="color" value={eventChange.color} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'>
           <option value="#E21D29">빨강</option>
           <option value="#336699">파랑</option>
           <option value="#7aac7a">초록</option>
         </select>
       </div>
-
       <div className='col-span-2'>
         <label htmlFor="teamParticipantsIds" className='block mt-2 mb-2 text-sm font-medium text-gray-900'>참여자</label>
-        <input id="teamParticipantsIds" value={eventChange.teamParticipantsIds} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-4'></input>
+        <Select
+          defaultValue={[teamParticipants[0]]}
+          isMulti
+          name="teamParticipantsIds"
+          classNamePrefix="select"
+          id="teamParticipantsIds" 
+          options={teamParticipants}
+          value={eventChange.teamParticipantsIds}
+          onChange={(newValue: MultiValue<any>) => {
+            handleEventMemberChange(newValue);
+            console.log("뉴 밸류 -> ",newValue);
+            console.log("뉴 밸류 에서 접근 -> ",newValue[0]);
+            console.log("뉴 밸류 에서 접근접근 -> ",newValue[0]['value']);
+            console.log("이벤트체인지 -> ",eventChange);
+          }}
+          className='basic-multi-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-4' 
+        />
+       {/* <input id="teamParticipantsIds" value={eventChange.teamParticipantsIds} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-4'></input> */}
       </div>
-      <>
-        <button onClick={handleScheduleModify} className="bg-white border-1 border-gray-300 mr-2">수정완료</button>
-        <button onClick={toggleIsEdit} className="bg-white border-1 border-gray-300">취소</button>
-      </>
+        <CommonSubmitBtn
+          onClick={(e: any) => {
+            handleMemberIds();
+            handleScheduleSubmit(e);
+          }}
+          className='mt-2'
+        >등록</CommonSubmitBtn>
     </form>
   );
 };
 
-export default EditEvent;
+export default AddEvent;
 
 // 스타일드 컴포넌트
 export const EventForm = styled.form`
