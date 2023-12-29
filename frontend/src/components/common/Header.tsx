@@ -84,6 +84,8 @@ const Header = () => {
 
   return (
     <header className="navbar bg-white">
+      <GnbBodyDiv>
+  
       <div className="flex-1">
         {isAuthenticated ? (
           <>
@@ -157,6 +159,7 @@ const Header = () => {
           )}
         </ul>
       </div>
+      </GnbBodyDiv>
     </header>
   );
 };
@@ -168,14 +171,14 @@ export default Header;
 export const LogoContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  // justify-content: center;
 `;
 
 // 헤더 로고 이미지
 export const HeaderImg = styled.img`
   width: 50px;
   height: 50px;
-  margin: 15px 10px 10px 10px;
+  // margin: 15px 10px 10px 10px;
 `;
 
 export const Div = styled.div`
@@ -185,3 +188,10 @@ export const Span = styled.span`
   cursor: pointer;
   color: #333333;
 `;
+
+export const GnbBodyDiv = styled.div`
+width: 100%;
+max-width: 1024px;
+height: 100%;
+margin: 0 auto;
+`
