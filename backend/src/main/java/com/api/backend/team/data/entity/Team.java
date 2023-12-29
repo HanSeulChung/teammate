@@ -1,5 +1,6 @@
 package com.api.backend.team.data.entity;
 
+import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.global.domain.BaseEntity;
 import com.api.backend.schedule.data.entity.RepeatSchedule;
 import com.api.backend.schedule.data.entity.SimpleSchedule;
@@ -51,10 +52,9 @@ public class Team extends BaseEntity {
   @Builder.Default
   private List<RepeatSchedule> repeatSchedules = new ArrayList<>();
 
-  // TODO: 추후 재셋팅 예정
-//  @OneToMany(mappedBy = "team")
-//  private List<Documents> documents = new ArrayList<>();
-
+  @OneToMany(mappedBy = "team")
+  @Builder.Default
+  private List<ScheduleCategory> scheduleCategories = new ArrayList<>();
 
   public void updateNameAndProfileUrl(String nickName, String url) {
     if (!name.equals(nickName)) {
@@ -63,5 +63,10 @@ public class Team extends BaseEntity {
     if (!profileUrl.equals(url)) {
       profileUrl = url;
     }
+  }
+
+  public void changeRestoreInfo() {
+    this.isDelete = true;
+    this.restorationDt = null;
   }
 }

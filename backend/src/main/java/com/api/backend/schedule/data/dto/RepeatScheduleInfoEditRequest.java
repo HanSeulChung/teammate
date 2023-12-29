@@ -44,12 +44,10 @@ public class RepeatScheduleInfoEditRequest {
   private String content;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-  @NotBlank(message = "시작 날짜를 입력해주세요.")
   @Schema(description = "start date", example = "2023-12-15T12:00:00")
   private LocalDateTime startDt;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-  @NotBlank(message = "시작 날짜를 입력해주세요.")
   @Schema(description = "end date", example = "2024-01-15T12:00:00")
   private LocalDateTime endDt;
 
@@ -67,7 +65,7 @@ public class RepeatScheduleInfoEditRequest {
 
   @Schema(description = "edit option", example = "이 일정")
   private EditOption editOption;
-
+  
   @NotNull(message = "updateParticipantId는 필수 값입니다.")
   @Schema(description = "update team participant id", example = "1L")
   private Long updateParticipantId;

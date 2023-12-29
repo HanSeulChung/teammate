@@ -149,7 +149,7 @@ const TeamInfoContainer = styled.div`
 const TeamImage = styled.img`
   max-width: 150px;
   max-height: 150px;
-  border-radius: 50%;
+  border-radius: 20px;
 `;
 
 const SelectContainer = styled.div`
@@ -198,4 +198,7 @@ const MoveTeamPage = styled.div`
   right: 250px;
   margin: 20px;
   cursor: pointer;
+  &:hover {
+    color: #a3cca3;
+  }
 `;

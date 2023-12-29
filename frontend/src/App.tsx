@@ -9,7 +9,7 @@ function App() {
   return (
     <BrowserRouter>
     <FullWidthDiv>
-        <Header />
+      <Header />
       <WrapperDiv>
         <section >
           <Router />
@@ -35,8 +35,8 @@ export const FullWidthDiv = styled.div`
 export const WrapperDiv = styled.div`
   padding: 0 10% 0;
   margin: 0 auto;
-  @media (min-width: 1170px) {
-    max-width: 1170px;
+  @media (max-width: 1024px) {
+    max-width: 1024px;
     min-height: 1080px;
   }
   @media (max-height: 900px) {

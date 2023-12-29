@@ -13,7 +13,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.ServletException;
@@ -35,8 +34,6 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
     private final HttpCookieOauth2AuthorizationRequestRepository cookieOauth2AuthorizationRequestRepository;
-    private final long COOKIE_EXPIRATION = 7776000;
-
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -50,20 +47,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
             TokenDto token = jwtTokenProvider.createToken(oAuth2User.getMemberId().toString(), authService.getAuthorities(authentication));
 
-            String accessToken = token.getAccessToken();
-            String refreshToken = token.getRefreshToken();
-
             authService.saveRefreshToken(oAuth2User.getMemberId().toString(), token.getRefreshToken());
 
-            response.setHeader("authorization", accessToken);
-            HttpCookie httpCookie = ResponseCookie.from("refresh-token", refreshToken)
-                    .maxAge(COOKIE_EXPIRATION)
-                    .httpOnly(true)
-                    .secure(true)
-                    .build();
-            response.setHeader("SET_COOKIE", httpCookie.toString());
-
-            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            getRedirectStrategy().sendRedirect(request, response, getRedirectUrl(targetUrl,token));
 
         } catch (Exception e) {
             throw e;
@@ -75,7 +61,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME).map(Cookie::getValue);
         clearAuthenticationAttributes(request, response);
-        return redirectUri.orElse("/homeview");
+        return redirectUri.orElse("/social-success/");
     }
 
     private String getRedirectUrl(String targetUrl, TokenDto token) {
