@@ -104,7 +104,7 @@ public class DocumentService {
     Documents validDocument = validCheck.findValidDocument(documentId);
     validCheck.validDocumentByTeamId(teamId, validDocument.getTeamId());
 
-    if (teamParticipant.getTeamRole() == TeamRole.LEADER) {
+    if (teamParticipant.getTeamRole() == TeamRole.LEADER && teamParticipant.getTeamParticipantsId() != validDocument.getWriterId()) {
       validCheck.validWriterStatus(validDocument.getWriterId());
     } else {
       validCheck.validDocumentByWriterId(validDocument.getWriterId(), teamParticipant.getTeamParticipantsId());
