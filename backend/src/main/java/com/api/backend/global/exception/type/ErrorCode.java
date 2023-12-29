@@ -18,6 +18,8 @@ public enum ErrorCode {
   INVALID_REPEAT_CYCLE_EXCEPTION(400, "잘못된 반복 주기입니다."),
   NON_REPEATING_SCHEDULE_EXCEPTION(500, "반복일정이 아닙니다."),
   TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION(400, "일정 팀참가자번호는 중복될 수 없습니다."),
+  SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION(400, "해당 일정의 생성자가 아닙니다."),
+  SCHEDULE_CREATOR_EXISTS_EXCEPTION(400, "일정 생성자가 팀안에 존재하므로, 팀장권한으로 삭제가 불가능합니다."),
 
   // team
   TEAM_NOT_FOUND_EXCEPTION(500, "존재하지 않는 팀입니다."),
@@ -71,6 +73,7 @@ public enum ErrorCode {
   // documents
   DOCUMENT_NOT_IN_TEAM_EXCEPTION(400, "해당 팀에 속하지 않은 문서입니다."),
   DOCUMENT_WRITER_UNMATCH_TEAM_PARTICIPANTS_EXCEPTION(400, "해당 문서의 생성자가 아닙니다."),
+  DOCUMENT_WRITER_EXISTS_EXCEPTION(400, "문서의 생성자가 팀안에 존재하므로 팀장권한으로 삭제가 불가능합니다."),
   DOCUMENT_NOT_FOUND_EXCEPTION(400, "존재하지 않는 문서입니다."),
   DOCUMENT_ID_AND_TEAM_ID_NOT_FOUND_EXCEPTION(400, "팀ID , 문서ID가 존재하지 않습니다."),
 

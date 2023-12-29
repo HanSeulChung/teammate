@@ -33,6 +33,7 @@ public class DocumentsWebSocketController {
     Documents documents = documentsRepository.findById(requestedDocument.getDocumentId())
         .orElseThrow(() -> new CustomException(DOCUMENT_NOT_FOUND_EXCEPTION));
     messagingTemplate.convertAndSend("/topic/display/" + requestedDocument.getDocumentId(), DocumentResponse.from(documents));
+    log.info("subsribe로 전송 : /topic/display/{}", requestedDocument.getDocumentId());
   }
 
   @MessageMapping("/doc.saveDocs")

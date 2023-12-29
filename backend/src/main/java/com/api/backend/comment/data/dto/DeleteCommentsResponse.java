@@ -6,17 +6,17 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Builder
+@ToString
 @AllArgsConstructor
 public class DeleteCommentsResponse {
-
 
   @NotBlank
   @Schema(description = "deleted comment id", example = "6575d6fe99101a62f9710877")
   private String id;
-
 
   @NotNull
   @Schema(description = "deleted writer id", example = "12L")

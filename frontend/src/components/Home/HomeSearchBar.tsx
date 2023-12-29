@@ -2,14 +2,17 @@ import { useState } from "react";
 import { useSearchState } from "../../state/authState";
 import styled from "styled-components";
 
-export default function HomeSearchBar() {
-  const { search, setSearch, handleSearch } = useSearchState();
-  const [isPlaceholderHidden, setPlaceholderHidden] = useState(false);
+interface HomeSearchBarProps {
+  onSearch: (value: string) => void;
+}
 
-  const handleSearchSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+export default function HomeSearchBar({ onSearch }: HomeSearchBarProps) {
+  const { search, setSearch } = useSearchState();
+  const [, setPlaceholderHidden] = useState(false);
+
+  const handleSearchSubmit = async (e: any) => {
     e.preventDefault();
-
-    await handleSearch(search);
+    onSearch(search);
   };
 
   const handleClick = () => {
@@ -49,9 +52,9 @@ export default function HomeSearchBar() {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
                 />
               </svg>
@@ -68,12 +71,12 @@ export default function HomeSearchBar() {
               placeholder="팀 명을 검색하세요"
               required
             />
-            <button
+            <Button
               type="submit"
               className="text-white absolute end-2.5 bottom-2.5 bg-green-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2"
             >
               Search
-            </button>
+            </Button>
           </div>
         </form>
       </SearchBarContainer>
@@ -89,26 +92,8 @@ const SearchBarContainer = styled.div`
   width: 1000px;
   height: 50px;
   justify-content: center;
+`;
 
-  //   input {
-  //     padding: 8px;
-  //     border: 2px solid #ccc;
-  //     border-radius: 50px;
-  //     flex: 1;
-  //     height: 100%;
-  //     outline: none;
-  //     position: relative;
-  //     text-align: Center;
-  //     background: white;
-  //   }
-
-  //   .search-icon {
-  //     width: 16px;
-  //     height: 16px;
-  //     position: absolute;
-  //     right: 20px;
-  //     top: 50%;
-  //     transform: translateY(-50%);
-  //     cursor: pointer;
-  //   }
+const Button = styled.button`
+  background: #a3cca3;
 `;

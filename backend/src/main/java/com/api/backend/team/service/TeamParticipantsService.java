@@ -39,6 +39,7 @@ public class TeamParticipantsService {
     if (teamParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION);
     }
+    fileProcessService.deleteImage(teamParticipants.getParticipantsProfileUrl());
     teamParticipantsRepository.delete(teamParticipants);
 
     return teamParticipants;
@@ -90,7 +91,7 @@ public class TeamParticipantsService {
 
   public List<TeamParticipants> getTeamParticipantsByUserId(Long memberId) {
     return teamParticipantsRepository
-        .findAllByMember_MemberIdAndTeam_IsDelete(
+        .findAllByMember_MemberIdAndTeam_IsDeleteAndTeam_RestorationDtIsNull(
             memberId, DELETE_FALSE_FLAG
         );
   }

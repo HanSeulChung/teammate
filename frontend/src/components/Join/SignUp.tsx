@@ -1,5 +1,12 @@
 import React, { useState, ChangeEvent } from "react";
-import { StyledContainer, StyledFormItem, Button } from "./SignUpStyled.tsx";
+import {
+  StyledContainer,
+  StyledFormItem,
+  GreenText,
+  StyledText,
+  StyledSignUp,
+  RedText,
+} from "./SignUpStyled.tsx";
 import * as Regex from "../../common/Regex.ts";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios.tsx";
@@ -7,7 +14,6 @@ import axiosInstance from "../../axios.tsx";
 interface SignUpProps {}
 
 const TEST = "EMAIL_ALREADY_EXIST_EXCEPTION";
-//이메일 사용자가 있다고 암시하는 변수명
 
 const SignUp: React.FC<SignUpProps> = () => {
   const [email, setEmail] = useState<string>("");
@@ -78,20 +84,6 @@ const SignUp: React.FC<SignUpProps> = () => {
           setSignUpMessage("이미 가입된 이메일입니다.");
         } else {
           console.error("회원가입 실패:", error);
-          if (error.response) {
-            // 서버 응답이 있을 경우
-            console.error("서버 응답 데이터:", error.response.data);
-            console.error("서버 응답 상태 코드:", error.response.status);
-            console.error("서버 응답 헤더:", error.response.headers);
-          } else if (error.request) {
-            // 요청이 전송되었지만 응답을 받지 못한 경우
-            console.error("서버 응답이 없습니다.");
-            console.error("요청 데이터:", error.request);
-          } else {
-            // 오류가 발생한 경우
-            console.error("에러 메세지:", error.message);
-          }
-
           setSignUpMessage("회원가입 실패");
         }
       });
@@ -138,21 +130,8 @@ const SignUp: React.FC<SignUpProps> = () => {
       .catch((error) => {
         console.error("이메일 중복 확인 실패:", error);
         if (error.response && error.response.data.errorCode === TEST) {
-          // 중복된 이메일 에러 처리
           setIsIdAvailable(false);
           console.log("중복된 이메일입니다.");
-        } else if (error.response) {
-          // 서버 응답이 있을 경우
-          console.error("서버 응답 데이터:", error.response.data);
-          console.error("서버 응답 상태 코드:", error.response.status);
-          console.error("서버 응답 헤더:", error.response.headers);
-        } else if (error.request) {
-          // 요청이 전송되었지만 응답을 받지 못한 경우
-          console.error("서버 응답이 없습니다.");
-          console.error("요청 데이터:", error.request);
-        } else {
-          // 오류가 발생한 경우
-          console.error("에러 메세지:", error.message);
         }
       });
   };
@@ -180,14 +159,16 @@ const SignUp: React.FC<SignUpProps> = () => {
         <button onClick={handleCheckIdAvailability}>중복 확인</button>
       </StyledFormItem>
       {isIdAvailable !== null && (
-        <span style={{ color: isIdAvailable ? "green" : "red" }}>
-          {isIdAvailable
-            ? "사용 가능한 아이디입니다."
-            : "이미 사용 중인 아이디입니다."}
-        </span>
+        <>
+          {isIdAvailable ? (
+            <GreenText>사용 가능한 아이디입니다.</GreenText>
+          ) : (
+            <RedText>이미 사용 중인 아이디입니다.</RedText>
+          )}
+        </>
       )}
       {isEmailFormatValid !== null && !isEmailFormatValid && (
-        <span style={{ color: "red" }}>{"올바른 이메일 형식이 아닙니다."}</span>
+        <RedText>올바른 이메일 형식이 아닙니다.</RedText>
       )}
       <br />
 
@@ -202,9 +183,7 @@ const SignUp: React.FC<SignUpProps> = () => {
         />
       </StyledFormItem>
       {password.length < 8 && password.length > 0 && (
-        <span style={{ color: "red" }}>
-          비밀번호는 8자리 이상이어야 합니다.
-        </span>
+        <RedText>비밀번호는 8자리 이상이어야 합니다.</RedText>
       )}
       <br />
 
@@ -226,9 +205,9 @@ const SignUp: React.FC<SignUpProps> = () => {
         />
       </StyledFormItem>
       {isRePasswordValid !== null && (
-        <span style={{ color: isRePasswordValid ? "green" : "red" }}>
+        <RedText>
           {!isRePasswordValid && "비밀번호가 일치하지 않습니다."}
-        </span>
+        </RedText>
       )}
       <br />
 
@@ -270,11 +249,11 @@ const SignUp: React.FC<SignUpProps> = () => {
         <button onClick={handleSignUp}>회원 가입</button>
       </StyledFormItem>
 
-      {signUpMessage && <p style={{ color: "red" }}>{signUpMessage}</p>}
+      {signUpMessage && <StyledSignUp>{signUpMessage}</StyledSignUp>}
       {isModalOpen && (
-        <div className="modal">
-          <p>아이디로 이메일 인증을 보냈습니다. 확인해주세요.</p>
-          <Button onClick={handleModalConfirm}>확인</Button>
+        <div>
+          <StyledText>아이디로 이메일 인증을 보냈습니다. </StyledText>
+          <button onClick={handleModalConfirm}>확인</button>
         </div>
       )}
     </StyledContainer>

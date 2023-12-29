@@ -1,9 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import HomeContent from "../components/Home/HomeContent";
 import HomeCreateTeamBtn from "../components/Home/HomeCreateTeamBtn";
 import HomeSearchBar from "../components/Home/HomeSearchBar";
 
 const homeView = () => {
+  const [, setSearch] = useState("");
+  const handleSearch = (value: any) => {
+    setSearch(value);
+  };
+
   useEffect(() => {
     const preventGoBack = () => {
       history.go(1);
@@ -18,7 +23,7 @@ const homeView = () => {
 
   return (
     <div>
-      <HomeSearchBar />
+      <HomeSearchBar onSearch={handleSearch} />
       <HomeCreateTeamBtn />
       <HomeContent />
     </div>

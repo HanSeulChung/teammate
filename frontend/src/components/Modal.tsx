@@ -25,24 +25,12 @@ const ModalContent = styled.div`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-`;
-
-const CloseButton = styled.button`
-  margin-top: 10px;
-  padding: 8px 16px;
-  background-color: #a3cca3;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  color: #333333;
-
-  &:hover {
-    background-color: #cccccc;
+  input {
+    border: 1px solid #cccccc;
   }
 `;
 
-const StyledModal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+const StyledModal: React.FC<ModalProps> = ({ isOpen, children }) => {
   return (
     <ModalOverlay isOpen={isOpen}>
       <ModalContent>

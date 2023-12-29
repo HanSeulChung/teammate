@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import profileImg from "../../assets/profileImg.png";
 import { Team, TeamParticipant } from "../../interface/interface";
@@ -12,6 +12,7 @@ const TeamMembers = () => {
     [],
   );
   const { teamId } = useParams();
+  const navigate = useNavigate();
 
   //팀 정보 가져오기
   useEffect(() => {
@@ -54,9 +55,9 @@ const TeamMembers = () => {
           member.name.toLowerCase().includes(searchTeam.toLowerCase()),
         )
         .sort((a, b) => {
-          if (a.role === "READER" && b.role !== "READER") {
+          if (a.role === "LEADER" && b.role !== "LEADER") {
             return -1;
-          } else if (a.role !== "READER" && b.role === "READER") {
+          } else if (a.role !== "LEADER" && b.role === "LEADER") {
             return 1;
           } else {
             return a.name.localeCompare(b.name);
@@ -70,8 +71,15 @@ const TeamMembers = () => {
     };
   };
 
+  const navigateToTeamPage = () => {
+    navigate(`/team/${teamId}`);
+  };
+
   return (
     <div>
+      <MoveTeamPage>
+        <div onClick={navigateToTeamPage}>팀 페이지로 이동</div>
+      </MoveTeamPage>
       <TeamProfileContainer>
         <TeamProfileTitle>{team?.name} 프로필</TeamProfileTitle>
         <TeamInfoContainer>
@@ -102,9 +110,9 @@ const TeamMembers = () => {
                   key={member.id}
                   type="text"
                   value={`${member.name} ${
-                    member.role === "READER" ? "(팀장)" : ""
+                    member.role === "LEADER" ? "(팀장)" : ""
                   }`}
-                  style={getMemberStyle(member.role === "READER")}
+                  style={getMemberStyle(member.role === "LEADER")}
                 />
               ))}
             </MemberContainer>
@@ -139,8 +147,8 @@ const TeamInfoContainer = styled.div`
 `;
 
 const TeamImage = styled.img`
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 150px;
+  max-height: 150px;
   border-radius: 50%;
 `;
 
@@ -180,4 +188,14 @@ const MemberInput = styled.input`
   &:hover {
     background-color: #f0f0f0;
   }
+`;
+
+const MoveTeamPage = styled.div`
+  text-align: right;
+  margin-top: 20px;
+  position: absolute;
+  top: 100px;
+  right: 250px;
+  margin: 20px;
+  cursor: pointer;
 `;

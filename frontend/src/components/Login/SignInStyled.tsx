@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const StyledContainer = styled.div`
   color: #333333;
   padding: 20px;
-  width: 25%;
+  width: 40%;
   margin: auto;
 `;
 
@@ -30,7 +30,6 @@ export const StyledFormItem = styled.div`
 
   button {
     flex: 1;
-    margin-left: 10px;
     padding: 8px;
     background-color: #a3cca3;
     color: #333333;
@@ -40,4 +39,17 @@ export const StyledFormItem = styled.div`
       background-color: #cccccc;
     }
   }
+
+  p {
+    margin: 0 auto;
+  }
+`;
+
+export const RedText = styled.p`
+  color: red;
+`;
+
+export const StyledText = styled.span`
+  cursor: pointer;
+  color: #333333;
 `;

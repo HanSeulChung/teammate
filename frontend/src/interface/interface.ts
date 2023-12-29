@@ -18,11 +18,17 @@ export interface Team {
   code: string;
   memberLimit: number;
   inviteLink: string;
+  teamName:string;
+  restorationDt:null;
+  teamRole: string;
+  teamParticipantsId:number;
+  participantsProfileUrl:string|undefined;
+  teamNickName:string;
 }
 
 // 사용자 정보 인터페이스
 export interface User {
-  // userId: string;
+  email: string;
   id: string;
   name: string;
 }

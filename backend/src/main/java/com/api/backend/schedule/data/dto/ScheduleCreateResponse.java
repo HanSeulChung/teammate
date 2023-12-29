@@ -11,10 +11,12 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@ToString
 public class ScheduleCreateResponse implements MentionTeamParticipantsNotifyByDto {
   private Long scheduleId;
   private String scheduleType;
@@ -49,6 +51,7 @@ public class ScheduleCreateResponse implements MentionTeamParticipantsNotifyByDt
         .endDt(repeatScheduleResponse.getEndDt())
         .title(repeatScheduleResponse.getTitle())
         .content(repeatScheduleResponse.getContent())
+        .color(repeatScheduleResponse.getColor())
         .place(repeatScheduleResponse.getPlace())
         .repeatCycle(repeatScheduleResponse.getRepeatCycle())
         .month(repeatScheduleResponse.getMonth())
@@ -70,6 +73,7 @@ public class ScheduleCreateResponse implements MentionTeamParticipantsNotifyByDt
         .endDt(simpleScheduleResponse.getEndDt())
         .title(simpleScheduleResponse.getTitle())
         .content(simpleScheduleResponse.getContent())
+        .color(simpleScheduleResponse.getColor())
         .place(simpleScheduleResponse.getPlace())
         .teamParticipantsIds(simpleScheduleResponse.getTeamParticipantsIds())
         .teamParticipantsNames(simpleScheduleResponse.getTeamParticipantsNames())
