@@ -4,6 +4,7 @@ import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION;
 
 import com.api.backend.category.data.dto.ScheduleCategoryDeleteRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
@@ -12,6 +13,7 @@ import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
+import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.schedule.data.entity.RepeatSchedule;
 import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.repository.RepeatScheduleRepository;
@@ -48,7 +50,8 @@ public class ScheduleCategoryService {
       Long memberId) {
     Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
 
-    teamParticipantsService.getTeamParticipants(scheduleCategoryRequest.getTeamId(), memberId);
+    validTeamParticipant(scheduleCategoryRequest.getTeamId(), memberId);
+
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
         .team(team)
         .categoryName(scheduleCategoryRequest.getCategoryName())
@@ -64,7 +67,8 @@ public class ScheduleCategoryService {
 
   public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
       Pageable pageable, Long teamId, Long memberId) {
-    teamParticipantsService.getTeamParticipants(teamId, memberId);
+    validTeamParticipant(teamId, memberId);
+
     Page<ScheduleCategory> categoryPagesByCategoryType = scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(
         categoryType, pageable,
         teamId);
@@ -76,7 +80,7 @@ public class ScheduleCategoryService {
   public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest,
       Long memberId) {
     findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
-    teamParticipantsService.getTeamParticipant(scheduleCategoryEditRequest.getTeamId(), memberId);
+    validTeamParticipant(scheduleCategoryEditRequest.getTeamId(), memberId);
     ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
         scheduleCategoryEditRequest.getCategoryId());
     scheduleCategory.editScheduleCategory(scheduleCategoryEditRequest);
@@ -139,6 +143,11 @@ public class ScheduleCategoryService {
   private ScheduleCategory findCategoryOrElseThrow(Long scheduleCategoryId) {
     return scheduleCategoryRepository.findById(scheduleCategoryId)
         .orElseThrow(() -> new CustomException(SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION));
+  }
+
+  private void validTeamParticipant(Long teamId, Long memberId) {
+    teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(teamId, memberId)
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
   }
 
 }
