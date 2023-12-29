@@ -4,12 +4,13 @@ export const StyledContainer = styled.div`
   color: #333333;
   padding: 20px;
   width: 40%;
-  margin: auto;
+  margin: 0 auto;
 `;
 
 export const StyledFormItem = styled.div`
   margin: 5px 0 5px 0;
   display: flex;
+  flex-direction: column;
 
   label {
     margin-right: 60px;
@@ -42,14 +43,17 @@ export const StyledFormItem = styled.div`
 
   p {
     margin: 0 auto;
+    text-align: center;
   }
 `;
 
 export const RedText = styled.p`
   color: red;
+  text-align: center;
 `;
 
 export const StyledText = styled.span`
   cursor: pointer;
   color: #333333;
+  text-align: center;
 `;
