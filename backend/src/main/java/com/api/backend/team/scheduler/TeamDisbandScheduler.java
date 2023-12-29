@@ -54,7 +54,7 @@ public class TeamDisbandScheduler {
     }
   }
 
-  @Scheduled(cron = "0 0 3 1 1 ?") // 매년 1월 1일 03시
+  @Scheduled(cron = "0 0 3 1 1 *") // 매년 1월 1일 03시
   public void teamDisbandCheckAndDelete() {
     List<Team> teams = teamRepository.findAllByIsDeleteIsTrue();
 
