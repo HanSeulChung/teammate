@@ -10,10 +10,12 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@ToString
 public class ScheduleTypeConverterResponse {
   private Long scheduleId;
   private String categoryName;
