@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const TeamProfileContainer = styled.div`
   position: absolute;
-  top: 130px;
+  top: 100px;
   left: 27%;
   display: flex;
   flex-direction: column;
@@ -120,7 +120,6 @@ export const TeamProfileBox = styled.div`
 `;
 
 export const Button = styled.button`
-  margin-top: 20px;
   padding: 8px 16px;
   background-color: #a3cca3;
   color: white;
@@ -137,4 +136,10 @@ export const Button = styled.button`
 export const LinkContainer = styled.div`
   text-align: right;
   margin-right: 0;
+`;
+
+export const TeamDisband = styled.div`
+  margin-top: 20px;
+  color: red;
+  cursor: pointer;
 `;
