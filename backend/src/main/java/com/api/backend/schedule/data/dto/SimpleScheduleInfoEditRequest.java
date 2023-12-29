@@ -42,12 +42,10 @@ public class SimpleScheduleInfoEditRequest {
   private String content;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-  @NotBlank(message = "시작 날짜를 입력해주세요.")
   @Schema(description = "start date", example = "2023-12-15T12:00:00")
   private LocalDateTime startDt;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-  @NotBlank(message = "종료 날짜를 입력해주세요.")
   @Schema(description = "end date", example = "2024-01-15T12:00:00")
   private LocalDateTime endDt;
 
