@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRecoilValue, useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
 import { useNavigate } from "react-router-dom";
+import move from "../../assets/move.png";
 import styled from "styled-components";
 import {
   searchState,
@@ -11,7 +12,11 @@ import {
 } from "../../state/authState";
 import { Team } from "../../interface/interface.ts";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
+
+interface PageNumberProps {
+  isSelected: boolean;
+}
 
 const HomeContent = () => {
   const [userTeams, setUserTeams] = useRecoilState<Team[]>(userTeamsState);
@@ -99,14 +104,16 @@ const HomeContent = () => {
               });
             }}
           >
-            <TeamName>{team.name}</TeamName>
             {team.profileUrl && (
               <TeamImage src={team.profileUrl} alt={`${team.name} 이미지`} />
             )}
-            {team.restorationDt !== null && (
+            <TeamName>{team.name}</TeamName>
+            {team.restorationDt !== null ? (
               <RestorationButton onClick={() => handleRestoration(team.teamId)}>
                 복구
               </RestorationButton>
+            ) : (
+              <MoveImg src={move} alt="move" />
             )}
           </TeamCard>
         </TeamItem>
@@ -115,7 +122,11 @@ const HomeContent = () => {
         {Array.from({
           length: Math.ceil(filteredTeamList.length / ITEMS_PER_PAGE),
         }).map((_, index) => (
-          <PageNumber key={index} onClick={() => paginate(index + 1)}>
+          <PageNumber
+            key={index}
+            onClick={() => paginate(index + 1)}
+            isSelected={index + 1 === currentPage}
+          >
             {index + 1}
           </PageNumber>
         ))}
@@ -127,46 +138,65 @@ const HomeContent = () => {
 export default HomeContent;
 
 const TeamListContainer = styled.div`
-  position: absolute;
-  width: 1000px;
-  top: 280px;
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 20px;
-  padding: 16px;
+  gap: 5px;
+  padding: 8px;
+
+  @media (max-width: 600px) {
+    width: 100%;
+    justify-content: center;
+  }
 `;
 
 const TeamItem = styled.li`
+  width: 60%;
   list-style: none;
-  width: calc(20% - 16px);
-  margin-bottom: 16px;
+  margin: 0 auto;
+  margin-bottom: 8px;
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
 `;
 
 const TeamCard = styled.div`
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   border: 1px solid #ccc;
-  border-radius: 12px;
+  border-radius: 15px;
   padding: 12px;
-  text-align: center;
   transition: transform 0.2s ease-in-out;
-  height: 170px;
+  height: auto;
 
   &:hover {
     transform: scale(1.05);
     color: #a3cca3;
   }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    width: 100%;
+  }
 `;
 
 const TeamName = styled.h3`
-  margin-bottom: 8px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 `;
 
 const TeamImage = styled.img`
-  max-width: 100%;
-  max-height: 100px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  margin: 0 auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  margin: 0 16px 0 8px;
   object-fit: cover;
 `;
 
@@ -175,13 +205,21 @@ const Pagination = styled.div`
   justify-content: center;
   width: 100%;
   height: 30px;
+  margin-bottom: 10px;
+
+  @media (max-width: 600px) {
+    justify-content: center;
+  }
 `;
 
-const PageNumber = styled.div`
+const PageNumber = styled.div<PageNumberProps>`
   width: 30px;
   height: 30px;
   cursor: pointer;
-  color: #333333;
+  color: ${({ isSelected }) => (isSelected ? "#ffffff" : "#333333")};
+  background-color: ${({ isSelected }) =>
+    isSelected ? "#a3cca3" : "transparent"};
+
   border-radius: 50px;
   text-align: center;
   padding: 4px;
@@ -197,10 +235,20 @@ const RestorationButton = styled.button`
   border: none;
   padding: 6px 12px;
   border-radius: 4px;
-  margin-top: 8px;
+  margin-right: 8px;
   cursor: pointer;
 
   &:hover {
     background-color: #cccccc;
   }
+
+  @media (max-width: 600px) {
+    order: -1;
+  }
+`;
+
+const MoveImg = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
 `;
