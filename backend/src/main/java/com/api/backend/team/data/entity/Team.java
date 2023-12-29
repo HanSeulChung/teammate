@@ -36,7 +36,7 @@ public class Team extends BaseEntity {
   private boolean isDelete;
   private int memberLimit;
   @Setter
-  private String inviteLink;
+  private String inviteCode;
   private String profileUrl;
 
   @OneToMany(mappedBy = "team")

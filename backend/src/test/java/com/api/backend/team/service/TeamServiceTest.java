@@ -113,7 +113,7 @@ class TeamServiceTest {
 
     //then
     assertEquals(result.getTeamName(), team.getName());
-    assertEquals(result.getInviteCode(), team.getInviteLink());
+    assertEquals(result.getInviteCode(), team.getInviteCode());
     assertEquals(result.getTeamUrl(), team.getProfileUrl());
 
     verify(memberRepository, timeout(1)).findById(userId);
@@ -131,7 +131,7 @@ class TeamServiceTest {
     Long userId = 1L;
     Team team = Team.builder()
         .teamId(1L)
-        .inviteLink("2/dsfefsefnklsd")
+        .inviteCode("2/dsfefsefnklsd")
         .build();
     when(teamRepository.findById(teamId))
         .thenReturn(Optional.of(team));
@@ -141,7 +141,7 @@ class TeamServiceTest {
     String result = teamService.getTeamUrl(teamId, userId);
 
     //then
-    assertEquals(result, team.getInviteLink());
+    assertEquals(result, team.getInviteCode());
   }
 
   @Test
@@ -177,7 +177,7 @@ class TeamServiceTest {
     Team team = Team.builder()
         .teamId(1L)
         .name("test")
-        .inviteLink("2/dsfefsefnklsd")
+        .inviteCode("2/dsfefsefnklsd")
         .memberLimit(3)
         .teamParticipants(new ArrayList<>())
         .build();
@@ -218,7 +218,7 @@ class TeamServiceTest {
     String code = "sadsadasd";
     Team team = Team.builder()
         .teamId(1L)
-        .inviteLink("2/dsfefsefnklsd")
+        .inviteCode("2/dsfefsefnklsd")
         .build();
     when(teamRepository.findById(anyLong()))
         .thenReturn(Optional.of(team));
@@ -243,7 +243,7 @@ class TeamServiceTest {
     String code = "dsfefsefnklsd";
     Team team = Team.builder()
         .teamId(1L)
-        .inviteLink("2/dsfefsefnklsd")
+        .inviteCode("2/dsfefsefnklsd")
         .memberLimit(3)
         .teamParticipants(new ArrayList<>())
         .build();
@@ -272,7 +272,7 @@ class TeamServiceTest {
     String code = "dsfefsefnklsd";
     Team team = Team.builder()
         .teamId(1L)
-        .inviteLink("2/dsfefsefnklsd")
+        .inviteCode("2/dsfefsefnklsd")
         .memberLimit(1)
         .teamParticipants(Lists.list(new TeamParticipants()))
         .build();

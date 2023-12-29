@@ -66,10 +66,8 @@ public class TeamService {
             .memberLimit(teamRequest.getMemberLimit())
             .name(teamRequest.getTeamName())
             .profileUrl(imgUrl)
+            .inviteCode(UUID.randomUUID().toString())
             .build()
-    );
-    team.setInviteLink(
-        getInviteLink(team.getTeamId())
     );
 
     teamParticipantsRepository.save(
@@ -309,15 +307,6 @@ public class TeamService {
     return teamParticipantsRepository
         .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
-  }
-
-  private static String getInviteLink(Long teamId) {
-    if (Objects.isNull(teamId)) {
-      throw new NullPointerException("teamId is null");
-    }
-
-    return teamId +
-        "/" + UUID.randomUUID();
   }
 
   private String getRandomNickName(String name){
