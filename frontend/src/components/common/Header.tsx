@@ -171,7 +171,7 @@ export default Header;
 export const LogoContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  // justify-content: center;
 `;
 
 // 헤더 로고 이미지
