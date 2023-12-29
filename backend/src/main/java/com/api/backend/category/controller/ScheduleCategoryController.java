@@ -1,6 +1,6 @@
 package com.api.backend.category.controller;
 
-import com.api.backend.category.data.dto.ScheduleCategoryDto;
+import com.api.backend.category.data.dto.ScheduleCategoryDeleteRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryEditRequest;
 import com.api.backend.category.data.dto.ScheduleCategoryEditResponse;
 import com.api.backend.category.data.dto.ScheduleCategoryRequest;
@@ -58,9 +58,10 @@ public class ScheduleCategoryController {
       @RequestBody ScheduleCategoryRequest request,
       @ApiIgnore Principal principal
   ) {
-    ScheduleCategoryDto dto = ScheduleCategoryDto.from(
-        scheduleCategoryService.add(request, principal));
-    return ResponseEntity.ok(ScheduleCategoryResponse.to(dto));
+    ScheduleCategoryResponse response = ScheduleCategoryResponse.from(
+        scheduleCategoryService.add(request, Long.valueOf(principal.getName()))
+    );
+    return ResponseEntity.ok(response);
   }
 
   @ApiOperation(value = "카테고리 유형 검색")
@@ -95,10 +96,9 @@ public class ScheduleCategoryController {
       @ApiIgnore Principal principal
   ) {
     CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
-    Page<ScheduleCategoryDto> scheduleCategories = ScheduleCategoryDto.from(
-        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable, teamId, principal)
+    Page<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.from(
+        scheduleCategoryService.searchByCategoryType(enumCategoryType, pageable, teamId, Long.valueOf(principal.getName()))
     );
-    Page<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.to(scheduleCategories);
     return ResponseEntity.ok(responses);
   }
 
@@ -123,10 +123,10 @@ public class ScheduleCategoryController {
       @RequestBody ScheduleCategoryEditRequest request,
       @ApiIgnore Principal principal
   ) {
-    ScheduleCategoryDto scheduleCategoryDto = ScheduleCategoryDto.from(
-        scheduleCategoryService.edit(request, principal)
+    ScheduleCategoryEditResponse editResponse = ScheduleCategoryEditResponse.from(
+        scheduleCategoryService.edit(request, Long.valueOf(principal.getName()))
     );
-    return ResponseEntity.ok(ScheduleCategoryEditResponse.to(scheduleCategoryDto));
+    return ResponseEntity.ok(editResponse);
   }
 
   @ApiOperation(value = "일정 카테고리 삭제")
@@ -143,22 +143,14 @@ public class ScheduleCategoryController {
               , required = true
               , dataType = "String"
               , paramType = "header"
-              , defaultValue = "None"),
-          @ApiImplicitParam(
-              name = "categoryId"
-              , value = "카테고리 id"
-              , required = true
-              , dataType = "Long"
-              , paramType = "path"
-              , defaultValue = "None"
-              , example = "1")
+              , defaultValue = "None")
       })
   @DeleteMapping
   public ResponseEntity<String> deleteCategory(
-      @RequestParam Long categoryId,
+      @RequestBody ScheduleCategoryDeleteRequest deleteRequest,
       @ApiIgnore Principal principal
   ) {
-    scheduleCategoryService.delete(categoryId, principal);
+    scheduleCategoryService.delete(deleteRequest, Long.valueOf(principal.getName()));
     return ResponseEntity.ok("해당 일정 카테고리가 정상적으로 삭제되었습니다.");
   }
 }
