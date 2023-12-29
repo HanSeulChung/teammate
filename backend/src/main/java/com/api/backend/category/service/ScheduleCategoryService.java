@@ -91,7 +91,9 @@ public class ScheduleCategoryService {
     TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(
         deleteRequest.getTeamId(), memberId);
 
-    if (teamParticipants.getTeamRole() == TeamRole.LEADER) {
+    if (teamParticipants.getTeamRole() == TeamRole.LEADER
+        && category.getCreateParticipantId() != teamParticipants.getTeamParticipantsId()
+    ) {
       if (teamParticipantsRepository.existsByTeamParticipantsId(
           category.getCreateParticipantId())) {
         throw new CustomException(SCHEDULE_CATEGORY_CREATOR_EXISTS_EXCEPTION);
