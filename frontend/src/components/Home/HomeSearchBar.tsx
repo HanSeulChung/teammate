@@ -85,11 +85,8 @@ export default function HomeSearchBar({ onSearch }: HomeSearchBarProps) {
 }
 
 const SearchBarContainer = styled.div`
-  position: absolute;
-  top: 150px;
   display: flex;
   align-items: center;
-  width: 1000px;
   height: 50px;
   justify-content: center;
 `;

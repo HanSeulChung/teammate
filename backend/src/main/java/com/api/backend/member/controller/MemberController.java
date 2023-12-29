@@ -28,13 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Api(tags = "회원")
@@ -137,6 +131,17 @@ public class MemberController {
         .body(signInResponse);
   }
 
+  @GetMapping("/social-success/")
+  public ResponseEntity<?> socialLoginSuccuss(
+          @RequestParam(name = "access_token") String accessToken,
+          @RequestParam(name = "refresh_token") String refreshToken
+  ){
+    SignInResponse signInResponse = memberService.socialLogin(accessToken, refreshToken);
+
+    return ResponseEntity.ok()
+            .body(signInResponse);
+
+  }
   @ApiOperation(value = "회원 로그아웃 API", notes = "헤더의 토큰정보를 바탕으로 로그아웃")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "정상처리시 토큰 삭제후 헤더값 삭제")

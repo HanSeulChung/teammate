@@ -11,9 +11,10 @@ import {
   ErrorContainer,
   LinkContainer,
 } from "./MyUserProfileStyled";
+import { StyledLink } from "../../styles/CommonStyled.tsx";
 import { useRecoilState } from "recoil";
 import axiosInstance from "../../axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function MyUserProfile() {
   const [, setIsAuthenticated] = useRecoilState(isAuthenticatedState);
@@ -125,7 +126,7 @@ export default function MyUserProfile() {
     <UserProfileContainer>
       <UserProfileTitle>내 프로필</UserProfileTitle>
       <LinkContainer>
-        <Link to="/myTeamProfile">내 팀 프로필로 이동</Link>
+        <StyledLink to="/myTeamProfile">내 팀 프로필로 이동</StyledLink>
       </LinkContainer>
       <br />
       {/* 231218 유나경 시작------------- */}
