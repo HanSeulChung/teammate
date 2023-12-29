@@ -13,10 +13,12 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@ToString
 public class RepeatScheduleResponse {
 
   private Long scheduleId;
@@ -50,6 +52,7 @@ public class RepeatScheduleResponse {
         .place(repeatSchedule.getPlace())
         .repeatCycle(repeatSchedule.getRepeatCycle())
         .month(repeatSchedule.getMonth())
+        .color(repeatSchedule.getColor())
         .day(repeatSchedule.getDay())
         .dayOfWeek(repeatSchedule.getDayOfWeek())
         .teamParticipantsIds(

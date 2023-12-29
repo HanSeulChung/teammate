@@ -5,9 +5,11 @@ import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @Builder
+@ToString
 @AllArgsConstructor
 public class DocumentInitRequest {
   @NotBlank(message = "문서 제목을 입력하세요.")

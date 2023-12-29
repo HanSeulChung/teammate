@@ -9,6 +9,7 @@ import com.api.backend.schedule.data.dto.RepeatScheduleInfoEditResponse;
 import com.api.backend.schedule.data.dto.RepeatScheduleResponse;
 import com.api.backend.schedule.data.dto.RepeatToSimpleScheduleEditRequest;
 import com.api.backend.schedule.data.dto.ScheduleCreateResponse;
+import com.api.backend.schedule.data.dto.ScheduleDeleteRequest;
 import com.api.backend.schedule.data.dto.ScheduleRequest;
 import com.api.backend.schedule.data.dto.ScheduleTypeConverterResponse;
 import com.api.backend.schedule.data.dto.SimpleScheduleInfoEditRequest;
@@ -435,12 +436,13 @@ public class ScheduleController {
   public ResponseEntity<MentionTeamParticipantsNotifyByDto> deleteSimpleSchedule(
       @PathVariable Long teamId,
       @PathVariable Long scheduleId,
+      @RequestBody ScheduleDeleteRequest deleteRequest,
       @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         scheduleService
             .deleteSimpleSchedule(
-                scheduleId, Long.valueOf(principal.getName()), teamId
+                deleteRequest, Long.valueOf(principal.getName())
             )
     );
   }
@@ -483,12 +485,13 @@ public class ScheduleController {
   public ResponseEntity<MentionTeamParticipantsNotifyByDto> deleteSchedule(
       @PathVariable Long teamId,
       @PathVariable Long scheduleId,
+      @RequestBody ScheduleDeleteRequest deleteRequest,
       @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
         scheduleService
             .deleteRepeatSchedule(
-                scheduleId, Long.valueOf(principal.getName()), teamId
+                deleteRequest, Long.valueOf(principal.getName())
             )
     );
   }
