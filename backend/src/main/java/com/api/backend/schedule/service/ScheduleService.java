@@ -310,7 +310,7 @@ public class ScheduleService {
         .map(TeamParticipants::getTeamParticipantsId)
         .collect(Collectors.toList());
 
-    if (teamParticipants.getTeamRole() == TeamRole.LEADER) {
+    if (teamParticipants.getTeamRole() == TeamRole.LEADER && teamParticipants.getTeamParticipantsId() != deleteRequest.getTeamParticipantId()) {
       if (teamParticipantsRepository.existsByTeamParticipantsId(simpleSchedule.getCreateParticipantId())) {
         throw new CustomException(SCHEDULE_CREATOR_EXISTS_EXCEPTION);
       }
@@ -344,7 +344,7 @@ public class ScheduleService {
         .map(TeamParticipants::getTeamParticipantsId)
         .collect(Collectors.toList());
 
-    if (teamParticipants.getTeamRole() == TeamRole.LEADER) {
+    if (teamParticipants.getTeamRole() == TeamRole.LEADER && teamParticipants.getTeamParticipantsId() != deleteRequest.getTeamParticipantId()) {
       if (teamParticipantsRepository.existsByTeamParticipantsId(repeatSchedule.getCreateParticipantId())) {
         throw new CustomException(SCHEDULE_CREATOR_EXISTS_EXCEPTION);
       }
