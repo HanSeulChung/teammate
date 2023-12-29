@@ -13,7 +13,6 @@ import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
 import com.api.backend.category.type.CategoryType;
 import com.api.backend.global.exception.CustomException;
-import com.api.backend.global.exception.type.ErrorCode;
 import com.api.backend.schedule.data.entity.RepeatSchedule;
 import com.api.backend.schedule.data.entity.SimpleSchedule;
 import com.api.backend.schedule.data.repository.RepeatScheduleRepository;
