@@ -49,7 +49,7 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/menus/**",
             "/h2-console/**",
-            "/sign-in", "/sign-up", "/logout", "/email-verify/**", "/sign-up/email-check/**", "/oauth2/authorization/**", "/login/oauth2/code/**",
+            "/sign-in", "/sign-up", "/logout", "/email-verify/**", "/sign-up/email-check/**", "/oauth2/authorization/**", "/login/oauth2/code/**","/social-success/**",
             "/ws"
     };
 
