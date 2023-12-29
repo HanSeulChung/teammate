@@ -1,16 +1,14 @@
-// TeamInfoStyled.js (스타일 파일)
-
 import styled from "styled-components";
 
 export const StyledContainer = styled.div`
   color: #333333;
   padding: 20px;
-  width: 30%;
+  width: 35%;
   margin: auto;
 `;
 
 export const StyledFormItem = styled.div`
-  margin: 10px 0;
+  margin: 20px 0;
   display: flex;
   align-items: center;
 
@@ -33,7 +31,7 @@ export const StyledFormItem = styled.div`
   input,
   select {
     border-radius: 0;
-    flex-direction: column; /* 수직으로 배치 */
+    flex-direction: column;
     align-items: flex-start;
     background: white;
   }
