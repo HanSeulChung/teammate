@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -27,6 +28,7 @@ import com.api.backend.file.type.FileFolder;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.member.data.repository.MemberRepository;
+import com.api.backend.team.crypt.SimpleEncryption;
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
@@ -61,6 +63,8 @@ class TeamServiceTest {
   private TeamParticipantsRepository teamParticipantsRepository;
   @Mock
   private FileProcessService fileProcessService;
+  @Mock
+  private SimpleEncryption simpleEncryption;
   @Mock
   private MemberRepository memberRepository;
 
@@ -129,19 +133,22 @@ class TeamServiceTest {
     //given
     Long teamId = 1L;
     Long userId = 1L;
+    String nowString = LocalDate.now().toString();
     Team team = Team.builder()
         .teamId(1L)
-        .inviteCode("2/dsfefsefnklsd")
+        .inviteCode("dsfefsefnklsd")
         .build();
     when(teamRepository.findById(teamId))
         .thenReturn(Optional.of(team));
+    when(simpleEncryption.encrypt(anyString()))
+        .thenReturn(LocalDate.now().toString());
     when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(teamId, userId))
         .thenReturn(true);
     //when
     String result = teamService.getTeamUrl(teamId, userId);
 
     //then
-    assertEquals(result, team.getInviteCode());
+    assertEquals(result, teamId + "/" + team.getInviteCode() + "/" + nowString);
   }
 
   @Test
@@ -171,14 +178,15 @@ class TeamServiceTest {
   @DisplayName("팀에 팀원 추가 로직 - 성공")
   void updateTeamParticipants_success() {
     //given
-    String dateString = LocalDate.now().minusDays(1).toString();
+    LocalDate localDate =  LocalDate.now().plusDays(1);
+    String dateString = localDate.toString();
     Long id = 1L;
     Long userId = 1L;
     String code = "dsfefsefnklsd";
     Team team = Team.builder()
         .teamId(1L)
         .name("test")
-        .inviteCode("2/dsfefsefnklsd")
+        .inviteCode("dsfefsefnklsd")
         .memberLimit(3)
         .teamParticipants(new ArrayList<>())
         .build();
@@ -194,6 +202,8 @@ class TeamServiceTest {
 
     when(teamRepository.findById(anyLong()))
         .thenReturn(Optional.of(team));
+    when(simpleEncryption.decrypt(dateString))
+        .thenReturn(localDate);
     when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(
         anyLong(), anyLong()
     )).thenReturn(false);
@@ -241,18 +251,21 @@ class TeamServiceTest {
   @DisplayName("팀에 팀원 추가 로직 - 실패[existUser]")
   void updateTeamParticipants_fail_exist_user() {
     //given
-    String dateString = LocalDate.now().minusDays(1).toString();
+    LocalDate localDate =  LocalDate.now().plusDays(1);
+    String dateString = localDate.toString();
     Long id = 1L;
     Long userId = 1L;
     String code = "dsfefsefnklsd";
     Team team = Team.builder()
         .teamId(1L)
-        .inviteCode("2/dsfefsefnklsd")
+        .inviteCode("dsfefsefnklsd")
         .memberLimit(3)
         .teamParticipants(new ArrayList<>())
         .build();
     when(teamRepository.findById(anyLong()))
         .thenReturn(Optional.of(team));
+    when(simpleEncryption.decrypt(dateString))
+        .thenReturn(localDate);
     when(teamParticipantsRepository.existsByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))
         .thenReturn(true);
 
@@ -271,18 +284,21 @@ class TeamServiceTest {
   @DisplayName("팀에 팀원 추가 로직 - 실패[인원 제한]")
   void updateTeamParticipants_fail_member_limit() {
     //given
-    String dateString = LocalDate.now().minusDays(1).toString();
+    LocalDate localDate =  LocalDate.now().plusDays(1);
+    String dateString = localDate.toString();
     Long teamId = 1L;
     Long userId = 1L;
     String code = "dsfefsefnklsd";
     Team team = Team.builder()
         .teamId(1L)
-        .inviteCode("2/dsfefsefnklsd")
+        .inviteCode("dsfefsefnklsd")
         .memberLimit(1)
         .teamParticipants(Lists.list(new TeamParticipants()))
         .build();
     when(teamRepository.findById(teamId))
         .thenReturn(Optional.of(team));
+    when(simpleEncryption.decrypt(dateString))
+        .thenReturn(localDate);
 
     //when
     CustomException result = assertThrows(
