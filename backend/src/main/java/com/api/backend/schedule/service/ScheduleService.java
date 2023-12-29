@@ -273,7 +273,8 @@ public class ScheduleService {
 
       //이 일정/이 일정 및 향후 일정 선택시 originRepeatId를 갖고 newRepeatSchedule Insert
     } else {
-      RepeatSchedule updateRepeatSchedule = buildRepeatScheduleForEdit(editRequest, team, category, originCreateParticipantId);
+      RepeatSchedule updateRepeatSchedule = buildRepeatScheduleForEdit(editRequest, team, category,
+          originCreateParticipantId);
 
       List<TeamParticipantsSchedule> originTeamParticipantsSchedules =
           teamParticipantsScheduleRepository.findAllByRepeatSchedule_RepeatScheduleId(
@@ -310,11 +311,14 @@ public class ScheduleService {
         .map(TeamParticipants::getTeamParticipantsId)
         .collect(Collectors.toList());
 
-    if (teamParticipants.getTeamRole() == TeamRole.LEADER && teamParticipants.getTeamParticipantsId() != deleteRequest.getTeamParticipantId()) {
-      if (teamParticipantsRepository.existsByTeamParticipantsId(simpleSchedule.getCreateParticipantId())) {
+    if (teamParticipants.getTeamRole() == TeamRole.LEADER
+        && simpleSchedule.getCreateParticipantId() != teamParticipants.getTeamParticipantsId()
+    ) {
+      if (teamParticipantsRepository.existsByTeamParticipantsId(
+          simpleSchedule.getCreateParticipantId())) {
         throw new CustomException(SCHEDULE_CREATOR_EXISTS_EXCEPTION);
       }
-    }else {
+    } else {
       if (deleteRequest.getTeamParticipantId() != teamParticipants.getTeamParticipantsId()) {
         throw new CustomException(SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
       }
@@ -344,11 +348,14 @@ public class ScheduleService {
         .map(TeamParticipants::getTeamParticipantsId)
         .collect(Collectors.toList());
 
-    if (teamParticipants.getTeamRole() == TeamRole.LEADER && teamParticipants.getTeamParticipantsId() != deleteRequest.getTeamParticipantId()) {
-      if (teamParticipantsRepository.existsByTeamParticipantsId(repeatSchedule.getCreateParticipantId())) {
+    if (teamParticipants.getTeamRole() == TeamRole.LEADER
+        && repeatSchedule.getCreateParticipantId() != teamParticipants.getTeamParticipantsId()
+    ) {
+      if (teamParticipantsRepository.existsByTeamParticipantsId(
+          repeatSchedule.getCreateParticipantId())) {
         throw new CustomException(SCHEDULE_CREATOR_EXISTS_EXCEPTION);
       }
-    }else {
+    } else {
       if (deleteRequest.getTeamParticipantId() != teamParticipants.getTeamParticipantsId()) {
         throw new CustomException(SCHEDULE_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION);
       }
