@@ -95,7 +95,7 @@ class TeamServiceTest {
     TeamParticipants teamParticipants = TeamParticipants.builder()
         .member(member)
         .team(team)
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .teamNickName("testNickName")
         .build();
 
@@ -171,6 +171,7 @@ class TeamServiceTest {
   @DisplayName("팀에 팀원 추가 로직 - 성공")
   void updateTeamParticipants_success() {
     //given
+    String dateString = LocalDate.now().minusDays(1).toString();
     Long id = 1L;
     Long userId = 1L;
     String code = "dsfefsefnklsd";
@@ -201,7 +202,8 @@ class TeamServiceTest {
     when(teamParticipantsRepository.save(any()))
         .thenReturn(teamParticipants);
     //when
-    TeamParticipantsUpdateResponse result = teamService.updateTeamParticipants(id, code, userId);
+    TeamParticipantsUpdateResponse result = teamService.updateTeamParticipants(id, code, userId,
+        dateString);
 
     //then
     assertEquals(result.getTeamId(), team.getTeamId());
@@ -213,6 +215,7 @@ class TeamServiceTest {
   @DisplayName("팀에 팀원 추가 로직 - 실패[code]")
   void updateTeamParticipants_fail_code() {
     //given
+    String dateString = LocalDate.now().minusDays(1).toString();
     Long id = 1L;
     Long userId = 1L;
     String code = "sadsadasd";
@@ -226,7 +229,7 @@ class TeamServiceTest {
     //when
     CustomException result = assertThrows(
         CustomException.class,
-        () -> teamService.updateTeamParticipants(id, code, userId)
+        () -> teamService.updateTeamParticipants(id, code, userId, dateString)
     );
 
     //then
@@ -238,6 +241,7 @@ class TeamServiceTest {
   @DisplayName("팀에 팀원 추가 로직 - 실패[existUser]")
   void updateTeamParticipants_fail_exist_user() {
     //given
+    String dateString = LocalDate.now().minusDays(1).toString();
     Long id = 1L;
     Long userId = 1L;
     String code = "dsfefsefnklsd";
@@ -255,7 +259,7 @@ class TeamServiceTest {
     //when
     CustomException result = assertThrows(
         CustomException.class,
-        () -> teamService.updateTeamParticipants(id, code, userId)
+        () -> teamService.updateTeamParticipants(id, code, userId, dateString)
     );
 
     //then
@@ -267,6 +271,7 @@ class TeamServiceTest {
   @DisplayName("팀에 팀원 추가 로직 - 실패[인원 제한]")
   void updateTeamParticipants_fail_member_limit() {
     //given
+    String dateString = LocalDate.now().minusDays(1).toString();
     Long teamId = 1L;
     Long userId = 1L;
     String code = "dsfefsefnklsd";
@@ -282,7 +287,7 @@ class TeamServiceTest {
     //when
     CustomException result = assertThrows(
         CustomException.class,
-        () -> teamService.updateTeamParticipants(teamId, code, userId)
+        () -> teamService.updateTeamParticipants(teamId, code, userId, dateString)
     );
 
     //then
@@ -301,14 +306,14 @@ class TeamServiceTest {
     TeamParticipants teamParticipants = TeamParticipants
         .builder()
         .teamParticipantsId(1L)
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(
             Member.builder().memberId(1L).build()
         ).build();
     TeamParticipants kickOutTeamParticipants = TeamParticipants
         .builder()
         .teamParticipantsId(2L)
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .teamNickName("강퇴 사용자 닉네임")
         .member(
             Member.builder().memberId(1L).name("testUser").build()
@@ -379,7 +384,7 @@ class TeamServiceTest {
         .name("test")
         .build();
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -462,7 +467,7 @@ class TeamServiceTest {
         .name("test")
         .build();
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -496,7 +501,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -529,7 +534,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -565,7 +570,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -619,7 +624,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -653,7 +658,7 @@ class TeamServiceTest {
         .build();
 
     TeamParticipants teamParticipants = TeamParticipants.builder()
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .member(member)
         .team(team)
         .build();
@@ -722,7 +727,7 @@ class TeamServiceTest {
     String testUrl = "teamUrl";
     TeamParticipants teamParticipants = TeamParticipants.builder()
         .team(team)
-        .teamRole(TeamRole.READER)
+        .teamRole(TeamRole.LEADER)
         .build();
 
     when(teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(anyLong(), anyLong()))
