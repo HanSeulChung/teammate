@@ -17,19 +17,8 @@ const CalendarCategory = () => {
   // 더미 카테고리
   const [dummyCatList, setDummyCatList] = useState([
     {
-      id: 1,
-      category: "카테고리1",
-      color: "yellow",
-    },
-    {
-      id: 2,
-      category: "카테고리2",
-      color: "yellow",
-    },
-    {
-      id: 3,
-      category: "카테고리3",
-      color: "yellow",
+      categoryId: 1,
+      categoryName: "카테고리1",
     },
   ]);
   
@@ -42,7 +31,8 @@ const CalendarCategory = () => {
         url: `/category/schedule?teamId=${teamId}`,
       });
       if (res.status === 200) {
-        console.log("카테고리 목록 -> ", res.data);
+        console.log("카테고리 목록 -> ", res.data.content);
+        setDummyCatList(res.data.content);
         return;
       }
     } catch (error) {
@@ -77,7 +67,7 @@ const CalendarCategory = () => {
       color: catOption.color,
     }
     optId += 1;
-    setDummyCatList([...dummyCatList, newCatOpt]);
+    // setDummyCatList([...dummyCatList, newCatOpt]);
     window.localStorage.setItem("dummyList", JSON.stringify(dummyCatList));
   }
 
@@ -93,9 +83,9 @@ const CalendarCategory = () => {
         </div>
         <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
           {dummyCatList.map((opt) => (
-            <li key={opt.id} className="flex items-center p-2 rounded hover:bg-gray-100">
+            <li key={opt.categoryId} className="flex items-center p-2 rounded hover:bg-gray-100">
               <input type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-50" />
-              <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.category}</label>
+              <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</label>
             </li>
           ))}
         </ul>
