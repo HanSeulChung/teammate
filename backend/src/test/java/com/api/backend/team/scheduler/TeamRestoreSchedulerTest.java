@@ -24,7 +24,7 @@ class TeamRestoreSchedulerTest {
   private TeamRepository teamRepository;
 
   @InjectMocks
-  private TeamRestoreScheduler teamRestoreScheduler;
+  private TeamDisbandScheduler teamDisbandScheduler;
 
   @Test
   @DisplayName("매일 자정에 팀 해체 기한이 지났을 경우")
@@ -46,7 +46,7 @@ class TeamRestoreSchedulerTest {
     when(teamRepository.findAllByRestorationDtIsNotNull()).thenReturn(teams);
 
     // when
-    teamRestoreScheduler.teamRestoreCheckAndUpdate();
+    teamDisbandScheduler.teamRestoreCheckAndUpdate();
 
     // then
     verify(teamRepository, times(1)).findAllByRestorationDtIsNotNull();
