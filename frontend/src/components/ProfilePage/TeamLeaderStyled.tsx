@@ -1,5 +1,14 @@
 import styled from "styled-components";
 
+export const TeamLeaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  margin-top: 10px;
+`;
+
 export const CenteredContainer = styled.div`
   margin-top: 0;
   display: flex;
@@ -42,21 +51,13 @@ export const StyledButton = styled.button`
   }
 `;
 
-export const TeamLeaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 70vh;
-`;
-
 export const TeamProfileSection = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
 export const TeamImageContainer = styled.div`
-  /* Add styles as needed */
+  margin: 0;
 `;
 
 export const TeamInfoContainer = styled.div`
@@ -107,20 +108,25 @@ export const ConfirmationModal = styled.div`
 
 export const MoveTeamPage = styled.div`
   text-align: right;
-  margin-right: 200px;
+  margin-right: 100px;
+  cursor: pointer;
+  &:hover {
+    color: #a3cca3;
+  }
 `;
 
 export const TeamName = styled.h3`
   text-align: center;
-  font-size: 30px;
+  font-size: 1.5rem;
   font-weight: bold;
 `;
 
 export const Img = styled.img`
-  width: 170px;
-  height: 170px;
+  width: 150px;
+  height: 150px;
   cursor: pointer;
-  margin: 20px 0 20px 50px;
+  margin: 20px 0 20px 30px;
+  border-radius: 20px;
 `;
 
 export const InputOne = styled.input`
