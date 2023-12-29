@@ -67,7 +67,7 @@ public class RepeatScheduleInfoEditRequest {
 
   @Schema(description = "edit option", example = "이 일정")
   private EditOption editOption;
-
+  
   @NotNull(message = "updateParticipantId는 필수 값입니다.")
   @Schema(description = "update team participant id", example = "1L")
   private Long updateParticipantId;

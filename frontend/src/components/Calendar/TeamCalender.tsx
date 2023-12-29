@@ -6,16 +6,18 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import '../../styles/teamCalender.css'
 import styled from "styled-components";
+import AddEvent from "./AddEvent.tsx";
 import EditEvent from "./EditEvent.tsx";
 import axiosInstance from "../../axios";
-
-// import { Team } from "../../interface/interface";
 
 const TeamCalender = () => {
   const navigate = useNavigate();
 
   // 팀 아이디
   const { teamId } = useParams();
+
+  // 현재 페이지의 사용자 팀 멤버 Id(participant)
+  const [myTeamMemberId, setMyTeamMemberId] = useState<number | undefined>(undefined);
 
   // 모달팝업 유무 값
   const [eventDetailModal, setEventDetailModal] = useState<any>(false);
@@ -33,6 +35,23 @@ const TeamCalender = () => {
   };
   const toggleFormModal = () => {
     setEventFormModal(!eventFormModal);
+  };
+
+  // 작성자 정보를 위한 현재 팀의 사용자 팀 멤버 id(participant) 가져오기
+  const fetchMyTeamMemberId = async () => {
+    try {
+      // 사용자가 속해있는 팀 목록과 닉네임등의 정보를 불러옴
+      const response = await axiosInstance.get("/member/participants", {});
+      // 사용자가 가입한 팀 목록중에 현재 팀id의 정보와 맞는 팀 내 내정보 값만 가져옴
+      const myTeamMemberInfo = response.data.find(
+        (item: { teamId: number }) => item.teamId === Number(teamId),
+      );
+      const authorTeamMemberId = myTeamMemberInfo.teamParticipantsId;      
+      setMyTeamMemberId(authorTeamMemberId);
+      console.log("작성자 팀멤버 아이디 -> ",myTeamMemberId);
+    } catch (error) {
+      console.error("Error fetching participants:", error);
+    }
   };
 
   // 일정클릭 핸들링
@@ -61,15 +80,13 @@ const TeamCalender = () => {
   const toggleIsEdit = () => setIsEdit(!isEdit);
 
   // 일정목록 렌더링을 위한 변환
-  // const result = todos.map((todo=>{
-  //   return todo.id === toggleId ? {...todo, didIt: !todo.didIt} : todo
-  // }))
   interface ConvertedEvent {
     id: number;
     start: string;
     end: string;
     title: string;
-    backgroundColor: null;
+    borderColor: string;
+    backgroundColor: string;
     extendedProps: {
       content: string;
       place: string;
@@ -85,7 +102,8 @@ const TeamCalender = () => {
       start: event.startDt,
       end: event.endDt,
       title: event.title,
-      backgroundColor: null,
+      borderColor: event.color,
+      backgroundColor: event.color,
       extendedProps: {
         content: event.content,
         place: event.place,
@@ -96,7 +114,6 @@ const TeamCalender = () => {
     }));
   };
   
-
   // 일정목록 불러오기
   const getAllEvents = async () => {
     try {
@@ -116,8 +133,10 @@ const TeamCalender = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getAllEvents();
+    fetchMyTeamMemberId();
   }, [teamId]);
 
   // 일정 삭제
@@ -191,11 +210,10 @@ const TeamCalender = () => {
             {isEdit ? (
               <>
                 {/* 에디터컴포넌트 */}
-                <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
+                <EditEvent isEdit={isEdit} originEvent={event} toggleIsEdit={toggleIsEdit} />
               </>
             ) : (
               <div className="p-4 md:p-5">
-                {/* <img src={calendarImg} className="w-5 inline-block" /> */}
                 <h2 className="text-xl mt-4 mb-4 font-semibold text-gray-900">{event.title}</h2>
                 <p>
                   {/* 일정 번호: {event.id} */}
@@ -235,7 +253,7 @@ const TeamCalender = () => {
             onClick={toggleFormModal}
           ></Overlay>
           <ModalContent>
-            <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} />
+            <AddEvent originEvent={event} setEventList={setEventList} myTeamMemberId={myTeamMemberId || 0} />
             <CloseModal
               onClick={toggleFormModal}
             >
@@ -275,7 +293,7 @@ export const Overlay = styled.div`
 
 export const ModalContent = styled.div`
   position: absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   line-height: 1.4;
