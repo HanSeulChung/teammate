@@ -13,8 +13,9 @@ public interface MemberService {
 
     SignInResponse login(SignInRequest signInRequest);
 
-    LogoutResponse logout(String requestAccessToken);
+    SignInResponse socialLogin(String access, String refresh);
 
+    LogoutResponse logout(String requestAccessToken);
 
     MemberInfoResponse getMemberInfo(String requestAccessTokenInHeader);
 

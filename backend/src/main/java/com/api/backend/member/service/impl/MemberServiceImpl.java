@@ -129,6 +129,14 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    public SignInResponse socialLogin(String access, String refresh){
+        return SignInResponse.builder()
+                .grantType("Bearer")
+                .accessToken(access)
+                .refreshToken(refresh)
+                .build();
+    }
+
     public LogoutResponse logout(String requestAccessTokenInHeader) {
         String requestAccessToken = authService.resolveToken(requestAccessTokenInHeader);
         String principal = authService.getPrincipal(requestAccessToken);
