@@ -20,6 +20,10 @@ spring:
     url:
     username:
     password:
+    hikari:
+      connection-timeout: 3000
+      maximum-pool-size: 10
+      max-lifetime: 30000
   data:
     mongodb:
       uri:
