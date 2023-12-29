@@ -56,47 +56,67 @@ export default function HomeCreateTeamBtn() {
       <Link to="/teamInfo">
         <CreateTeamButton>+ 팀 생성하기</CreateTeamButton>
       </Link>
-      <TeamNameInput
-        type="text"
-        placeholder="초대코드를 입력하세요"
-        value={inviteCode}
-        onChange={handleInputInviteCode}
-      />
+      <TeamInvite>
+        <input
+          type="text"
+          placeholder="초대코드를 입력하세요"
+          value={inviteCode}
+          onChange={handleInputInviteCode}
+        />
+      </TeamInvite>
       <CreateTeamButton onClick={handleCreateTeam}>참가</CreateTeamButton>
     </CenteredContainer>
   );
 }
 
 const CenteredContainer = styled.div`
-  position: absolute;
-  width: 1000px;
-  top: 210px;
+  margin: 20px 0 10px 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
 `;
 
 const CreateTeamButton = styled.button`
-  margin-top: 20px;
   padding: 8px 16px;
   background-color: #a3cca3;
   color: white;
   border: none;
-  border-radius: 20px;
+  border-radius: 10px;
   cursor: pointer;
-  color: #333333;
 
   &:hover {
     background-color: #cccccc;
   }
+  @media (max-width: 600px) {
+    margin-top: 10px;
+  }
 `;
 
-const TeamNameInput = styled.input`
-  margin-top: 20px;
+const TeamInvite = styled.span`
+  position: relative;
+  padding: 5px;
   margin-right: 5px;
   margin-left: 30px;
-  padding: 8px;
-  border: 1px solid #cccccc;
-  border-radius: 20px;
-  outline: none;
+  @media (max-width: 600px) {
+    margin-top: 10px;
+  }
+
+  input {
+    outline: none;
+    border: none;
+    width: 150px;
+  }
+
+  &:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background-color: #cccccc;
+  }
 `;

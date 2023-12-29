@@ -263,7 +263,7 @@ const TitleContentContainer = styled.div`
 
 const StyledButton = styled.button`
   background-color: rgb(163, 204, 163);
-  color: #333333;
+  color: white;
   border-radius: 0.5rem;
   margin: 4px;
 `;
@@ -356,6 +356,7 @@ const BlurLayer = styled.div<BlurLayerProps>`
 `;
 
 const PagenationButton = styled.button`
+  color: white;
   background-color: rgb(163, 204, 163);
   margin-right: 4px;
   height: 45px;

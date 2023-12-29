@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios";
 import {
   TeamProfileContainer,
@@ -13,7 +13,9 @@ import {
   TeamProfileBox,
   Button,
   LinkContainer,
+  TeamDisband,
 } from "./MyTeamProfileStyled";
+import { StyledLink } from "../../styles/CommonStyled.tsx";
 import profileImg from "../../assets/profileImg.png";
 import { Team } from "../../interface/interface.ts";
 import { accessTokenState } from "../../state/authState";
@@ -163,7 +165,7 @@ const MyTeamProfile: React.FC = () => {
       <UserProfileInfo>
         <UserProfileTitle>내 팀 프로필</UserProfileTitle>
         <LinkContainer>
-          <Link to="/myUserProfile">내 프로필로 이동</Link>
+          <StyledLink to="/myUserProfile">내 프로필로 이동</StyledLink>
         </LinkContainer>
         <select
           title="profile"
@@ -213,13 +215,18 @@ const MyTeamProfile: React.FC = () => {
                 id="nickname"
                 value={nickName || userTeamData?.teamNickName || ""}
                 onChange={(e) => setNickName(e.target.value)}
+                onBlur={(e) => {
+                  if (e.target.value.trim() === "") {
+                    setNickName("");
+                  }
+                }}
               />
             </NicknameContainer>
           </ContainerWrapper>
           <ButtonContainer>
             <Button onClick={handleCreateTeam}>변경하기</Button>
           </ButtonContainer>
-          <Button onClick={handleLeaveTeam}>팀 탈퇴하기</Button>
+          <TeamDisband onClick={handleLeaveTeam}>팀 탈퇴하기</TeamDisband>
         </TeamProfileBox>
       )}
     </TeamProfileContainer>

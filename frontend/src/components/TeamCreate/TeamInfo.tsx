@@ -184,8 +184,8 @@ export default function TeamInfo() {
       </StyledFormItem>
       <StyledFormItem>
         <StyledButton onClick={handleCreateTeam}>생성하기</StyledButton>
-        {error && <StyledErrorMessage>{error}</StyledErrorMessage>}
       </StyledFormItem>
+      {error && <StyledErrorMessage>{error}</StyledErrorMessage>}
     </StyledContainer>
   );
 }
