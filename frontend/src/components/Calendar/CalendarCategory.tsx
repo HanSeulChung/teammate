@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from "styled-components";
+import axiosInstance from "../../axios";
 
 const CalendarCategory = () => {
+  // 팀 ID
+  const { teamId } = useParams();
+
   // 모달팝업 유무
   const [schdlCtgryModal, setSchdlCtgryModal] = useState(false);
 
@@ -27,6 +32,27 @@ const CalendarCategory = () => {
       color: "yellow",
     },
   ]);
+  
+  // /category/{categoryType}?teamId=1
+  // 카테고리 목록 불러오기
+  const getCategoryList = async () => {
+    try {
+      const res = await axiosInstance({
+        method: "get",
+        url: `/category/schedule?teamId=${teamId}`,
+      });
+      if (res.status === 200) {
+        console.log("카테고리 목록 -> ", res.data);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getCategoryList();
+  }, [teamId]);
 
   // 카테고리 입력 값
   const [catOption, setCatOption] = useState({
@@ -54,6 +80,7 @@ const CalendarCategory = () => {
     setDummyCatList([...dummyCatList, newCatOpt]);
     window.localStorage.setItem("dummyList", JSON.stringify(dummyCatList));
   }
+
 
   return (
     <>
