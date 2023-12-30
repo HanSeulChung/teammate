@@ -1,5 +1,6 @@
 package com.api.backend.category.service;
 
+import static com.api.backend.global.exception.type.ErrorCode.NO_CATEGORY_SELECTED_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_CREATOR_EXISTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.SCHEDULE_CATEGORY_NOT_FOUND_EXCEPTION;
@@ -92,6 +93,14 @@ public class ScheduleCategoryService {
     ScheduleCategory category = findCategoryOrElseThrow(deleteRequest.getCategoryId());
     TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(deleteRequest.getTeamId(), memberId);
 
+    List<RepeatSchedule> repeatScheduleList = repeatScheduleRepository.findAllByScheduleCategory_ScheduleCategoryIdAndTeam_TeamId(
+        deleteRequest.getCategoryId(), deleteRequest.getTeamId()
+    );
+
+    List<SimpleSchedule> simpleScheduleList = simpleScheduleRepository.findAllByScheduleCategory_ScheduleCategoryIdAndTeam_TeamId(
+        deleteRequest.getCategoryId(), deleteRequest.getTeamId()
+    );
+
     if (teamParticipants.getTeamRole() == TeamRole.LEADER
         && category.getCreateParticipantId() != teamParticipants.getTeamParticipantsId()
     ) {
@@ -104,12 +113,20 @@ public class ScheduleCategoryService {
       }
     }
 
-    if (!deleteRequest.isMoved()) {
+    if(repeatScheduleList.size() == 0 && simpleScheduleList.size() == 0) {
       scheduleCategoryRepository.delete(category);
       log.info("일정 카테고리가 성공적으로 삭제되었습니다.");
-    } else {
-      if (deleteRequest.getNewCategoryId() != null ) {
+    }
 
+    if (repeatScheduleList.size() > 0 || simpleScheduleList.size() > 0 ) {
+      if (!deleteRequest.isMoved()) {
+        scheduleCategoryRepository.delete(category);
+        log.info("일정 카테고리가 성공적으로 삭제되었습니다.");
+
+      } else {
+        if (deleteRequest.getNewCategoryId() == null) {
+          throw new CustomException(NO_CATEGORY_SELECTED_EXCEPTION);
+        }
         ScheduleCategory newCategory = findCategoryOrElseThrow(deleteRequest.getNewCategoryId());
         List<RepeatSchedule> repeatSchedules = category.getRepeatSchedules();
         List<SimpleSchedule> simpleSchedules = category.getSimpleSchedule();
@@ -119,16 +136,17 @@ public class ScheduleCategoryService {
           repeatScheduleRepository.save(repeatSchedule);
         }
         log.info("해당 카테고리에 속한 반복 일정들의 카테고리가 성공적으로 변경되었습니다.");
+
         for (SimpleSchedule simpleSchedule : simpleSchedules) {
           simpleSchedule.setScheduleCategory(newCategory);
           simpleScheduleRepository.save(simpleSchedule);
         }
         log.info("해당 카테고리에 속한 단순 일정들의 카테고리가 성공적으로 변경되었습니다.");
+
         scheduleCategoryRepository.delete(category);
         log.info("일정 카테고리가 성공적으로 삭제되었습니다.");
       }
     }
-
   }
 
   private Team findTeamOrElseThrow(Long teamId) {
