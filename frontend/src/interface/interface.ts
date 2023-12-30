@@ -55,3 +55,26 @@ export interface TeamParticipant {
   participantsProfileUrl: string;
   teamNickName: string;
 }
+
+// 카테고리 목록
+export interface ICategoryList {
+  categoryId: number;
+  categoryName: string;
+}
+
+// 일정목록 렌더링을 위한 타입
+export interface ConvertedEvent {
+  id: number;
+  start: string;
+  end: string;
+  title: string;
+  borderColor: string;
+  backgroundColor: string;
+  extendedProps: {
+    content: string;
+    place: string;
+    scheduleType: string;
+    category: string;
+    categoryName: string;
+  };
+}

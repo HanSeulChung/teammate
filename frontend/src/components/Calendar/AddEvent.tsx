@@ -3,15 +3,16 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 import styled from "styled-components";
 import Select, { MultiValue } from 'react-select';
-// import SelectTeamMember from "./SelectTeamMember.tsx";
+import { ICategoryList } from "../../interface/interface.ts"
 
 type AddEventProps = {
   originEvent: any,
   setEventList: React.Dispatch<React.SetStateAction<any>>,
+  categoryList: ICategoryList[],
   myTeamMemberId: number,
 }
 
-const AddEvent = ({ originEvent, setEventList, myTeamMemberId }: AddEventProps) => {
+const AddEvent = ({ originEvent, setEventList, categoryList, myTeamMemberId }: AddEventProps) => {
   // 현재 페이지의 팀 아이디
   const { teamId } = useParams();
 
@@ -179,9 +180,9 @@ const AddEvent = ({ originEvent, setEventList, myTeamMemberId }: AddEventProps) 
       <div className='col-span-2'>
         <label htmlFor="categoryId" className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리</label>
         <select id="categoryId" name='categoryId' value={eventChange.categoryId} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'>
-          <option value="1">주간회의</option>
-          <option value="2">회의</option>
-          <option value="3">미팅</option>
+          {categoryList.map((item)=>(
+            <option key={item.categoryId} value={item.categoryId}>{item.categoryName}</option>
+          ))}
         </select>
       </div>
       <div className='col-span-2'>
@@ -214,7 +215,6 @@ const AddEvent = ({ originEvent, setEventList, myTeamMemberId }: AddEventProps) 
       </div>
       <CommonSubmitBtn
         onClick={(e: any) => {
-          //handleMemberIds();
           handleScheduleSubmit(e);
         }}
         className='mt-2'

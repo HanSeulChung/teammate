@@ -182,12 +182,12 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
               <TitleContentContainer>
                 <TitleDomStyled>
                   제목 : {doc.title}
-                  <BlurLayer $blur={3.6} $width="5px" />
-                  <BlurLayer $blur={3.2} $width="10px" />
-                  <BlurLayer $blur={2.8} $width="15px" />
-                  <BlurLayer $blur={2.4} $width="20px" />
-                  <BlurLayer $blur={2.0} $width="25px" />
-                  <BlurLayer $blur={1.6} $width="30px" />
+                  <BlurLayer $blur={3.0} $width="5px" />
+                  <BlurLayer $blur={2.6} $width="10px" />
+                  <BlurLayer $blur={2.4} $width="15px" />
+                  <BlurLayer $blur={2.0} $width="20px" />
+                  <BlurLayer $blur={1.6} $width="25px" />
+                  <BlurLayer $blur={1.2} $width="30px" />
                   <BlurLayer $blur={0.8} $width="35px" />
                   <BlurLayer $blur={0.4} $width="40px" />
                 </TitleDomStyled>
@@ -196,13 +196,33 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
                   {doc.content
                     .replace(/<p>/g, "")
                     .replace(/<\/p>/g, "")
-                    .replace(/<br>/g, "\n")}
-                  <BlurLayer $blur={3.6} $width="5px" />
-                  <BlurLayer $blur={3.2} $width="10px" />
-                  <BlurLayer $blur={2.8} $width="15px" />
-                  <BlurLayer $blur={2.4} $width="20px" />
-                  <BlurLayer $blur={2.0} $width="25px" />
-                  <BlurLayer $blur={1.6} $width="30px" />
+                    .replace(/<br>/g, "\n")
+                    .replace(/<ol>/g, "")
+                    .replace(/<\/ol>/g, "")
+                    .replace(/<li>/g, "")
+                    .replace(/<\/li>/g, "")
+                    .replace(/<ul>/g, "")
+                    .replace(/<\/ul>/g, "")
+                    .replace(/<strong>/g, "")
+                    .replace(/<\/strong>/g, "")
+                    .replace(/<em>/g, "")
+                    .replace(/<\/em>/g, "")
+                    .replace(/<u>/g, "")
+                    .replace(/<\/u>/g, "")
+                    .replace(/<h1>/g, "")
+                    .replace(/<\/h1>/g, "\n")
+                    .replace(/<h2>/g, "")
+                    .replace(/<\/h2>/g, "\n")
+                    .replace(/<h3>/g, "")
+                    .replace(/<\/h3>/g, "\n")
+                    .replace(/<h4>/g, "")
+                    .replace(/<\/h4>/g, "\n")}
+                  <BlurLayer $blur={3.0} $width="5px" />
+                  <BlurLayer $blur={2.6} $width="10px" />
+                  <BlurLayer $blur={2.4} $width="15px" />
+                  <BlurLayer $blur={2.0} $width="20px" />
+                  <BlurLayer $blur={1.6} $width="25px" />
+                  <BlurLayer $blur={1.2} $width="30px" />
                   <BlurLayer $blur={0.8} $width="35px" />
                   <BlurLayer $blur={0.4} $width="40px" />
                 </ContentDomStyled>
