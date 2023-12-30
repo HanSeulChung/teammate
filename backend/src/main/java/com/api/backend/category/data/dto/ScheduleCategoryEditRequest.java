@@ -21,7 +21,7 @@ public class ScheduleCategoryEditRequest {
 
   @NotNull(message = "updateTeamParticipantId는 필수 값입니다.")
   @Schema(description = "update team participant id", example = "1L")
-  private Long updateTeamParticipantId;
+  private Long updateParticipantId;
 
   @NotNull(message = "teamId는 필수 값입니다.")
   @Schema(description = "team id", example = "1L")
