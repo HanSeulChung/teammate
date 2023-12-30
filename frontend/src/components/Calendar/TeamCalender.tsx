@@ -9,6 +9,7 @@ import styled from "styled-components";
 import AddEvent from "./AddEvent.tsx";
 import EditEvent from "./EditEvent.tsx";
 import axiosInstance from "../../axios";
+import { ConvertedEvent, ICategoryList } from "../../interface/interface.ts"
 
 const TeamCalender = () => {
   const navigate = useNavigate();
@@ -25,6 +26,14 @@ const TeamCalender = () => {
 
   // 일정 전체 목록
   const [eventList, setEventList] = useState<any>([]);
+
+  // 카테고리 목록
+  const [categoryList, setCategoryList] = useState<ICategoryList[]>([
+    {
+      categoryId: 1,
+      categoryName: "카테고리1",
+    },
+  ]);
 
   // 달력 일정 각각 state 핸들링용
   const [event, setEvent] = useState<any>([]);
@@ -80,22 +89,6 @@ const TeamCalender = () => {
   const toggleIsEdit = () => setIsEdit(!isEdit);
 
   // 일정목록 렌더링을 위한 변환
-  interface ConvertedEvent {
-    id: number;
-    start: string;
-    end: string;
-    title: string;
-    borderColor: string;
-    backgroundColor: string;
-    extendedProps: {
-      content: string;
-      place: string;
-      scheduleType: string;
-      category: string;
-      categoryName: string;
-    };
-  }
-  
   const convertEvents = (events: any[]): ConvertedEvent[] => {
     return events.map(event => ({
       id: event.scheduleId,
@@ -134,9 +127,27 @@ const TeamCalender = () => {
     }
   };
 
+  // 카테고리 목록 불러오기
+  const getCategoryList = async () => {
+    try {
+      const res = await axiosInstance({
+        method: "get",
+        url: `/category/schedule?teamId=${teamId}`,
+      });
+      if (res.status === 200) {
+        console.log("카테고리 목록 -> ", res.data.content);
+        setCategoryList(res.data.content);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getAllEvents();
     fetchMyTeamMemberId();
+    getCategoryList();
   }, [teamId]);
 
   // 일정 삭제
@@ -260,7 +271,7 @@ const TeamCalender = () => {
             onClick={toggleFormModal}
           ></Overlay>
           <ModalContent>
-            <AddEvent originEvent={event} setEventList={setEventList} myTeamMemberId={myTeamMemberId || 0} />
+            <AddEvent originEvent={event} setEventList={setEventList} categoryList={categoryList} myTeamMemberId={myTeamMemberId || 0} />
             <CloseModal
               onClick={toggleFormModal}
             >
