@@ -71,8 +71,7 @@ export default function TeamLeader() {
     if (newSelectedImage instanceof File) {
       formData.append("profileImg", newSelectedImage);
     }
-    console.log("FormData:", newSelectedImage);
-    const response = await axiosInstance.post("/team/update", formData, {
+    await axiosInstance.post("/team/update", formData, {
       withCredentials: true,
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -80,7 +79,6 @@ export default function TeamLeader() {
       },
     });
     alert("팀 정보가 성공적으로 변경되었습니다.");
-    console.log("팀 수정 성공 :", response.data);
   };
   //이미지업로드
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,7 +162,6 @@ export default function TeamLeader() {
           kickOutReason: kickReason,
         });
         alert("해당 팀원이 강퇴되었습니다.");
-        console.log("강퇴 응답:", response.data);
         const updatedTeamParticipants = teamParticipants.filter(
           (_, index) => index !== memberIndexToRemove,
         );
@@ -192,7 +189,6 @@ export default function TeamLeader() {
             teamRole: "LEADER",
           },
         );
-        console.log(response);
         alert("팀장이 변경되었습니다.");
         navigate("/homeView");
       } catch (error) {
@@ -225,14 +221,13 @@ export default function TeamLeader() {
   const handleTeamNameConfirmation = async () => {
     try {
       if (inputTeamName === team?.name) {
-        const response = await axiosInstance.put(`/team/disband`, {
+        await axiosInstance.put(`/team/disband`, {
           teamId: team?.teamId,
           teamName: team?.name,
         });
         alert(
           "팀이 삭제되었습니다. 복구는 30일 이내로 가능하며 30일 뒤에는 자동으로 팀이 해체됩니다.",
         );
-        console.log("팀 삭제 응답:", response.data);
         navigate("/homeView");
       } else {
         setTeamNameError("팀 명이 올바르지 않습니다.");

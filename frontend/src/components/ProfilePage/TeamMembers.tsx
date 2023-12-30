@@ -39,7 +39,6 @@ const TeamMembers = () => {
         const response = await axiosInstance.get<TeamParticipant[]>(
           `/team/${teamId}/participant/list`,
         );
-        console.log(response.data);
         setTeamParticipants(response.data);
       } catch (error) {
         console.error("Error fetching team participants:", error);

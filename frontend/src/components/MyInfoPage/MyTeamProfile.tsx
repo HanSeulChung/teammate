@@ -47,7 +47,6 @@ const MyTeamProfile: React.FC = () => {
             teamName: team.teamName,
           })),
         );
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching team list:", error);
       }
@@ -62,7 +61,6 @@ const MyTeamProfile: React.FC = () => {
       console.error("선택된 팀이 없습니다.");
       return;
     }
-    console.log("선택된 팀 정보:", selectedTeam);
     const formData = new FormData();
     formData.append("teamNickName", nickName);
     if (userTeamData?.teamParticipantsId !== undefined) {
@@ -75,7 +73,7 @@ const MyTeamProfile: React.FC = () => {
     if (newSelectedImage instanceof File) {
       formData.append("participantImg", newSelectedImage);
     }
-    const response = await axiosInstance.post(`/member/participant`, formData, {
+    await axiosInstance.post(`/member/participant`, formData, {
       withCredentials: true,
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -83,7 +81,6 @@ const MyTeamProfile: React.FC = () => {
       },
     });
     window.alert("프로필이 수정되었습니다.");
-    console.log("내 프로필 수정 성공 :", response.data);
   };
 
   //이미지업로드
@@ -100,7 +97,6 @@ const MyTeamProfile: React.FC = () => {
         setNewSelectedImage(file);
         setPreviewImage(result);
         setSelectedImage(result);
-        console.log("Selected Image:", result);
       };
 
       reader.onerror = (error) => {
@@ -114,10 +110,7 @@ const MyTeamProfile: React.FC = () => {
     setSelectedTeam(team);
 
     try {
-      const teamParticipantsResponse = await axiosInstance.get(
-        `/member/participants?teamId=${team.teamId}`,
-      );
-      console.log("팀 참가자 정보:", teamParticipantsResponse.data);
+      await axiosInstance.get(`/member/participants?teamId=${team.teamId}`);
       const teamParticipant = team;
       setUserTeamData({
         teamParticipantsId: teamParticipant.teamParticipantsId,
@@ -140,15 +133,11 @@ const MyTeamProfile: React.FC = () => {
         return;
       }
 
-      const response = await axiosInstance.delete(
-        `/team/${selectedTeam.teamId}/participant`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+      await axiosInstance.delete(`/team/${selectedTeam.teamId}/participant`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-      );
-      console.log("팀 탈퇴 성공:", response.data);
+      });
       window.alert("팀에서 탈퇴되었습니다.");
       navigator("/homeView");
       setSelectedTeam(null);
