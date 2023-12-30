@@ -7,6 +7,9 @@ const CalendarCategory = () => {
   // 팀 ID
   const { teamId } = useParams();
 
+  // 현재 페이지의 사용자 팀 멤버 Id(participant)
+  const [myTeamMemberId, setMyTeamMemberId] = useState<number | undefined>(undefined);
+
   // 모달팝업 유무
   const [categoryModal, setCategoryModal] = useState(false);
 
@@ -39,38 +42,66 @@ const CalendarCategory = () => {
       console.log(error);
     }
   };
+  
+  // 작성자 정보를 위한 현재 팀의 사용자 팀 멤버 id(participant) 가져오기
+  const fetchMyTeamMemberId = async () => {
+    try {
+      // 사용자가 속해있는 팀 목록과 닉네임등의 정보를 불러옴
+      const response = await axiosInstance.get("/member/participants", {});
+      // 사용자가 가입한 팀 목록중에 현재 팀id의 정보와 맞는 팀 내 내정보 값만 가져옴
+      const myTeamMemberInfo = response.data.find(
+        (item: { teamId: number }) => item.teamId === Number(teamId),
+      );
+      const authorTeamMemberId = myTeamMemberInfo.teamParticipantsId;      
+      setMyTeamMemberId(authorTeamMemberId);
+      console.log("작성자 팀멤버 아이디 카테고리-> ",myTeamMemberId);
+    } catch (error) {
+      console.error("Error fetching participants:", error);
+    }
+  };
 
   useEffect(() => {
     getCategoryList();
+    fetchMyTeamMemberId();
   }, [teamId]);
 
   // 카테고리 입력 값
-  const [catOption, setCatOption] = useState({
-    category: "",
+  const [categoryInput, setCategoryInput] = useState({
+    teamId: teamId,
+    createTeamParticipantId: myTeamMemberId,
+    categoryName: "",
+    categoryType: "schedule",
     color: "",
   });
 
-  // 바뀌는값
+  // 카테고리 입력값 핸들링
   const handleChangeOption = (e: any) => {
     console.log(e.target.value);
-    setCatOption({
-      ...catOption,
+    setCategoryInput({
+      ...categoryInput,
       [e.target.name]: e.target.value,
     })
+    console.log(categoryInput);
   };
 
-  const AddOption = () => {
-    let optId = 4;
-    // const newCatOpt = {
-    //   id: optId,
-    //   category: catOption.category,
-    //   color: catOption.color,
-    // }
-    optId += 1;
-    // setDummyCatList([...dummyCatList, newCatOpt]);
-    window.localStorage.setItem("dummyList", JSON.stringify(categoryList));
-  }
-
+  const AddCategory = async (e: any) => {
+    // /category
+    e.preventDefault();
+    try {
+      const res = await axiosInstance.post(`/category`, categoryInput, {
+        headers: {
+          "Content-Type": "application/json"
+        },
+      });
+      if (res.status === 200) {
+        console.log("카테고리 옵션이 추가되었습니다 -> ", res);
+        // setCategoryList(res.data.content);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -90,7 +121,7 @@ const CalendarCategory = () => {
           ))}
         </ul>
       </div>
-      {/* 날짜클릭 모달 */}
+      {/* 카테고리 추가 버튼 클릭시 모달 */}
       {categoryModal && (
         <Modal>
           <Overlay
@@ -101,29 +132,28 @@ const CalendarCategory = () => {
               <h2 className="text-lg font-semibold text-gray-900">카테고리 추가</h2>
               <CategoryForm>
                 <div className="col-span-2">
-
                 </div>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리 이름</label>
                 <input
                   placeholder='카테고리명'
-                  name="category"
-                  value={catOption.category}
+                  name="categoryName"
+                  value={categoryInput.categoryName}
                   onChange={handleChangeOption}
                   className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 ></input>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
                 <select
                   name="color"
-                  value={catOption.color}
+                  value={categoryInput.color}
                   onChange={handleChangeOption}
                   className='block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 >
-                  <option value="red">red</option>
-                  <option value="yellow">yellow</option>
-                  <option value="blue">blue</option>
+                  <option value="#7aac7a">초록</option>
+                  <option value="#E21D29">빨강</option>
+                  <option value="#336699">파랑</option>
                 </select>
                 <CommonSubmitBtn
-                  onClick={AddOption}
+                  onClick={AddCategory}
                 >등록</CommonSubmitBtn>
               </CategoryForm>
               <CloseModal
@@ -135,7 +165,6 @@ const CalendarCategory = () => {
           </ModalContent>
         </Modal>
       )}
-      {/* </div> */}
     </>
   );
 };
