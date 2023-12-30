@@ -187,9 +187,9 @@ const AddEvent = ({ originEvent, setEventList, myTeamMemberId }: AddEventProps) 
       <div className='col-span-2'>
         <label htmlFor="color" className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
         <select id="color" name="color" value={eventChange.color} onChange={handleEventChange} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5'>
+          <option value="#7aac7a">초록</option>
           <option value="#E21D29">빨강</option>
           <option value="#336699">파랑</option>
-          <option value="#7aac7a">초록</option>
         </select>
       </div>
       <div className='col-span-2'>

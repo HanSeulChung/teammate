@@ -61,11 +61,11 @@ const CalendarCategory = () => {
 
   const AddOption = () => {
     let optId = 4;
-    const newCatOpt = {
-      id: optId,
-      category: catOption.category,
-      color: catOption.color,
-    }
+    // const newCatOpt = {
+    //   id: optId,
+    //   category: catOption.category,
+    //   color: catOption.color,
+    // }
     optId += 1;
     // setDummyCatList([...dummyCatList, newCatOpt]);
     window.localStorage.setItem("dummyList", JSON.stringify(dummyCatList));
