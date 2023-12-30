@@ -129,16 +129,22 @@ export default function TeamLeader() {
 
   //강퇴
   const handleTeamMemberChange = (
-    index: number,
+    participant: TeamParticipant,
     e: ChangeEvent<HTMLInputElement>,
   ) => {
     const updatedTeamMembers = [...teamMembers];
-    updatedTeamMembers[index] = e.target.value;
+    const memberIndex = teamParticipants.findIndex(
+      (p) => p.teamParticipantsId === participant.teamParticipantsId,
+    );
+    updatedTeamMembers[memberIndex] = e.target.value;
     setTeamMembers(updatedTeamMembers);
   };
 
-  const handleRemoveMember = (index: number) => {
-    setMemberIndexToRemove(index);
+  const handleRemoveMember = (teamParticipantsId: number) => {
+    const selectedMemberIndex = teamParticipants.findIndex(
+      (participant) => participant.teamParticipantsId === teamParticipantsId,
+    );
+    setMemberIndexToRemove(selectedMemberIndex);
     setShowConfirmation(true);
   };
 
@@ -151,12 +157,10 @@ export default function TeamLeader() {
   //강퇴 api 호출
   const handleKickOutMember = async () => {
     if (memberIndexToRemove !== null && kickReason.trim() !== "") {
-      const selectedMember = teamParticipants.find(
-        (_, index) => index === memberIndexToRemove,
-      );
+      const selectedMember = teamParticipants[memberIndexToRemove];
 
       try {
-        const response = await axiosInstance.post("/team/kick-out", {
+        await axiosInstance.post("/team/kick-out", {
           teamId: team?.teamId,
           participantId: selectedMember?.teamParticipantsId,
           kickOutReason: kickReason,
@@ -183,7 +187,7 @@ export default function TeamLeader() {
 
     if (selectedParticipant && selectedParticipant.teamRole === "MATE") {
       try {
-        const response = await axiosInstance.patch(
+        await axiosInstance.patch(
           `/team/${teamId}/participant/${selectedParticipant.teamParticipantsId}`,
           {
             teamRole: "LEADER",
@@ -247,7 +251,6 @@ export default function TeamLeader() {
         const teamCode = response.data;
         const codeUrl = `${teamCode}`;
         setCodeUrl(codeUrl);
-        // await axiosInstance.post(codeUrl);
       } catch (error) {
         console.error("Error fetching team code:", error);
       }
@@ -369,15 +372,19 @@ export default function TeamLeader() {
             onChange={(e) => setSearchTeam(e.target.value)}
           />
           <SearchMember>
-            {filteredTeamMembers.map((participant, index) => (
-              <MemberList key={index}>
+            {filteredTeamMembers.map((participant) => (
+              <MemberList key={participant.teamParticipantsId}>
                 <StyledInput
                   title="disband"
                   type="text"
                   value={participant.teamNickName}
-                  onChange={(e) => handleTeamMemberChange(index, e)}
+                  onChange={(e) => handleTeamMemberChange(participant, e)}
                 />
-                <StyledButton onClick={() => handleRemoveMember(index)}>
+                <StyledButton
+                  onClick={() =>
+                    handleRemoveMember(participant.teamParticipantsId)
+                  }
+                >
                   강퇴
                 </StyledButton>
               </MemberList>
