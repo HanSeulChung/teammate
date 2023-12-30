@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
 import axiosInstance from "../../axios";
@@ -16,6 +16,9 @@ const CalendarCategory = () => {
   const toggleCat = () => {
     setCategoryModal(!categoryModal);
   };
+
+  // input 요소
+  const categoryNameInput = useRef<HTMLInputElement | null>(null);
 
   // 카테고리 목록
   const [categoryList, setCategoryList] = useState([
@@ -85,17 +88,26 @@ const CalendarCategory = () => {
   };
 
   // 카테고리 추가
-  const handleCategoryAdd = async (e: any) => {
-    // e.preventDefault();
+  const handleCategoryAdd = (e: any) => {
+    if(categoryInput.categoryName.length < 1){
+      categoryNameInput.current?.focus();
+      e.preventDefault();
+      return;
+    }
+    
+    onAddCategory();
+  };
+  
+  const onAddCategory = async () => {
     try {
       const res = await axiosInstance.post(`/category`, 
-        {
-          teamId: teamId,
-          createParticipantId: myTeamMemberId,
-          categoryName: categoryInput.categoryName,
-          categoryType: "SCHEDULE",
-          color: categoryInput.color,
-        }
+      {
+        teamId: teamId,
+        createParticipantId: myTeamMemberId,
+        categoryName: categoryInput.categoryName,
+        categoryType: "SCHEDULE",
+        color: categoryInput.color,
+      }
       );
       if (res.status === 200) {
         console.log("카테고리 옵션이 추가되었습니다 -> ", res);
@@ -105,7 +117,7 @@ const CalendarCategory = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   // 카테고리 삭제
   const handleCategoryDelete = async (e: any) => {
@@ -166,6 +178,7 @@ const CalendarCategory = () => {
                 </div>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리 이름</label>
                 <input
+                  ref={categoryNameInput}
                   placeholder='카테고리명'
                   name="categoryName"
                   value={categoryInput.categoryName}
