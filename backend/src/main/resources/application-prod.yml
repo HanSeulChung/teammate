@@ -7,6 +7,7 @@ spring:
       - classpath:application-s3.yml
       - classpath:application-oauth.yml
       - classpath:application-host.yml
+      - classpath:application-ssl.yml
   jpa:
     open-in-view: true
     hibernate:

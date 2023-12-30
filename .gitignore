@@ -258,6 +258,9 @@ $RECYCLE.BIN/
 ### Log ###
 *.log
 
+## http ##
+*.http
+
 ## yml ##
 application-db.yml
 application-jwt.yml
