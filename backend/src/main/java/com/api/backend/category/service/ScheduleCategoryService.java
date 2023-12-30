@@ -45,43 +45,42 @@ public class ScheduleCategoryService {
   private final RepeatScheduleRepository repeatScheduleRepository;
 
   @Transactional
-  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest,
-      Long memberId) {
-    Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
-
+  public ScheduleCategory add(ScheduleCategoryRequest scheduleCategoryRequest, Long memberId) {
     validTeamParticipant(scheduleCategoryRequest.getTeamId(), memberId);
+
+    Team team = findTeamOrElseThrow(scheduleCategoryRequest.getTeamId());
 
     ScheduleCategory scheduleCategory = ScheduleCategory.builder()
         .team(team)
         .categoryName(scheduleCategoryRequest.getCategoryName())
         .categoryType(scheduleCategoryRequest.getCategoryType())
         .color(scheduleCategoryRequest.getColor())
-        .createParticipantId(scheduleCategoryRequest.getCreateTeamParticipantId())
+        .createParticipantId(scheduleCategoryRequest.getCreateParticipantId())
         .build();
+
     scheduleCategoryRepository.save(scheduleCategory);
     log.info("일정 카테고리가 성공적으로 추가되었습니다.");
     return scheduleCategory;
   }
 
 
-  public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType,
-      Pageable pageable, Long teamId, Long memberId) {
+  public Page<ScheduleCategory> searchByCategoryType(CategoryType categoryType, Pageable pageable, Long teamId, Long memberId) {
     validTeamParticipant(teamId, memberId);
 
-    Page<ScheduleCategory> categoryPagesByCategoryType = scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(
-        categoryType, pageable,
-        teamId);
+    Page<ScheduleCategory> categoryPagesByCategoryType =
+        scheduleCategoryRepository.findAllByCategoryTypeAndTeam_TeamId(categoryType, pageable, teamId);
+
     log.info("카테고리 유형별 조회에 성공하였습니다.");
     return categoryPagesByCategoryType;
   }
 
   @Transactional
-  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest,
-      Long memberId) {
-    findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
+  public ScheduleCategory edit(ScheduleCategoryEditRequest scheduleCategoryEditRequest, Long memberId) {
     validTeamParticipant(scheduleCategoryEditRequest.getTeamId(), memberId);
-    ScheduleCategory scheduleCategory = findCategoryOrElseThrow(
-        scheduleCategoryEditRequest.getCategoryId());
+    findTeamOrElseThrow(scheduleCategoryEditRequest.getTeamId());
+
+    ScheduleCategory scheduleCategory = findCategoryOrElseThrow(scheduleCategoryEditRequest.getCategoryId());
+
     scheduleCategory.editScheduleCategory(scheduleCategoryEditRequest);
     ScheduleCategory editCategory = scheduleCategoryRepository.save(scheduleCategory);
     log.info("일정 카테고리 수정에 성공하였습니다.");
@@ -91,14 +90,12 @@ public class ScheduleCategoryService {
   @Transactional
   public void delete(ScheduleCategoryDeleteRequest deleteRequest, Long memberId) {
     ScheduleCategory category = findCategoryOrElseThrow(deleteRequest.getCategoryId());
-    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(
-        deleteRequest.getTeamId(), memberId);
+    TeamParticipants teamParticipants = teamParticipantsService.getTeamParticipant(deleteRequest.getTeamId(), memberId);
 
     if (teamParticipants.getTeamRole() == TeamRole.LEADER
         && category.getCreateParticipantId() != teamParticipants.getTeamParticipantsId()
     ) {
-      if (teamParticipantsRepository.existsByTeamParticipantsId(
-          category.getCreateParticipantId())) {
+      if (teamParticipantsRepository.existsByTeamParticipantsId(category.getCreateParticipantId())) {
         throw new CustomException(SCHEDULE_CATEGORY_CREATOR_EXISTS_EXCEPTION);
       }
     } else {
