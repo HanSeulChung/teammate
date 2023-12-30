@@ -65,6 +65,9 @@ public class AmazonS3FileProcessService implements FileProcessService {
 
   @Override
   public String getFileName(String url) {
+    if (url == null) {
+      return null;
+    }
     String[] paths = url.split("/");
     return paths[paths.length-2] + "/" + paths[paths.length-1];
   }
@@ -83,8 +86,10 @@ public class AmazonS3FileProcessService implements FileProcessService {
   }
 
   private void deleteFile(String fileName) {
-    amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
-    log.info("{}의 이미지 파일이 삭제되었습니다.", fileName);
+    if (fileName != null) {
+      amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+      log.info("{}의 이미지 파일이 삭제되었습니다.", fileName);
+    }
   }
 
   public String getFileUrl(String fileName) {
