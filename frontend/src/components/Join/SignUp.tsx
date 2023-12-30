@@ -74,8 +74,7 @@ const SignUp: React.FC<SignUpProps> = () => {
           withCredentials: true,
         },
       )
-      .then((res) => {
-        console.log(res.data);
+      .then(() => {
         setSignUpMessage("회원가입 성공");
         openModal();
       })
@@ -118,20 +117,16 @@ const SignUp: React.FC<SignUpProps> = () => {
       .post(`/sign-up/email-check`, { email })
       .then((response) => {
         const isEmailAvailable = response.data.errorCode;
-        console.log(isEmailAvailable);
         if (isEmailAvailable === TEST) {
-          console.log("중복된 이메일입니다.");
           setIsIdAvailable(false);
         } else {
           setIsIdAvailable(true);
-          console.log("사용가능한 이메일입니다.");
         }
       })
       .catch((error) => {
         console.error("이메일 중복 확인 실패:", error);
         if (error.response && error.response.data.errorCode === TEST) {
           setIsIdAvailable(false);
-          console.log("중복된 이메일입니다.");
         }
       });
   };

@@ -53,7 +53,6 @@ const SignIn = () => {
 
       const { token } = response.data;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      console.log("토큰이 발급되었습니다:", response.data.token);
       const newAccessToken = response.data.accessToken;
       const newRefreshToken = response.data.refreshToken;
 
@@ -69,7 +68,6 @@ const SignIn = () => {
       setIsAuthenticated(true);
       saveUser({ id: email, name: response.data.name, email: email });
       navigate("/homeView");
-      console.log("login successful");
     } catch (error) {
       console.error("Sign In Error:", error);
 
