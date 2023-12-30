@@ -17,8 +17,7 @@ export default function HomeCreateTeamBtn() {
     }
     axiosInstance
       .get(`/team/${inviteCode}`)
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
         alert("팀에 참가되었습니다.");
         window.location.reload();
       })

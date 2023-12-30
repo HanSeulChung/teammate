@@ -45,7 +45,6 @@ export default function TeamInfo() {
         const result = reader.result as string;
         setSelectedImage(file); // 파일 경로(string)를 저장
         setPreviewImage(result);
-        console.log("Selected Image:", result);
       };
 
       reader.onerror = (error) => {
@@ -100,7 +99,7 @@ export default function TeamInfo() {
         formData.append("teamImg", selectedImage);
       }
       formData.append("memberLimit", memberLimit.toString());
-      const response = await axiosInstance.post("/team", formData, {
+      await axiosInstance.post("/team", formData, {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -110,7 +109,6 @@ export default function TeamInfo() {
       alert(`팀 프로필에서 초대코드를 확인하세요!`);
       navigate("/homeView");
       // 성공적으로 팀 생성이 완료되었을 때의 로직
-      console.log("팀 생성 성공:", response.data);
     } catch (error) {
       // 에러가 발생했을 때의 로직
       console.error("팀 생성 중 오류:", error);

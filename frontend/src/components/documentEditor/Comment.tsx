@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../axios";
 
 interface CommentType {
@@ -30,6 +30,15 @@ const Comment: React.FC = () => {
   }>();
   const [participantIds, setParticipantIds] = useState<number>();
   const [nicknames, setNicknames] = useState<{ [key: number]: string }>({});
+  const location = useLocation();
+  const { title } = location.state || {};
+
+  const navigate = useNavigate();
+
+  // 댓글에서 문서로 돌아가는 함수
+  const goBackToDocument = () => {
+    navigate(`/team/${teamId}/documents/${documentsId}`);
+  };
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -179,6 +188,11 @@ const Comment: React.FC = () => {
 
   return (
     <CommentSection>
+      <TitleAndButton>
+        <CommentTitle>제목 : {title}</CommentTitle>
+        <GoBackButton onClick={goBackToDocument}>문서로 돌아가기</GoBackButton>
+      </TitleAndButton>
+
       <CommentInputContainer
         onSubmit={(e) => {
           e.preventDefault();
@@ -244,6 +258,33 @@ const Comment: React.FC = () => {
 
 export default Comment;
 
+const TitleAndButton = styled.div`
+  display: flex;
+`;
+
+const CommentTitle = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  font-size: 24px;
+  margin-bottom: 16px;
+`;
+
+const GoBackButton = styled.button`
+  padding: 8px 16px;
+  background-color: #a3cca3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  width: 170px;
+  &:hover {
+    background-color: #91b491;
+  }
+`;
+
 const CommentSection = styled.div`
   align-items: center;
   padding: 20px;
@@ -306,10 +347,12 @@ const CommentButton = styled.button`
   width: 80px;
   margin-left: 5px;
   background-color: #a3cca3;
+  color: white;
 `;
 
 const UDbutton = styled.button`
   width: 40px;
   padding: 0;
   background-color: #a3cca3;
+  color: white;
 `;
