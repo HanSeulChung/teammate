@@ -81,6 +81,7 @@ const MyTeamProfile: React.FC = () => {
       },
     });
     window.alert("프로필이 수정되었습니다.");
+    navigator("/homeview");
   };
 
   //이미지업로드
@@ -205,9 +206,8 @@ const MyTeamProfile: React.FC = () => {
                 value={nickName || userTeamData?.teamNickName || ""}
                 onChange={(e) => setNickName(e.target.value)}
                 onBlur={(e) => {
-                  if (e.target.value.trim() === "") {
-                    setNickName("");
-                  }
+                  const trimmedValue = e.target.value.trim();
+                  setNickName(trimmedValue); // 이 부분 수정
                 }}
               />
             </NicknameContainer>
