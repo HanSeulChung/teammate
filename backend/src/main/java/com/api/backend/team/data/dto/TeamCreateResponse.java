@@ -26,7 +26,7 @@ public class TeamCreateResponse {
         .teamId(team.getTeamId())
         .leaderId(userId)
         .teamUrl(team.getProfileUrl())
-        .inviteCode(team.getInviteLink())
+        .inviteCode(team.getInviteCode())
         .teamName(team.getName())
         .build();
   }
