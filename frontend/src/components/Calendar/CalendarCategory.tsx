@@ -8,10 +8,10 @@ const CalendarCategory = () => {
   const { teamId } = useParams();
 
   // 모달팝업 유무
-  const [schdlCtgryModal, setSchdlCtgryModal] = useState(false);
+  const [categoryModal, setCategoryModal] = useState(false);
 
   const toggleCat = () => {
-    setSchdlCtgryModal(!schdlCtgryModal);
+    setCategoryModal(!categoryModal);
   };
 
   // 카테고리 목록
@@ -91,7 +91,7 @@ const CalendarCategory = () => {
         </ul>
       </div>
       {/* 날짜클릭 모달 */}
-      {schdlCtgryModal && (
+      {categoryModal && (
         <Modal>
           <Overlay
             onClick={toggleCat}
