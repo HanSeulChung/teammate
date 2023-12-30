@@ -61,21 +61,20 @@ public class ScheduleService {
   private final ScheduleCategoryRepository categoryRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
   private final TeamParticipantsScheduleRepository teamParticipantsScheduleRepository;
-
-
-  // 알람
   private final TeamParticipantsService teamParticipantsService;
 
   @Transactional
-  public SimpleSchedule addSimpleScheduleAndSave(ScheduleRequest scheduleRequest,
-      Long teamParticipantsId) {
+  public SimpleSchedule addSimpleScheduleAndSave(ScheduleRequest scheduleRequest, Long memberId) {
+    validateTeamParticipant(scheduleRequest.getTeamId(), memberId);
+
     Team team = findTeamOrElseThrow(scheduleRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleRequest.getCategoryId());
-    teamParticipantsService.getTeamParticipant(scheduleRequest.getTeamId(), teamParticipantsId);
     SimpleSchedule simpleSchedule = buildSimpleScheduleForAdd(scheduleRequest, team, category);
+
     List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesBySimpleSchedule(
         simpleSchedule, scheduleRequest.getTeamParticipantsIds()
     );
+
     simpleSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
     simpleScheduleRepository.save(simpleSchedule);
     log.info("단순 일정이 성공적으로 저장되었습니다.");
@@ -83,13 +82,15 @@ public class ScheduleService {
   }
 
   @Transactional
-  public RepeatSchedule addRepeatScheduleAndSave(ScheduleRequest scheduleRequest,
-      Long teamParticipantsId) {
+  public RepeatSchedule addRepeatScheduleAndSave(ScheduleRequest scheduleRequest, Long memberId) {
+    validateTeamParticipant(scheduleRequest.getTeamId(), memberId);
+
     Team team = findTeamOrElseThrow(scheduleRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(scheduleRequest.getCategoryId());
-    teamParticipantsService.getTeamParticipant(scheduleRequest.getTeamId(), teamParticipantsId);
     List<Long> teamParticipantsIds = scheduleRequest.getTeamParticipantsIds();
+
     validateSameTeamOrElsThrow(teamParticipantsIds, team.getTeamId());
+
     RepeatSchedule repeatSchedule = buildRepeatScheduleForAdd(scheduleRequest, team, category);
 
     List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesByRepeatSchedule(
@@ -103,12 +104,13 @@ public class ScheduleService {
   }
 
   @Transactional
-  public SimpleSchedule editSimpleScheduleInfoAndSave(SimpleScheduleInfoEditRequest editRequest,
-      Long teamParticipantsId) {
+  public SimpleSchedule editSimpleScheduleInfoAndSave(SimpleScheduleInfoEditRequest editRequest, Long memberId) {
+    validateTeamParticipant(editRequest.getTeamId(), memberId);
+
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
-    teamParticipantsService.getTeamParticipant(editRequest.getTeamId(), teamParticipantsId);
     List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
+
     validateSameTeamOrElsThrow(teamParticipantsIds, team.getTeamId());
 
     SimpleSchedule updatedSimpleSchedule = findSimpleScheduleOrElseThrow(
@@ -124,7 +126,8 @@ public class ScheduleService {
 
     List<TeamParticipantsSchedule> originTeamParticipantsSchedules =
         teamParticipantsScheduleRepository.findAllBySimpleSchedule_SimpleScheduleId(
-            updatedSimpleSchedule.getSimpleScheduleId());
+            updatedSimpleSchedule.getSimpleScheduleId()
+        );
 
     teamParticipantsScheduleRepository.deleteAll(originTeamParticipantsSchedules);
 
@@ -139,13 +142,15 @@ public class ScheduleService {
 
 
   @Transactional
-  public SimpleSchedule convertRepeatToSimpleSchedule(RepeatToSimpleScheduleEditRequest editRequest,
-      Long teamParticipantsId) {
+  public SimpleSchedule convertRepeatToSimpleSchedule(RepeatToSimpleScheduleEditRequest editRequest, Long memberId) {
+    validateTeamParticipant(editRequest.getTeamId(), memberId);
+
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
-    teamParticipantsService.getTeamParticipant(editRequest.getTeamId(), teamParticipantsId);
     List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
+
     validateSameTeamOrElsThrow(teamParticipantsIds, team.getTeamId());
+
     RepeatSchedule repeatSchedule = findRepeatScheduleOrElseThrow(
         editRequest.getRepeatScheduleId());
 
@@ -175,12 +180,13 @@ public class ScheduleService {
   }
 
   @Transactional
-  public RepeatSchedule convertSimpleToRepeatSchedule(SimpleToRepeatScheduleEditRequest editRequest,
-      Long teamParticipantsId) {
+  public RepeatSchedule convertSimpleToRepeatSchedule(SimpleToRepeatScheduleEditRequest editRequest, Long memberId) {
+    validateTeamParticipant(editRequest.getTeamId(), memberId);
+
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
-    teamParticipantsService.getTeamParticipant(editRequest.getTeamId(), teamParticipantsId);
     List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
+
     validateSameTeamOrElsThrow(teamParticipantsIds, team.getTeamId());
 
     String month = editRequest.getStartDt().getMonth().name();
@@ -205,9 +211,8 @@ public class ScheduleService {
         .createParticipantId(originCreateParticipantId)
         .build();
 
-    setRepeatScheduleFieldsByCycle(repeatSchedule, month, day, dayOfWeek,
-        editRequest.getRepeatCycle()
-    );
+    setRepeatScheduleFieldsByCycle(repeatSchedule, month, day, dayOfWeek, editRequest.getRepeatCycle());
+
     List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesByRepeatSchedule(
         repeatSchedule, editRequest.getTeamParticipantsIds()
     );
@@ -221,23 +226,25 @@ public class ScheduleService {
   }
 
   @Transactional
-  public RepeatSchedule editRepeatScheduleInfoAndSave(RepeatScheduleInfoEditRequest editRequest,
-      Long teamParticipantsId) {
+  public RepeatSchedule editRepeatScheduleInfoAndSave(RepeatScheduleInfoEditRequest editRequest, Long memberId) {
+    validateTeamParticipant(editRequest.getTeamId(), memberId);
+
     Team team = findTeamOrElseThrow(editRequest.getTeamId());
     ScheduleCategory category = findScheduleCategoryOrElseThrow(editRequest.getCategoryId());
-    teamParticipantsService.getTeamParticipant(editRequest.getTeamId(), teamParticipantsId);
     List<Long> teamParticipantsIds = editRequest.getTeamParticipantsIds();
+
     validateSameTeamOrElsThrow(teamParticipantsIds, team.getTeamId());
 
     String month = editRequest.getStartDt().getMonth().name();
     int day = editRequest.getStartDt().getDayOfMonth();
     String dayOfWeek = String.valueOf(editRequest.getStartDt().getDayOfWeek());
+
     RepeatSchedule originRepeatSchedule = repeatScheduleRepository.findByOriginRepeatScheduleId(
-        editRequest.getRepeatScheduleId());
+        editRequest.getRepeatScheduleId()
+    );
 
     Long originCreateParticipantId = originRepeatSchedule.getCreateParticipantId();
 
-    //모든 일정 선택시 update
     if (editRequest.getEditOption().equals(EditOption.ALL_SCHEDULES)) {
 
       if (originRepeatSchedule != null) {
@@ -248,33 +255,33 @@ public class ScheduleService {
           editRequest.getRepeatScheduleId()
       );
 
-      updateRepeatSchedule.setRepeatScheduleInfo(category, editRequest.getTitle(),
-          editRequest.getContent(), editRequest.getStartDt(), editRequest.getEndDt(),
+      updateRepeatSchedule.setRepeatScheduleInfo(
+          category, editRequest.getTitle(), editRequest.getContent(),
+          editRequest.getStartDt(), editRequest.getEndDt(),
           editRequest.getPlace(), editRequest.getColor()
       );
 
-      setRepeatScheduleFieldsByCycle(updateRepeatSchedule, month, day, dayOfWeek,
-          editRequest.getRepeatCycle());
+      setRepeatScheduleFieldsByCycle(
+          updateRepeatSchedule, month, day, dayOfWeek,
+          editRequest.getRepeatCycle()
+      );
 
       List<TeamParticipantsSchedule> originTeamParticipantsSchedules =
-          teamParticipantsScheduleRepository.findAllByRepeatSchedule_RepeatScheduleId(
-              updateRepeatSchedule.getRepeatScheduleId()
-          );
+          teamParticipantsScheduleRepository.findAllByRepeatSchedule_RepeatScheduleId(updateRepeatSchedule.getRepeatScheduleId());
 
       teamParticipantsScheduleRepository.deleteAll(originTeamParticipantsSchedules);
 
       List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesByRepeatSchedule(
-          updateRepeatSchedule, teamParticipantsIds);
+          updateRepeatSchedule, teamParticipantsIds
+      );
 
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
       repeatScheduleRepository.save(updateRepeatSchedule);
       log.info("반복 일정의 모든 일정이 성공적으로 수정되었습니다.");
       return updateRepeatSchedule;
 
-      //이 일정/이 일정 및 향후 일정 선택시 originRepeatId를 갖고 newRepeatSchedule Insert
     } else {
-      RepeatSchedule updateRepeatSchedule = buildRepeatScheduleForEdit(editRequest, team, category,
-          originCreateParticipantId);
+      RepeatSchedule updateRepeatSchedule = buildRepeatScheduleForEdit(editRequest, team, category, originCreateParticipantId);
 
       List<TeamParticipantsSchedule> originTeamParticipantsSchedules =
           teamParticipantsScheduleRepository.findAllByRepeatSchedule_RepeatScheduleId(
@@ -284,11 +291,11 @@ public class ScheduleService {
       teamParticipantsScheduleRepository.deleteAll(originTeamParticipantsSchedules);
 
       List<TeamParticipantsSchedule> teamParticipantsSchedules = buildTeamParticipantsSchedulesByRepeatSchedule(
-          updateRepeatSchedule, teamParticipantsIds);
+          updateRepeatSchedule, teamParticipantsIds
+      );
 
       updateRepeatSchedule.setTeamParticipantsSchedules(teamParticipantsSchedules);
-      updateRepeatSchedule.setOriginRepeatScheduleId(
-          originRepeatSchedule.getOriginRepeatScheduleId());
+      updateRepeatSchedule.setOriginRepeatScheduleId(originRepeatSchedule.getOriginRepeatScheduleId());
       repeatScheduleRepository.save(updateRepeatSchedule);
       log.info("반복 일정의 이 일정 혹은 이 일정 및 향후 일정이 성공적으로 수정되었습니다.");
       return updateRepeatSchedule;
@@ -297,9 +304,7 @@ public class ScheduleService {
 
 
   @Transactional
-  public AlarmScheduleDeleteResponse deleteSimpleSchedule(
-      ScheduleDeleteRequest deleteRequest, Long memberId
-  ) {
+  public AlarmScheduleDeleteResponse deleteSimpleSchedule(ScheduleDeleteRequest deleteRequest, Long memberId) {
     SimpleSchedule simpleSchedule = simpleScheduleRepository.findById(deleteRequest.getScheduleId())
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
 
@@ -335,8 +340,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public AlarmScheduleDeleteResponse deleteRepeatSchedule(
-      ScheduleDeleteRequest deleteRequest, Long memberId) {
+  public AlarmScheduleDeleteResponse deleteRepeatSchedule(ScheduleDeleteRequest deleteRequest, Long memberId) {
     RepeatSchedule repeatSchedule = repeatScheduleRepository.findById(deleteRequest.getScheduleId())
         .orElseThrow(() -> new CustomException(SCHEDULE_NOT_FOUND_EXCEPTION));
 
@@ -371,65 +375,61 @@ public class ScheduleService {
         .build();
   }
 
-  public SimpleSchedule getSimpleScheduleDetailInfo(Long scheduleId, Long teamId,
-      Long teamParticipantsId) {
+  public SimpleSchedule getSimpleScheduleDetailInfo(Long scheduleId, Long teamId, Long memberId) {
     findTeamOrElseThrow(teamId);
-    teamParticipantsService.getTeamParticipant(teamId, teamParticipantsId);
-    SimpleSchedule simpleSchedule = simpleScheduleRepository.findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(
-        scheduleId,
-        teamId);
+    validateTeamParticipant(teamId, memberId);
+    SimpleSchedule simpleSchedule = simpleScheduleRepository.findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(scheduleId, teamId);
     log.info("단순 일정 상세 조회에 성공하였습니다.");
     return simpleSchedule;
   }
 
-  public RepeatSchedule getRepeatScheduleDetailInfo(Long scheduleId, Long teamId,
-      Long teamParticipantsId) {
+  public RepeatSchedule getRepeatScheduleDetailInfo(Long scheduleId, Long teamId, Long memberId) {
     findTeamOrElseThrow(teamId);
-    teamParticipantsService.getTeamParticipant(teamId, teamParticipantsId);
-    RepeatSchedule repeatSchedule = repeatScheduleRepository.findRepeatScheduleByRepeatScheduleIdAndTeam_TeamId(
-        scheduleId,
-        teamId);
+    validateTeamParticipant(teamId, memberId);
+    RepeatSchedule repeatSchedule = repeatScheduleRepository.findRepeatScheduleByRepeatScheduleIdAndTeam_TeamId(scheduleId, teamId);
     log.info("반복 일정 상세 조회에 성공하였습니다.");
     return repeatSchedule;
   }
 
 
-  public Page<AllSchedulesMonthlyView> getCategoryTypeMonthlySchedules(Long teamId,
-      CategoryType categoryType, Pageable pageable, Long teamParticipantsId) {
-    Page<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(
-        categoryType, teamId, pageable);
-    Page<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(
-        categoryType, teamId, pageable);
-    teamParticipantsService.getTeamParticipant(teamId, teamParticipantsId);
+  public Page<AllSchedulesMonthlyView> getCategoryTypeMonthlySchedules(
+      Long teamId, CategoryType categoryType, Pageable pageable, Long memberId
+  ) {
+    validateTeamParticipant(teamId, memberId);
+
+    Page<RepeatSchedule> repeatSchedules =
+        repeatScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(categoryType, teamId, pageable);
+    Page<SimpleSchedule> simpleSchedules =
+        simpleScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(categoryType, teamId, pageable);
+
     List<AllSchedulesMonthlyView> allSchedulesList = Stream.concat(
         repeatSchedules.getContent().stream().map(AllSchedulesMonthlyView::from),
-        simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from)
-    ).collect(Collectors.toList());
+        simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from))
+        .collect(Collectors.toList());
 
     PageImpl<AllSchedulesMonthlyView> allSchedulesMonthlyViews = new PageImpl<>(allSchedulesList,
-        pageable,
-        repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
+        pageable, repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
     );
 
     log.info("카테고리 유형별 월간 보기 조회에 성공하였습니다.");
     return allSchedulesMonthlyViews;
   }
 
-  public Page<AllSchedulesMonthlyView> getAllMonthlySchedules(Long teamId, Pageable pageable,
-      Long teamParticipantsId) {
-    Page<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByTeam_TeamId(
-        teamId, pageable);
-    Page<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByTeam_TeamId(
-        teamId, pageable);
-    teamParticipantsService.getTeamParticipant(teamId, teamParticipantsId);
+  public Page<AllSchedulesMonthlyView> getAllMonthlySchedules(Long teamId, Pageable pageable, Long memberId) {
+    validateTeamParticipant(teamId, memberId);
+
+    Page<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByTeam_TeamId(teamId, pageable);
+    Page<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByTeam_TeamId(teamId, pageable);
+
     List<AllSchedulesMonthlyView> allSchedulesList = Stream.concat(
         repeatSchedules.getContent().stream().map(AllSchedulesMonthlyView::from),
-        simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from)
-    ).collect(Collectors.toList());
+        simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from))
+        .collect(Collectors.toList());
+
     PageImpl<AllSchedulesMonthlyView> allSchedulesMonthlyViews = new PageImpl<>(allSchedulesList,
-        pageable,
-        repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
+        pageable, repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
     );
+
     log.info("월간 보기 조회에 성공하였습니다.");
     return allSchedulesMonthlyViews;
   }
@@ -469,8 +469,12 @@ public class ScheduleService {
     }
   }
 
-  private SimpleSchedule buildSimpleScheduleForAdd(ScheduleRequest request, Team team,
-      ScheduleCategory category) {
+  private void validateTeamParticipant(Long teamId, Long memberId) {
+    teamParticipantsRepository.findByTeam_TeamIdAndMember_MemberId(teamId, memberId)
+        .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
+  }
+
+  private SimpleSchedule buildSimpleScheduleForAdd(ScheduleRequest request, Team team, ScheduleCategory category) {
     return SimpleSchedule.builder()
         .team(team)
         .scheduleCategory(category)
@@ -485,8 +489,7 @@ public class ScheduleService {
         .build();
   }
 
-  private RepeatSchedule buildRepeatScheduleForAdd(ScheduleRequest request, Team team,
-      ScheduleCategory category) {
+  private RepeatSchedule buildRepeatScheduleForAdd(ScheduleRequest request, Team team, ScheduleCategory category) {
     String month = request.getStartDt().getMonth().name();
     int day = request.getStartDt().getDayOfMonth();
     String dayOfWeek = String.valueOf(request.getStartDt().getDayOfWeek());
@@ -510,10 +513,12 @@ public class ScheduleService {
     return newRepeatSchedule;
   }
 
-  private RepeatSchedule buildRepeatScheduleForEdit(RepeatScheduleInfoEditRequest editRequest,
+  private RepeatSchedule buildRepeatScheduleForEdit(
+      RepeatScheduleInfoEditRequest editRequest,
       Team team,
       ScheduleCategory category,
-      Long originCreateParticipantId) {
+      Long originCreateParticipantId
+  ) {
     String month = editRequest.getStartDt().getMonth().name();
     int day = editRequest.getStartDt().getDayOfMonth();
     String dayOfWeek = String.valueOf(editRequest.getStartDt().getDayOfWeek());
@@ -539,11 +544,14 @@ public class ScheduleService {
 
   private List<TeamParticipantsSchedule> buildTeamParticipantsSchedulesBySimpleSchedule(
       SimpleSchedule simpleSchedule,
-      List<Long> teamParticipantsIds) {
+      List<Long> teamParticipantsIds
+  ) {
     if (hasDuplicateTeamParticipantsIds(teamParticipantsIds)) {
       throw new CustomException(TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION);
     }
+
     List<TeamParticipantsSchedule> teamParticipantsSchedules = new ArrayList<>();
+
     for (Long teamParticipantsId : teamParticipantsIds) {
       TeamParticipants participants = findTeamParticipantsOrElseThrow(teamParticipantsId);
       TeamParticipantsSchedule teamParticipantsSchedule = TeamParticipantsSchedule.builder()
@@ -560,11 +568,14 @@ public class ScheduleService {
 
   private List<TeamParticipantsSchedule> buildTeamParticipantsSchedulesByRepeatSchedule(
       RepeatSchedule repeatSchedule,
-      List<Long> teamParticipantsIds) {
+      List<Long> teamParticipantsIds
+  ) {
     if (hasDuplicateTeamParticipantsIds(teamParticipantsIds)) {
       throw new CustomException(TEAM_PARTICIPANTS_ID_DUPLICATE_EXCEPTION);
     }
+
     List<TeamParticipantsSchedule> teamParticipantsSchedules = new ArrayList<>();
+
     for (Long teamParticipantsId : teamParticipantsIds) {
       TeamParticipants participants = findTeamParticipantsOrElseThrow(teamParticipantsId);
       TeamParticipantsSchedule teamParticipantsSchedule = TeamParticipantsSchedule.builder()
@@ -579,8 +590,10 @@ public class ScheduleService {
     return teamParticipantsSchedules;
   }
 
-  private void setRepeatScheduleFieldsByCycle(RepeatSchedule repeatSchedule, String month, int day,
-      String dayOfWeek, RepeatCycle repeatCycle) {
+  private void setRepeatScheduleFieldsByCycle(
+      RepeatSchedule repeatSchedule, String month, int day,
+      String dayOfWeek, RepeatCycle repeatCycle
+  ) {
     switch (repeatCycle) {
       case WEEKLY:
         repeatSchedule.setDayOfWeek(dayOfWeek);
