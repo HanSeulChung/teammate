@@ -110,7 +110,6 @@ export const useSearchState = () => {
   const [teamList, setTeamList] = useRecoilState(teamListState);
 
   const handleSearch = async (searchTerm: string) => {
-    console.log("검색어:", searchTerm);
     const searchResults = await fetchTeamsBySearchTeam(searchTerm);
     setTeamList(searchResults);
   };

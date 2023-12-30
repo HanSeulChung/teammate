@@ -3,7 +3,7 @@ export const UserProfileContainer = styled.div`
   padding: 20px;
   border-radius: 8px;
   margin: auto;
-  width: 70%;
+  width: 600px;
 `;
 
 export const UserProfileTitle = styled.h2`
