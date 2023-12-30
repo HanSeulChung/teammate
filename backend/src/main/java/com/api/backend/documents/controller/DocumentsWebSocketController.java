@@ -2,15 +2,12 @@ package com.api.backend.documents.controller;
 
 import static com.api.backend.global.exception.type.ErrorCode.DOCUMENT_NOT_FOUND_EXCEPTION;
 
-import com.api.backend.documents.data.dto.DeltaMessage;
-import com.api.backend.documents.data.dto.RequestedDocument;
 import com.api.backend.documents.data.dto.DocumentResponse;
-import com.api.backend.documents.data.dto.SelectionChangeMessage;
+import com.api.backend.documents.data.dto.RequestedDocument;
 import com.api.backend.documents.data.dto.TotalMessage;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.global.exception.CustomException;
-import java.util.LinkedHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -49,33 +46,7 @@ public class DocumentsWebSocketController {
     return DocumentResponse.from(documentsRepository.save(documents));
   }
 
-
   // 브로드 캐스팅
-  @MessageMapping("/doc.updateDocsBySelectionChange")
-  public void handleBroadCastBySelectionChange(@Payload DeltaMessage deltaMessage) {
-    LinkedHashMap<String, Integer> deltaValue = (LinkedHashMap<String, Integer>) deltaMessage.getDeltaValue();
-
-    log.info("deltaMessage From selection-change {}", deltaMessage);
-
-    Integer index = deltaValue.get("index");
-    Integer length = deltaValue.get("length");
-
-    SelectionChangeMessage selectionChangeMessage = SelectionChangeMessage.builder()
-        .eventName("selection-change")
-        .index(index)
-        .length(length)
-        .build();
-    messagingTemplate.convertAndSend("/topic/broadcastBySelectionChange", selectionChangeMessage);
-  }
-
-//  @MessageMapping("/doc.updateDocsByTextChange")
-//  public void handleBroadCastByTextChange(@Payload DeltaMessage deltaMessage) {
-//
-//    System.out.println(deltaMessage);
-//
-//    messagingTemplate.convertAndSend("/topic/broadcastByTextChange", deltaMessage);
-//  }
-
   @MessageMapping("/doc.updateDocsByTextChange")
   public void handleTotalBroadCastByTextChange(@Payload TotalMessage totalMessage) {
 
