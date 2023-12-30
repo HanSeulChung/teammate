@@ -83,8 +83,10 @@ public class AmazonS3FileProcessService implements FileProcessService {
   }
 
   private void deleteFile(String fileName) {
-    amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
-    log.info("{}의 이미지 파일이 삭제되었습니다.", fileName);
+    if (fileName != null) {
+      amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+      log.info("{}의 이미지 파일이 삭제되었습니다.", fileName);
+    }
   }
 
   public String getFileUrl(String fileName) {
