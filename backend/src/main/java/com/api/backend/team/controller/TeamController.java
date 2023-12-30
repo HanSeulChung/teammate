@@ -105,17 +105,22 @@ public class TeamController {
           @ApiImplicitParam(
               name = "code", value = "팀 코드", required = true, dataType = "String"
               , paramType = "path", defaultValue = "None", example = "nklndsiofnefm"
+          ),
+          @ApiImplicitParam(
+              name = "expireCode", value = "기한 코드", required = true, dataType = "String"
+              , paramType = "path", defaultValue = "None", example = "nklndsiofnefm"
           )
       })
   @TeamParticipantsSendNotify
-  @GetMapping("/{teamId}/{code}")
+  @GetMapping("/{teamId}/{code}/{expireCode}")
   public ResponseEntity<TeamParticipantsNotifyByDto> updateTeamParticipantRequest(
       @PathVariable("teamId") Long teamId,
       @PathVariable("code") String code,
+      @PathVariable("expireCode") String expireCode ,
       @ApiIgnore Principal principal
   ) {
     return ResponseEntity.ok(
-        teamService.updateTeamParticipants(teamId, code, Long.valueOf(principal.getName()))
+        teamService.updateTeamParticipants(teamId, code, Long.valueOf(principal.getName()), expireCode)
     );
   }
 

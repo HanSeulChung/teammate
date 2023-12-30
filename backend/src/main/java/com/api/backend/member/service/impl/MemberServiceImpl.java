@@ -237,7 +237,7 @@ public class MemberServiceImpl implements MemberService {
 
         UUID uuid = UUID.randomUUID();
         String text = "가입을 축하합니다. 아래 링크를 클릭하여서 가입을 완료하세요.<br>"
-            + "<a href='http://118.67.128.124:8080//email-verify/" + uuid + "/" + email
+            + "<a href='http://118.67.128.124:8080/email-verify/" + uuid + "/" + email
             + "'> 이메일 인증 </a>";
 
         redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);
