@@ -8,7 +8,7 @@ const CalendarCategory = () => {
   const { teamId } = useParams();
 
   // 현재 페이지의 사용자 팀 멤버 Id(participant)
-  const [myTeamMemberId, setMyTeamMemberId] = useState<number | undefined>(undefined);
+  const [myTeamMemberId, setMyTeamMemberId] = useState<number>();
 
   // 모달팝업 유무
   const [categoryModal, setCategoryModal] = useState(false);
@@ -25,7 +25,6 @@ const CalendarCategory = () => {
     },
   ]);
   
-  // /category/{categoryType}?teamId=1
   // 카테고리 목록 불러오기
   const getCategoryList = async () => {
     try {
@@ -44,25 +43,26 @@ const CalendarCategory = () => {
   };
   
   // 작성자 정보를 위한 현재 팀의 사용자 팀 멤버 id(participant) 가져오기
-  const fetchMyTeamMemberId = async () => {
-    try {
-      // 사용자가 속해있는 팀 목록과 닉네임등의 정보를 불러옴
-      const response = await axiosInstance.get("/member/participants", {});
-      // 사용자가 가입한 팀 목록중에 현재 팀id의 정보와 맞는 팀 내 내정보 값만 가져옴
-      const myTeamMemberInfo = response.data.find(
-        (item: { teamId: number }) => item.teamId === Number(teamId),
-      );
-      const authorTeamMemberId = myTeamMemberInfo.teamParticipantsId;      
-      setMyTeamMemberId(authorTeamMemberId);
-      console.log("작성자 팀멤버 아이디 카테고리-> ",myTeamMemberId);
-    } catch (error) {
-      console.error("Error fetching participants:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchMyTeamMemberId = async () => {
+      try {
+        const response = await axiosInstance.get("/member/participants", {});
+        const myTeamMemberInfo = response.data.find(
+          (item: { teamId: number }) => item.teamId === Number(teamId),
+        );
+        const authorTeamMemberId = myTeamMemberInfo.teamParticipantsId;      
+        setMyTeamMemberId(authorTeamMemberId);
+        console.log("작성자 팀멤버 아이디 카테고리-> ",myTeamMemberId);
+      } catch (error) {
+        console.error("Error fetching participants:", error);
+      }
+    };
+    fetchMyTeamMemberId();
+  }, [teamId]);
 
   useEffect(() => {
     getCategoryList();
-    fetchMyTeamMemberId();
+    // fetchMyTeamMemberId();
   }, [teamId]);
 
   // 카테고리 입력 값
@@ -88,11 +88,15 @@ const CalendarCategory = () => {
     // /category
     e.preventDefault();
     try {
-      const res = await axiosInstance.post(`/category`, categoryInput, {
-        headers: {
-          "Content-Type": "application/json"
-        },
-      });
+      const res = await axiosInstance.post(`/category`, 
+        {
+          teamId: teamId,
+          createTeamParticipantId: myTeamMemberId,
+          categoryName: categoryInput.categoryName,
+          categoryType: "SCHEDULE",
+          color: categoryInput.color,
+        }
+      );
       if (res.status === 200) {
         console.log("카테고리 옵션이 추가되었습니다 -> ", res);
         // setCategoryList(res.data.content);
