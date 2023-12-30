@@ -142,15 +142,18 @@ const TeamCalender = () => {
   // 일정 삭제
   const handleEventDelete = async (e: any) => {
     e.preventDefault();
-    if (!window.confirm(`번째 일정을 삭제하시겠습니까?`)) return;
+    if (!window.confirm(`일정을 삭제하시겠습니까?`)) return;
     const eventId = event.id;
     try {
-      const res = await axiosInstance.delete(`/schedules`, {
+      // team/{teamId}/schedules/simple/{schedule_id}
+      const res = await axiosInstance.delete(`/team/${teamId}/schedules/simple/${eventId}`, {
         headers: {
           "Content-Type": "application/json"
         },
         data: {
-          eventId
+          scheduleId: eventId,
+          teamId: teamId,
+          teamParticipantId: myTeamMemberId,
         }
       });
       if (res.status === 201) {
@@ -216,7 +219,7 @@ const TeamCalender = () => {
               <div className="p-4 md:p-5">
                 <h2 className="text-xl mt-4 mb-4 font-semibold text-gray-900">{event.title}</h2>
                 <p>
-                  {/* 일정 번호: {event.id} */}
+                  일정 번호: {event.id}
                   {/* 이름: {event.title}<br /> */}
                   <div className="mb-3">
                     <span className="mr-10 text-gray-500">일시</span><span className="">{event.start.toJSON()}</span>
@@ -227,9 +230,13 @@ const TeamCalender = () => {
                   <div className="mb-3">
                     <span className="mr-10 text-gray-500">장소</span>{event.place}
                   </div>
-                  <div className="mb-5">
+                  <div className="mb-3">
                     <span className="text-gray-500 mr-3">카테고리</span>{event.groupId}
                   </div>
+                  {/* <div className="mb-5">
+                    <span className="text-gray-500 mr-3">참가자</span>
+                    {event.groupId}
+                  </div> */}
                 </p>
                 <button onClick={toggleIsEdit} className="bg-white border-1 border-gray-300 mr-2">수정</button>
                 <button onClick={handleEventDelete} className="bg-white border-1 border-gray-300">삭제</button>
