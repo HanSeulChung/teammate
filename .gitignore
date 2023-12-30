@@ -262,6 +262,7 @@ $RECYCLE.BIN/
 application-db.yml
 application-jwt.yml
 application-aws.yml
-application-local.yml
+application-s3.yml
 application-email.yml
+application-host.yml
 application-oauth.yml
