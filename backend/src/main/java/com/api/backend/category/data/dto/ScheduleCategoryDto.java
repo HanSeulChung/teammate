@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 public class ScheduleCategoryDto {
 
   private Long categoryId;
+  private Long createParticipantId;
   private Long teamId;
   private LocalDateTime createDt;
   private LocalDateTime updateDt;
@@ -24,6 +25,7 @@ public class ScheduleCategoryDto {
   public static ScheduleCategoryDto from(ScheduleCategory scheduleCategory) {
     return ScheduleCategoryDto.builder()
         .categoryId(scheduleCategory.getScheduleCategoryId())
+        .createParticipantId(scheduleCategory.getCreateParticipantId())
         .teamId(scheduleCategory.getTeam().getTeamId())
         .categoryName(scheduleCategory.getCategoryName())
         .categoryType(scheduleCategory.getCategoryType())
