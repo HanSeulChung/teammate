@@ -20,8 +20,8 @@ public class ScheduleCategoryRequest {
   private Long teamId;
 
   @NotNull(message = "createTeamParticipantId는 필수 값입니다.")
-  @Schema(description = "create team participant id", example = "1L")
-  private Long createTeamParticipantId;
+  @Schema(description = "create participant id", example = "1L")
+  private Long createParticipantId;
 
   @NotBlank(message = "카테고리명을 입력해주세요.")
   @Schema(description = "category name", example = "회의")

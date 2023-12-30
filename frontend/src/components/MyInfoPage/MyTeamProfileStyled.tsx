@@ -50,6 +50,7 @@ export const ImageUploadContainer = styled.span`
   img {
     max-width: 150px;
     max-height: 150px;
+    border-radius: 15px;
   }
 `;
 
