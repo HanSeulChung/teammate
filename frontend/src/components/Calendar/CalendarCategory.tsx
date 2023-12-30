@@ -86,12 +86,12 @@ const CalendarCategory = () => {
 
   // 카테고리 추가
   const handleCategoryAdd = async (e: any) => {
-    e.preventDefault();
+    // e.preventDefault();
     try {
       const res = await axiosInstance.post(`/category`, 
         {
           teamId: teamId,
-          createTeamParticipantId: myTeamMemberId,
+          createParticipantId: myTeamMemberId,
           categoryName: categoryInput.categoryName,
           categoryType: "SCHEDULE",
           color: categoryInput.color,
@@ -109,7 +109,6 @@ const CalendarCategory = () => {
 
   // 카테고리 삭제
   const handleCategoryDelete = async (e: any) => {
-    e.preventDefault();
     try {
       const res = await axiosInstance.delete(`/category`, {
         data: {
@@ -123,7 +122,7 @@ const CalendarCategory = () => {
       );
       if (res.status === 200) {
         console.log("카테고리 삭제 성공!! -> ", res);
-        // setCategoryList(res.data.content);
+        getCategoryList();
         return;
       }
     } catch (error) {
