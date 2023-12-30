@@ -1,59 +1,111 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from "styled-components";
+import axiosInstance from "../../axios";
 
 const CalendarCategory = () => {
+  // 팀 ID
+  const { teamId } = useParams();
+
+  // 현재 페이지의 사용자 팀 멤버 Id(participant)
+  const [myTeamMemberId, setMyTeamMemberId] = useState<number>();
+
   // 모달팝업 유무
-  const [schdlCtgryModal, setSchdlCtgryModal] = useState(false);
+  const [categoryModal, setCategoryModal] = useState(false);
 
   const toggleCat = () => {
-    setSchdlCtgryModal(!schdlCtgryModal);
+    setCategoryModal(!categoryModal);
   };
 
-  // 더미 카테고리
-  const [dummyCatList, setDummyCatList] = useState([
+  // 카테고리 목록
+  const [categoryList, setCategoryList] = useState([
     {
-      id: 1,
-      category: "카테고리1",
-      color: "yellow",
-    },
-    {
-      id: 2,
-      category: "카테고리2",
-      color: "yellow",
-    },
-    {
-      id: 3,
-      category: "카테고리3",
-      color: "yellow",
+      categoryId: 1,
+      categoryName: "카테고리1",
     },
   ]);
+  
+  // 카테고리 목록 불러오기
+  const getCategoryList = async () => {
+    try {
+      const res = await axiosInstance({
+        method: "get",
+        url: `/category/schedule?teamId=${teamId}`,
+      });
+      if (res.status === 200) {
+        console.log("카테고리 목록 -> ", res.data.content);
+        setCategoryList(res.data.content);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  // 작성자 정보를 위한 현재 팀의 사용자 팀 멤버 id(participant) 가져오기
+  useEffect(() => {
+    const fetchMyTeamMemberId = async () => {
+      try {
+        const response = await axiosInstance.get("/member/participants", {});
+        const myTeamMemberInfo = response.data.find(
+          (item: { teamId: number }) => item.teamId === Number(teamId),
+        );
+        const authorTeamMemberId = myTeamMemberInfo.teamParticipantsId;      
+        setMyTeamMemberId(authorTeamMemberId);
+        console.log("작성자 팀멤버 아이디 카테고리-> ",myTeamMemberId);
+      } catch (error) {
+        console.error("Error fetching participants:", error);
+      }
+    };
+    fetchMyTeamMemberId();
+  }, [teamId]);
+
+  useEffect(() => {
+    getCategoryList();
+    // fetchMyTeamMemberId();
+  }, [teamId]);
 
   // 카테고리 입력 값
-  const [catOption, setCatOption] = useState({
-    category: "",
+  const [categoryInput, setCategoryInput] = useState({
+    teamId: teamId,
+    createTeamParticipantId: myTeamMemberId,
+    categoryName: "",
+    categoryType: "schedule",
     color: "",
   });
 
-  // 바뀌는값
+  // 카테고리 입력값 핸들링
   const handleChangeOption = (e: any) => {
     console.log(e.target.value);
-    setCatOption({
-      ...catOption,
+    setCategoryInput({
+      ...categoryInput,
       [e.target.name]: e.target.value,
     })
+    console.log(categoryInput);
   };
 
-  const AddOption = () => {
-    let optId = 4;
-    const newCatOpt = {
-      id: optId,
-      category: catOption.category,
-      color: catOption.color,
+  const AddCategory = async (e: any) => {
+    // /category
+    e.preventDefault();
+    try {
+      const res = await axiosInstance.post(`/category`, 
+        {
+          teamId: teamId,
+          createTeamParticipantId: myTeamMemberId,
+          categoryName: categoryInput.categoryName,
+          categoryType: "SCHEDULE",
+          color: categoryInput.color,
+        }
+      );
+      if (res.status === 200) {
+        console.log("카테고리 옵션이 추가되었습니다 -> ", res);
+        // setCategoryList(res.data.content);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
     }
-    optId += 1;
-    setDummyCatList([...dummyCatList, newCatOpt]);
-    window.localStorage.setItem("dummyList", JSON.stringify(dummyCatList));
-  }
+  };
 
   return (
     <>
@@ -65,16 +117,16 @@ const CalendarCategory = () => {
           </button>
         </div>
         <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
-          {dummyCatList.map((opt) => (
-            <li key={opt.id} className="flex items-center p-2 rounded hover:bg-gray-100">
+          {categoryList.map((opt) => (
+            <li key={opt.categoryId} className="flex items-center p-2 rounded hover:bg-gray-100">
               <input type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-50" />
-              <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.category}</label>
+              <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</label>
             </li>
           ))}
         </ul>
       </div>
-      {/* 날짜클릭 모달 */}
-      {schdlCtgryModal && (
+      {/* 카테고리 추가 버튼 클릭시 모달 */}
+      {categoryModal && (
         <Modal>
           <Overlay
             onClick={toggleCat}
@@ -84,29 +136,28 @@ const CalendarCategory = () => {
               <h2 className="text-lg font-semibold text-gray-900">카테고리 추가</h2>
               <CategoryForm>
                 <div className="col-span-2">
-
                 </div>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리 이름</label>
                 <input
                   placeholder='카테고리명'
-                  name="category"
-                  value={catOption.category}
+                  name="categoryName"
+                  value={categoryInput.categoryName}
                   onChange={handleChangeOption}
                   className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 ></input>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
                 <select
                   name="color"
-                  value={catOption.color}
+                  value={categoryInput.color}
                   onChange={handleChangeOption}
                   className='block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 >
-                  <option value="red">red</option>
-                  <option value="yellow">yellow</option>
-                  <option value="blue">blue</option>
+                  <option value="#7aac7a">초록</option>
+                  <option value="#E21D29">빨강</option>
+                  <option value="#336699">파랑</option>
                 </select>
                 <CommonSubmitBtn
-                  onClick={AddOption}
+                  onClick={AddCategory}
                 >등록</CommonSubmitBtn>
               </CategoryForm>
               <CloseModal
@@ -118,7 +169,6 @@ const CalendarCategory = () => {
           </ModalContent>
         </Modal>
       )}
-      {/* </div> */}
     </>
   );
 };

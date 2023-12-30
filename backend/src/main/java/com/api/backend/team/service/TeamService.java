@@ -3,6 +3,7 @@ package com.api.backend.team.service;
 import static com.api.backend.global.exception.type.ErrorCode.MEMBER_NOT_FOUND_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.PASSWORD_NOT_MATCH_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_CODE_NOT_VALID_EXCEPTION;
+import static com.api.backend.global.exception.type.ErrorCode.TEAM_EXPIRED_DATE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETEING_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_IS_DELETE_TRUE_EXCEPTION;
 import static com.api.backend.global.exception.type.ErrorCode.TEAM_LIMIT_VALID_EXCEPTION;
@@ -22,6 +23,7 @@ import com.api.backend.file.type.FileFolder;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.member.data.repository.MemberRepository;
+import com.api.backend.team.crypt.SimpleEncryption;
 import com.api.backend.team.data.dto.TeamCreateRequest;
 import com.api.backend.team.data.dto.TeamCreateResponse;
 import com.api.backend.team.data.dto.TeamDisbandRequest;
@@ -39,18 +41,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TeamService {
 
   private final TeamRepository teamRepository;
   private final MemberRepository memberRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
-  private final boolean DELETE_FALSE_FLAG = false;
+  private final SimpleEncryption simpleEncryption;
+  private static final boolean DELETE_FALSE_FLAG = false;
+  private static final int EXPIRE_DATE = 10;
 
   private final FileProcessService fileProcessService;
 
@@ -66,10 +72,8 @@ public class TeamService {
             .memberLimit(teamRequest.getMemberLimit())
             .name(teamRequest.getTeamName())
             .profileUrl(imgUrl)
+            .inviteCode(UUID.randomUUID().toString())
             .build()
-    );
-    team.setInviteLink(
-        getInviteLink(team.getTeamId())
     );
 
     teamParticipantsRepository.save(
@@ -91,16 +95,27 @@ public class TeamService {
 
     existTeamParticipantsFalseThrows(teamId, userId);
 
-    return team.getInviteLink();
+    String encryptDate = simpleEncryption.encrypt(
+        LocalDate.now().plusDays(EXPIRE_DATE).toString()
+    );
+
+    return team.getTeamId() + "/" +team.getInviteCode() + "/" + encryptDate;
   }
 
   @Transactional
-  public TeamParticipantsUpdateResponse updateTeamParticipants(Long teamId, String code, Long userId) {
+  public TeamParticipantsUpdateResponse updateTeamParticipants(Long teamId, String code, Long userId,
+      String dateString) {
     Team team = getTeam(teamId);
-    String entityCode = team.getInviteLink().split("/")[1];
+    String codeByEntity = team.getInviteCode();
 
-    if (!entityCode.equals(code)) {
+    if (!codeByEntity.equals(code)) {
       throw new CustomException(TEAM_CODE_NOT_VALID_EXCEPTION);
+    }
+
+    LocalDate date = simpleEncryption.decrypt(dateString);
+
+    if (LocalDate.now().isAfter(date)) {
+      throw new CustomException(TEAM_EXPIRED_DATE_EXCEPTION);
     }
 
     isDeletedCheck(team.getRestorationDt(), team.isDelete());
@@ -310,15 +325,6 @@ public class TeamService {
     return teamParticipantsRepository
         .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
-  }
-
-  private static String getInviteLink(Long teamId) {
-    if (Objects.isNull(teamId)) {
-      throw new NullPointerException("teamId is null");
-    }
-
-    return teamId +
-        "/" + UUID.randomUUID();
   }
 
   private String getRandomNickName(String name){
