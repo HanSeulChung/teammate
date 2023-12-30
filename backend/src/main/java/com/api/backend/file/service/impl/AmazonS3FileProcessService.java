@@ -65,6 +65,9 @@ public class AmazonS3FileProcessService implements FileProcessService {
 
   @Override
   public String getFileName(String url) {
+    if (url == null) {
+      return null;
+    }
     String[] paths = url.split("/");
     return paths[paths.length-2] + "/" + paths[paths.length-1];
   }
