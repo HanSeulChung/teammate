@@ -196,8 +196,24 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
   };
 
   const handleCommentClick = () => {
+    if (client.current) {
+      const contentCopy = content.slice(); // content의 복사본을 만듦
+      const message = {
+        memberEmail: JSON.parse(sessionStorage.getItem("user") ?? "").id,
+        title: title,
+        content: contentCopy,
+        documentId: documentsId,
+        participantsId: participantIds,
+      };
+
+      client.current.publish({
+        destination: "/app/doc.saveDocs",
+        body: JSON.stringify(message),
+      });
+    }
+
     const currentPath = window.location.pathname;
-    navigate(`${currentPath}/comment`);
+    navigate(`${currentPath}/comment`, { state: { title: title } });
   };
 
   useEffect(() => {

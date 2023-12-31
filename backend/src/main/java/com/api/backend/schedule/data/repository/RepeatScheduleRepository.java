@@ -22,6 +22,8 @@ public interface RepeatScheduleRepository extends JpaRepository<RepeatSchedule, 
 
   Page<RepeatSchedule> findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(CategoryType categoryType, Long teamId, Pageable pageable);
 
+  List<RepeatSchedule> findAllByScheduleCategory_ScheduleCategoryIdAndTeam_TeamId(Long categoryId, Long teamId);
+
   @Transactional
   @Modifying
   @Query(

@@ -1,32 +1,12 @@
 spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username:
-    password:
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-    auth-code-expiration-millis: 1800000
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url:
-    username:
-    password:
-    hikari:
-      connection-timeout: 3000
-      maximum-pool-size: 10
-      max-lifetime: 30000
-  data:
-    mongodb:
-      uri:
+  config:
+    import:
+      - classpath:application-db.yml
+      - classpath:application-jwt.yml
+      - classpath:application-email.yml
+      - classpath:application-s3.yml
+      - classpath:application-oauth.yml
+      - classpath:application-ssl.yml
   jpa:
     open-in-view: true
     hibernate:
@@ -37,67 +17,13 @@ spring:
       dialect: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: true
     database: mysql
-  redis:
-    host:
-    port:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-cloud:
-  aws:
-    credentials:
-      accessKey:
-      secretKey:
-    s3:
-      bucket:
-    region:
-      static:
-    stack:
-      auto: false
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id:
-            client-secret:
-            scope:
-          naver:
-            client-id:
-            client-secret:
-            redirect-uri:
-            authorization-grant-type:
-            scope:
-            client-name:
-          kakao:
-            client-id:
-            client-secret:
-            redirect-uri:
-            client-authentication-method:
-            authorization-grant-type:
-            scope:
-            client-name:
-        provider:
-          naver:
-            authorization_uri:
-            token_uri:
-            user-info-uri:
-            user_name_attribute:
-          kakao:
-            authorization-uri:
-            token-uri:
-            user-info-uri:
-            user-name-attribute:
-jwt:
-  secret:
-  token:
-    access-expiration-time:
-    refresh-expiration-time:
 logging:
   level:
     root: info
@@ -105,6 +31,3 @@ logging:
       amazonaws:
         util:
           EC2MetadataUtils: error
-frontend:
-  host:
-  port:

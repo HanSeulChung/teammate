@@ -24,7 +24,6 @@ public class ScheduleCategoryDeleteRequest {
   @Schema(description = "participant id", example = "1L")
   private Long participantId;
 
-  @NotNull(message = "isMoved는 필수 값입니다.")
   @Schema(description = "is moved", example = "true")
   private boolean isMoved;
 
