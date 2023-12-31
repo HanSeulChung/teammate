@@ -120,6 +120,8 @@ public class ScheduleCategoryService {
 
     if (repeatScheduleList.size() > 0 || simpleScheduleList.size() > 0 ) {
       if (!deleteRequest.isMoved()) {
+        repeatScheduleRepository.deleteAll(repeatScheduleList);
+        simpleScheduleRepository.deleteAll(simpleScheduleList);
         scheduleCategoryRepository.delete(category);
         log.info("일정 카테고리가 성공적으로 삭제되었습니다.");
       }
