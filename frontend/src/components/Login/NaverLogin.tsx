@@ -12,7 +12,7 @@ const NaverLogin: React.FC = () => {
   );
   console.log("code:", code);
   console.log("state:", state);
-  const BASE_URL = "http://118.67.128.124:8080";
+  const BASE_URL = "https://118.67.128.124:8080";
 
   useEffect(() => {
     const naver = async () => {
