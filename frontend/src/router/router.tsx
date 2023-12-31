@@ -4,7 +4,8 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import Index from "../views/Index";
 import SignUp from "../components/Join/SignUp";
 import SignInView from "../views/SignInView";
-import KakaoLogin from "../components/Login/KakaoLogin";
+import Naver from "../components/Login/Naver";
+import SocialServiceCallbackPage from "../components/Login/SocialServiceCallbackPage";
 import HomeView from "../views/HomeView";
 import TeamContent from "../components/TeamPage/TeamContent";
 
@@ -34,7 +35,8 @@ const Router = () => {
       <Route path="/" element={<Index />} />
       <Route path="/signUp" element={<SignUp />} />
       <Route path="/signIn" element={<SignInView />} />
-      <Route path="/kakaoLogin" element={<KakaoLogin />} />
+      <Route path="/naver" element={<Naver />} />
+      <Route path="/social-success/" element={<SocialServiceCallbackPage />} />
       <Route path="/homeView" element={<HomeView />} />
       <Route path="/team/:teamId" element={<TeamContent />} />
       <Route path="/team/:teamId/schedule" element={<Calender />} />

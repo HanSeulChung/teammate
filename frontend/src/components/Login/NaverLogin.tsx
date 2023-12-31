@@ -1,8 +1,17 @@
 import axiosInstance from "../../axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import {
+  accessTokenState,
+  refreshTokenState,
+  saveAccessToken,
+  saveRefreshToken,
+} from "../../state/authState";
 
 const NaverLogin: React.FC = () => {
+  const [, setAccessToken] = useRecoilState(accessTokenState);
+  const [, setRefreshToken] = useRecoilState(refreshTokenState);
   const navigate = useNavigate();
   const code: string | null = new URL(window.location.href).searchParams.get(
     "code",
@@ -12,7 +21,7 @@ const NaverLogin: React.FC = () => {
   );
   console.log("code:", code);
   console.log("state:", state);
-  const BASE_URL = "http://118.67.128.124:8080";
+  const BASE_URL = "https://www.teammate.digital:8080/";
 
   useEffect(() => {
     const naver = async () => {
@@ -20,8 +29,8 @@ const NaverLogin: React.FC = () => {
         const response = await axiosInstance.get(
           `${BASE_URL}/login/oauth2/code/naver?code=${code}&state=${state}`,
         );
-        const token: string = response.headers.authorization;
-        console.log(token);
+        const location: string = response.headers.Location;
+        console.log(location);
 
         navigate("/homeView");
       } catch (error) {

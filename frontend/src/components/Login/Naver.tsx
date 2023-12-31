@@ -2,10 +2,7 @@ import naverImg from "../../assets/naverImg.jpg";
 import styled from "styled-components";
 
 const Naver = () => {
-  const clientID = import.meta.env.VITE_REST_API;
-  const callbackUrl = import.meta.env.VITE_REDIRECT_KEY;
-  const stateString = import.meta.env.VITE_STATE;
-  const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${clientID}&response_type=code&redirect_uri=${callbackUrl}&state=${stateString}`;
+  const naverAuthUrl = `https://localhost:5173/oauth2/authorization/naver`;
 
   const loginHandler = () => {
     window.location.href = naverAuthUrl;
