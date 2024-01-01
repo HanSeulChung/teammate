@@ -143,6 +143,7 @@ public class ScheduleCategoryService {
           simpleSchedule.setScheduleCategory(newCategory);
           simpleScheduleRepository.save(simpleSchedule);
         }
+        scheduleCategoryRepository.delete(category);
         log.info("해당 카테고리에 속한 단순 일정들의 카테고리가 성공적으로 변경되었습니다.");
 
       }
