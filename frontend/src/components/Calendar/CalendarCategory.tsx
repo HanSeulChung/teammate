@@ -162,8 +162,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>타입</label>
                 <select
                   name="categoryType"
-                  defaultValue="SCHEDULE"
-                  value={categoryInput.color}
+                  value={categoryInput.categoryType}
                   onChange={handleChangeInput}
                   className='block p-2.5 mb-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 >
