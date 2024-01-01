@@ -27,9 +27,9 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -222,13 +222,12 @@ public class ScheduleController {
               , example = "1")
       })
   @GetMapping("/calendar")
-  public ResponseEntity<Page<AllSchedulesMonthlyView>> getMonthlySchedules(
+  public ResponseEntity<List<AllSchedulesMonthlyView>> getMonthlySchedules(
       @PathVariable Long teamId,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDt,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDt,
       @RequestParam(required = false) String categoryType,
-      @ApiIgnore Principal principal,
-      Pageable pageable
+      @ApiIgnore Principal principal
   ) {
     if (startDt == null) {
       startDt = LocalDateTime.now().withDayOfMonth(1);
@@ -237,14 +236,16 @@ public class ScheduleController {
       endDt = startDt.plusMonths(1).withDayOfMonth(1).minusDays(1);
     }
 
-    Page<AllSchedulesMonthlyView> allSchedules;
+    List<AllSchedulesMonthlyView> allSchedules;
     if (categoryType == null) {
-      allSchedules = scheduleService.getAllMonthlySchedules(teamId, pageable,
-          Long.valueOf(principal.getName()));
+      allSchedules = scheduleService.getAllMonthlySchedules(teamId,
+          Long.valueOf(principal.getName())
+      );
     } else {
       CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
-      allSchedules = scheduleService.getCategoryTypeMonthlySchedules(teamId, enumCategoryType,
-          pageable, Long.valueOf(principal.getName()));
+      allSchedules = scheduleService.getCategoryTypeMonthlySchedules(
+          teamId, enumCategoryType,Long.valueOf(principal.getName())
+      );
     }
 
     return ResponseEntity.ok(allSchedules);
