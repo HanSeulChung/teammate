@@ -8,7 +8,11 @@ export default {
     './src/components/**/*.{tsx,js,ts}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        mainGreen: '#A3CCA3'
+      }
+    },
   },
   plugins: [require("daisyui")],
 }
