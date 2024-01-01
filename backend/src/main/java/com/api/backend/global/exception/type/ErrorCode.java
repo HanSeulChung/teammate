@@ -63,6 +63,7 @@ public enum ErrorCode {
   MEMBER_NOT_MATCH_PASSWORD_EXCEPTION(400, "기존 비밀번호가 틀렸습니다."),
   INCORRECT_FORM_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호 형식이 잘못되었습니다."),
   NOT_MATCH_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호가 재확인 비밀번호와 일치하지 않습니다."),
+  MEMBER_LOGINTYPE_IS_SOCIAL_EXCEPTION(400,"소셜로 회원가입한 회원입니다."),
 
 
   TARGET_URL_EMPTY_EXCEPTION(400, "비어 있는 반환 url이 있습니다."),

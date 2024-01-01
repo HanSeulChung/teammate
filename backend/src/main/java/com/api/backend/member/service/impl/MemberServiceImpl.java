@@ -171,6 +171,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(Long.valueOf(principal))
             .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
+        if(member.getLoginType() != TEAMMATE){
+            throw new CustomException(MEMBER_LOGINTYPE_IS_SOCIAL_EXCEPTION);
+        }
+
+
         if (!passwordEncoder.matches(updateMemberPasswordRequest.getOldPassword(),
             member.getPassword())) {
             throw new CustomException(MEMBER_NOT_MATCH_PASSWORD_EXCEPTION);
