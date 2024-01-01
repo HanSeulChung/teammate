@@ -255,9 +255,6 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,react,node
 =======
 
-### Log ###
-*.log
-
 ## http ##
 *.http
 
@@ -269,3 +266,4 @@ application-s3.yml
 application-email.yml
 application-host.yml
 application-oauth.yml
+application-ssl.yml
