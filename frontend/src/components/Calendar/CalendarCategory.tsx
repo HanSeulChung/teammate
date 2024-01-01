@@ -1,14 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
 import axiosInstance from "../../axios";
+import getCategoryList from "./GetCategoryList.tsx";
 
-const CalendarCategory = () => {
+const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any) => {
   // 팀 ID
   const { teamId } = useParams();
-
-  // 현재 페이지의 사용자 팀 멤버 Id(participant)
-  const [myTeamMemberId, setMyTeamMemberId] = useState<number>();
 
   // 모달팝업 유무
   const [categoryModal, setCategoryModal] = useState(false);
@@ -19,54 +17,6 @@ const CalendarCategory = () => {
 
   // input 요소
   const categoryNameInput = useRef<HTMLInputElement | null>(null);
-
-  // 카테고리 목록
-  const [categoryList, setCategoryList] = useState([
-    {
-      categoryId: 1,
-      categoryName: "카테고리1",
-    },
-  ]);
-  
-  // 카테고리 목록 불러오기
-  const getCategoryList = async () => {
-    try {
-      const res = await axiosInstance({
-        method: "get",
-        url: `/category/schedule?teamId=${teamId}`,
-      });
-      if (res.status === 200) {
-        console.log("카테고리 목록 -> ", res.data.content);
-        setCategoryList(res.data.content);
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  
-  // 작성자 정보를 위한 현재 팀의 사용자 팀 멤버 id(participant) 가져오기
-  useEffect(() => {
-    const fetchMyTeamMemberId = async () => {
-      try {
-        const response = await axiosInstance.get("/member/participants", {});
-        const myTeamMemberInfo = response.data.find(
-          (item: { teamId: number }) => item.teamId === Number(teamId),
-        );
-        const authorTeamMemberId = myTeamMemberInfo.teamParticipantsId;      
-        setMyTeamMemberId(authorTeamMemberId);
-        console.log("작성자 팀멤버 아이디 카테고리-> ",myTeamMemberId);
-      } catch (error) {
-        console.error("Error fetching participants:", error);
-      }
-    };
-    fetchMyTeamMemberId();
-  }, [teamId]);
-
-  useEffect(() => {
-    getCategoryList();
-    // fetchMyTeamMemberId();
-  }, [teamId]);
 
   // 카테고리 입력 값
   const [categoryInput, setCategoryInput] = useState({
@@ -119,6 +69,11 @@ const CalendarCategory = () => {
     }
   }
 
+  const getCategoryItems = async(teamId: any) => {
+    const response = await getCategoryList(teamId);
+    setCategoryList(response);
+  } 
+
   // 카테고리 삭제
   const handleCategoryDelete = async (e: any) => {
     try {
@@ -134,7 +89,7 @@ const CalendarCategory = () => {
       );
       if (res.status === 200) {
         console.log("카테고리 삭제 성공!! -> ", res);
-        getCategoryList();
+        getCategoryItems(teamId);
         return;
       }
     } catch (error) {
@@ -152,7 +107,7 @@ const CalendarCategory = () => {
           </button>
         </div>
         <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
-          {categoryList.map((opt) => (
+          {categoryList.map((opt: any) => (
             <li key={opt.categoryId} className="flex items-center p-2 rounded hover:bg-gray-100">
               <input type="checkbox" value="" className="w-4 h-4 checkbox checkbox-success text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-50" />
               <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</label>

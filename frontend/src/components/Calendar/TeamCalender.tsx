@@ -9,16 +9,13 @@ import styled from "styled-components";
 import AddEvent from "./AddEvent.tsx";
 import EditEvent from "./EditEvent.tsx";
 import axiosInstance from "../../axios";
-import { ConvertedEvent, ICategoryList } from "../../interface/interface.ts"
+import { ConvertedEvent } from "../../interface/interface.ts"
 
-const TeamCalender = () => {
+const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
   const navigate = useNavigate();
 
   // 팀 아이디
   const { teamId } = useParams();
-
-  // 현재 페이지의 사용자 팀 멤버 Id(participant)
-  const [myTeamMemberId, setMyTeamMemberId] = useState<number | undefined>(undefined);
 
   // 모달팝업 유무 값
   const [eventDetailModal, setEventDetailModal] = useState<any>(false);
@@ -26,14 +23,6 @@ const TeamCalender = () => {
 
   // 일정 전체 목록
   const [eventList, setEventList] = useState<any>([]);
-
-  // 카테고리 목록
-  const [categoryList, setCategoryList] = useState<ICategoryList[]>([
-    {
-      categoryId: 1,
-      categoryName: "카테고리1",
-    },
-  ]);
 
   // 달력 일정 각각 state 핸들링용
   const [event, setEvent] = useState<any>([]);
@@ -44,23 +33,6 @@ const TeamCalender = () => {
   };
   const toggleFormModal = () => {
     setEventFormModal(!eventFormModal);
-  };
-
-  // 작성자 정보를 위한 현재 팀의 사용자 팀 멤버 id(participant) 가져오기
-  const fetchMyTeamMemberId = async () => {
-    try {
-      // 사용자가 속해있는 팀 목록과 닉네임등의 정보를 불러옴
-      const response = await axiosInstance.get("/member/participants", {});
-      // 사용자가 가입한 팀 목록중에 현재 팀id의 정보와 맞는 팀 내 내정보 값만 가져옴
-      const myTeamMemberInfo = response.data.find(
-        (item: { teamId: number }) => item.teamId === Number(teamId),
-      );
-      const authorTeamMemberId = myTeamMemberInfo.teamParticipantsId;      
-      setMyTeamMemberId(authorTeamMemberId);
-      console.log("작성자 팀멤버 아이디 -> ",myTeamMemberId);
-    } catch (error) {
-      console.error("Error fetching participants:", error);
-    }
   };
 
   // 일정클릭 핸들링
@@ -108,46 +80,27 @@ const TeamCalender = () => {
   };
   
   // 일정목록 불러오기
-  const getAllEvents = async () => {
-    try {
-      const res = await axiosInstance({
-        method: "get",
-        url: `/team/${teamId}/schedules/calendar`,
-      });
-      if (res.status === 200) {
-        console.log(res.data.content);
-        // 데이터 변환
-        const convertedEvents = convertEvents(res.data.content);
-        console.log(convertedEvents);
-        setEventList(convertedEvents);
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // 카테고리 목록 불러오기
-  const getCategoryList = async () => {
-    try {
-      const res = await axiosInstance({
-        method: "get",
-        url: `/category/schedule?teamId=${teamId}`,
-      });
-      if (res.status === 200) {
-        console.log("카테고리 목록 -> ", res.data.content);
-        setCategoryList(res.data.content);
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
+    const getAllEvents = async () => {
+      try {
+        const res = await axiosInstance({
+          method: "get",
+          url: `/team/${teamId}/schedules/calendar`,
+        });
+        if (res.status === 200) {
+          console.log(res.data.content);
+          // 데이터 변환
+          const convertedEvents = convertEvents(res.data.content);
+          console.log(convertedEvents);
+          setEventList(convertedEvents);
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     getAllEvents();
-    fetchMyTeamMemberId();
-    getCategoryList();
   }, [teamId]);
 
   // 일정 삭제

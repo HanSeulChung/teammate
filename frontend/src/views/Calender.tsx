@@ -1,19 +1,12 @@
-import TeamCalender from "../components/Calendar/TeamCalender"
-import CalendarCategory from "../components/Calendar/CalendarCategory"
+import CalendarView from "../components/Calendar/CalendarView";
 
 const Calender = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-between">
       <div className="grid grid-cols-10">
-        <div className="col-span-8">
-          <TeamCalender />
-        </div>
-        <div className="ml-8 w-full mt-16 lg:h-1/2">
-          <CalendarCategory />
-        </div>
+        <CalendarView />
       </div>
     </div>
-
   )
 }
 
