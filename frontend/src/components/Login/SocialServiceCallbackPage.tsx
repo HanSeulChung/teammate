@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import {
+  isAuthenticatedState,
   accessTokenState,
   refreshTokenState,
   saveAccessToken,
@@ -12,6 +13,7 @@ import axios from "axios";
 const SocialServiceCallbackPage = () => {
   const [, setAccessToken] = useRecoilState(accessTokenState);
   const [, setRefreshToken] = useRecoilState(refreshTokenState);
+  const [, setIsAuthenticated] = useRecoilState(isAuthenticatedState);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const SocialServiceCallbackPage = () => {
       if (newAccessToken && newRefreshToken) {
         saveAccessToken(newAccessToken);
         saveRefreshToken(newRefreshToken);
-
+        setIsAuthenticated(true);
         navigate("/homeView");
         console.log("login successful");
       }

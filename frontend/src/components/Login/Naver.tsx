@@ -2,7 +2,7 @@ import naverImg from "../../assets/naverImg.jpg";
 import styled from "styled-components";
 
 const Naver = () => {
-  const naverAuthUrl = `https://localhost:5173/oauth2/authorization/naver`;
+  const naverAuthUrl = `https://www.teammate.digital:8080/oauth2/authorization/naver`;
 
   const loginHandler = () => {
     window.location.href = naverAuthUrl;
