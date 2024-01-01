@@ -44,11 +44,11 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
     color: "",
   });
   
-  const handleChangeInput = () => {
+  const handleChangeInput = (e: any) => {
     // console.log(e.target.value);
     setCategoryInput({
       ...categoryInput,
-      // [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value,
     })
     // console.log(categoryInput);
   };
@@ -159,6 +159,17 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
             <div className='p-4 md:p-5'>
               <h2 className="text-lg font-semibold text-gray-900">카테고리 추가</h2>
               <CategoryForm>
+                <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>타입</label>
+                <select
+                  name="categoryType"
+                  defaultValue="SCHEDULE"
+                  value={categoryInput.color}
+                  onChange={handleChangeInput}
+                  className='block p-2.5 mb-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                >
+                  <option value="SCHEDULE">일정</option>
+                  <option value="DOCUMENTS">문서</option>
+                </select>
                 <div className="col-span-2">
                 </div>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리 이름</label>
