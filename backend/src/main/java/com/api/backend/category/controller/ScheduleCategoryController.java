@@ -53,10 +53,10 @@ public class ScheduleCategoryController {
               , paramType = "header"
               , defaultValue = "None")
       })
+
   @PostMapping
   public ResponseEntity<ScheduleCategoryResponse> categoryAdd(
-      @RequestBody ScheduleCategoryRequest request,
-      @ApiIgnore Principal principal
+      @RequestBody ScheduleCategoryRequest request, @ApiIgnore Principal principal
   ) {
     ScheduleCategoryResponse response = ScheduleCategoryResponse.from(
         scheduleCategoryService.add(request, Long.valueOf(principal.getName()))
@@ -88,12 +88,10 @@ public class ScheduleCategoryController {
               , defaultValue = "None"
               , example = "1")
       })
+
   @GetMapping("/{categoryType}")
   public ResponseEntity<Page<ScheduleCategoryResponse>> searchByCategoryType(
-      @PathVariable String categoryType,
-      Pageable pageable,
-      @RequestParam Long teamId,
-      @ApiIgnore Principal principal
+      @PathVariable String categoryType, Pageable pageable, @RequestParam Long teamId, @ApiIgnore Principal principal
   ) {
     CategoryType enumCategoryType = CategoryType.valueOf(categoryType.toUpperCase());
     Page<ScheduleCategoryResponse> responses = ScheduleCategoryResponse.from(
@@ -118,10 +116,10 @@ public class ScheduleCategoryController {
               , paramType = "header"
               , defaultValue = "None")
       })
+
   @PutMapping
   public ResponseEntity<ScheduleCategoryEditResponse> editCategory(
-      @RequestBody ScheduleCategoryEditRequest request,
-      @ApiIgnore Principal principal
+      @RequestBody ScheduleCategoryEditRequest request, @ApiIgnore Principal principal
   ) {
     ScheduleCategoryEditResponse editResponse = ScheduleCategoryEditResponse.from(
         scheduleCategoryService.edit(request, Long.valueOf(principal.getName()))
@@ -145,11 +143,10 @@ public class ScheduleCategoryController {
               , paramType = "header"
               , defaultValue = "None")
       })
+
   @DeleteMapping
   public ResponseEntity<String> deleteCategory(
-      @RequestBody ScheduleCategoryDeleteRequest deleteRequest,
-      @ApiIgnore Principal principal
-  ) {
+      @RequestBody ScheduleCategoryDeleteRequest deleteRequest, @ApiIgnore Principal principal) {
     scheduleCategoryService.delete(deleteRequest, Long.valueOf(principal.getName()));
     return ResponseEntity.ok("해당 일정 카테고리가 정상적으로 삭제되었습니다.");
   }

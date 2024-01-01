@@ -28,12 +28,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    @Value("${frontend.host}")
-    String host;
-
-    @Value("${frontend.port}")
-    String port;
-
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -55,9 +49,6 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        StringBuilder url = new StringBuilder();
-        url.append("http://").append(host).append(":").append(port);
         http
                 .httpBasic().disable()
                 .csrf().disable()

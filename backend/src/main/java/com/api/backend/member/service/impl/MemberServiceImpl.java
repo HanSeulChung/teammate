@@ -3,14 +3,13 @@ package com.api.backend.member.service.impl;
 import com.api.backend.global.email.MailService;
 import com.api.backend.global.exception.CustomException;
 import com.api.backend.global.redis.RedisService;
-import com.api.backend.global.security.jwt.service.AuthService;
 import com.api.backend.global.security.data.dto.TokenDto;
 import com.api.backend.global.security.jwt.JwtTokenProvider;
+import com.api.backend.global.security.jwt.service.AuthService;
 import com.api.backend.member.data.dto.*;
 import com.api.backend.member.data.entity.Member;
 import com.api.backend.member.data.repository.MemberRepository;
 import com.api.backend.member.data.type.Authority;
-import com.api.backend.member.data.type.LoginType;
 import com.api.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -29,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.api.backend.global.exception.type.ErrorCode.*;
+import static com.api.backend.member.data.type.LoginType.TEAMMATE;
 
 @Slf4j
 @Service
@@ -61,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
             .password(request.getPassword())
             .name(request.getName())
             .sexType(request.getSexType())
-            .loginType(LoginType.TEAMMATE)
+            .loginType(TEAMMATE)
             .authority(Authority.USER)
             .isAuthenticatedEmail(false)
             .build();
@@ -88,7 +87,7 @@ public class MemberServiceImpl implements MemberService {
             return result;
         }
 
-        Member member = memberRepository.findByEmail(email)
+        Member member = memberRepository.findByEmailAndLoginType(email, TEAMMATE)
             .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
         member.setIsAuthenticatedEmail(true);
@@ -102,7 +101,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public SignInResponse login(SignInRequest signInRequest) {
-        Member member = memberRepository.findByEmail(signInRequest.getEmail())
+        Member member = memberRepository.findByEmailAndLoginType(signInRequest.getEmail(), TEAMMATE)
             .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
         if (!member.getIsAuthenticatedEmail()) {
@@ -172,6 +171,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(Long.valueOf(principal))
             .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND_EXCEPTION));
 
+        if(member.getLoginType() != TEAMMATE){
+            throw new CustomException(MEMBER_LOGINTYPE_IS_SOCIAL_EXCEPTION);
+        }
+
+
         if (!passwordEncoder.matches(updateMemberPasswordRequest.getOldPassword(),
             member.getPassword())) {
             throw new CustomException(MEMBER_NOT_MATCH_PASSWORD_EXCEPTION);
@@ -217,6 +221,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberInfoResponse.builder()
             .email(member.getEmail())
             .name(member.getName())
+            .loginType(member.getLoginType())
             .build();
     }
 
@@ -230,14 +235,15 @@ public class MemberServiceImpl implements MemberService {
     public void deleteMember(Member member) {
         memberRepository.delete(member);
     }
+
     private void sendVerificationMail (String email){
 
-        Member member = memberRepository.findByEmail(email)
+        Member member = memberRepository.findByEmailAndLoginType(email, TEAMMATE)
             .orElseThrow(() -> new CustomException(EMAIL_NOT_FOUND_EXCEPTION));
 
         UUID uuid = UUID.randomUUID();
         String text = "가입을 축하합니다. 아래 링크를 클릭하여서 가입을 완료하세요.<br>"
-            + "<a href='http://118.67.128.124:8080/email-verify/" + uuid + "/" + email
+            + "<a href='https://www.teammate.digital:8080/email-verify/" + uuid + "/" + email
             + "'> 이메일 인증 </a>";
 
         redisService.setValues(uuid.toString(), member.getEmail(), 60 * 30L, TimeUnit.MINUTES);

@@ -53,7 +53,6 @@ const SignIn = () => {
 
       const { token } = response.data;
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      console.log("토큰이 발급되었습니다:", response.data.token);
       const newAccessToken = response.data.accessToken;
       const newRefreshToken = response.data.refreshToken;
 
@@ -69,7 +68,6 @@ const SignIn = () => {
       setIsAuthenticated(true);
       saveUser({ id: email, name: response.data.name, email: email });
       navigate("/homeView");
-      console.log("login successful");
     } catch (error) {
       console.error("Sign In Error:", error);
 
@@ -87,7 +85,8 @@ const SignIn = () => {
         } else if (errorCode === "EMAIL_NOT_MATCH_EXCEPTION") {
           errorMessage = "이메일이 일치하지 않습니다. 다시 입력해주세요.";
         } else if (errorCode === "EMAIL_NOT_FOUND_EXCEPTION") {
-          errorMessage = "이메일로 가입된 사용자가 없습니다.";
+          errorMessage =
+            "이메일로 가입된 사용자가 없습니다. 회원가입을 해주세요.";
         }
 
         setError(errorMessage);

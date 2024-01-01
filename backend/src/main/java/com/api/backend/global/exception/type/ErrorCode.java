@@ -16,6 +16,7 @@ public enum ErrorCode {
   SCHEDULE_CATEGORY_ALREADY_EXIST_EXCEPTION(500, "이미 존재하는 일정 카테고리 입니다."),
   SCHEDULE_CATEGORY_CREATOR_NOT_MATCH_TEAM_PARTICIPANTS_EXCEPTION(400, "해당 일정 카테고리의 생성자가 아닙니다."),
   SCHEDULE_CATEGORY_CREATOR_EXISTS_EXCEPTION(400, "일정 카테고리 생성자가 팀안에 존재하므로, 팀장권한으로 삭제가 불가능합니다."),
+  NO_CATEGORY_SELECTED_EXCEPTION(400, "일정들을 옮길 카테고리를 선택하지 않았습니다."),
 
   SCHEDULE_NOT_FOUND_EXCEPTION(500, "존재하지 않는 일정입니다."),
   INVALID_REPEAT_CYCLE_EXCEPTION(400, "잘못된 반복 주기입니다."),
@@ -62,6 +63,7 @@ public enum ErrorCode {
   MEMBER_NOT_MATCH_PASSWORD_EXCEPTION(400, "기존 비밀번호가 틀렸습니다."),
   INCORRECT_FORM_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호 형식이 잘못되었습니다."),
   NOT_MATCH_NEW_PASSWORD_EXCEPTION(400,"새로운 비밀번호가 재확인 비밀번호와 일치하지 않습니다."),
+  MEMBER_LOGINTYPE_IS_SOCIAL_EXCEPTION(400,"소셜로 회원가입한 회원입니다."),
 
 
   TARGET_URL_EMPTY_EXCEPTION(400, "비어 있는 반환 url이 있습니다."),

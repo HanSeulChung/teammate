@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 import HomeContent from "../components/Home/HomeContent";
 import HomeCreateTeamBtn from "../components/Home/HomeCreateTeamBtn";
 import HomeSearchBar from "../components/Home/HomeSearchBar";
@@ -22,12 +23,17 @@ const homeView = () => {
   }, []);
 
   return (
-    <div>
+    <HomeViewContainer>
       <HomeSearchBar onSearch={handleSearch} />
       <HomeCreateTeamBtn />
       <HomeContent />
-    </div>
+    </HomeViewContainer>
   );
 };
 
 export default homeView;
+
+const HomeViewContainer = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+`;

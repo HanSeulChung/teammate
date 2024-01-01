@@ -8,8 +8,6 @@ import com.api.backend.global.security.jwt.JwtTokenProvider;
 import com.api.backend.global.security.jwt.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpCookie;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -61,7 +59,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME).map(Cookie::getValue);
         clearAuthenticationAttributes(request, response);
-        return redirectUri.orElse("/social-success/");
+        return redirectUri.orElse("http://localhost:5173/social-success/");
     }
 
     private String getRedirectUrl(String targetUrl, TokenDto token) {
