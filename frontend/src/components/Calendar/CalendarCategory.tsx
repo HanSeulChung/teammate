@@ -102,7 +102,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
       console.log(error);
     }
   }
-  
+
   // 카테고리 삭제 동작
   const handleCategoryDelete = async () => {
     // e.preventDefault();
@@ -202,19 +202,23 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
           ></Overlay>
           <ModalContent>
             <div className='p-4 md:p-5'>
-              <h2 className="text-lg font-semibold text-gray-900">카테고리 삭제</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">카테고리 삭제</h2>
               <CategoryForm>
                 <fieldset>
                   <legend className='block mt-2 mb-2 text-sm font-medium text-gray-900'>일정을 다른 카테고리로 이동</legend>
                   <div className='mb-3'>
-                    <input id="isMoved-true" type="radio" onChange={handleChangeOption} name="isMoved" value={true.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
-                    <label htmlFor="isMoved-true" className="text-sm font-medium text-gray-900">
-                      예
-                    </label>
-                    <input checked id="isMoved-false" type="radio" onChange={handleChangeOption} name="isMoved" value={false.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
-                    <label htmlFor="isMoved-false" className="ms-2 text-sm font-medium text-gray-900">
-                      아니오
-                    </label>
+                    <span className="flex items-center">
+                      <input id="isMoved-true" type="radio" onChange={handleChangeOption} name="isMoved" value={true.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-green-500" />
+                      <label htmlFor="isMoved-true" className="ms-2 text-sm font-medium text-gray-900">
+                        예
+                      </label>
+                    </span>
+                    <span className="flex items-center">
+                      <input checked id="isMoved-false" type="radio" onChange={handleChangeOption} name="isMoved" value={false.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-green-500" />
+                      <label htmlFor="isMoved-false" className="ms-2 text-sm font-medium text-gray-900">
+                        아니오
+                      </label>
+                    </span>
                   </div>
                 </fieldset>
                 <fieldset>
