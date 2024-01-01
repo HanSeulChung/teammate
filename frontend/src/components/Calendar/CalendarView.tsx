@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ICategoryList } from "../../interface/interface.ts"
-import axiosInstance from "../../axios";
+import axiosInstance from "../../axios.tsx";
 import getCategoryList from "./GetCategoryList.tsx";
-import TeamCalender from "./TeamCalender"
-import CalendarCategory from "./CalendarCategory"
+import TeamCalender from "./TeamCalender.tsx"
+import CalendarCategory from "./CalendarCategory.tsx"
 
-const Calendar = () => {
+const CalendarView = () => {
   // 팀 아이디
   const { teamId } = useParams();
 
@@ -48,17 +48,15 @@ const Calendar = () => {
   }, [teamId]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between">
-      <div className="grid grid-cols-10">
-        <div className="col-span-8">
-          <TeamCalender categoryList={categoryList} myTeamMemberId={myTeamMemberId} />
-        </div>
-        <div className="ml-8 w-full mt-16 lg:h-1/2">
-          <CalendarCategory categoryList={categoryList} myTeamMemberId={myTeamMemberId} setCategoryList={setCategoryList} />
-        </div>
+    <>
+      <div className="col-span-8">
+        <TeamCalender categoryList={categoryList} myTeamMemberId={myTeamMemberId} />
       </div>
-    </div>
+      <div className="ml-8 w-full mt-16 lg:h-1/2">
+        <CalendarCategory categoryList={categoryList} myTeamMemberId={myTeamMemberId} setCategoryList={setCategoryList} />
+      </div>
+    </>
   )
 }
 
-export default Calendar;
+export default CalendarView;
