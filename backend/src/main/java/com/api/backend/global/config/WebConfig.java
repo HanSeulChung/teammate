@@ -17,6 +17,9 @@ public class WebConfig implements WebMvcConfigurer {
   String host;
   @Value("${frontend.port}")
   String port;
+  @Value("${frontend.prod}")
+  String domain;
+
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
     SortHandlerMethodArgumentResolver sortHandlerMethodArgumentResolver
@@ -34,8 +37,10 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addCorsMappings(CorsRegistry registry) {
+    String[] origins = {"http://" + host + ":" + port, domain};
+
     registry.addMapping("/**")
-        .allowedOrigins("http://" + host + ":" + port)
+        .allowedOrigins(origins)
         .allowedOriginPatterns("*");
   }
 }
