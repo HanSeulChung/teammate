@@ -221,6 +221,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberInfoResponse.builder()
             .email(member.getEmail())
             .name(member.getName())
+            .loginType(member.getLoginType())
             .build();
     }
 
