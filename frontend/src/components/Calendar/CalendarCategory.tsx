@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
 import axiosInstance from "../../axios";
@@ -16,6 +16,9 @@ const CalendarCategory = () => {
   const toggleCat = () => {
     setCategoryModal(!categoryModal);
   };
+
+  // input 요소
+  const categoryNameInput = useRef<HTMLInputElement | null>(null);
 
   // 카테고리 목록
   const [categoryList, setCategoryList] = useState([
@@ -84,22 +87,54 @@ const CalendarCategory = () => {
     console.log(categoryInput);
   };
 
-  const AddCategory = async (e: any) => {
-    // /category
-    e.preventDefault();
+  // 카테고리 추가
+  const handleCategoryAdd = (e: any) => {
+    if(categoryInput.categoryName.length < 1){
+      categoryNameInput.current?.focus();
+      e.preventDefault();
+      return;
+    }
+    
+    onAddCategory();
+  };
+  
+  const onAddCategory = async () => {
     try {
       const res = await axiosInstance.post(`/category`, 
-        {
-          teamId: teamId,
-          createTeamParticipantId: myTeamMemberId,
-          categoryName: categoryInput.categoryName,
-          categoryType: "SCHEDULE",
-          color: categoryInput.color,
-        }
+      {
+        teamId: teamId,
+        createParticipantId: myTeamMemberId,
+        categoryName: categoryInput.categoryName,
+        categoryType: "SCHEDULE",
+        color: categoryInput.color,
+      }
       );
       if (res.status === 200) {
         console.log("카테고리 옵션이 추가되었습니다 -> ", res);
         // setCategoryList(res.data.content);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // 카테고리 삭제
+  const handleCategoryDelete = async (e: any) => {
+    try {
+      const res = await axiosInstance.delete(`/category`, {
+        data: {
+          categoryId: e.target.value,
+          teamId: teamId,
+          participantId: myTeamMemberId,
+          isMoved: "",
+          newCategoryId: "",
+        },
+      }
+      );
+      if (res.status === 200) {
+        console.log("카테고리 삭제 성공!! -> ", res);
+        getCategoryList();
         return;
       }
     } catch (error) {
@@ -119,8 +154,12 @@ const CalendarCategory = () => {
         <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
           {categoryList.map((opt) => (
             <li key={opt.categoryId} className="flex items-center p-2 rounded hover:bg-gray-100">
-              <input type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-50" />
+              <input type="checkbox" value="" className="w-4 h-4 checkbox checkbox-success text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-50" />
               <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</label>
+              <button onClick={handleCategoryDelete} value={opt.categoryId} className="w-4 h-4 text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
+                x
+                <span className="sr-only">카테고리 삭제 버튼</span>
+              </button>
             </li>
           ))}
         </ul>
@@ -139,6 +178,7 @@ const CalendarCategory = () => {
                 </div>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리 이름</label>
                 <input
+                  ref={categoryNameInput}
                   placeholder='카테고리명'
                   name="categoryName"
                   value={categoryInput.categoryName}
@@ -157,7 +197,7 @@ const CalendarCategory = () => {
                   <option value="#336699">파랑</option>
                 </select>
                 <CommonSubmitBtn
-                  onClick={AddCategory}
+                  onClick={handleCategoryAdd}
                 >등록</CommonSubmitBtn>
               </CategoryForm>
               <CloseModal

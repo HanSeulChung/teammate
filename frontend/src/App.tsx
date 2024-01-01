@@ -32,13 +32,15 @@ export const FullWidthDiv = styled.div`
 `;
 
 export const WrapperDiv = styled.div`
-  padding: 0 10% 0;
+  // padding: 0 10% 0;
   margin: 0 auto;
   min-height: 1080px;
 
-  @media (max-width: 1024px) {
+  @media (min-width: 1024px) {
     max-width: 1024px;
     min-height: 1080px;
+    // width: 1024px;
+    height: auto;
   }
   @media (max-height: 900px) {
     min-height: 600px;
