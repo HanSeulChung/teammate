@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
         if (refreshToken) {
           try {
             const response = await axios.post(
-              "http://localhost:8080/refresh-token",
+              "https://www.teammate.digital:8080/refresh-token",
               { refreshToken },
               { withCredentials: true },
             );
