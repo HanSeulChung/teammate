@@ -9,7 +9,8 @@ import SocialServiceCallbackPage from "../components/Login/SocialServiceCallback
 import HomeView from "../views/HomeView";
 import TeamContent from "../components/TeamPage/TeamContent";
 
-import Calender from "../views/Calender";
+// import Calender from "../views/Calender";
+import Calender from "../components/Calendar/Calendar";
 import CreateTextView from "../views/CreateTextView";
 import TextEditorView from "../views/TextEditorView";
 import DocumentListView from "../views/DocumentListView";
