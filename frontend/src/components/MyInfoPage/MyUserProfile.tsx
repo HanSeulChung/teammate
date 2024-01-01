@@ -144,68 +144,78 @@ export default function MyUserProfile() {
               <td>{user?.email}</td>
             </tr>
             {/* row 3 */}
-            <tr>
-              <th>현재 비밀번호</th>
-              <td>
-                <label className="form-control w-full max-w-xs">
-                  <input
-                    type="password"
-                    placeholder="현재 비밀번호"
-                    className="input input-bordered w-full max-w-xs bg-white"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                  />
-                  <div className="label">
-                    <span className="label-text-alt">8자 이상</span>
-                  </div>
-                </label>
-              </td>
-            </tr>
-            {/* row 4 */}
-            <tr>
-              <th>새 비밀번호</th>
-              <td>
-                <label className="form-control w-full max-w-xs">
-                  <input
-                    type="password"
-                    placeholder="새 비밀번호"
-                    className="input input-bordered w-full max-w-xs bg-white"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                  />
-                  <div className="label">
-                    <span className="label-text-alt">8자 이상</span>
-                  </div>
-                </label>
-              </td>
-            </tr>
-            {/* row 5 */}
-            <tr>
-              <th>새 비밀번호 확인</th>
-              <td>
-                <label className="form-control w-full max-w-xs">
-                  <input
-                    type="password"
-                    placeholder="새 비밀번호"
-                    className="input input-bordered w-full max-w-xs bg-white"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                  <div className="label">
-                    <span className="label-text-alt">8자 이상</span>
-                  </div>
-                </label>
-              </td>
-            </tr>
+            {user?.loginType == "TEAMMATE" && (
+              <>
+                <tr>
+                  <th>현재 비밀번호</th>
+                  <td>
+                    <label className="form-control w-full max-w-xs">
+                      <input
+                        type="password"
+                        placeholder="현재 비밀번호"
+                        className="input input-bordered w-full max-w-xs bg-white"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                      />
+                      <div className="label">
+                        <span className="label-text-alt">8자 이상</span>
+                      </div>
+                    </label>
+                  </td>
+                </tr>
+                {/* row 4 */}
+                <tr>
+                  <th>새 비밀번호</th>
+                  <td>
+                    <label className="form-control w-full max-w-xs">
+                      <input
+                        type="password"
+                        placeholder="새 비밀번호"
+                        className="input input-bordered w-full max-w-xs bg-white"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                      />
+                      <div className="label">
+                        <span className="label-text-alt">8자 이상</span>
+                      </div>
+                    </label>
+                  </td>
+                </tr>
+                {/* row 5 */}
+                <tr>
+                  <th>새 비밀번호 확인</th>
+                  <td>
+                    <label className="form-control w-full max-w-xs">
+                      <input
+                        type="password"
+                        placeholder="새 비밀번호"
+                        className="input input-bordered w-full max-w-xs bg-white"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                      <div className="label">
+                        <span className="label-text-alt">8자 이상</span>
+                      </div>
+                    </label>
+                  </td>
+                </tr>
+              </>
+            )}
           </tbody>
         </table>
       </div>
-      <ButtonContainer>
-        <Button onClick={handleUpdatePassword}>변경하기</Button>
-      </ButtonContainer>
-      <ErrorContainer>
-        {passwordChangeError && <ErrorText>{passwordChangeError}</ErrorText>}
-      </ErrorContainer>
+      {user?.loginType == "TEAMMATE" && (
+        <>
+          <ButtonContainer>
+            <Button onClick={handleUpdatePassword}>변경하기</Button>
+          </ButtonContainer>
+          <ErrorContainer>
+            {passwordChangeError && (
+              <ErrorText>{passwordChangeError}</ErrorText>
+            )}
+          </ErrorContainer>
+        </>
+      )}
       <br />
       {/* 231218 유나경 끝------------- */}
     </UserProfileContainer>

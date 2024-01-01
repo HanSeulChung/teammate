@@ -66,7 +66,12 @@ const SignIn = () => {
         setRefreshToken(newRefreshToken);
       }
       setIsAuthenticated(true);
-      saveUser({ id: email, name: response.data.name, email: email });
+      saveUser({
+        id: email,
+        name: response.data.name,
+        email: email,
+        loginType: response.data.loginType,
+      });
       navigate("/homeView");
     } catch (error) {
       console.error("Sign In Error:", error);
