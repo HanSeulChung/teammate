@@ -7,18 +7,35 @@ import getCategoryList from "./GetCategoryList.tsx";
 const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any) => {
   // 팀 ID
   const { teamId } = useParams();
+  
+  // 카테고리 리스트 불러오기
+  const getCategoryItems = async(teamId: any) => {
+    const response = await getCategoryList(teamId);
+    setCategoryList(response);
+  } 
 
-  // 모달팝업 유무
-  const [categoryModal, setCategoryModal] = useState(false);
+  // 추가, 삭제 폼 모달
+  const [isAddModal, setIsAddModal] = useState(false);
+  const [isDeleteModal, setIsDeleteModal] = useState(false);
 
-  const toggleCat = () => {
-    setCategoryModal(!categoryModal);
+  const toggleAddModal = () => {
+    setIsAddModal(!isAddModal);
+  };
+  
+  const toggleDeleteModal = (e: any) => {
+    setIsDeleteModal(!isDeleteModal);
+    
+    // 삭제버튼 클릭된 카테고리 id
+    setDeleteOption({
+      ...deleteOption,
+      ['categoryId']: e.target.value,
+    })
   };
 
   // input 요소
   const categoryNameInput = useRef<HTMLInputElement | null>(null);
 
-  // 카테고리 입력 값
+  // 카테고리 추가 폼 입력값
   const [categoryInput, setCategoryInput] = useState({
     teamId: teamId,
     createTeamParticipantId: myTeamMemberId,
@@ -26,18 +43,34 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
     categoryType: "schedule",
     color: "",
   });
-
-  // 카테고리 입력값 핸들링
-  const handleChangeOption = (e: any) => {
-    console.log(e.target.value);
+  
+  const handleChangeInput = () => {
+    // console.log(e.target.value);
     setCategoryInput({
       ...categoryInput,
+      // [e.target.name]: e.target.value,
+    })
+    // console.log(categoryInput);
+  };
+  
+  // 카테고리 삭제 폼 입력값
+  const [deleteOption, setDeleteOption] = useState({
+    categoryId: 0,
+    teamId: teamId,
+    participantId: myTeamMemberId,
+    isMoved: false,
+    newCategoryId: 0,
+  });
+  
+  const handleChangeOption = (e: any) => {
+    console.log(e.target.value);
+    setDeleteOption({
+      ...deleteOption,
       [e.target.name]: e.target.value,
     })
-    console.log(categoryInput);
   };
-
-  // 카테고리 추가
+  
+  // 카테고리 추가 동작
   const handleCategoryAdd = (e: any) => {
     if(categoryInput.categoryName.length < 1){
       categoryNameInput.current?.focus();
@@ -49,6 +82,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
   };
   
   const onAddCategory = async () => {
+    // e.preventDefault();
     try {
       const res = await axiosInstance.post(`/category`, 
       {
@@ -68,22 +102,18 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
       console.log(error);
     }
   }
-
-  const getCategoryItems = async(teamId: any) => {
-    const response = await getCategoryList(teamId);
-    setCategoryList(response);
-  } 
-
-  // 카테고리 삭제
-  const handleCategoryDelete = async (e: any) => {
+  
+  // 카테고리 삭제 동작
+  const handleCategoryDelete = async () => {
+    // e.preventDefault();
     try {
       const res = await axiosInstance.delete(`/category`, {
         data: {
-          categoryId: e.target.value,
+          categoryId: deleteOption.categoryId,
           teamId: teamId,
           participantId: myTeamMemberId,
-          isMoved: "",
-          newCategoryId: "",
+          isMoved: deleteOption.isMoved,
+          newCategoryId: deleteOption.newCategoryId,
         },
       }
       );
@@ -102,7 +132,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
       <div className="p-3 bg-white rounded-lg shadow w-60">
         <div className="relative flex justify-between items-center px-2">
           <h2 className=''>카테고리</h2>
-          <button onClick={toggleCat} className="p-3 text-sm font-medium text-gray-600 border-t border-gray-200 rounded-b-lg bg-gray-50 hover:bg-gray-100">
+          <button onClick={toggleAddModal} className="p-3 text-sm font-medium text-gray-600 border-t border-gray-200 rounded-b-lg bg-gray-50 hover:bg-gray-100">
             추가
           </button>
         </div>
@@ -111,7 +141,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
             <li key={opt.categoryId} className="flex items-center p-2 rounded hover:bg-gray-100">
               <input type="checkbox" value="" className="w-4 h-4 checkbox checkbox-success text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-50" />
               <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</label>
-              <button onClick={handleCategoryDelete} value={opt.categoryId} className="w-4 h-4 text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
+              <button onClick={toggleDeleteModal} value={opt.categoryId} className="w-4 h-4 text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
                 x
                 <span className="sr-only">카테고리 삭제 버튼</span>
               </button>
@@ -119,11 +149,11 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
           ))}
         </ul>
       </div>
-      {/* 카테고리 추가 버튼 클릭시 모달 */}
-      {categoryModal && (
+      {/* 카테고리 추가 폼 */}
+      {isAddModal && (
         <Modal>
           <Overlay
-            onClick={toggleCat}
+            onClick={toggleAddModal}
           ></Overlay>
           <ModalContent>
             <div className='p-4 md:p-5'>
@@ -137,14 +167,14 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
                   placeholder='카테고리명'
                   name="categoryName"
                   value={categoryInput.categoryName}
-                  onChange={handleChangeOption}
+                  onChange={handleChangeInput}
                   className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 ></input>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
                 <select
                   name="color"
                   value={categoryInput.color}
-                  onChange={handleChangeOption}
+                  onChange={handleChangeInput}
                   className='block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 >
                   <option value="#7aac7a">초록</option>
@@ -156,7 +186,58 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
                 >등록</CommonSubmitBtn>
               </CategoryForm>
               <CloseModal
-                onClick={toggleCat}
+                onClick={toggleAddModal}
+              >
+                닫기
+              </CloseModal>
+            </div>
+          </ModalContent>
+        </Modal>
+      )}
+      {/* 카테고리 삭제 폼 */}
+      {isDeleteModal && (
+        <Modal>
+          <Overlay
+            // onClick={toggleCat}
+          ></Overlay>
+          <ModalContent>
+            <div className='p-4 md:p-5'>
+              <h2 className="text-lg font-semibold text-gray-900">카테고리 삭제</h2>
+              <CategoryForm>
+                <fieldset>
+                  <legend className='block mt-2 mb-2 text-sm font-medium text-gray-900'>일정을 다른 카테고리로 이동</legend>
+                  <div className='mb-3'>
+                    <input id="isMoved-true" type="radio" onChange={handleChangeOption} name="isMoved" value={true.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
+                    <label htmlFor="isMoved-true" className="text-sm font-medium text-gray-900">
+                      예
+                    </label>
+                    <input checked id="isMoved-false" type="radio" onChange={handleChangeOption} name="isMoved" value={false.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500" />
+                    <label htmlFor="isMoved-false" className="ms-2 text-sm font-medium text-gray-900">
+                      아니오
+                    </label>
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>이동시킬 카테고리</label>
+                  <select
+                    name="newCategoryId"
+                    value={deleteOption.newCategoryId}
+                    onChange={handleChangeOption}
+                    className='block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  >
+                    {categoryList.map((item: any) => (
+                      <option key={item.categoryId} value={item.categoryId}>
+                        {item.categoryName}
+                      </option>
+                    ))}
+                  </select>
+                </fieldset>
+                <CommonSubmitBtn
+                  onClick={handleCategoryDelete}
+                >확인</CommonSubmitBtn>
+              </CategoryForm>
+              <CloseModal
+                onClick={toggleDeleteModal}
               >
                 닫기
               </CloseModal>
