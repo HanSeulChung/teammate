@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from "styled-components";
 import axiosInstance from "../../axios";
+import getCategoryList from "./GetCategoryList.tsx";
 
-const CalendarCategory = () => {
+const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any) => {
   // 팀 ID
   const { teamId } = useParams();
-
-  // 현재 페이지의 사용자 팀 멤버 Id(participant)
-  const [myTeamMemberId, setMyTeamMemberId] = useState<number>();
 
   // 모달팝업 유무
   const [categoryModal, setCategoryModal] = useState(false);
@@ -17,53 +15,8 @@ const CalendarCategory = () => {
     setCategoryModal(!categoryModal);
   };
 
-  // 카테고리 목록
-  const [categoryList, setCategoryList] = useState([
-    {
-      categoryId: 1,
-      categoryName: "카테고리1",
-    },
-  ]);
-  
-  // 카테고리 목록 불러오기
-  const getCategoryList = async () => {
-    try {
-      const res = await axiosInstance({
-        method: "get",
-        url: `/category/schedule?teamId=${teamId}`,
-      });
-      if (res.status === 200) {
-        console.log("카테고리 목록 -> ", res.data.content);
-        setCategoryList(res.data.content);
-        return;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  
-  // 작성자 정보를 위한 현재 팀의 사용자 팀 멤버 id(participant) 가져오기
-  useEffect(() => {
-    const fetchMyTeamMemberId = async () => {
-      try {
-        const response = await axiosInstance.get("/member/participants", {});
-        const myTeamMemberInfo = response.data.find(
-          (item: { teamId: number }) => item.teamId === Number(teamId),
-        );
-        const authorTeamMemberId = myTeamMemberInfo.teamParticipantsId;      
-        setMyTeamMemberId(authorTeamMemberId);
-        console.log("작성자 팀멤버 아이디 카테고리-> ",myTeamMemberId);
-      } catch (error) {
-        console.error("Error fetching participants:", error);
-      }
-    };
-    fetchMyTeamMemberId();
-  }, [teamId]);
-
-  useEffect(() => {
-    getCategoryList();
-    // fetchMyTeamMemberId();
-  }, [teamId]);
+  // input 요소
+  const categoryNameInput = useRef<HTMLInputElement | null>(null);
 
   // 카테고리 입력 값
   const [categoryInput, setCategoryInput] = useState({
@@ -84,22 +37,59 @@ const CalendarCategory = () => {
     console.log(categoryInput);
   };
 
-  const AddCategory = async (e: any) => {
-    // /category
-    e.preventDefault();
+  // 카테고리 추가
+  const handleCategoryAdd = (e: any) => {
+    if(categoryInput.categoryName.length < 1){
+      categoryNameInput.current?.focus();
+      e.preventDefault();
+      return;
+    }
+    
+    onAddCategory();
+  };
+  
+  const onAddCategory = async () => {
     try {
       const res = await axiosInstance.post(`/category`, 
-        {
-          teamId: teamId,
-          createTeamParticipantId: myTeamMemberId,
-          categoryName: categoryInput.categoryName,
-          categoryType: "SCHEDULE",
-          color: categoryInput.color,
-        }
+      {
+        teamId: teamId,
+        createParticipantId: myTeamMemberId,
+        categoryName: categoryInput.categoryName,
+        categoryType: "SCHEDULE",
+        color: categoryInput.color,
+      }
       );
       if (res.status === 200) {
         console.log("카테고리 옵션이 추가되었습니다 -> ", res);
         // setCategoryList(res.data.content);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const getCategoryItems = async(teamId: any) => {
+    const response = await getCategoryList(teamId);
+    setCategoryList(response);
+  } 
+
+  // 카테고리 삭제
+  const handleCategoryDelete = async (e: any) => {
+    try {
+      const res = await axiosInstance.delete(`/category`, {
+        data: {
+          categoryId: e.target.value,
+          teamId: teamId,
+          participantId: myTeamMemberId,
+          isMoved: "",
+          newCategoryId: "",
+        },
+      }
+      );
+      if (res.status === 200) {
+        console.log("카테고리 삭제 성공!! -> ", res);
+        getCategoryItems(teamId);
         return;
       }
     } catch (error) {
@@ -117,10 +107,14 @@ const CalendarCategory = () => {
           </button>
         </div>
         <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
-          {categoryList.map((opt) => (
+          {categoryList.map((opt: any) => (
             <li key={opt.categoryId} className="flex items-center p-2 rounded hover:bg-gray-100">
-              <input type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-50" />
+              <input type="checkbox" value="" className="w-4 h-4 checkbox checkbox-success text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-50" />
               <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</label>
+              <button onClick={handleCategoryDelete} value={opt.categoryId} className="w-4 h-4 text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
+                x
+                <span className="sr-only">카테고리 삭제 버튼</span>
+              </button>
             </li>
           ))}
         </ul>
@@ -139,6 +133,7 @@ const CalendarCategory = () => {
                 </div>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>카테고리 이름</label>
                 <input
+                  ref={categoryNameInput}
                   placeholder='카테고리명'
                   name="categoryName"
                   value={categoryInput.categoryName}
@@ -157,7 +152,7 @@ const CalendarCategory = () => {
                   <option value="#336699">파랑</option>
                 </select>
                 <CommonSubmitBtn
-                  onClick={AddCategory}
+                  onClick={handleCategoryAdd}
                 >등록</CommonSubmitBtn>
               </CategoryForm>
               <CloseModal

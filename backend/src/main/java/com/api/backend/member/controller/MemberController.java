@@ -14,6 +14,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -135,12 +138,13 @@ public class MemberController {
   public ResponseEntity<?> socialLoginSuccuss(
           @RequestParam(name = "access_token") String accessToken,
           @RequestParam(name = "refresh_token") String refreshToken
-  ){
+  ) throws URISyntaxException {
     SignInResponse signInResponse = memberService.socialLogin(accessToken, refreshToken);
+    URI redirectUri = new URI("http://loclhost:5173");
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.setLocation(redirectUri);
 
-    return ResponseEntity.ok()
-            .body(signInResponse);
-
+    return new ResponseEntity<>(signInResponse, httpHeaders, HttpStatus.MOVED_PERMANENTLY);
   }
   @ApiOperation(value = "회원 로그아웃 API", notes = "헤더의 토큰정보를 바탕으로 로그아웃")
   @ApiResponses(value = {

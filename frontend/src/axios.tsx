@@ -3,6 +3,7 @@ import { saveAccessToken, saveRefreshToken } from "./state/authState"; // 필요
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: "https://www.teammate.digital:8080/",
+
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -35,7 +36,7 @@ axiosInstance.interceptors.response.use(
         if (refreshToken) {
           try {
             const response = await axios.post(
-              "http://localhost:8080/refresh-token",
+              "https://www.teammate.digital:8080/refresh-token",
               { refreshToken },
               { withCredentials: true },
             );

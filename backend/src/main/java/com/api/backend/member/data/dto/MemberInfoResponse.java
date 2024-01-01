@@ -1,5 +1,6 @@
 package com.api.backend.member.data.dto;
 
+import com.api.backend.member.data.type.LoginType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,4 +11,5 @@ import lombok.Setter;
 public class MemberInfoResponse {
     private String email;
     private String name;
+    private LoginType loginType;
 }
