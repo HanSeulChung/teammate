@@ -4,6 +4,7 @@ package com.api.backend.notification.controller;
 import com.api.backend.notification.data.dto.NotificationsResponse;
 import com.api.backend.notification.service.EmitterService;
 import com.api.backend.notification.service.NotificationService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import springfox.documentation.annotations.ApiIgnore;
-
+@Api(tags = "알람")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/notification")
