@@ -36,17 +36,12 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     const fetchDocuments = async () => {
       try {
         const response = await axiosInstance.get(
-          `/team/${teamId}/documents?page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
+          `/team/${teamId}/documents?sortBy=createdDt-desc`,
         );
 
-        setTotlaPages(response.data.totalPages);
-
-        if (response.data && Array.isArray(response.data.content)) {
-          const sortedDocuments = response.data.content.sort(
-            (a: any, b: any) =>
-              new Date(b.createdDt).getTime() - new Date(a.createdDt).getTime(),
-          );
-          setFilteredDocuments(sortedDocuments);
+        if (response.data && Array.isArray(response.data)) {
+          setDocuments(response.data);
+          setFilteredDocuments(response.data);
         } else {
           console.error("Invalid response structure:", response.data);
         }
@@ -58,7 +53,19 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     if (teamId) {
       fetchDocuments();
     }
-  }, [teamId, currentPage, pageSize]);
+  }, [teamId]);
+
+  useEffect(() => {
+    const filtered = documents.filter(
+      (doc) =>
+        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setFilteredDocuments(
+      filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    );
+    setTotlaPages(Math.ceil(filtered.length / pageSize));
+  }, [searchTerm, documents, currentPage, pageSize]);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -121,7 +128,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   }, []);
 
   const handlePageChange = (page: any) => {
-    setCurrentPage(page + 1);
+    setCurrentPage(page);
   };
 
   const handleSearchChange = (event: { target: { value: any } }) => {
