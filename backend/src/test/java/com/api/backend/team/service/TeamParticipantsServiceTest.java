@@ -38,7 +38,7 @@ class TeamParticipantsServiceTest {
   @DisplayName("나 자신을 해당 팀으로 부터 탈퇴 로직")
   void deleteTeamParticipant() {
     //given
-    Long userId = 1L;
+    Long memberId = 1L;
     Long teamId = 1L;
     TeamParticipants teamParticipants = TeamParticipants.builder()
         .teamRole(TeamRole.MATE).build();
@@ -57,7 +57,7 @@ class TeamParticipantsServiceTest {
   @DisplayName("팀장이 팀원에게 권한부여 로직")
   void updateRoleTeamParticipant(){
     //given
-    Long userId = 1L;
+    Long memberId = 1L;
     Long participantId = 1L;
     Long teamId = 1L;
     Team team = Team.builder().teamId(1L).build();
@@ -78,7 +78,7 @@ class TeamParticipantsServiceTest {
         .thenReturn(Optional.of(teamParticipants2));
 
     //when
-    String result = teamParticipantsService.updateRoleTeamParticipant(userId, participantId,
+    String result = teamParticipantsService.updateRoleTeamParticipant(memberId, participantId,
         teamId);
 
     //then
@@ -90,7 +90,7 @@ class TeamParticipantsServiceTest {
   void getTeamParticipants(){
     //given
     Long teamId = 1L;
-    Long userId = 1L;
+    Long memberId = 1L;
     List<TeamParticipants> teamParticipantsList = new ArrayList<>();
 
     for (int i = 0; i < 3; i++) {
@@ -114,7 +114,7 @@ class TeamParticipantsServiceTest {
     doNothing().when(teamService).isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     //when
-    List<TeamParticipants> result = teamParticipantsService.getTeamParticipants(teamId, userId);
+    List<TeamParticipants> result = teamParticipantsService.getTeamParticipants(teamId, memberId);
 
     //then
     for (int i = 0; i < 3; i++) {
@@ -128,7 +128,7 @@ class TeamParticipantsServiceTest {
   void getTeamParticipant(){
     //given
     Long teamId = 1L;
-    Long userId = 1L;
+    Long memberId = 1L;
 
     Team team = Team.builder()
         .isDelete(false)
@@ -143,7 +143,7 @@ class TeamParticipantsServiceTest {
     doNothing().when(teamService).isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     //when
-    TeamParticipants result = teamParticipantsService.getTeamParticipant(teamId, userId);
+    TeamParticipants result = teamParticipantsService.getTeamParticipant(teamId, memberId);
 
     //then
     assertEquals(result.getTeamNickName(),teamParticipants.getTeamNickName());
@@ -157,7 +157,7 @@ class TeamParticipantsServiceTest {
         .teamParticipantsId(1L)
         .teamNickName("수정된 내용입니다.")
         .build();
-    String userId = "1";
+    String memberId = "1";
 
     Team team = Team.builder()
         .isDelete(false)
@@ -173,7 +173,7 @@ class TeamParticipantsServiceTest {
         .thenReturn(Optional.of(teamParticipants));
 
     //when
-    TeamParticipants result = teamParticipantsService.updateParticipantContent(request, userId);
+    TeamParticipants result = teamParticipantsService.updateParticipantContent(request, memberId);
 
     //then
     assertEquals(result.getTeamNickName(), request.getTeamNickName());
