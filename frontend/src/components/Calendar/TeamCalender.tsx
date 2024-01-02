@@ -119,9 +119,11 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
           teamParticipantId: myTeamMemberId,
         }
       });
-      if (res.status === 201) {
+      if (res.status === 200) {
         // setNewEvent()
         console.log(res.data);
+        alert("삭제 되었습니다");
+        location.reload();
       }
     } catch (error) {
       console.log(error);

@@ -257,7 +257,7 @@ const EditEvent = ({
           className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
-      <div className="col-span-2">
+      {/* <div className="col-span-2">
         <label
           htmlFor="repeatCycle"
           className="block mt-2 mb-2 text-sm font-medium text-gray-900"
@@ -274,7 +274,7 @@ const EditEvent = ({
           <option value="WEEKLY">매주</option>
           <option value="MONTHLY">매달</option>
         </select>
-      </div>
+      </div> */}
       <div className="col-span-2">
         <label
           htmlFor="categoryId"
