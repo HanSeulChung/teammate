@@ -60,38 +60,60 @@ public class TeamDisbandScheduler {
   public void teamDisbandCheckAndDelete() {
     List<Team> teams = teamRepository.findAllByIsDeleteIsTrue();
 
-    if (!teams.isEmpty()) {
-      List<Long> teamIds = teams.stream().map(Team::getTeamId).collect(Collectors.toList());
-      documentService.deleteAllDocsInTeams(teamIds);
-      commentService.deleteAllCommentsInTeams(teamIds);
-
-      teams.forEach(team -> {
-        deleteProcessing(team);
-        fileProcessService.deleteImage(team.getProfileUrl());
-        log.info("현재 날짜 {}에 삭제할 팀 {}의 프로필 이미지를 삭제하였습니다.", LocalDateTime.now(), team.getName());
-      });
-
-      teamRepository.deleteAllByIdsInQuery(teamIds);
+    if (teams.isEmpty()) {
+      return;
     }
+
+    List<Long> teamIds = teams.stream().map(Team::getTeamId).collect(Collectors.toList());
+    documentService.deleteAllDocsInTeams(teamIds);
+    commentService.deleteAllCommentsInTeams(teamIds);
+
+    teams.forEach(team -> {
+      deleteProcessing(team);
+      fileProcessService.deleteImage(team.getProfileUrl());
+      log.info("현재 날짜 {}에 삭제할 팀 {}의 프로필 이미지를 삭제하였습니다.", LocalDateTime.now(), team.getName());
+    });
+
+    teamRepository.deleteAllByIdsInQuery(teamIds);
   }
 
   @Transactional
   public void deleteProcessing(Team team) {
-    List<Long> teamParticipantsIds = team.getTeamParticipants().stream()
-        .map(TeamParticipants::getTeamParticipantsId)
-        .collect(Collectors.toList());
+    List<Long> teamParticipantsIds = new ArrayList<>();
 
-    List<Long> notificationIds = team.getTeamParticipants().stream()
-        .flatMap(tp -> tp.getNotifications().stream().map(Notification::getNotificationId))
-        .collect(Collectors.toList());
+    List<Long> notificationIds = new ArrayList<>();
+    List<Long> teamParticipantScheduleIds = new ArrayList<>();
 
-    List<Long> teamParticipantScheduleIds = team.getTeamParticipants().stream()
-        .flatMap(tp -> tp.getTeamParticipantsSchedules().stream().map(TeamParticipantsSchedule::getTeamParticipantsScheduleId))
-        .collect(Collectors.toList());
+    for (TeamParticipants teamParticipant : team.getTeamParticipants()) {
+      teamParticipantsIds.add(teamParticipant.getTeamParticipantsId());
 
-    notificationRepository.deleteAllByIdInQuery(notificationIds);
-    teamParticipantsScheduleRepository.deleteAllByIdInQuery(teamParticipantScheduleIds);
-    teamParticipantsRepository.deleteAllByIdInQuery(teamParticipantsIds);
+      notificationIds.addAll(
+          teamParticipant.getNotifications()
+              .stream().map(Notification::getNotificationId)
+              .collect(Collectors.toList())
+      );
+
+      teamParticipantScheduleIds.addAll(
+          teamParticipant.getTeamParticipantsSchedules()
+              .stream().map(TeamParticipantsSchedule::getTeamParticipantsScheduleId).collect(Collectors.toList())
+      );
+    }
+
+    if (!notificationIds.isEmpty()) {
+      notificationRepository.deleteAllByIdInQuery(
+          notificationIds
+      );
+    }
+    if (!teamParticipantScheduleIds.isEmpty()) {
+      teamParticipantsScheduleRepository.deleteAllByIdInQuery(
+          teamParticipantScheduleIds
+      );
+    }
+    if (!teamParticipantsIds.isEmpty()) {
+      teamParticipantsRepository.deleteAllByIdInQuery(
+          teamParticipantsIds
+      );
+    }
 
     List<Long> repeatScheduleIds = team.getRepeatSchedules().stream()
         .map(RepeatSchedule::getRepeatScheduleId)
@@ -105,10 +127,20 @@ public class TeamDisbandScheduler {
         .map(ScheduleCategory::getScheduleCategoryId)
         .collect(Collectors.toList());
 
-    repeatScheduleRepository.deleteAllByIdsInQuery(repeatScheduleIds);
-    simpleScheduleRepository.deleteAllByIdInQuery(simpleScheduleIds);
-    scheduleCategoryRepository.deleteAllByIdInQuery(scheduleCategoryIds);
+    if (!repeatScheduleIds.isEmpty()) {
+      repeatScheduleRepository.deleteAllByIdsInQuery(
+          repeatScheduleIds);
+    }
+    if (!simpleScheduleIds.isEmpty()) {
+      simpleScheduleRepository.deleteAllByIdInQuery(
+          simpleScheduleIds
+      );
+    }
+    if (!scheduleCategoryIds.isEmpty()) {
+      scheduleCategoryRepository.deleteAllByIdInQuery(
+          scheduleCategoryIds
+      );
+    }
   }
-
 }
 
