@@ -2,7 +2,8 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 import { saveAccessToken, saveRefreshToken } from "./state/authState"; // 필요에 따라 import 경로를 업데이트하세요.
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: "https://www.teammate.digital:8080",
+  baseURL: "https://www.teammate.digital:8080/",
+
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
