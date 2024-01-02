@@ -56,8 +56,7 @@ public class TeamParticipantsService {
     TeamParticipants mateParticipant = teamParticipantsRepository.findById(participantId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
-    if (!readerParticipant.getTeam().getTeamId()
-        .equals(mateParticipant.getTeam().getTeamId())) {
+    if (!mateParticipant.getTeam().getTeamId().equals(teamId)) {
       throw new CustomException(TEAM_NOT_EQUALS_EXCEPTION);
     }
     if (!mateParticipant.getTeamRole().equals(TeamRole.MATE)) {
