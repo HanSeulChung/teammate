@@ -2,6 +2,8 @@ package com.api.backend.team.scheduler;
 
 import com.api.backend.category.data.entity.ScheduleCategory;
 import com.api.backend.category.data.repository.ScheduleCategoryRepository;
+import com.api.backend.comment.service.CommentService;
+import com.api.backend.documents.service.DocumentService;
 import com.api.backend.file.service.FileProcessService;
 import com.api.backend.notification.data.entity.Notification;
 import com.api.backend.notification.data.repository.NotificationRepository;
@@ -31,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TeamDisbandScheduler {
 
+  private final DocumentService documentService;
+  private final CommentService commentService;
   private final FileProcessService fileProcessService;
   private final TeamRepository teamRepository;
   private final TeamParticipantsRepository teamParticipantsRepository;
@@ -48,8 +52,6 @@ public class TeamDisbandScheduler {
     for (Team team : teams) {
       if (!team.getRestorationDt().isAfter(LocalDate.now())) {
         team.changeRestoreInfo();
-        fileProcessService.deleteImage(team.getProfileUrl());
-        log.info("현재 날짜 {}에 해당 팀을 삭제(soft delete)한 뒤 팀 프로필 이미지를 삭제하였습니다.", LocalDateTime.now());
       }
     }
   }
@@ -58,16 +60,19 @@ public class TeamDisbandScheduler {
   public void teamDisbandCheckAndDelete() {
     List<Team> teams = teamRepository.findAllByIsDeleteIsTrue();
 
-    List<Long> teamIds = new ArrayList<>();
-
-    for (Team team : teams) {
-      deleteProcessing(team);
-      teamIds.add(team.getTeamId());
-    }
-
-    if (teamIds.isEmpty()) {
+    if (teams.isEmpty()) {
       return;
     }
+
+    List<Long> teamIds = teams.stream().map(Team::getTeamId).collect(Collectors.toList());
+    documentService.deleteAllDocsInTeams(teamIds);
+    commentService.deleteAllCommentsInTeams(teamIds);
+
+    teams.forEach(team -> {
+      deleteProcessing(team);
+      fileProcessService.deleteImage(team.getProfileUrl());
+      log.info("현재 날짜 {}에 삭제할 팀 {}의 프로필 이미지를 삭제하였습니다.", LocalDateTime.now(), team.getName());
+    });
 
     teamRepository.deleteAllByIdsInQuery(teamIds);
   }
@@ -90,8 +95,7 @@ public class TeamDisbandScheduler {
 
       teamParticipantScheduleIds.addAll(
           teamParticipant.getTeamParticipantsSchedules()
-              .stream().map(TeamParticipantsSchedule::getTeamParticipantsScheduleId)
-              .collect(Collectors.toList())
+              .stream().map(TeamParticipantsSchedule::getTeamParticipantsScheduleId).collect(Collectors.toList())
       );
     }
 
@@ -111,23 +115,21 @@ public class TeamDisbandScheduler {
       );
     }
 
-
-    List<Long> repeatScheduleIds = team.getRepeatSchedules()
-        .stream().map(RepeatSchedule::getRepeatScheduleId)
+    List<Long> repeatScheduleIds = team.getRepeatSchedules().stream()
+        .map(RepeatSchedule::getRepeatScheduleId)
         .collect(Collectors.toList());
 
-    List<Long> simpleScheduleIds = team.getSimpleSchedules()
-        .stream().map(SimpleSchedule::getSimpleScheduleId)
+    List<Long> simpleScheduleIds = team.getSimpleSchedules().stream()
+        .map(SimpleSchedule::getSimpleScheduleId)
         .collect(Collectors.toList());
 
-    List<Long> scheduleCategoryIds = team.getScheduleCategories()
-        .stream().map(ScheduleCategory::getScheduleCategoryId)
+    List<Long> scheduleCategoryIds = team.getScheduleCategories().stream()
+        .map(ScheduleCategory::getScheduleCategoryId)
         .collect(Collectors.toList());
 
     if (!repeatScheduleIds.isEmpty()) {
       repeatScheduleRepository.deleteAllByIdsInQuery(
-          repeatScheduleIds
-      );
+          repeatScheduleIds);
     }
     if (!simpleScheduleIds.isEmpty()) {
       simpleScheduleRepository.deleteAllByIdInQuery(
@@ -140,6 +142,5 @@ public class TeamDisbandScheduler {
       );
     }
   }
-
 }
 
