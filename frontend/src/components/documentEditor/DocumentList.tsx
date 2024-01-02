@@ -61,11 +61,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-    setFilteredDocuments(
-      filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    );
+    setFilteredDocuments(filtered);
     setTotlaPages(Math.ceil(filtered.length / pageSize));
-  }, [searchTerm, documents, currentPage, pageSize]);
+  }, [searchTerm, documents, pageSize]);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -129,6 +127,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
 
   const handlePageChange = (page: any) => {
     setCurrentPage(page);
+    const startIdx = (page - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    setFilteredDocuments(documents.slice(startIdx, endIdx));
   };
 
   const handleSearchChange = (event: { target: { value: any } }) => {
@@ -139,7 +140,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     let pages = [];
     for (let i = 0; i < totalPages; i++) {
       pages.push(
-        <PagenationButton key={i} onClick={() => handlePageChange(i)}>
+        <PagenationButton key={i} onClick={() => handlePageChange(i + 1)}>
           {i + 1}
         </PagenationButton>,
       );
