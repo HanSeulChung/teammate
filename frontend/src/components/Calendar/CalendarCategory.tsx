@@ -63,7 +63,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
   });
   
   const handleChangeOption = (e: any) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setDeleteOption({
       ...deleteOption,
       [e.target.name]: e.target.value,

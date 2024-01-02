@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import '../../styles/teamCalender.css'
 import styled from "styled-components";
-import AddEvent from "./AddEvent.tsx";
 import EditEvent from "./EditEvent.tsx";
 import axiosInstance from "../../axios";
 import { ConvertedEvent } from "../../interface/interface.ts"
@@ -43,7 +42,7 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
       id: e.event.id,
       title: e.event.title,
       start: e.event.start,
-      contents: e.event.extendedProps.content,
+      content: e.event.extendedProps.content,
       place: e.event.extendedProps.place,
       groupId: e.event.extendedProps.categoryName,
     });
@@ -91,7 +90,7 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
           console.log(res.data);
           // 데이터 변환
           const convertedEvents = convertEvents(res.data);
-          console.log(convertedEvents);
+          // console.log(convertedEvents);
           setEventList(convertedEvents);
           return;
         }
@@ -104,8 +103,8 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
   }, [teamId]);
 
   // 일정 삭제
-  const handleEventDelete = async (e: any) => {
-    e.preventDefault();
+  const handleEventDelete = async () => {
+    // e.preventDefault();
     if (!window.confirm(`일정을 삭제하시겠습니까?`)) return;
     const eventId = event.id;
     try {
@@ -177,19 +176,19 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
             {isEdit ? (
               <>
                 {/* 에디터컴포넌트 */}
-                <EditEvent isEdit={isEdit} originEvent={event} toggleIsEdit={toggleIsEdit} />
+                <EditEvent isEdit={isEdit} originEvent={event} setEventList={setEventList} toggleIsEdit={toggleIsEdit} categoryList={categoryList} myTeamMemberId={myTeamMemberId || 0} />
               </>
             ) : (
               <div className="p-4 md:p-5">
                 <h2 className="text-xl mt-4 mb-4 font-semibold text-gray-900">{event.title}</h2>
-                <p>
-                  일정 번호: {event.id}
+                <div>
+                  {/* 일정 번호: {event.id} */}
                   {/* 이름: {event.title}<br /> */}
                   <div className="mb-3">
                     <span className="mr-10 text-gray-500">일시</span><span className="">{event.start.toJSON()}</span>
                   </div>
                   <div className="mb-3">
-                    <span className="mr-10 text-gray-500">내용</span>{event.contents}
+                    <span className="mr-10 text-gray-500">내용</span>{event.content}
                   </div>
                   <div className="mb-3">
                     <span className="mr-10 text-gray-500">장소</span>{event.place}
@@ -201,7 +200,7 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
                     <span className="text-gray-500 mr-3">참가자</span>
                     {event.groupId}
                   </div> */}
-                </p>
+                </div>
                 <button onClick={toggleIsEdit} className="bg-white border-1 border-gray-300 mr-2">수정</button>
                 <button onClick={handleEventDelete} className="bg-white border-1 border-gray-300">삭제</button>
               </div>
@@ -224,7 +223,7 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
             onClick={toggleFormModal}
           ></Overlay>
           <ModalContent>
-            <AddEvent originEvent={event} setEventList={setEventList} categoryList={categoryList} myTeamMemberId={myTeamMemberId || 0} />
+            <EditEvent isEdit={isEdit} toggleIsEdit={toggleIsEdit} originEvent={event} setEventList={setEventList} categoryList={categoryList} myTeamMemberId={myTeamMemberId || 0} />
             <CloseModal
               onClick={toggleFormModal}
             >
