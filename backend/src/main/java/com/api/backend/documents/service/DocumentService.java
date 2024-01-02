@@ -1,10 +1,6 @@
 package com.api.backend.documents.service;
 
-import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_DELETEING_EXCEPTION;
-import static com.api.backend.global.exception.type.ErrorCode.TEAM_NOT_FOUND_EXCEPTION;
-
 import com.api.backend.comment.data.repository.CommentRepository;
-import com.api.backend.documents.data.dto.DeleteAllDocsInTeamResponse;
 import com.api.backend.documents.data.dto.DeleteDocsResponse;
 import com.api.backend.documents.data.dto.DocumentInitRequest;
 import com.api.backend.documents.data.dto.DocumentInitResponse;
@@ -12,11 +8,7 @@ import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.documents.valid.DocumentAndCommentValidCheck;
 import com.api.backend.global.exception.CustomException;
-import com.api.backend.global.exception.type.ErrorCode;
-import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
-import com.api.backend.team.data.repository.TeamParticipantsRepository;
-import com.api.backend.team.data.repository.TeamRepository;
 import com.api.backend.team.data.type.TeamRole;
 import com.mongodb.bulk.BulkWriteResult;
 import java.security.Principal;
@@ -124,22 +116,17 @@ public class DocumentService {
   }
 
   @Transactional
-  public DeleteAllDocsInTeamResponse deleteAllDocsInTeam(Long teamId) {
-
-    Team team = validCheck.validTeamToDelete(teamId);
+  public void deleteAllDocsInTeams(List<Long> teamIdList) {
     BulkOperations bulkOperations = mongoTemplate.bulkOps(BulkMode.UNORDERED, Documents.class);
-    Query query = new Query(Criteria.where("teamId").is(teamId));
 
-    bulkOperations.remove(query);
+    for (Long teamId : teamIdList) {
+      Query query = new Query(Criteria.where("teamId").is(teamId));
+      bulkOperations.remove(query);
+    }
+
     BulkWriteResult bulkWriteResult = bulkOperations.execute();
     long deletedCount = bulkWriteResult.getDeletedCount();
-
-    return DeleteAllDocsInTeamResponse.builder()
-        .teamId(teamId)
-        .teamName(team.getName())
-        .totalDocumentCount(deletedCount)
-        .deletedDt(LocalDateTime.now())
-        .build();
+    log.info("{}개의 팀들의 총 문서 {}개가 삭제되었습니다.", teamIdList.size(), deletedCount);
   }
 
   private Page<Documents> findAllDocumentInTeam(Long teamId, Pageable pageable, Page<Documents> allDocsInTeam) {

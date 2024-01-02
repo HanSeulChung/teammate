@@ -2,20 +2,18 @@ package com.api.backend.comment.service;
 
 import com.api.backend.comment.data.dto.CommentEditRequest;
 import com.api.backend.comment.data.dto.CommentInitRequest;
-import com.api.backend.comment.data.dto.DeleteAllCommentsInTeamResponse;
 import com.api.backend.comment.data.dto.DeleteCommentsResponse;
 import com.api.backend.comment.data.entity.Comment;
 import com.api.backend.comment.data.repository.CommentRepository;
 import com.api.backend.documents.data.entity.Documents;
 import com.api.backend.documents.data.repository.DocumentsRepository;
 import com.api.backend.documents.valid.DocumentAndCommentValidCheck;
-import com.api.backend.team.data.entity.Team;
 import com.api.backend.team.data.entity.TeamParticipants;
 import com.mongodb.bulk.BulkWriteResult;
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -129,21 +128,16 @@ public class CommentService {
   }
 
   @Transactional
-  public DeleteAllCommentsInTeamResponse deleteAllCommentsInTeam(Long teamId) {
-
-    Team team = validCheck.validTeamToDelete(teamId);
+  public void deleteAllCommentsInTeams(List<Long> teamIdList) {
     BulkOperations bulkOperations = mongoTemplate.bulkOps(BulkMode.UNORDERED, Comment.class);
-    Query query = new Query(Criteria.where("teamId").is(teamId));
 
-    bulkOperations.remove(query);
+    for (Long teamId : teamIdList) {
+      Query query = new Query(Criteria.where("teamId").is(teamId));
+      bulkOperations.remove(query);
+    }
+
     BulkWriteResult bulkWriteResult = bulkOperations.execute();
     long deletedCount = bulkWriteResult.getDeletedCount();
-
-    return DeleteAllCommentsInTeamResponse.builder()
-        .teamId(teamId)
-        .teamName(team.getName())
-        .totalCommentCount(deletedCount)
-        .deletedDt(LocalDateTime.now())
-        .build();
+    log.info("{}개의 팀들의 댓글 총 {}개가 삭제되었습니다.", teamIdList.size(), deletedCount);
   }
 }
