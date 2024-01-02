@@ -98,7 +98,7 @@ public class TeamParticipantsService {
 
   @Transactional
   public TeamParticipants updateParticipantContent(
-      TeamParticipantUpdateRequest teamParticipantUpdateRequest, String memberId
+      TeamParticipantUpdateRequest teamParticipantUpdateRequest, Long memberId
   ) {
     TeamParticipants teamParticipant = teamParticipantsRepository.findById(
         teamParticipantUpdateRequest.getTeamParticipantsId()
@@ -109,7 +109,7 @@ public class TeamParticipantsService {
     teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     if (!teamParticipant.getMember().getMemberId()
-        .equals(Long.valueOf(memberId))) {
+        .equals(memberId)) {
       throw new CustomException(MEMBER_NOT_EQUALS_EXCEPTION);
     }
 
