@@ -59,7 +59,7 @@ const Comment: React.FC = () => {
     const fetchComments = async () => {
       try {
         const response = await axiosInstance.get<{ content: CommentType[] }>(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+          `https://www.teammate.digital:8080/team/${teamId}/documents/${documentsId}/comments`,
         );
         setCommentsPage(response.data);
       } catch (error) {
@@ -83,7 +83,7 @@ const Comment: React.FC = () => {
       const commentToUpdate = commentsPage.content[editingIndex];
       try {
         const response = await axiosInstance.put(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
+          `https://www.teammate.digital:8080/team/${teamId}/documents/${documentsId}/comments/${commentToUpdate.id}`,
           { content: editingComment, editorId: commentToUpdate.writerId + "" },
         );
 
@@ -110,7 +110,7 @@ const Comment: React.FC = () => {
     if (confirmDelete) {
       try {
         await axiosInstance.delete(
-          `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
+          `https://www.teammate.digital:8080/team/${teamId}/documents/${documentsId}/comments/${commentId}`,
         );
         const updatedComments = commentsPage.content.filter(
           (comment) => comment.id !== commentId,
@@ -125,7 +125,7 @@ const Comment: React.FC = () => {
     if (!newComment.trim()) return;
     try {
       const response = await axiosInstance.post(
-        `http://118.67.128.124:8080/team/${teamId}/documents/${documentsId}/comments`,
+        `https://www.teammate.digital:8080/team/${teamId}/documents/${documentsId}/comments`,
         {
           content: newComment,
           writerId: participantIds,
@@ -151,7 +151,7 @@ const Comment: React.FC = () => {
   ) => {
     try {
       const response = await axiosInstance.get(
-        `http://118.67.128.124:8080/team/${teamId}/participant/list`,
+        `https://www.teammate.digital:8080/team/${teamId}/participant/list`,
       );
       const nicknames = response.data
         .filter((data: { teamId: number }) => data.teamId === teamId)

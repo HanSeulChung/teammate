@@ -3,11 +3,13 @@ import styled from "styled-components";
 const Footer = () => {
   return (
     <FooterTag>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.<br />
-        Numquam animi molestiae doloremque quam saepe officiis laboriosam,
-        nostrum porro similique tempore.
-      </p>
+      <FooterDiv>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.<br />
+          Numquam animi molestiae doloremque quam saepe officiis laboriosam,
+          nostrum porro similique tempore.
+        </p>
+      </FooterDiv>
     </FooterTag>
   );
 };
@@ -29,4 +31,11 @@ export const FooterTag = styled.footer`
     min-width: 1024px; 
     padding-top: 2.9rem;
   }
+`
+
+export const FooterDiv = styled.div`
+  width: 100%;
+  max-width: 1024px;
+  height: 100%;
+  margin: 0 auto;
 `

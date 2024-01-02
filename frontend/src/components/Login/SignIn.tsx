@@ -85,7 +85,8 @@ const SignIn = () => {
         } else if (errorCode === "EMAIL_NOT_MATCH_EXCEPTION") {
           errorMessage = "이메일이 일치하지 않습니다. 다시 입력해주세요.";
         } else if (errorCode === "EMAIL_NOT_FOUND_EXCEPTION") {
-          errorMessage = "이메일로 가입된 사용자가 없습니다.";
+          errorMessage =
+            "이메일로 가입된 사용자가 없습니다. 회원가입을 해주세요.";
         }
 
         setError(errorMessage);

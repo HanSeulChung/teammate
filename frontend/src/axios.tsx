@@ -2,7 +2,8 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 import { saveAccessToken, saveRefreshToken } from "./state/authState"; // 필요에 따라 import 경로를 업데이트하세요.
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: "http://118.67.128.124:8080",
+  baseURL: "https://www.teammate.digital:8080/",
+
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -35,7 +36,7 @@ axiosInstance.interceptors.response.use(
         if (refreshToken) {
           try {
             const response = await axios.post(
-              "http://localhost:8080/refresh-token",
+              "https://www.teammate.digital:8080/refresh-token",
               { refreshToken },
               { withCredentials: true },
             );

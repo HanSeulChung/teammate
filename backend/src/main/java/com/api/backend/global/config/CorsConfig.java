@@ -19,12 +19,15 @@ public class CorsConfig {
   @Value("${frontend.port}")
   String port;
 
+  @Value("${frontend.prod}")
+  String domain;
+
   @Bean
   public CorsFilter corsFilter() {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
-    config.setAllowedOrigins(Collections.singletonList("http://" + host + ":" + port));
+    config.setAllowedOrigins(Arrays.asList("http://" + host + ":" + port, domain));
     config.setAllowedHeaders(Collections.singletonList("*"));
     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
     source.registerCorsConfiguration("/**", config);
