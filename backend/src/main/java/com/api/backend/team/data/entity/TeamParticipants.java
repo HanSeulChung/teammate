@@ -38,6 +38,7 @@ public class TeamParticipants extends BaseEntity {
   private Long teamParticipantsId;
 
   @Enumerated(EnumType.STRING)
+  @Setter
   private TeamRole teamRole;
   @Setter
   private String teamNickName;
@@ -59,9 +60,4 @@ public class TeamParticipants extends BaseEntity {
   @OneToMany(mappedBy = "teamParticipants", cascade = CascadeType.ALL)
   @Builder.Default
   private List<TeamParticipantsSchedule> teamParticipantsSchedules = new ArrayList<>();
-
-
-  public void updateRole(TeamRole teamRole) {
-    this.teamRole = teamRole;
-  }
 }

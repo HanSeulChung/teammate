@@ -64,8 +64,8 @@ public class TeamParticipantsService {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_MATE_EXCEPTION);
     }
 
-    readerParticipant.updateRole(TeamRole.MATE);
-    mateParticipant.updateRole(TeamRole.LEADER);
+    readerParticipant.setTeamRole(TeamRole.MATE);
+    mateParticipant.setTeamRole(TeamRole.LEADER);
     return UPDATE_ROLE_TEAM_PARTICIPANT;
   }
 
