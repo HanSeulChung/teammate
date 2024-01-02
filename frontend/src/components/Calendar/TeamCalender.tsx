@@ -88,9 +88,9 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
           url: `/team/${teamId}/schedules/calendar`,
         });
         if (res.status === 200) {
-          console.log(res.data.content);
+          console.log(res.data);
           // 데이터 변환
-          const convertedEvents = convertEvents(res.data.content);
+          const convertedEvents = convertEvents(res.data);
           console.log(convertedEvents);
           setEventList(convertedEvents);
           return;
