@@ -24,6 +24,7 @@ public class SimpleScheduleResponse {
 
   private Long scheduleId;
   private String scheduleType;
+  private Long categoryId;
   private String categoryName;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
@@ -41,6 +42,7 @@ public class SimpleScheduleResponse {
     return SimpleScheduleResponse.builder()
         .scheduleType("단순 일정")
         .scheduleId(simpleSchedule.getSimpleScheduleId())
+        .categoryId(simpleSchedule.getScheduleCategory().getScheduleCategoryId())
         .categoryName(simpleSchedule.getScheduleCategory().getCategoryName())
         .startDt(simpleSchedule.getStartDt())
         .endDt(simpleSchedule.getEndDt())
