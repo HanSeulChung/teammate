@@ -14,10 +14,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -63,19 +63,19 @@ public class DocumentsController {
               , example = "1")
       })
   @GetMapping()
-  public ResponseEntity<Page<DocumentResponse>> getDocsList(
+  public ResponseEntity<List<DocumentResponse>> getDocsList(
         @PathVariable
         Long teamId,
         @ApiIgnore
         Principal principal,
-        Pageable pageable,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDt,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDt) {
-    Page<Documents> docsPage = documentService.getDocsList(teamId, principal, pageable, startDt, endDt);
-    Page<DocumentResponse> documentDtoPage = docsPage.map(
-        document -> DocumentResponse.from(document));
+    List<Documents> docsList = documentService.getDocsList(teamId, principal, startDt, endDt);
+    List<DocumentResponse> documentDtoList = docsList.stream()
+        .map(document -> DocumentResponse.from(document))
+        .collect(Collectors.toList());
 
-    return ResponseEntity.ok(documentDtoPage);
+    return ResponseEntity.ok(documentDtoList);
   }
 
   @ApiOperation(value = "해당 팀의 문서를 생성합니다.")

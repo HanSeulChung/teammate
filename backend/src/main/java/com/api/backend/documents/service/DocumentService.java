@@ -14,11 +14,10 @@ import com.mongodb.bulk.BulkWriteResult;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -36,7 +35,7 @@ public class DocumentService {
   private final CommentRepository commentRepository;
   private final DocumentAndCommentValidCheck validCheck;
 
-  public Page<Documents> getDocsList(Long teamId, Principal principal, Pageable pageable, LocalDate startDt, LocalDate endDt) {
+  public List<Documents> getDocsList(Long teamId, Principal principal, LocalDate startDt, LocalDate endDt) {
 
     Long memberId = validCheck.getMemberId(principal);
 
@@ -44,24 +43,24 @@ public class DocumentService {
 
     TeamParticipants teamParticipant = validCheck.findValidTeamParticipantByMemberIdAndTeamId(memberId, teamId);
     validCheck.validTeam(teamId);
-    Page<Documents> allDocsInTeam = null ;
+    List<Documents> allDocsInTeam = null;
     if (startDt == null && endDt == null) {
-      return findAllDocumentInTeam(teamId, pageable, allDocsInTeam);
+      return findAllDocumentInTeam(teamId, allDocsInTeam);
     }
 
     if (startDt != null && endDt == null) {
-      return findAllDocumentInTeamWithStartDt(teamId, startDt.atStartOfDay(), pageable, allDocsInTeam);
+      return findAllDocumentInTeamWithStartDt(teamId, startDt.atStartOfDay(),  allDocsInTeam);
     }
 
     if (startDt == null && endDt != null) {
-      return findAllDocumentInTeamWithEndDt(teamId, endDt.plusDays(1).atStartOfDay(), pageable, allDocsInTeam);
+      return findAllDocumentInTeamWithEndDt(teamId, endDt.plusDays(1).atStartOfDay(), allDocsInTeam);
     }
 
     if (startDt != null && endDt != null) {
       return findAllDocumentInTeamBetweenStartDtAndEndDt(teamId, startDt.atStartOfDay(),
-          endDt.plusDays(1).atStartOfDay(), pageable, allDocsInTeam);
+          endDt.plusDays(1).atStartOfDay(), allDocsInTeam);
     }
-    return Page.empty();
+    return new ArrayList<>();
   }
 
   public DocumentInitResponse createDocs(DocumentInitRequest request, Long teamId, Principal principal) throws CustomException {
@@ -129,38 +128,38 @@ public class DocumentService {
     log.info("{}개의 팀들의 총 문서 {}개가 삭제되었습니다.", teamIdList.size(), deletedCount);
   }
 
-  private Page<Documents> findAllDocumentInTeam(Long teamId, Pageable pageable, Page<Documents> allDocsInTeam) {
-    allDocsInTeam = documentsRepository.findAllByTeamId(teamId, pageable);
+  private List<Documents> findAllDocumentInTeam(Long teamId, List<Documents> allDocsInTeam) {
+    allDocsInTeam = documentsRepository.findAllByTeamId(teamId);
     if (allDocsInTeam != null) {
       return allDocsInTeam;
     } else {
-      return Page.empty();
+      return new ArrayList<>();
     }
   }
 
-  private Page<Documents> findAllDocumentInTeamWithStartDt(Long teamId, LocalDateTime startDt, Pageable pageable, Page<Documents> allDocsInTeam) {
-    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtGreaterThanEqual(teamId, startDt ,pageable);
+  private List<Documents> findAllDocumentInTeamWithStartDt(Long teamId, LocalDateTime startDt, List<Documents> allDocsInTeam) {
+    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtGreaterThanEqual(teamId, startDt);
     if (allDocsInTeam != null) {
       return allDocsInTeam;
     } else {
-      return Page.empty();
+      return new ArrayList<>();
     }
   }
-  private Page<Documents> findAllDocumentInTeamWithEndDt(Long teamId, LocalDateTime endDt, Pageable pageable, Page<Documents> allDocsInTeam) {
-    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtLessThanEqual(teamId, endDt, pageable);
+  private List<Documents> findAllDocumentInTeamWithEndDt(Long teamId, LocalDateTime endDt,  List<Documents> allDocsInTeam) {
+    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtLessThanEqual(teamId, endDt);
     if (allDocsInTeam != null) {
       return allDocsInTeam;
     } else {
-      return Page.empty();
+      return new ArrayList<>();
     }
   }
 
-  private Page<Documents> findAllDocumentInTeamBetweenStartDtAndEndDt(Long teamId, LocalDateTime startDt, LocalDateTime endDt, Pageable pageable, Page<Documents> allDocsInTeam) {
-    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtBetween(teamId, startDt, endDt, pageable);
+  private List<Documents> findAllDocumentInTeamBetweenStartDtAndEndDt(Long teamId, LocalDateTime startDt, LocalDateTime endDt, List<Documents> allDocsInTeam) {
+    allDocsInTeam = documentsRepository.findAllByTeamIdAndCreatedDtBetween(teamId, startDt, endDt);
     if (allDocsInTeam != null) {
       return allDocsInTeam;
     } else {
-      return Page.empty();
+      return new ArrayList<>();
     }
   }
 
