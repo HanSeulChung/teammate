@@ -27,9 +27,9 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const navigate = useNavigate();
-  const [totalPages, setTotlaPages] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const datepickerRef = useRef<HTMLInputElement>(null);
-  const [startDt, setStartDt] = useState<string>("");
+  const [startDt, setStartDt] = useState<string>("1000-01-01");
   const [endDt, setEndDt] = useState<string>("3000-12-30");
 
   useEffect(() => {
@@ -40,8 +40,11 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         );
 
         if (response.data && Array.isArray(response.data)) {
-          setDocuments(response.data);
-          setFilteredDocuments(response.data);
+          const sortedDocuments = response.data.sort(
+            (a, b) =>
+              new Date(b.createdDt).getTime() - new Date(a.createdDt).getTime(),
+          );
+          setDocuments(sortedDocuments);
         } else {
           console.error("Invalid response structure:", response.data);
         }
@@ -56,51 +59,31 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
   }, [teamId]);
 
   useEffect(() => {
-    const filtered = documents.filter(
-      (doc) =>
-        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    setFilteredDocuments(filtered);
-    setTotlaPages(Math.ceil(filtered.length / pageSize));
-  }, [searchTerm, documents, pageSize]);
+    const filterDocumentsByDate = () => {
+      const startDate = new Date(startDt);
+      const endDate = new Date(endDt);
 
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `/team/${teamId}/documents?startDt=${startDt}&endDt=${endDt}&page=${currentPage}&size=${pageSize}&sortBy=createdDt-desc`,
-        );
-
-        setTotlaPages(response.data.totalPages);
-
-        if (response.data && Array.isArray(response.data.content)) {
-          const sortedDocuments = response.data.content.sort(
-            (a: any, b: any) =>
-              new Date(b.createdDt).getTime() - new Date(a.createdDt).getTime(),
-          );
-          setFilteredDocuments(sortedDocuments);
-        } else {
-          console.error("Invalid response structure:", response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
+      return documents.filter((doc) => {
+        const docDate = new Date(doc.createdDt);
+        return docDate >= startDate && docDate <= endDate;
+      });
     };
 
-    if (teamId) {
-      fetchDocuments();
-    }
-  }, [startDt, endDt]);
+    let filtered = filterDocumentsByDate();
 
-  useEffect(() => {
-    const filtered = filteredDocuments.filter(
-      (doc) =>
-        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (doc) =>
+          doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          doc.content.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+
+    setFilteredDocuments(
+      filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
     );
-    setDocuments(filtered);
-  }, [searchTerm, filteredDocuments]);
+    setTotalPages(Math.ceil(filtered.length / pageSize));
+  }, [searchTerm, documents, currentPage, pageSize, startDt, endDt]);
 
   useEffect(() => {
     let fpInstance: Instance | null = null;
@@ -127,9 +110,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
 
   const handlePageChange = (page: any) => {
     setCurrentPage(page);
-    const startIdx = (page - 1) * pageSize;
-    const endIdx = startIdx + pageSize;
-    setFilteredDocuments(documents.slice(startIdx, endIdx));
   };
 
   const handleSearchChange = (event: { target: { value: any } }) => {
@@ -140,12 +120,12 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
     let pages = [];
     for (let i = 0; i < totalPages; i++) {
       pages.push(
-        <PagenationButton key={i} onClick={() => handlePageChange(i + 1)}>
+        <PaginationButton key={i} onClick={() => handlePageChange(i + 1)}>
           {i + 1}
-        </PagenationButton>,
+        </PaginationButton>,
       );
     }
-    return <PagenationButtonContainer>{pages}</PagenationButtonContainer>;
+    return <PaginationButtonContainer>{pages}</PaginationButtonContainer>;
   };
 
   const navigateToDocument = (id: string) => {
@@ -181,8 +161,8 @@ const DocumentList: React.FC<DocumentListProps> = ({ teamId }) => {
         </ButtonContainer>
       </InputAndButton>
       <DocumentContainer>
-        {documents.length !== 0 ? (
-          documents.map((doc) => (
+        {filteredDocuments.length !== 0 ? (
+          filteredDocuments.map((doc) => (
             <DocumentItem
               key={doc.id}
               onClick={() => navigateToDocument(doc.id)}
@@ -383,7 +363,7 @@ const BlurLayer = styled.div<BlurLayerProps>`
   backdrop-filter: blur(${(props) => props.$blur}px) grayscale(0);
 `;
 
-const PagenationButton = styled.button`
+const PaginationButton = styled.button`
   color: white;
   background-color: rgb(163, 204, 163);
   margin-right: 4px;
@@ -394,7 +374,7 @@ const PagenationButton = styled.button`
   justify-content: center;
 `;
 
-const PagenationButtonContainer = styled.div`
+const PaginationButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-bottom: 24px;
