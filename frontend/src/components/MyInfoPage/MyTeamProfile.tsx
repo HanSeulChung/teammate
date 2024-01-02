@@ -134,6 +134,10 @@ const MyTeamProfile: React.FC = () => {
         return;
       }
 
+      if (selectedTeam.teamRole === "LEADER") {
+        window.alert("팀장 권한을 부여한 후 다시 시도해주세요.");
+        return;
+      }
       await axiosInstance.delete(`/team/${selectedTeam.teamId}/participant`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
