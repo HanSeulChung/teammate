@@ -363,9 +363,6 @@ export default function TeamLeader() {
         </div>
         <TeamMembersContainer>
           <StyledInput
-            style={{
-              width: "300px",
-            }}
             type="text"
             placeholder="팀원을 검색하세요"
             value={searchTeam}
