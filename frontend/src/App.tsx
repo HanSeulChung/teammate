@@ -38,7 +38,7 @@ export const WrapperDiv = styled.div`
 
   @media (min-width: 1024px) {
     max-width: 1024px;
-    min-height: 1080px;
+    min-height: 800px;
     // width: 1024px;
     height: auto;
   }
