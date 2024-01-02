@@ -77,5 +77,6 @@ export interface ConvertedEvent {
     scheduleType: string;
     category: string;
     categoryName: string;
+    categoryId: number,
   };
 }
