@@ -136,13 +136,16 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
             추가
           </button>
         </div>
-        <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
+        <ul className="h-48 px-3 pb-3 text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
           {categoryList.map((opt: any) => (
             <li key={opt.categoryId} className="flex items-center p-2 rounded hover:bg-gray-100">
-              <input type="checkbox" value="" className="w-4 h-4 checkbox checkbox-success text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-50" />
-              <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</label>
-              <button onClick={toggleDeleteModal} value={opt.categoryId} className="w-4 h-4 text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
-                x
+              {/* <input type="checkbox" value="" className="w-4 h-4 checkbox checkbox-success text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-50" /> */}
+              <svg className="w-3.5 h-3.5 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+              </svg>
+              <span className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</span>
+              <button onClick={toggleDeleteModal} value={opt.categoryId} className="w-4 h-4 justify-center text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
+                <span className="">x</span>
                 <span className="sr-only">카테고리 삭제 버튼</span>
               </button>
             </li>
