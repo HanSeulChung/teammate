@@ -23,6 +23,7 @@ public class RepeatScheduleResponse {
 
   private Long scheduleId;
   private String scheduleType;
+  private Long categoryId;
   private String categoryName;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
@@ -44,6 +45,7 @@ public class RepeatScheduleResponse {
     return RepeatScheduleResponse.builder()
         .scheduleType("반복 일정")
         .scheduleId(repeatSchedule.getRepeatScheduleId())
+        .categoryId(repeatSchedule.getScheduleCategory().getScheduleCategoryId())
         .categoryName(repeatSchedule.getScheduleCategory().getCategoryName())
         .startDt(repeatSchedule.getStartDt())
         .endDt(repeatSchedule.getEndDt())
