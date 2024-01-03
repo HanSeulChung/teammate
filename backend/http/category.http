@@ -1,10 +1,46 @@
-POST localhost:8080/category
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNzc2NTc0fQ.XVKP9V_hH3zswIc0tZPnBgMg2cIDcJSyuewjdZOg1vo
+### 일정 카테고리 생성
+POST http://localhost:8080/category
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNzc3MTE2fQ.FCW8JBUoJ0C7YMa0SmVOW0iT8QGwDIk_aBuItLhQ_xA
 Content-Type: application/json
 
 {
-  "teamId": 15,
-  "categoryName": "categoryName_169509dcb68c",
-  "categoryType": "DOCUMENTS",
-  "color": "color_e875edadd488"
+  "teamId":43,
+  "categoryName": "삭제테스트",
+  "categoryType": "SCHEDULE",
+  "color": "PURPLE",
+  "createParticipantId":84
+}
+
+
+### 일정 카테고리 수정
+PUT http://localhost:8080/category
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "categoryId":18,
+  "teamId":43,
+  "updateParticipantId": 55,
+  "categoryName": "회의",
+  "categoryType": "SCHEDULE",
+  "color": "#ff0000"
+}
+
+### 일정 카테고리 유형별 조회
+GET http://localhost:8080/category/SCHEDULE?teamId=43
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+
+### 일정 카테고리 삭제
+DELETE http://localhost:8080/category
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "categoryId": 93,
+  "teamId": 43,
+  "participantId": 84,
+  "isMoved": true,
+  "newCategoryId": 70
 }

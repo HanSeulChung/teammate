@@ -1,5 +1,5 @@
-### 알람 생성
-POST localhost:8080/team/15/schedules
+### 일정 알람 생성
+POST http://localhost:8080/team/15/schedules
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNzc3MTE2fQ.FCW8JBUoJ0C7YMa0SmVOW0iT8QGwDIk_aBuItLhQ_xA
 Content-Type: application/json
 
@@ -17,7 +17,168 @@ Content-Type: application/json
   "createParticipantId": 21
 }
 
-### 알람 삭제
-DELETE localhost:8080/team/5/schedules/repeat/2
+### 일정 알람 삭제
+DELETE http://localhost:8080/team/5/schedules/repeat/2
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjQiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMTc3Mzc4fQ.x2NLhWaIAf6uN7Yct0Ygho3QHpjRP8dJIQxU0sUN4CU
 Content-Type: application/json
+
+
+### 반복 일정 생성
+POST http://localhost:8080/team/43/schedules
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+    "teamId": 43,
+    "categoryId": 30,
+    "title": "회의",
+    "content": "기획회의",
+    "startDt": "2023-12-15T12:00:00",
+    "endDt": "2024-12-15T14:00:00",
+    "place": "회의실",
+    "repeatCycle": "MONTHLY",
+    "color": "#333333",
+    "teamParticipantsIds": [42, 44],
+    "createParticipantId": 55
+}
+
+
+### 단순 일정 생성
+POST http://localhost:8080/team/43/schedules
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "teamId": 43,
+  "categoryId": 30,
+  "title": "회의",
+  "content": "기획회의",
+  "startDt": "2023-12-15T12:00:00",
+  "endDt": "2024-12-15T14:00:00",
+  "place": "회의실",
+  "repeatCycle": null,
+  "color": "#333333",
+  "teamParticipantsIds": [],
+  "createParticipantId": 55
+}
+
+### 캘린더 월간보기
+GET http://localhost:8080/team/43/schedules/calendar
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+### 반복 일정 조회
+GET http://localhost:8080/team/43/schedules/repeat/220
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+
+### 단순 일정 조회
+GET http://localhost:8080/team/43/schedules/simple/227
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+
+### 반복 일정 정보 수정
+PUT http://localhost:8080/team/43/schedules/repeat
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "repeatScheduleId": 28,
+  "teamId": 43,
+  "categoryId": 64,
+  "title": "긴급회의",
+  "content": "기획 변경으로 인한 긴급 회의",
+  "startDt": "2023-12-15T12:00:00",
+  "endDt": "2024-01-31T14:00:00",
+  "place": "회의실",
+  "repeatCycle": "WEEKLY",
+  "color": "#ff0000",
+  "editOption": "ALL_SCHEDULES",
+  "teamParticipantsIds": [55, 56, 57, 58],
+  "updateParticipantId": 55
+}
+
+### 단순 일정 정보 수정
+PUT http://localhost:8080/team/43/schedules/simple
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "simpleScheduleId": 227,
+  "teamId": 43,
+  "categoryId": 65,
+  "title": "컨셉 회의",
+  "content": "컨셉 회의",
+  "place": "회의실",
+  "startDt": "2023-12-16T12:00:00",
+  "endDt": "2023-12-16T14:00:00",
+  "isRepeat": false,
+  "repeatCycle": null,
+  "color": "#ff0000",
+  "teamParticipantsIds": [55, 56, 57],
+  "updateParticipantId": 55
+}
+
+### 반복일정 ->  단순일정 (일정 유형 변경)
+PUT http://localhost:8080/team/43/schedules/convert-repeat-to-simple
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "repeatScheduleId": 227,
+  "teamId": 43,
+  "categoryId": 65,
+  "title": "컨셉 회의",
+  "content": "컨셉 회의",
+  "place": "회의실",
+  "startDt": "2023-12-16T12:00:00",
+  "endDt": "2023-12-16T14:00:00",
+  "color": "#ff0000",
+  "teamParticipantsIds": [55, 56, 57],
+  "updateParticipantId": 55
+}
+
+### 단순일정 ->  반복일정 (유형 변경)
+PUT http://localhost:8080/team/43/schedules/convert-simple-to-repeat
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "simpleScheduleId": 227,
+  "teamId": 43,
+  "categoryId": 65,
+  "title": "컨셉 회의",
+  "content": "컨셉 회의",
+  "place": "회의실",
+  "startDt": "2023-12-16T12:00:00",
+  "endDt": "2024-01-16T14:00:00",
+  "repeatCycle": "WEEKLY",
+  "color": "#ff0000",
+  "teamParticipantsIds": [55, 56, 57],
+  "updateParticipantId": 55
+}
+
+### 단순 일정 삭제
+DELETE http://localhost:8080/team/43/schedules/simple/220
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "scheduleId": 220,
+  "teamId": 43,
+  "teamParticipantId": 55
+}
+
+
+### 반복 일정 삭제
+DELETE http://localhost:8080/team/43/schedules/repeat/221
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMzczNzg5MX0.Gx6Vj5RgPTJiuyvxrZa-siX22Ri-GOYfjuHZFqiKUs4
+Content-Type: application/json
+
+{
+  "scheduleId": 221,
+  "teamId": 43,
+  "teamParticipantId": 55
+}
