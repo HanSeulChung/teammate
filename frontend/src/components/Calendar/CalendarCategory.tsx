@@ -104,8 +104,8 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
   }
 
   // 카테고리 삭제 동작
-  const handleCategoryDelete = async () => {
-    // e.preventDefault();
+  const handleCategoryDelete = async (e: any) => {
+    e.preventDefault();
     try {
       const res = await axiosInstance.delete(`/category`, {
         data: {
@@ -124,6 +124,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
       }
     } catch (error) {
       console.log(error);
+      alert("카테고리 생성자가 팀 내에 존재하므로, 팀장권한으로 삭제가 불가능합니다.");
     }
   };
 

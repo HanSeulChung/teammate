@@ -129,6 +129,7 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
       }
     } catch (error) {
       console.log(error);
+      alert("일정 생성자가 팀 내에 존재하므로, 팀장권한으로 삭제가 불가능합니다.");
     }
   }
 
