@@ -66,7 +66,8 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 
 
 ## Architecture
-![프로젝트 아키텍처](https://github.com/100backfro/teammate/assets/94779505/1034b886-e885-4615-b8b5-f780d934f689)
+![image](https://github.com/100backfro/teammate/assets/110381560/35856126-d4da-4c93-bdc2-c42cd16f22a1)
+
 
 ## API
 [http 요청](backend/http)
