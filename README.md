@@ -69,6 +69,9 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 ## Architecture
 ![프로젝트 아키텍처](https://github.com/100backfro/teammate/assets/94779505/1034b886-e885-4615-b8b5-f780d934f689)
 
+## API
+[http 요청](backend/http)
+
 ## 화면
 | 첫 화면  |
 |:-:|
@@ -95,12 +98,19 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 
 | 팀 첫 화면  | 문서 |  캘린더 |
 |:-:|:-:|:-:|
- ![image](https://github.com/100backfro/teammate/assets/94779505/76d717d7-5106-4910-9213-4caa66974387)  | ![image](https://github.com/100backfro/teammate/assets/94779505/95e5621b-a45f-40f5-8625-efc8d503874c)| ![image](https://github.com/100backfro/teammate/assets/94779505/37827547-23bb-47bd-bd5c-757e1b2bc72a)   
+ ![image](https://github.com/100backfro/teammate/assets/94779505/76d717d7-5106-4910-9213-4caa66974387)  | ![image](https://github.com/100backfro/teammate/assets/94779505/95e5621b-a45f-40f5-8625-efc8d503874c)| !![image](https://github.com/100backfro/teammate/assets/94779505/76ae530f-875d-4769-a83f-b682e8d58e66)
+  
 
 
 | 문서 작성  | 문서 수정  | 댓글 |
 |:-:|:-:|:-:|
  ![image](https://github.com/100backfro/teammate/assets/94779505/38c7255a-3920-44e2-9e8f-98c27c79c5f5)  | ![image](https://github.com/100backfro/teammate/assets/94779505/e47a47ec-ff1d-495f-b193-27159346cfa5)| ![image](https://github.com/100backfro/teammate/assets/94779505/2759c70f-4e2a-46f4-8373-2d2c529cec00)
+
+
+| 캘린더 카테고리 추가  | 캘린더 카테고리 수정  | 일정 등록 |
+|:-:|:-:|:-:|
+![image](https://github.com/100backfro/teammate/assets/94779505/79b23aec-7790-404f-9f28-135701be4b04) |![image](https://github.com/100backfro/teammate/assets/94779505/74e9baef-1176-40ca-a61c-d9c49db24062)  
+| ![image](https://github.com/100backfro/teammate/assets/94779505/70860ac3-8aee-40f8-a018-595f0589fff1)
 
 
 | 마이페이지  | 비밀번호 수정 실패<br>(비밀번호가 틀렸을 때)  | 비밀번호 수정 완료  |
@@ -125,4 +135,5 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 
 
 ## Notion 
+[100% 팀 노션](https://www.notion.so/f6266a684b02452d99bcfec7a44192ed?pvs=4)
 
