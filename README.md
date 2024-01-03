@@ -39,7 +39,7 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Websocket](https://img.shields.io/badge/Websocket-808080?style=for-the-badge&logo=websocket&logoColor=white)
 ![Stomp](https://img.shields.io/badge/Stomp-32CD32?style=for-the-badge&logo=stomp&logoColor=white)
-![SSE](https://img.shields.io/badge/SSE-FF6347?style=for-the-badge&logo=eventsource&logoColor=white)
+
 
 ### DataBase
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
@@ -48,6 +48,8 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 ### Deploy
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
+![Naver Cloud](https://img.shields.io/badge/Naver_Cloud-03C75A?style=for-the-badge&logo=naver&logoColor=white)
+
 
 ### Tool
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
