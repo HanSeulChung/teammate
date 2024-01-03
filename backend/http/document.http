@@ -1,0 +1,14 @@
+### 문서 생성
+POST http://localhost:8080/team/9/documents
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNjkyNTU1fQ.wqg2cyxCQzWmcHDasOSYRzCk4qUb-L_0h8N0AN1mUcM
+Content-Type: application/json
+
+{
+  "title": "알람 테스트",
+  "content": "content_e9d040265ad2",
+  "writerEmail": "writerEmail_dc7a81ef44f0"
+}
+
+### 문서 삭제
+DELETE http://localhost:8080/team/5/documents/658576f614522b78c7422a32
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI

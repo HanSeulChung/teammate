@@ -1,0 +1,52 @@
+### team 생성 api
+POST http://localhost:8080/team
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjEiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAyNzY2ODE2fQ.MXJFOGONNJc8j4RbvzyX4ppz1bc5D_OkKc7cdEgRQSQ
+Content-Type: application/json
+
+{
+  "teamName": "백",
+  "teamImg": "asdas",
+  "memberLimit": 2
+}
+
+### team 초대 코드 URL
+GET http://localhost:8080/team/14/code
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzODYxODQ3fQ.by_Eiq7uDCpi28uYrkmh2SNzx-6rkt_PRcnbFctha9Y
+
+### team 참가
+GET http://localhost:8080/team/14/61d49ecf-7d31-40a2-8515-93a7239c755c/3c3F0KwJa4_kJO3kKX157w==
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzODYxODQ3fQ.by_Eiq7uDCpi28uYrkmh2SNzx-6rkt_PRcnbFctha9Y
+
+### team 강퇴
+POST http://localhost:8080/team/kick-out
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNTE0MjE3fQ.6FkgDR4nY8IG6Fmhy3IFYPc1xdV3e7sfYcYYp83tuXQ
+Content-Type: application/json
+
+{
+  "teamId": 5,
+  "participantId": 9,
+  "kickOutReason": "불편한 사용자입니다."
+}
+
+### team 해체
+PUT http://localhost:8080/team/disband
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNjkyNTU1fQ.wqg2cyxCQzWmcHDasOSYRzCk4qUb-L_0h8N0AN1mUcM
+Content-Type: application/json
+
+{
+  "teamId": 9,
+  "teamName": "알람 테스트"
+}
+
+### team 복구
+PATCH http://localhost:8080/team/9/restore?restoreDt=2023-12-25
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNjkyNTU1fQ.wqg2cyxCQzWmcHDasOSYRzCk4qUb-L_0h8N0AN1mUcM
+
+### team list api
+GET http://localhost:8080/team/list
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNTE0MjE3fQ.6FkgDR4nY8IG6Fmhy3IFYPc1xdV3e7sfYcYYp83tuXQ
+
+
+### team 디테일 조회
+GET http://localhost:8080/team/5
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNTE0MjE3fQ.6FkgDR4nY8IG6Fmhy3IFYPc1xdV3e7sfYcYYp83tuXQ

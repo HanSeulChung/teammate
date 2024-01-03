@@ -1,0 +1,68 @@
+POST http://127.0.0.1:8080/sign-up
+Content-Type: application/json
+
+{
+  "email": "data.helchang@gmail.com",
+  "password": "testtest",
+  "repassword": "testtest",
+  "name": "이진영222",
+  "sexType": "MALE"
+}
+
+### 로그인1
+POST http://localhost:8080/sign-in
+Content-Type: application/json
+
+{
+  "email": "dkwktm45@naver.com",
+  "password": "testtest"
+}
+
+
+### 로그인2
+POST http://localhost:8080/sign-in
+Content-Type: application/json
+
+{
+  "email": "wpekdl153@gmail.com",
+  "password": "testtest"
+}
+
+### 로그인3
+POST http://localhost:8080/sign-in
+Content-Type: application/json
+
+{
+  "email": "data.helchang@gmail.com",
+  "password": "testtest"
+}
+
+### 로그인4
+POST http://localhost:8080/sign-in
+Content-Type: application/json
+
+{
+  "email": "test4@gmail.com",
+  "password": "test4"
+}
+
+
+### test1
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzODYxODMzfQ.jy9gkt9XsElRsxnGOHgOFFlg9GMUhC_BTAbsrpimoy
+
+### test2
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzODYxODQ3fQ.by_Eiq7uDCpi28uYrkmh2SNzx-6rkt_PRcnbFctha9Y
+
+### test3
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjQiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMTc3Mzc4fQ.x2NLhWaIAf6uN7Yct0Ygho3QHpjRP8dJIQxU0sUN4CU
+
+### test4
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjQiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAyNDk5NzUxfQ.xgs0SqbsEhkL3uzn6Enp-glauNVbVjygnFLClV4B2gA
+
+### memeber가 속한 팀 참가자 조회
+GET localhost:8080/member/participants
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNjkyNTU1fQ.wqg2cyxCQzWmcHDasOSYRzCk4qUb-L_0h8N0AN1mUcM
+
+### memeber가 속한 팀 참가자 조회
+GET localhost:8080/member/participants
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjEzIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMjQ4NDg3NH0.lvadB3zTSLTSNIVZmTqy4rgbTZli6HAxrc5fDJZtFn8

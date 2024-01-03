@@ -1,0 +1,15 @@
+### 팀의 모든 팀원 조회
+DELETE localhost:8080/team/5/participant
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
+### 팀원에게 팀장 위임
+PATCH localhost:8080/team/2/participant/32
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjEiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAyOTE2NjUwfQ.KkbmgvJ5NBY1zNFFlMKmtBG8xGYnYrW2cZIlxtJb5P0
+
+### 여러 팀원 조회 API
+GET localhost:8080/team/9/participant/list
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjExIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMjQ4NDA1Nn0.WVtl9EA_XQWLiBYvUCpUrvAq8626L_EWcjQEqm_ZwVk
+
+### 나 자신 팀원 조회 API
+GET localhost:8080/team/9/participant
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjExIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTcwMjQ4NDA1Nn0.WVtl9EA_XQWLiBYvUCpUrvAq8626L_EWcjQEqm_ZwVk

@@ -1,0 +1,23 @@
+### 알람 생성
+POST localhost:8080/team/15/schedules
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzNzc3MTE2fQ.FCW8JBUoJ0C7YMa0SmVOW0iT8QGwDIk_aBuItLhQ_xA
+Content-Type: application/json
+
+{
+  "teamId": 15,
+  "categoryId": 4,
+  "title": "title",
+  "content": "content_0e7aa7f1d07b",
+  "startDt": "2023-12-15T12:00:00",
+  "endDt": "2024-01-31T14:00:00",
+  "place": "place_5efc71820825",
+  "repeatCycle": "WEEKLY",
+  "color": "color_3ff7814ba6aa",
+  "teamParticipantsIds": [],
+  "createParticipantId": 21
+}
+
+### 알람 삭제
+DELETE localhost:8080/team/5/schedules/repeat/2
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjQiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMTc3Mzc4fQ.x2NLhWaIAf6uN7Yct0Ygho3QHpjRP8dJIQxU0sUN4CU
+Content-Type: application/json

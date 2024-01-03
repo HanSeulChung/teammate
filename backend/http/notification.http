@@ -1,0 +1,15 @@
+### 맴버에게 온 알람
+GET http://localhost:8080/notification/member?page=1&size=10&sortBy=createDt-desc
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjEiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAyOTE2NjUwfQ.KkbmgvJ5NBY1zNFFlMKmtBG8xGYnYrW2cZIlxtJb5P0
+
+### 팀별 알람
+GET http://localhost:8080/notification/team/2?page=1&size=10&sortBy=createDt-desc
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAyOTE2NjM4fQ.RfbU5t1twVg6We8DB4-9HA8zcazkOAbvVFFGpdP_74k
+
+### 맴버 알람 읽기 api
+PUT http://localhost:8080/notification/24/member
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAyOTE2NjM4fQ.RfbU5t1twVg6We8DB4-9HA8zcazkOAbvVFFGpdP_74k
+
+### 팀 알람 읽기 api
+PUT http://localhost:8080/notification/23/teamParticipants/32
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjIiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAyOTE2NjM4fQ.RfbU5t1twVg6We8DB4-9HA8zcazkOAbvVFFGpdP_74k
