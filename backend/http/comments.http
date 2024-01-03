@@ -1,1 +1,26 @@
-POST localhost:8080/team/5/documents/{documentId}/comments
+### 댓글 조회
+GET localhost:8080/team/5/documents/658576f614522b78c7422a32/comments
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
+
+### 댓글 생성
+POST localhost:8080/team/5/documents/658576f614522b78c7422a32/comments
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
+{
+    "writerId" : 1,
+    "content" : "문서삭제시 삭제되는 댓글5"
+}
+
+### 댓글 수정
+PUT localhost:8080/team/5/documents/658576f614522b78c7422a32/comments/6586f7f91624e21876ad80c4
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
+{
+    "editorId" : 1,
+    "content" : "하하하하 댓글을 수정했어요."
+}
+
+### 댓글 삭제
+DELETE localhost:8080/team/5/documents/658576f614522b78c7422a32/comments/6586f7f91624e21876ad80c4
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI

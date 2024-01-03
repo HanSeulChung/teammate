@@ -6,9 +6,28 @@ Content-Type: application/json
 {
   "title": "알람 테스트",
   "content": "content_e9d040265ad2",
-  "writerEmail": "writerEmail_dc7a81ef44f0"
+  "writerEmail": "dkwktm45@naver.com"
 }
 
 ### 문서 삭제
 DELETE http://localhost:8080/team/5/documents/658576f614522b78c7422a32
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
+### 문서 전체 조회
+GET http://localhost:8080/team/5/documents
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
+
+### 문서 전체 조회(기간별) 시작기간만 존재할 경우 오늘 날짜까지 존재하는 기간별 조회 가능
+GET http://localhost:8080/team/5/documents?startDt=2023-10-02
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
+
+### 문서 전체 조회(기간별) 끝기간만 존재할 경우 문서가 처음 작성된 기간부터 끝 기간까지 기간별 조회 가능
+GET http://localhost:8080/team/5/documents?endDt=2023-10-02
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
+### 문서 전체 조회(기간별)
+GET http://localhost:8080/team/5/documents?startDt=2023-10-02&endDt=2023-11-23
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY2Nlc3MtdG9rZW4iLCJtZW1iZXJJZCI6IjMiLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzAzMjg3MjU0fQ.d8ocQy0glpA30qtFxTmh_hoWgxFkbyzOZBzciXcHHcI
+
