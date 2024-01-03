@@ -79,7 +79,7 @@ const EditEvent = ({
     startDt: originEvent.start,
     endDt: originEvent.end,
     repeatCycle: null,
-    color: "#ff0000",
+    color: "#7AAC7A",
     createParticipantId: myTeamMemberId,
     teamParticipantsIds: [] as any,
   });
