@@ -59,7 +59,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME).map(Cookie::getValue);
         clearAuthenticationAttributes(request, response);
-        return redirectUri.orElse("https://teammate-omega.vercel.app:5173/social-success/");
+        return redirectUri.orElse("https://teammate-omega.vercel.app:80/social-success/");
     }
 
     private String getRedirectUrl(String targetUrl, TokenDto token) {
