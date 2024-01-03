@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../axios.tsx";
 import styled from "styled-components";
@@ -106,8 +106,21 @@ const EditEvent = ({
     setParticipantsIds(valuesArray);
   };
 
-  // 새 일정 등록 요청
-  const handleScheduleSubmit = async () => {
+  // 필수 입력값
+  const eventTitleInput = useRef<HTMLInputElement | null>(null);
+
+  // 새 일정 등록
+  const handleScheduleAdd = (e: any) => {
+    if(eventChange.title.length < 1){
+      eventTitleInput.current?.focus();
+      e.preventDefault();
+      return;
+    }
+
+    onAddSchedule();
+  }
+
+  const onAddSchedule = async () => {
     // e.preventDefault();
     let result = eventChange;
     result.teamParticipantsIds = participantsIds;
@@ -139,7 +152,17 @@ const EditEvent = ({
   };
 
   // 일정 수정 
-  const handleScheduleModify = async () => {
+  const handleScheduleModify = (e: any) => {
+    if(eventChange.title.length < 1){
+      eventTitleInput.current?.focus();
+      e.preventDefault();
+      return;
+    }
+
+    onModifySchedule();
+  }
+
+  const onModifySchedule = async () => {
     // e.preventDefault();
 
     let result = eventChange;
@@ -217,6 +240,7 @@ const EditEvent = ({
           일정제목
         </label>
         <EventInput
+          ref={eventTitleInput}
           type="text"
           name="title"
           id="title"
@@ -310,7 +334,7 @@ const EditEvent = ({
           onChange={handleEventChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
         >
-          <option value="#7aac7a">초록</option>
+          <option value="#7AAC7A">초록</option>
           <option value="#E21D29">빨강</option>
           <option value="#336699">파랑</option>
         </select>
@@ -343,7 +367,7 @@ const EditEvent = ({
         </>
       ) : (
         <CommonSubmitBtn
-          onClick={handleScheduleSubmit}
+          onClick={handleScheduleAdd}
           className="mt-2"
         >
           등록

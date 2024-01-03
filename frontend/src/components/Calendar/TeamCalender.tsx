@@ -189,7 +189,7 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
                   {/* 일정 번호: {event.id} */}
                   {/* 이름: {event.title}<br /> */}
                   <div className="mb-3">
-                    <span className="mr-10 text-gray-500">일시</span><span className="">{event.start.toJSON()}</span>
+                    <span className="mr-10 text-gray-500">일시</span><span className="">{event.start.toISOString().split(':00')[0].replace("T", " ")}</span>
                   </div>
                   <div className="mb-3">
                     <span className="mr-10 text-gray-500">내용</span>{event.content}
