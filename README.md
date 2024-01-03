@@ -6,7 +6,7 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
  FE   | FE   | FE   
  :------: | :------: | :------: 
 |   캘린더, 일정 카테고리, 일정   | 회원가입, 로그인, 소셜 로그인,<br> 팀, 팀참가자   |  문서, 댓글, 웹소켓  |
-| <img src="https://avatars.githubusercontent.com/u/110381560?v=4" width="150px;" alt=""/>  | <img src="https://avatars.githubusercontent.com/u/135790442?v=4" width="150px;" alt=""/>  | <img src="https://avatars.githubusercontent.com/u/89259535?v=4" width="150px;" alt=""/>  |
+| <img src="https://avatars.githubusercontent.com/u/110381560?v=4" width="150px;" alt=""/>  | <img src="https://avatars.githubusercontent.com/u/135790442?v=4" width="150px;" alt=""/>  | <img src="https://cdn.discordapp.com/attachments/1174704902870671414/1191694416923082902/786186ad013cf08d.jpg?ex=65a65ee9&is=6593e9e9&hm=f31bb543779f01cae9ee20e3d94d8208421b2621d26c0af7de78a0e9ab71844a&" width="150px;" alt=""/>  |
 | [유나경](https://github.com/shiningKyung) | [장유리](https://github.com/zzannorita) | [정도헌](https://github.com/bslkuye) |
 
 |    BE   |   BE    |   BE   |  BE  |
