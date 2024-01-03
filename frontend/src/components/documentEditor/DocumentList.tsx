@@ -244,6 +244,8 @@ const DocumentContainer = styled.div`
   align-content: space-between;
   flex-wrap: wrap;
   margin-bottom: 20px;
+  padding-top: 30px;
+
 `;
 
 const DocumentItem = styled.div`
@@ -294,6 +296,8 @@ const Container = styled.section`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  padding-top: 50px;
+
 `;
 
 const InputAndButton = styled.div`

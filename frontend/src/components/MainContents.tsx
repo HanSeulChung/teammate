@@ -29,7 +29,7 @@ export default MainContents;
 
 // 스타일드 컴포넌트
 export const MainContentsSpan = styled.span`
-  margin-top: 200px;
+  padding-top: 200px;
   display: flex;
   align-items: center;
   justify-content: space-between;

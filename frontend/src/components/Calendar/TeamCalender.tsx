@@ -45,6 +45,7 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
       content: e.event.extendedProps.content,
       place: e.event.extendedProps.place,
       groupId: e.event.extendedProps.categoryName,
+      categoryId: e.event.extendedProps.categoryId,
     });
     toggleModal();
   }
@@ -74,6 +75,7 @@ const TeamCalender = ({ categoryList, myTeamMemberId }: any) => {
         scheduleType: event.scheduleType,
         category: event.category,
         categoryName: event.categoryName,
+        categoryId: event.categoryId,
       }
     }));
   };

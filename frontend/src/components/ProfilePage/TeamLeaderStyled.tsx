@@ -7,6 +7,7 @@ export const TeamLeaderContainer = styled.div`
   justify-content: flex-start;
   height: 100vh;
   margin-top: 10px;
+  padding-top: 80px;
 `;
 
 export const CenteredContainer = styled.div`
@@ -110,6 +111,8 @@ export const MoveTeamPage = styled.div`
   text-align: right;
   margin-right: 100px;
   cursor: pointer;
+  padding-top: 100px;
+
   &:hover {
     color: #a3cca3;
   }
