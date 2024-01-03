@@ -309,7 +309,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
                       </label>
                     </span>
                     <span className="flex items-center">
-                      <input checked id="isMoved-false" type="radio" onChange={handleChangeOption} name="isMoved" value={false.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-green-500" />
+                      <input id="isMoved-false" type="radio" onChange={handleChangeOption} name="isMoved" value={false.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-green-500" />
                       <label htmlFor="isMoved-false" className="ms-2 text-sm font-medium text-gray-900">
                         아니오
                       </label>
