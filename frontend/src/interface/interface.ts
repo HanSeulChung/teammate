@@ -31,6 +31,7 @@ export interface User {
   email: string;
   id: string;
   name: string;
+  loginType:string;
 }
 
 // 토큰 상태 인터페이스
@@ -76,5 +77,6 @@ export interface ConvertedEvent {
     scheduleType: string;
     category: string;
     categoryName: string;
+    categoryId: number,
   };
 }

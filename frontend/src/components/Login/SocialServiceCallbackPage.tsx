@@ -23,9 +23,7 @@ const SocialServiceCallbackPage = () => {
       const newRefreshToken = urlParams.get("refresh_token");
 
       try {
-        const result = await axios.get(`/social-success/`);
-
-        console.log(result);
+        await axios.get(`/social-success/`);
       } catch (error) {
         console.log("error", error);
       }
@@ -35,13 +33,12 @@ const SocialServiceCallbackPage = () => {
         saveRefreshToken(newRefreshToken);
         setIsAuthenticated(true);
         navigate("/homeView");
-        console.log("login successful");
       }
     };
     fetchData();
   }, [navigate, setAccessToken, setRefreshToken]);
 
-  return <div>로딩페이지컴포넌트</div>;
+  return <div>로그인 중입니다.</div>;
 };
 
 export default SocialServiceCallbackPage;

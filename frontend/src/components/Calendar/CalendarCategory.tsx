@@ -63,7 +63,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
   });
   
   const handleChangeOption = (e: any) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setDeleteOption({
       ...deleteOption,
       [e.target.name]: e.target.value,
@@ -90,7 +90,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
         createParticipantId: myTeamMemberId,
         categoryName: categoryInput.categoryName,
         categoryType: "SCHEDULE",
-        color: categoryInput.color,
+        color: "",
       }
       );
       if (res.status === 200) {
@@ -104,8 +104,8 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
   }
 
   // 카테고리 삭제 동작
-  const handleCategoryDelete = async () => {
-    // e.preventDefault();
+  const handleCategoryDelete = async (e: any) => {
+    e.preventDefault();
     try {
       const res = await axiosInstance.delete(`/category`, {
         data: {
@@ -124,8 +124,56 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
       }
     } catch (error) {
       console.log(error);
+      alert("카테고리 생성자가 팀 내에 존재하므로, 팀장권한으로 삭제가 불가능합니다.");
     }
   };
+
+  // 카테고리 수정
+  const [isCategoryEdit, setIsCategoryEdit] = useState(false);
+  const [editedId, setEditedId] = useState(0);
+  // const toggleCatIsEdit = () => setIsCategoryEdit(!isCategoryEdit);
+  
+  const toggleCatIsEdit = (e: any) => {
+    // 수정버튼 클릭된 카테고리 id
+    console.log("수정버튼 클릭된 카테고리아이디-> ",e.target.id)
+    setEditedId(e.target.id);
+    
+    setIsCategoryEdit(!isCategoryEdit);
+    toggleAddModal();
+  };
+
+  const handleCategoryEdit = (e: any) => {
+    if(categoryInput.categoryName.length < 1){
+      categoryNameInput.current?.focus();
+      e.preventDefault();
+      return;
+    }
+    
+    onEditCategory();
+  };
+  
+  const onEditCategory = async () => {
+    // e.preventDefault();
+    try {
+      const res = await axiosInstance.put(`/category`, 
+      {
+        categoryId: editedId,
+        teamId: teamId,
+        updateParticipantId: myTeamMemberId,
+        categoryName: categoryInput.categoryName,
+        categoryType: "SCHEDULE",
+        color: "",
+      }
+      );
+      if (res.status === 200) {
+        console.log("카테고리 옵션이 수정되었습니다 -> ", res);
+        // setCategoryList(res.data.content);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <>
@@ -136,28 +184,43 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
             추가
           </button>
         </div>
-        <ul className="h-48 px-3 pb-3  text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
+        <ul className="h-48 px-3 pb-3 text-sm text-gray-700" aria-labelledby="dropdownSearchButton">
           {categoryList.map((opt: any) => (
             <li key={opt.categoryId} className="flex items-center p-2 rounded hover:bg-gray-100">
-              <input type="checkbox" value="" className="w-4 h-4 checkbox checkbox-success text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-50" />
-              <label className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</label>
-              <button onClick={toggleDeleteModal} value={opt.categoryId} className="w-4 h-4 text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
-                x
+              {/* <input type="checkbox" value="" className="w-4 h-4 checkbox checkbox-success text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-50" /> */}
+              <svg className="w-3.5 h-3.5 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+              </svg>
+              <span className="w-full ms-2 text-sm font-medium text-gray-900 rounded">{opt.categoryName}</span>
+              <button onClick={toggleDeleteModal} value={opt.categoryId} className="w-4 h-4 justify-center text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
+                <span className="">x</span>
                 <span className="sr-only">카테고리 삭제 버튼</span>
+              </button>
+              <button onClick={toggleCatIsEdit} className="w-4 h-4 justify-center text-gray-700 border border-gray-200 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-500 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
+                <span className="" id={opt.categoryId}>✎</span>
+                <span className="sr-only">카테고리 수정 버튼</span>
               </button>
             </li>
           ))}
         </ul>
       </div>
-      {/* 카테고리 추가 폼 */}
+      {/* 카테고리 추가, 수정 폼 */}
       {isAddModal && (
         <Modal>
           <Overlay
-            onClick={toggleAddModal}
+            // onClick={toggleAddModal}
           ></Overlay>
           <ModalContent>
             <div className='p-4 md:p-5'>
-              <h2 className="text-lg font-semibold text-gray-900">카테고리 추가</h2>
+              {isCategoryEdit ? (
+                <>
+                  <h2 className="text-lg font-semibold text-gray-900">카테고리 수정</h2>
+                </>
+              ): (
+                <>
+                  <h2 className="text-lg font-semibold text-gray-900">카테고리 추가</h2>
+                </>
+              )}
               <CategoryForm>
                 <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>타입</label>
                 <select
@@ -178,9 +241,9 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
                   name="categoryName"
                   value={categoryInput.categoryName}
                   onChange={handleChangeInput}
-                  className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  className='block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                 ></input>
-                <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
+                {/* <label className='block mt-2 mb-2 text-sm font-medium text-gray-900'>색상</label>
                 <select
                   name="color"
                   value={categoryInput.color}
@@ -190,16 +253,38 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
                   <option value="#7aac7a">초록</option>
                   <option value="#E21D29">빨강</option>
                   <option value="#336699">파랑</option>
-                </select>
-                <CommonSubmitBtn
-                  onClick={handleCategoryAdd}
-                >등록</CommonSubmitBtn>
+                </select> */}
+                {isCategoryEdit ? (
+                  <>
+                    <CommonSubmitBtn
+                      onClick={handleCategoryEdit}
+                    >수정</CommonSubmitBtn>
+                  </>
+                ): (
+                  <>
+                    <CommonSubmitBtn
+                      onClick={handleCategoryAdd}
+                    >등록</CommonSubmitBtn>
+                  </>
+                )}
               </CategoryForm>
-              <CloseModal
-                onClick={toggleAddModal}
-              >
-                닫기
-              </CloseModal>
+              {isCategoryEdit ? (
+                <>
+                  <CloseModal
+                    onClick={toggleCatIsEdit}
+                  >
+                    닫기
+                  </CloseModal>
+                </>
+              ): (
+                <>
+                  <CloseModal
+                    onClick={toggleAddModal}
+                  >
+                    닫기
+                  </CloseModal>
+                </>
+              )}
             </div>
           </ModalContent>
         </Modal>
@@ -224,7 +309,7 @@ const CalendarCategory = ({ categoryList, myTeamMemberId, setCategoryList }: any
                       </label>
                     </span>
                     <span className="flex items-center">
-                      <input checked id="isMoved-false" type="radio" onChange={handleChangeOption} name="isMoved" value={false.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-green-500" />
+                      <input id="isMoved-false" type="radio" onChange={handleChangeOption} name="isMoved" value={false.toString()} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-green-500" />
                       <label htmlFor="isMoved-false" className="ms-2 text-sm font-medium text-gray-900">
                         아니오
                       </label>

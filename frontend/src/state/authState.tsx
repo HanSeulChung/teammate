@@ -42,7 +42,12 @@ export const refreshTokenState = atom({
 // 사용자 정보 상태
 export const userState = atom({
   key: "userState",
-  default: null as { id: string; name: string; email: string } | null,
+  default: null as {
+    id: string;
+    name: string;
+    email: string;
+    loginType: string;
+  } | null,
 });
 
 // 리프레시 토큰 저장 함수

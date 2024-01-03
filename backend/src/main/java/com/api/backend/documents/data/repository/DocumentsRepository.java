@@ -2,7 +2,7 @@ package com.api.backend.documents.data.repository;
 
 import com.api.backend.documents.data.entity.Documents;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -18,11 +18,11 @@ public interface DocumentsRepository extends MongoRepository<Documents, String> 
   @Transactional
   void deleteById(String documentId);
 
-  Page<Documents> findAllByTeamId(Long teamId, Pageable pageable);
+  List<Documents> findAllByTeamId(Long teamId);
 
-  Page<Documents> findAllByTeamIdAndCreatedDtGreaterThanEqual(Long teamId, LocalDateTime startDt, Pageable pageable);
+  List<Documents> findAllByTeamIdAndCreatedDtGreaterThanEqual(Long teamId, LocalDateTime startDt);
 
-  Page<Documents> findAllByTeamIdAndCreatedDtLessThanEqual(Long teamId, LocalDateTime endDt, Pageable pageable);
+  List<Documents> findAllByTeamIdAndCreatedDtLessThanEqual(Long teamId, LocalDateTime endDt);
 
-  Page<Documents> findAllByTeamIdAndCreatedDtBetween(Long teamId, LocalDateTime startDt, LocalDateTime endDt, Pageable pageable);
+  List<Documents> findAllByTeamIdAndCreatedDtBetween(Long teamId, LocalDateTime startDt, LocalDateTime endDt);
 }
