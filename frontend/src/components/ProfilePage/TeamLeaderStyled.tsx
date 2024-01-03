@@ -7,6 +7,7 @@ export const TeamLeaderContainer = styled.div`
   justify-content: flex-start;
   height: 100vh;
   margin-top: 10px;
+  padding-top: 80px;
 `;
 
 export const CenteredContainer = styled.div`
@@ -89,15 +90,15 @@ export const TeamMembersContainer = styled.div`
 
 export const ConfirmationModal = styled.div`
   position: absolute;
-  top: 65%;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 20px;
   background: white;
   z-index: 999;
   border: 1px solid #cccccc;
-  width: 30%;
-  height: 17%;
+  width: 250px;
+  height: 170px;
 
   input {
     background: white;
@@ -110,6 +111,8 @@ export const MoveTeamPage = styled.div`
   text-align: right;
   margin-right: 100px;
   cursor: pointer;
+  padding-top: 100px;
+
   &:hover {
     color: #a3cca3;
   }

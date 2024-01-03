@@ -392,46 +392,36 @@ public class ScheduleService {
   }
 
 
-  public Page<AllSchedulesMonthlyView> getCategoryTypeMonthlySchedules(
-      Long teamId, CategoryType categoryType, Pageable pageable, Long memberId
+  public List<AllSchedulesMonthlyView> getCategoryTypeMonthlySchedules(
+      Long teamId, CategoryType categoryType, Long memberId
   ) {
     validateTeamParticipant(teamId, memberId);
 
-    Page<RepeatSchedule> repeatSchedules =
-        repeatScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(categoryType, teamId, pageable);
-    Page<SimpleSchedule> simpleSchedules =
-        simpleScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(categoryType, teamId, pageable);
+    List<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(categoryType, teamId);
+    List<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(categoryType, teamId);
 
     List<AllSchedulesMonthlyView> allSchedulesList = Stream.concat(
-        repeatSchedules.getContent().stream().map(AllSchedulesMonthlyView::from),
-        simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from))
+            repeatSchedules.stream().map(AllSchedulesMonthlyView::from),
+            simpleSchedules.stream().map(AllSchedulesMonthlyView::from))
         .collect(Collectors.toList());
-
-    PageImpl<AllSchedulesMonthlyView> allSchedulesMonthlyViews = new PageImpl<>(allSchedulesList,
-        pageable, repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
-    );
 
     log.info("카테고리 유형별 월간 보기 조회에 성공하였습니다.");
-    return allSchedulesMonthlyViews;
+    return allSchedulesList;
   }
 
-  public Page<AllSchedulesMonthlyView> getAllMonthlySchedules(Long teamId, Pageable pageable, Long memberId) {
+  public List<AllSchedulesMonthlyView> getAllMonthlySchedules(Long teamId, Long memberId) {
     validateTeamParticipant(teamId, memberId);
 
-    Page<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByTeam_TeamId(teamId, pageable);
-    Page<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByTeam_TeamId(teamId, pageable);
+    List<RepeatSchedule> repeatSchedules = repeatScheduleRepository.findAllByTeam_TeamId(teamId);
+    List<SimpleSchedule> simpleSchedules = simpleScheduleRepository.findAllByTeam_TeamId(teamId);
 
     List<AllSchedulesMonthlyView> allSchedulesList = Stream.concat(
-        repeatSchedules.getContent().stream().map(AllSchedulesMonthlyView::from),
-        simpleSchedules.getContent().stream().map(AllSchedulesMonthlyView::from))
+        repeatSchedules.stream().map(AllSchedulesMonthlyView::from),
+        simpleSchedules.stream().map(AllSchedulesMonthlyView::from))
         .collect(Collectors.toList());
 
-    PageImpl<AllSchedulesMonthlyView> allSchedulesMonthlyViews = new PageImpl<>(allSchedulesList,
-        pageable, repeatSchedules.getTotalElements() + simpleSchedules.getTotalElements()
-    );
-
     log.info("월간 보기 조회에 성공하였습니다.");
-    return allSchedulesMonthlyViews;
+    return allSchedulesList;
   }
 
   private SimpleSchedule findSimpleScheduleOrElseThrow(Long simpleScheduleId) {

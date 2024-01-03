@@ -17,9 +17,9 @@ public interface SimpleScheduleRepository extends JpaRepository<SimpleSchedule, 
 
   SimpleSchedule findSimpleScheduleBySimpleScheduleIdAndTeam_TeamId(Long scheduleId, Long teamId);
 
-  Page<SimpleSchedule> findAllByTeam_TeamId(Long teamId, Pageable pageable);
+  List<SimpleSchedule> findAllByTeam_TeamId(Long teamId);
 
-  Page<SimpleSchedule> findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(CategoryType categoryType, Long teamId, Pageable pageable);
+  List<SimpleSchedule> findAllByScheduleCategory_CategoryTypeAndTeam_TeamId(CategoryType categoryType, Long teamId);
 
   List<SimpleSchedule> findAllByScheduleCategory_ScheduleCategoryIdAndTeam_TeamId(Long categoryId, Long teamId);
 

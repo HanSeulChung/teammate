@@ -4,6 +4,7 @@ export const UserProfileContainer = styled.div`
   border-radius: 8px;
   margin: auto;
   width: 600px;
+  padding-top: 50px;
 `;
 
 export const UserProfileTitle = styled.h2`

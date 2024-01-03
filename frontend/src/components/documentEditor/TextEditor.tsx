@@ -185,11 +185,13 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
 
   const handleDelete = async () => {
     const isConfirmed = window.confirm("문서를 삭제하시겠습니까?");
+
     if (isConfirmed) {
       try {
         await axiosInstance.delete(`/team/${teamId}/documents/${documentsId}`);
         navigate(`/team/${teamId}/documentsList`);
       } catch (error) {
+        alert("작성자가 아니면 삭제할 수 없습니다.");
         console.error("Error deleting document:", error);
       }
     }
@@ -232,7 +234,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ teamId, documentsId }) => {
           body: JSON.stringify(message),
         });
       }
-    }, 2000);
+    }, 1000);
 
     // 컴포넌트가 언마운트되거나 의존성이 변경될 때 실행될 정리 함수
     return () => {

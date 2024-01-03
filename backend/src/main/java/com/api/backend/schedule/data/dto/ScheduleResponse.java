@@ -20,6 +20,7 @@ public class ScheduleResponse {
 
   private Long scheduleId;
   private String scheduleType;
+  private Long categoryId;
   private String categoryName;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startDt;
@@ -41,6 +42,7 @@ public class ScheduleResponse {
     return ScheduleResponse.builder()
         .scheduleId(repeatScheduleResponse.getScheduleId())
         .scheduleType("반복 일정")
+        .categoryId(repeatScheduleResponse.getCategoryId())
         .categoryName(repeatScheduleResponse.getCategoryName())
         .startDt(repeatScheduleResponse.getStartDt())
         .endDt(repeatScheduleResponse.getEndDt())
@@ -60,6 +62,7 @@ public class ScheduleResponse {
   public static ScheduleResponse from(SimpleScheduleResponse simpleScheduleResponse) {
     return ScheduleResponse.builder()
         .scheduleId(simpleScheduleResponse.getScheduleId())
+        .categoryId(simpleScheduleResponse.getCategoryId())
         .scheduleType("단순 일정")
         .categoryName(simpleScheduleResponse.getCategoryName())
         .scheduleId(simpleScheduleResponse.getScheduleId())

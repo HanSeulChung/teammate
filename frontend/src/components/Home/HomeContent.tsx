@@ -144,6 +144,7 @@ const TeamListContainer = styled.div`
   justify-content: flex-start;
   gap: 5px;
   padding: 8px;
+  padding-top: 50px;
 
   @media (max-width: 600px) {
     width: 100%;

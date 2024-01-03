@@ -25,6 +25,9 @@ public class AllSchedulesMonthlyView {
   @Schema(description = "schedule type", example = "반복 일정/단순 일정")
   private String scheduleType;
 
+  @Schema(description = "category id", example = "1L")
+  private Long categoryId;
+
   @Schema(description = "category type", example = "문서/일정")
   private CategoryType category;
 
@@ -55,6 +58,7 @@ public class AllSchedulesMonthlyView {
     return AllSchedulesMonthlyView.builder()
         .scheduleId(repeatSchedule.getRepeatScheduleId())
         .scheduleType("반복일정")
+        .categoryId(repeatSchedule.getScheduleCategory().getScheduleCategoryId())
         .category(repeatSchedule.getScheduleCategory().getCategoryType())
         .categoryName(repeatSchedule.getScheduleCategory().getCategoryName())
         .title(repeatSchedule.getTitle())
@@ -70,6 +74,7 @@ public class AllSchedulesMonthlyView {
     return AllSchedulesMonthlyView.builder()
         .scheduleId(simpleSchedule.getSimpleScheduleId())
         .scheduleType("단순일정")
+        .categoryId(simpleSchedule.getScheduleCategory().getScheduleCategoryId())
         .category(simpleSchedule.getScheduleCategory().getCategoryType())
         .categoryName(simpleSchedule.getScheduleCategory().getCategoryName())
         .title(simpleSchedule.getTitle())
