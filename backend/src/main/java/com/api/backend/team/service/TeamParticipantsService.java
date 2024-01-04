@@ -33,8 +33,8 @@ public class TeamParticipantsService {
   private final FileProcessService fileProcessService;
 
   @Transactional
-  public TeamParticipants deleteTeamParticipantById(Long userId, Long teamId) {
-    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
+  public TeamParticipants deleteTeamParticipantById(Long memberId, Long teamId) {
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, memberId);
 
     if (teamParticipants.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_DELETE_NOT_VALID_EXCEPTION);
@@ -46,8 +46,8 @@ public class TeamParticipantsService {
   }
 
   @Transactional
-  public String updateRoleTeamParticipant(Long userId, Long participantId, Long teamId) {
-    TeamParticipants readerParticipant = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
+  public String updateRoleTeamParticipant(Long memberId, Long participantId, Long teamId) {
+    TeamParticipants readerParticipant = getTeamParticipantByTeamIdAndMemberId(teamId, memberId);
 
     if (!readerParticipant.getTeamRole().equals(TeamRole.LEADER)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_READER_EXCEPTION);
@@ -56,21 +56,20 @@ public class TeamParticipantsService {
     TeamParticipants mateParticipant = teamParticipantsRepository.findById(participantId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
 
-    if (!readerParticipant.getTeam().getTeamId()
-        .equals(mateParticipant.getTeam().getTeamId())) {
+    if (!mateParticipant.getTeam().getTeamId().equals(teamId)) {
       throw new CustomException(TEAM_NOT_EQUALS_EXCEPTION);
     }
     if (!mateParticipant.getTeamRole().equals(TeamRole.MATE)) {
       throw new CustomException(TEAM_PARTICIPANT_NOT_VALID_MATE_EXCEPTION);
     }
 
-    readerParticipant.updateRole(TeamRole.MATE);
-    mateParticipant.updateRole(TeamRole.LEADER);
+    readerParticipant.setTeamRole(TeamRole.MATE);
+    mateParticipant.setTeamRole(TeamRole.LEADER);
     return UPDATE_ROLE_TEAM_PARTICIPANT;
   }
 
-  public List<TeamParticipants> getTeamParticipants(Long teamId, Long userId) {
-    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
+  public List<TeamParticipants> getTeamParticipants(Long teamId, Long memberId) {
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, memberId);
 
     Team team = teamParticipants.getTeam();
 
@@ -79,8 +78,8 @@ public class TeamParticipantsService {
     return team.getTeamParticipants();
   }
 
-  public TeamParticipants getTeamParticipant(Long teamId, Long userId) {
-    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, userId);
+  public TeamParticipants getTeamParticipant(Long teamId, Long memberId) {
+    TeamParticipants teamParticipants = getTeamParticipantByTeamIdAndMemberId(teamId, memberId);
 
     Team team = teamParticipants.getTeam();
 
@@ -98,7 +97,7 @@ public class TeamParticipantsService {
 
   @Transactional
   public TeamParticipants updateParticipantContent(
-      TeamParticipantUpdateRequest teamParticipantUpdateRequest, String userId
+      TeamParticipantUpdateRequest teamParticipantUpdateRequest, Long memberId
   ) {
     TeamParticipants teamParticipant = teamParticipantsRepository.findById(
         teamParticipantUpdateRequest.getTeamParticipantsId()
@@ -109,7 +108,7 @@ public class TeamParticipantsService {
     teamService.isDeletedCheck(team.getRestorationDt(), team.isDelete());
 
     if (!teamParticipant.getMember().getMemberId()
-        .equals(Long.valueOf(userId))) {
+        .equals(memberId)) {
       throw new CustomException(MEMBER_NOT_EQUALS_EXCEPTION);
     }
 
@@ -142,9 +141,9 @@ public class TeamParticipantsService {
     return teamParticipantsRepository.findAllById(teamParticipantIds);
   }
 
-  private TeamParticipants getTeamParticipantByTeamIdAndMemberId(Long teamId, Long userId) {
+  private TeamParticipants getTeamParticipantByTeamIdAndMemberId(Long teamId, Long memberId) {
     return teamParticipantsRepository
-        .findByTeam_TeamIdAndMember_MemberId(teamId, userId)
+        .findByTeam_TeamIdAndMember_MemberId(teamId, memberId)
         .orElseThrow(() -> new CustomException(TEAM_PARTICIPANTS_NOT_FOUND_EXCEPTION));
   }
 }

@@ -221,7 +221,7 @@ public class MemberController {
     return ResponseEntity.ok(
         TeamParticipantsDto.from(
             teamParticipantsService.updateParticipantContent(teamParticipantUpdateRequest,
-                principal.getName())
+                Long.valueOf(principal.getName()))
         )
     );
   }
