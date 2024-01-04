@@ -134,7 +134,7 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 
 
 ## 시연 영상 
-
+[![Video Label](http://img.youtube.com/vi/LNwdEaD7rvs/0.jpg)](https://youtu.be/LNwdEaD7rvs)
 
 ## Notion 
 [100% 팀 노션](https://www.notion.so/f6266a684b02452d99bcfec7a44192ed?pvs=4)
