@@ -66,6 +66,8 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 ## ERD
 ![사본 -TeamMateERD](https://github.com/100backfro/teammate/assets/94779505/f6fecb2c-2832-49b9-a9df-a77b5c5aa05b)
 
+* MongoDB: Documents, Comment
+* MySQL: Member, Team, TeamParticipants, ScheduleCategory, SimpleSchedule, RepeatSchedule, TeamParticipantsSchedule
 
 ## Architecture
 ![image](https://github.com/100backfro/teammate/assets/110381560/35856126-d4da-4c93-bdc2-c42cd16f22a1)
