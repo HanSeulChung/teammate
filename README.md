@@ -1,33 +1,12 @@
 # TeamMate : 팀원들과의 원할한 협업을 위한 서비스
 TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 캘린더로 일정 공유를 할 수 있어 원활한 협업을 가능하게 합니다.
 
-## 100backfro 팀원 소개
+협업 프로젝트를 혼자서 처음부터 다시 구현하기 위해 fork 후 작업 진행 예정입니다.
 
- FE   | FE   | FE   
- :------: | :------: | :------: 
-|   캘린더, 일정 카테고리, 일정   | 회원가입, 로그인, 소셜 로그인,<br> 팀, 팀참가자   |  문서, 댓글, 웹소켓  |
-| <img src="https://avatars.githubusercontent.com/u/110381560?v=4" width="150px;" alt=""/>  | <img src="https://avatars.githubusercontent.com/u/135790442?v=4" width="150px;" alt=""/>  | <img src="https://avatars.githubusercontent.com/u/89259535?v=4" width="150px;" alt=""/>  |
-| [유나경](https://github.com/shiningKyung) | [장유리](https://github.com/zzannorita) | [정도헌](https://github.com/bslkuye) |
-
-|    BE   |   BE    |   BE   |  BE  |
-|:-------:|:-----:|:-----:|:----:|
-| 캘린더, 일정 카테고리, 일정   |   팀, 팀참가자, 배포   |      문서, 댓글, 웹소켓, S3    | 회원가입, 로그인, 소셜로그인   |
-| <img src="https://avatars.githubusercontent.com/u/122286693?v=4" width="150px;" alt=""/>| <img src="https://avatars.githubusercontent.com/u/48014869?v=4" width="150px;" alt=""/> |<img src="https://avatars.githubusercontent.com/u/94779505?s=400&u=d3b96565f9872e98397c9f11e6a2f11c82cdecbb&v=4" width="150px;" alt=""/>|  <img src="https://avatars.githubusercontent.com/u/68370338?v=4" width="150px;" alt=""/> |
-|            [이제인](https://github.com/xenxxn)           |                           [이진영](https://github.com/dkwktm45)                          |   [정한슬](https://github.com/HanSeulChung)   | [최진성](https://github.com/choijinsung05) |
+[original 링크](https://github.com/100backfro/teammate)
 
         
 ## 기술 스택
-### Frontend
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![React.js](https://img.shields.io/badge/React.js-61DAFB?style=for-the-badge&logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Axios](https://img.shields.io/badge/Axios-007ACC?style=for-the-badge&logo=axios&logoColor=white)
-![React-Query](https://img.shields.io/badge/React_Query-00BCBA?style=for-the-badge&logo=react&logoColor=white)
-![Quill.js](https://img.shields.io/badge/quill.js-DE8B4A?style=for-the-badge&logo=javascript&logoColor=white)
-![Recoil](https://img.shields.io/badge/Recoil-1F1F1F?style=for-the-badge&logo=react&logoColor=white)
-![daisyUi](https://img.shields.io/badge/daisyUi-FF9F00?style=for-the-badge&logo=react&logoColor=white)
-
-
 ### Backend
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white)
@@ -54,14 +33,7 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 
 ### Tool
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
-![VSCode](https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 ![IntelliJ](https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellij-idea&logoColor=white)
-
-### Communication
-![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white)
-![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)
-![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
 
 
 ## ERD
@@ -71,6 +43,8 @@ TeamMate는 협업 해야하는 사람들과 팀을 만들어 문서 공유와 �
 * MySQL: Member, Team, TeamParticipants, ScheduleCategory, SimpleSchedule, RepeatSchedule, TeamParticipantsSchedule
 
 ## Architecture
+Architecture 재구성 필요/예정
+
 ![image](https://github.com/100backfro/teammate/assets/110381560/35856126-d4da-4c93-bdc2-c42cd16f22a1)
 
 
